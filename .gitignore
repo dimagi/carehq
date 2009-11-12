@@ -1,0 +1,6 @@
+*.pyc
+local.ini
+.project
+.pydevproject
+rapidsms-django.log*
+rapidsms.log*

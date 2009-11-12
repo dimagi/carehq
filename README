@@ -1,5 +1,24 @@
-ASHand Project Source Code
-(work in progress)
-webproject/ - All the webui components for the python/django web components
-docs/ - documentation
+ASHand Overall project structure.
 
+apps/
+	Django apps that you will make
+  
+libs/
+	Any third party libs (presumably python) that you'll need to reference
+  
+  
+contrib/
+
+docs/
+
+lib/
+	Third party libraries (presumably python) that you'll need to reference
+
+rapidsms/
+	Dimagi's rapidsms fork for bootstrapping the django runtime
+
+tests/
+	Tests outside the scope of unit tests.  Usually deployment tests
+
+utilities/
+	Additional utilities that operate on the running codebase
