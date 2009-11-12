@@ -111,18 +111,7 @@
 				<include name="**/*"/>
 			</fileset>
 		</py-doc>
-	</target>	
-	
-	<target name="deploy-to-server" depends="compile,django-tests-all,syncdb">
-		<py-run script="${deployment.dir}/deploy.py" pythonpath="${deployment.dir}">			
-		</py-run>
-	</target>
-	
-	<target name="post-deploy-tests" depends="compile,django-tests-all,deploy-to-server">
-			<py-run script="${postdeploy.dir}/testRegisterAndSubmitData.py" pythonpath="${postdeploy.dir}">			
-			</py-run>
-	</target>
-	
+	</target>		
 	 
 </project>
 
