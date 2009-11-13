@@ -26,6 +26,11 @@ from django.contrib.contenttypes.models import ContentType
 
 from rapidsms.webui.utils import render_to_response, paginated
 
+# myapp/views.py
+from datagrids import UserDataGrid
+ 
+def datagrids(request, template_name='ashand/datagrids.html'):
+    return UserDataGrid(request).render_to_response(template_name)
 
 def styleguide(request, template_name="ashand/styleguide.html"):
     context = {}

@@ -3,5 +3,6 @@ import ashand.views as views
 
 urlpatterns = patterns('',
     (r'^$', 'ashand.views.styleguide'),
+    (r'^grids/$', 'ashand.views.datagrids'),
 )    
     
