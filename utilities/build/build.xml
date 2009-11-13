@@ -90,12 +90,20 @@
 		
 	</target> 
 	
-	<target name="syncdb" depends="compile,django-tests-all">
+	<!-- Note, this is extremely dangerous for running on your own environment -->
+	<target name="cleanflush" depends="compile,django-tests-all">
 		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
-			<arg value="syncdb" />
+			<arg value="flush" />
 			<arg value="--noinput" />
 			</py-run>		
 	</target>
+	
+	<target name="syncdb" depends="compile,django-tests-all">
+			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
+				<arg value="syncdb" />
+				<arg value="--noinput" />
+				</py-run>		
+		</target>
 	
 		
 	<target name="pydoc" depends="init,compile">
