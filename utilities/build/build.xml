@@ -94,11 +94,7 @@
 		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 			<arg value="syncdb" />
 			<arg value="--noinput" />
-			</py-run>
-		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
-			<arg value="runscript" />
-			<arg value="scripts.hqbootstrap" />
-		</py-run>
+			</py-run>		
 	</target>
 	
 		
