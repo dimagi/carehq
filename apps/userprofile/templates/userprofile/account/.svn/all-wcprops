@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/393/trunk/userprofile/templates/userprofile/account
+END
+password_change_done.html
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_change_done.html
+END
+registration_done.html
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/375/trunk/userprofile/templates/userprofile/account/registration_done.html
+END
+password_reset_confirm.html
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_reset_confirm.html
+END
+email_validation_reset_response.html
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/359/trunk/userprofile/templates/userprofile/account/email_validation_reset_response.html
+END
+password_expired.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_expired.html
+END
+password_reset_complete.html
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_reset_complete.html
+END
+email_validation.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/email_validation.html
+END
+email_validation_reset.html
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/359/trunk/userprofile/templates/userprofile/account/email_validation_reset.html
+END
+password_reset.html
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_reset.html
+END
+email_validation_done.html
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/email_validation_done.html
+END
+password_change.html
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_change.html
+END
+login.html
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/359/trunk/userprofile/templates/userprofile/account/login.html
+END
+email_validation_processed.html
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/email_validation_processed.html
+END
+logout.html
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/logout.html
+END
+password_reset_done.html
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/354/trunk/userprofile/templates/userprofile/account/password_reset_done.html
+END
+registration.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/365/trunk/userprofile/templates/userprofile/account/registration.html
+END

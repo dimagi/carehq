@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/378/trunk/userprofile/urls
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/331/trunk/userprofile/urls/__init__.py
+END
+en.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/378/trunk/userprofile/urls/en.py
+END
+es.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/376/trunk/userprofile/urls/es.py
+END

@@ -98,12 +98,19 @@
 			</py-run>		
 	</target>
 	
-	<target name="syncdb" depends="compile,django-tests-all">
+	<target name="syncdb" depends="compile,django-tests-all,setstatic">
 			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 				<arg value="syncdb" />
 				<arg value="--noinput" />
-				</py-run>		
-		</target>
+			</py-run>		
+	</target>
+	
+	<target name="setstatic" depends="">
+		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
+			<arg value="runscruipt" />
+			<arg value="utilities.setapache_static" />
+		</py-run>		
+	</target>
 	
 		
 	<target name="pydoc" depends="init,compile">

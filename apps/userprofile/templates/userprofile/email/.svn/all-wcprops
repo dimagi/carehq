@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/316/trunk/userprofile/templates/userprofile/email
+END
+validation_subject.txt
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/270/trunk/userprofile/templates/userprofile/email/validation_subject.txt
+END
+validation.txt
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/296/trunk/userprofile/templates/userprofile/email/validation.txt
+END
+password_reset_email.txt
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/316/trunk/userprofile/templates/userprofile/email/password_reset_email.txt
+END
