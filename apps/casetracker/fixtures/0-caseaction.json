@@ -1,0 +1,44 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Resolve"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Close"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Follow Up"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Assign"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Escalate"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Query"
+    }
+  }
+]

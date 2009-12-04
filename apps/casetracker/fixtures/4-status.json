@@ -1,0 +1,34 @@
+[
+ {
+    "pk": 1, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 1, 
+      "description": "Active"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 1, 
+      "description": "Resolved (Answered)"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 2, 
+      "description": "Active"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 2, 
+      "description": "Resolved (Responded)"
+    }
+  }
+]

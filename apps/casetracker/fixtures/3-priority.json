@@ -1,0 +1,58 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "Critical"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "Serious"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 1, 
+      "description": "Will Do"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "Need in Future"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "Helpful in Future"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "Address If Time"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "default": 0, 
+      "description": "TBD"
+    }
+  }
+]

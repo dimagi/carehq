@@ -1,0 +1,83 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Edit Case", 
+      "summary": "Edit a case"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Email", 
+      "summary": "email on an issue"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Phone Call", 
+      "summary": "Make a phone call"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "SMS", 
+      "summary": "Send an SMS"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "SMS", 
+      "summary": "Send an SMS"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "Phone Call", 
+      "summary": "Make a phone call"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "New Case", 
+      "summary": "Created a new case"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "New Case", 
+      "summary": "Created a new case"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "Edit Case", 
+      "summary": "Edit a case"
+    }
+  }
+]

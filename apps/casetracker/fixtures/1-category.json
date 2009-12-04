@@ -1,0 +1,20 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Inquiry", 
+      "plural": "Inquiries", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Issue", 
+      "plural": "Issues", 
+      "default_status": null
+    }
+  }
+]
