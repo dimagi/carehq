@@ -5,7 +5,8 @@
     "fields": {
       "category": 2, 
       "name": "Edit Case", 
-      "summary": "Edit a case"
+      "summary": "Edit a case",
+      "event_class": "edit"
     }
   }, 
   {
@@ -14,7 +15,8 @@
     "fields": {
       "category": 2, 
       "name": "Email", 
-      "summary": "email on an issue"
+      "summary": "email on an issue",
+      "event_class": "custom"
     }
   }, 
   {
@@ -23,7 +25,8 @@
     "fields": {
       "category": 2, 
       "name": "Phone Call", 
-      "summary": "Make a phone call"
+      "summary": "Make a phone call",
+      "event_class": "custom"
     }
   }, 
   {
@@ -32,7 +35,8 @@
     "fields": {
       "category": 2, 
       "name": "SMS", 
-      "summary": "Send an SMS"
+      "summary": "Send an SMS",
+      "event_class": "custom"
     }
   }, 
   {
@@ -41,7 +45,8 @@
     "fields": {
       "category": 1, 
       "name": "SMS", 
-      "summary": "Send an SMS"
+      "summary": "Send an SMS",
+      "event_class": "custom"
     }
   }, 
   {
@@ -50,7 +55,8 @@
     "fields": {
       "category": 1, 
       "name": "Phone Call", 
-      "summary": "Make a phone call"
+      "summary": "Make a phone call",
+      "event_class": "custom"
     }
   }, 
   {
@@ -59,7 +65,8 @@
     "fields": {
       "category": 1, 
       "name": "New Case", 
-      "summary": "Created a new case"
+      "summary": "Created a new case",
+      "event_class": "open"
     }
   }, 
   {
@@ -68,7 +75,8 @@
     "fields": {
       "category": 2, 
       "name": "New Case", 
-      "summary": "Created a new case"
+      "summary": "Created a new case",
+      "event_class": "open"
     }
   }, 
   {
@@ -77,7 +85,88 @@
     "fields": {
       "category": 1, 
       "name": "Edit Case", 
-      "summary": "Edit a case"
+      "summary": "Edit a case",
+      "event_class": "edit"
+    }
+  },  
+  {
+    "pk": 10, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "View Case", 
+      "summary": "View a case",
+      "event_class": "view"
+    }
+  },
+  {
+    "pk": 11, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "View Case", 
+      "summary": "View a case",
+      "event_class": "view"
+    }
+  },
+  {
+    "pk": 12, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "Resolve Case", 
+      "summary": "Resolve a case",
+      "event_class": "resolve"
+    }
+  },
+  {
+    "pk": 13, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Resolve Case", 
+      "summary": "Resolve a case",
+      "event_class": "resolve"
+    }
+  },
+  {
+    "pk": 14, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "Close Case", 
+      "summary": "Close a case",
+      "event_class": "close"
+    }
+  },
+  {
+    "pk": 15, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Close Case", 
+      "summary": "Close a case",
+      "event_class": "close"
+    }
+  },
+  {
+    "pk": 16, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "name": "Reopen Case", 
+      "summary": "Reopen a case",
+      "event_class": "reopen"
+    }
+  },
+  {
+    "pk": 17, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "name": "Reopen Case", 
+      "summary": "Reopen a case",
+      "event_class": "reopen"
     }
   }
 ]

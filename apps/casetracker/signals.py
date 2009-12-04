@@ -19,12 +19,12 @@ def case_saved(sender, instance, created, **kwargs):
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
         notes = "New case created by " + str(event_creator)
-        qname = Q(name='New Case')
+        qname = Q(event_class='open')
     else:
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
         notes = "Case edited by " + str(event_creator)
-        qname = Q(name='Edit Case')
+        qname = Q(event_class='edit')
     try:
         event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
     except:

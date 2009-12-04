@@ -106,9 +106,22 @@ class EventActivity(models.Model):
     sms    
         
     """
+    EVENT_CLASS_CHOICES = (
+        ('open', 'Open/Create'),
+        ('view', 'View'),
+        ('edit', 'Edit'),        
+        ('resolve', 'Resolve'),
+        ('close', 'Close'),        
+        ('reopen', 'Reopen'),
+        
+        ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+    )
+    
     name = models.TextField(max_length=64)
     summary = models.TextField(max_length=512)
     category = models.ForeignKey(Category) # different categories have different event types
+    
+    event_class = models.TextField(max_length=24, choices=EVENT_CLASS_CHOICES)
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.name)
@@ -136,6 +149,14 @@ class CaseEvent(models.Model):
     
     created_date  = models.DateTimeField()
     created_by = models.ForeignKey(User)
+    
+    
+    def save(self):   
+        if self.id == None:     
+            if self.created_by == None:
+                raise Exception("Missing fields in Case creation - created by")           
+                self.created_date = datetime.utcnow()                            
+        super(CaseEvent, self).save()  
     
     def __unicode__(self):
         return "Case Event: %s - %s" % (self.created_by.username, self.created_date)
