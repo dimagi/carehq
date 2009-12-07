@@ -1,0 +1,3 @@
+This version of django-reversion included is the django 1.0 compatible build.
+
+When upgrading to django 1.1, please pull from the reversion project, the 1.1 compatible build.
