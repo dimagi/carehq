@@ -36,7 +36,7 @@ class EventActivityVerificationTest(TestCase):
         
         user = User.objects.get(username='mockuser')
         newcase = Case()
-        newcase.title = "this is a case made by the test case"
+        newcase.description = "this is a case made by the test case"
         newcase.opened_by = user
         
         newcase.category = Category.objects.all()[0]
@@ -55,12 +55,12 @@ class EventActivityVerificationTest(TestCase):
         #verify that said case count is a new case event of type "open"
         self.assertEqual("open", events[0].activity.event_class)
     
-    def testCaseModifyTitle(self):
+    def testCaseModifyDescription(self):
         self.testCreateCase()
         user = User.objects.get(username='mockuser')
         
-        case = Case.objects.all().get(title = "this is a case made by the test case")
-        case.title = "i just changed it, foo"
+        case = Case.objects.all().get(description = "this is a case made by the test case")
+        case.description = "i just changed it, foo"
         case.last_edit_by = user
         case.save()
         
@@ -73,10 +73,10 @@ class EventActivityVerificationTest(TestCase):
         self.assertEqual("edit", events[1].activity.event_class)
         
         
-        #quickly verify that the original title is still unchanged
-        dbcase = Case.objects.all().get(title='i just changed it, foo')
+        #quickly verify that the original description is still unchanged
+        dbcase = Case.objects.all().get(description='i just changed it, foo')
         self.assertEqual(dbcase.id, case.id)        
-        self.assertEqual(dbcase.orig_title, "this is a case made by the test case")
+        self.assertEqual(dbcase.orig_description, "this is a case made by the test case")
         
         
         

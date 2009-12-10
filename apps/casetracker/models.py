@@ -4,7 +4,8 @@ from django.db.models import Q
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 class CaseAction(models.Model):
     """
@@ -77,6 +78,9 @@ class Status (models.Model):
     
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
+    
+    #query filters can be implemented a la kwarg evaluation:
+    #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419
         
     #Note: 
     #fogbugz had a bunch of classifiers here that describe the nature of the status
@@ -179,8 +183,8 @@ class Case(models.Model):
     
     Changes to these cases will be managed by django-reversion.  Actions revolving around these cases will be done via encounters.
     """    
-    title = models.CharField(max_length=160)
-    orig_title = models.CharField(max_length=160, blank=True, null=True, editable=False)    
+    description = models.CharField(max_length=160)
+    orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
     category = models.ForeignKey(Category)
     status = models.ForeignKey(Status)    
     
@@ -207,14 +211,41 @@ class Case(models.Model):
     parent_case = models.ForeignKey('self', null=True, blank=True)
     
     
+    @property
+    def last_case_event(self):
+        if CaseEvent.objects.filter(case=self).order_by('-created_date').count() > 0:
+            return CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
+        else:
+            return None
+        
+        
+    @property
+    def last_event_date(self):
+        evt = self.last_case_event
+        if evt:            
+            return evt.created_date
+        else:
+            return None
+    
+    @property
+    def last_event_by(self):
+        evt = self.last_case_event
+        if evt:            
+            return evt.created_by
+        else:
+            return None
+    
+    
+    
+    
     def save(self):        
         if self.id == None:
-            if self.opened_by == None or self.title == None:
-                raise Exception("Missing fields in Case creation - opened by and title")            
+            if self.opened_by == None or self.description == None:
+                raise Exception("Missing fields in Case creation - opened by and description")            
             
             #if we're brand new, we'll update the dates in this way:
             self.opened_date = datetime.utcnow()
-            self.orig_title = self.title
+            self.orig_description = self.description
         else:
             if self.last_edit_by == None:
                 raise Exception("Missing fields in Case edit - last_edit_by")            
@@ -224,12 +255,200 @@ class Case(models.Model):
         super(Case, self).save()        
     
     def __unicode__(self):
-        return "(Case %s) %s" % (self.id, self.title)
+        return "(Case %s) %s" % (self.id, self.description)
     class Meta:
         verbose_name = "Case"
         verbose_name_plural="Cases"
         ordering = ['-opened_date']
 
+
+class Filter(models.Model):
+    """
+    
+    """
+
+    #below are the enumerated integer choices because integer fields don't like choices that aren't ints.
+    #for more information see here:
+    #http://www.b-list.org/weblog/2007/nov/02/handle-choices-right-way/
+    TODAY=0
+    ONE_DAY=1
+    THREE_DAYS=3
+    ONE_WEEK=7
+    TWO_WEEKS=14
+    ONE_MONTH=30
+    TWO_MONTHS=60
+    THREE_MONTHS=90
+    SIX_MONTHS=180
+    ONE_YEAR=365
+    
+    TIME_DURATION_FUTURE_CHOICES = (
+        (-ONE_DAY, 'In the past'),
+        (TODAY, 'Today'),
+        (ONE_DAY, 'Today or tomorrow'),        
+        (THREE_DAYS, 'In the next three days'),
+        (ONE_WEEK, 'In the next week'),        
+        (TWO_WEEKS, 'In the next two weeks'),
+        (ONE_MONTH, 'In the next month'),
+        (TWO_MONTHS, 'In the next two months'),
+        (THREE_MONTHS, 'In the next three months'),
+        (SIX_MONTHS, 'In the next six months'),
+        (ONE_YEAR, 'In the next year'),
+    )
+    
+    TIME_DURATION_PAST_CHOICES = (        
+        (TODAY, 'Today'),
+        (-ONE_DAY, 'Yesterday or today'),
+        (-ONE_WEEK, 'In the past week'),        
+        (-ONE_MONTH, 'In the past month'),
+        (-TWO_MONTHS, 'In the past two months'),
+        (-THREE_MONTHS, 'In the past three months'),
+        (-SIX_MONTHS, 'In the past six months'),
+        (-ONE_YEAR, 'In the past year'),
+    )
+    #metadata about the query
+    description = models.CharField(max_length=64)
+    creator = models.ForeignKey(User, related_name="filter_creator")
+    shared = models.BooleanField(default = False)
+    
+    #case related properties
+    category = models.ForeignKey(Category, null=True, blank=True)
+    status = models.ForeignKey(Status, null=True, blank=True)
+    priority = models.ForeignKey(Priority, null=True, blank=True)
+    
+    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name="assigned_to")
+    opened_by = models.ForeignKey(User, null=True, blank=True, related_name="opened_by")
+    last_edit_by = models.ForeignKey(User, null=True, blank=True, related_name="last_edit_by")    
+    resolved_by = models.ForeignKey(User, null=True, blank=True, related_name="resolved_by")
+    closed_by = models.ForeignKey(User, null=True, blank=True, related_name="closed_by")
+        
+    opened_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    last_edit_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    resolved_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    closed_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    
+    next_action_date = models.IntegerField(choices = TIME_DURATION_FUTURE_CHOICES, null=True, blank=True)    
+    
+    #case Event information
+    last_event_type = models.ForeignKey(EventActivity, null=True, blank=True)
+    last_event_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    last_event_by = models.ForeignKey(User, null=True, blank=True)
+    
+    
+    #this should come in as a dictionary of key-value pairs that are compatible with a 
+    #django query when resolved as a kwargs.
+    #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
+    #http://stackoverflow.com/questions/353489/cleaner-way-to-query-on-a-dynamic-number-of-columns-in-django
+       
+    
+    def get_filter_queryset(self):
+        """
+        On a given filter instance, we will generate a query 
+        """        
+        utcnow = datetime.utcnow()
+                
+        case_query_arr = []        
+        case_event_query_arr = []
+        
+        if self.category:
+            case_query_arr.append(Q(category=self.category))        
+        if self.status:
+            case_query_arr.append(Q(status = self.status))
+        if self.priority:
+            case_query_arr.append(Q(priority = self.priority))
+        if self.assigned_to:
+            case_query_arr.append(Q(assigned_to = self.assigned_to))        
+        if self.opened_by:
+            case_query_arr.append(Q(opened_by = self.opened_by))
+        if self.last_edit_by:
+            case_query_arr.append(Q(last_edit_by = self.last_edit_by))
+        if self.resolved_by:
+            case_query_arr.append(Q(resolved_by = self.resolved_by))
+        if self.closed_by:
+            case_query_arr.append(Q(closed_by = self.closed_by))
+        
+        if self.opened_date:
+            compare_date = utcnow + timedelta(days=self.opened_date)
+            case_query_arr.append(Q(opened_date__gte=compare_date))
+        if self.last_edit_date:
+            compare_date = utcnow + timedelta(days=self.last_edit_date)
+            case_query_arr.append(Q(last_edit_date__gte=compare_date))
+        if self.resolved_date:
+            compare_date = utcnow + timedelta(days=self.resolved_date)
+            case_query_arr.append(Q(resolved_date__gte=compare_date))
+        if self.closed_date:
+            compare_date = utcnow + timedelta(days=self.closed_date)
+            case_query_arr.append(Q(closed_date__gte=compare_date))
+        
+        
+        if self.next_action_date:
+            compare_date = utcnow + timedelta(days=self.next_action_date)
+            case_query_arr.append(Q(next_action_date__lte=compare_date))
+                             
+                             
+        #ok, this is getting a little tricky.
+        #query CaseEvent and we will get the actual cases.  we will get the id's of the cases and apply
+        #those back as a filter
+        if self.last_event_type:
+            case_event_query_arr.append(Q(activity=self.last_event_type))
+        if self.last_event_by:
+            case_event_query_arr.append(Q(activity=self.last_event_by))
+            
+        if self.last_event_date:        
+            compare_date = utcnow + timedelta(days=self.last_event_date)
+            case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
+
+        #now, we got the queries built up, let's run the queries
+        
+        cases = Case.objects.all()
+        for qu in case_query_arr:
+            #dmyung 12-8-2009
+            #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
+            #them all in an evaluation to the filter() call a-la the kwargs or something.  since these
+            # are ANDED, we want them to be done sequentially (ie, filter(q1,q2,q3...)
+            #negations should be handled by the custom search
+            cases = cases.filter(qu)
+        
+        case_events = CaseEvent.objects.all()   
+        for qu in case_event_query_arr:
+            case_events = case_events.filter(qu)
+        
+        #get all the case ids from the case event filters
+        case_events_casesids = case_events.values_list('case',flat=True)
+        
+        
+        if len(case_events_casesids) > 0:
+            cases = cases.filter(id in case_events_casesids)
+        
+        return cases
+        
+    def __unicode__(self):
+        return "Filter - %s" % (self.description)
+
+    class Meta:
+        verbose_name = "Case Filter"
+        verbose_name_plural = "Case Filters"
+
+
+class GridColumn(models.Model):
+    name = models.CharField(max_length=32)
+
+class GridSort(models.Model):
+    column = models.ForeignKey("GridColumn")
+    preference = models.ForeignKey("GridPreference")
+    ascending = models.BooleanField()
+    order = models.PositiveIntegerField()
+
+class GridOrder (models.Model):
+    column = models.ForeignKey("GridColumn")
+    preference = models.ForeignKey("GridPreference")
+    order = models.PositiveIntegerField()
+
+class GridPreference(models.Model):
+    filter = models.OneToOneField(Filter)
+    display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
+    sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
+    
+    
 
 
 #We recognize this is a nasty practice to do an import, but we hate putting signal code

@@ -2,7 +2,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 
-from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case
+from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter,GridPreference,GridColumn,GridOrder,GridSort
 
 
 class CaseActionAdmin(admin.ModelAdmin):
@@ -50,11 +50,11 @@ class CaseEventAdmin(admin.ModelAdmin):
 
 
 class CaseReversion(VersionAdmin):
-    list_display=('title','orig_title','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
-    list_filter=['id','title','status','category','last_edit_by','assigned_to']
+    list_display=('description','orig_description','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
+    list_filter=['id','description','status','category','last_edit_by','assigned_to']
     
     fieldsets = (
-                 ('Basic Information', { 'fields': ('title',
+                 ('Basic Information', { 'fields': ('description',
                                                     ('category','status','priority'),
                                                     'assigned_to',
                                                     'next_action',
@@ -73,6 +73,32 @@ class CaseReversion(VersionAdmin):
     #                }
     #inlines = [ CaseEventInline, ]
 
+#class GridPreferenceInline(admin.StackedInline):
+#    model = GridPreference    
+
+class FilterAdmin(admin.ModelAdmin):
+    list_display=('id','description','shared','creator')
+    list_filter= ['shared','creator']
+#    inlines=[GridPreferenceInline]
+
+class GridColumnAdmin(admin.ModelAdmin):
+    list_display= ('id','name')
+admin.site.register(GridColumn, GridColumnAdmin)
+
+class GridPreferenceAdmin(admin.ModelAdmin):
+    list_display= ('id','name')
+admin.site.register(GridPreference, GridPreferenceAdmin)
+
+class GridSortAdmin(admin.ModelAdmin):
+    list_display= ('id','preference','column','order','ascending')
+admin.site.register(GridSort, GridSortAdmin)
+
+class GridOrderAdmin(admin.ModelAdmin):
+    list_display = ('id','preference','column','order')
+    list_filter = ['preference']
+admin.site.register(GridOrder, GridOrderAdmin)
+
+
 admin.site.register(EventActivity, EventActivityAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(CaseAction, CaseActionAdmin)
@@ -80,3 +106,5 @@ admin.site.register(Priority, PriorityAdmin)
 admin.site.register(Status, StatusAdmin)
 admin.site.register(CaseEvent, CaseEventAdmin)
 admin.site.register(Case, CaseReversion)
+
+admin.site.register(Filter, FilterAdmin)
