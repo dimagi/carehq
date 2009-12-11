@@ -47,8 +47,6 @@ MEDIA_URL = ''
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '&7fk0gp0ml!65s$9l7hb#-*dd3f_1*5quu-74%wrk^-=8nj$!$'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -57,10 +55,12 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
 )
 
 ROOT_URLCONF = 'ashand.urls'
@@ -76,7 +76,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'ashand',
+    'ashandapp',
     'casetracker',
     'debug_toolbar',
     'django_extensions',
@@ -112,5 +112,12 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     #'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     #'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
-    'HIDE_DJANGO_SQL': False,}
+    'HIDE_DJANGO_SQL': False,
+}
+
+try:
+    from settings_local import *
+except:
+    print "Local settings not found, loading defaults"
+    from settings_default import *
     

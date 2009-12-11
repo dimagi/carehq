@@ -84,7 +84,7 @@
 
 	
 	<target name="django-tests-all" depends="compile">	
-		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}" optimize="0">
+		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}" optimize="0">
 			<arg value="test" />
 		</py-run>
 		
@@ -92,22 +92,22 @@
 	
 	<!-- Note, this is extremely dangerous for running on your own environment -->
 	<target name="cleanflush" depends="compile,django-tests-all">
-		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
+		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 			<arg value="flush" />
 			<arg value="--noinput" />
 			</py-run>		
 	</target>
 	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">
-			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
+			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 				<arg value="syncdb" />
 				<arg value="--noinput" />
 			</py-run>		
 	</target>
 	
 	<target name="setstatic" depends="">
-		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
-			<arg value="runscruipt" />
+		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<arg value="runscript" />
 			<arg value="utilities.setapache_static" />
 		</py-run>		
 	</target>

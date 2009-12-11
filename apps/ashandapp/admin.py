@@ -2,7 +2,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 
 from django.contrib.auth.models import User
-from models import AshandProfile
+from models import *
 
 
 try:
@@ -15,8 +15,8 @@ class UserRevision(VersionAdmin):
 
 admin.site.register(User, UserRevision)
 
-class AshandProfileAdmin(VersionAdmin):
-    list_display = ('id','firstname','surname', 'user')
-    list_filter = []    
+#class AshandProfileAdmin(VersionAdmin):
+#    list_display = ('id','firstname','surname', 'user')
+#    list_filter = []    
 
-admin.site.register(AshandProfile,AshandProfileAdmin)
+#admin.site.register(AshandProfile,AshandProfileAdmin)

@@ -20,7 +20,7 @@ from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import User 
 from django.contrib.contenttypes.models import ContentType
 
-from rapidsms.webui.utils import render_to_response, paginated
+from django.shortcuts import render_to_response
 
 from models import Case, CaseEvent, Filter, GridPreference
 

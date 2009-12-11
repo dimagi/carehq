@@ -1,8 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-{% load region-tags %}
 {% load i18n %}
-{% load webapp-tags %}
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
@@ -34,9 +32,8 @@
         {% block extrahead %}{% endblock %}
     </head>
     <body class="container">
-      <div>        
-            {% region "top" %}
-            {% block header %}
+      <div>
+      		{% block header %}
             <div id="header">
                 {% block auth %}
                     <div id="auth">
@@ -83,10 +80,9 @@
                     Copyright &copy; 2009 <a href="http://dimagi.com">Dimagi Inc.</a><br />                   
                 </p>
                 <a href="javascript:void($('.container').toggleClass('showgrid'));">Toggle BP Grid</a>
-                {% region "footer" %}
+                
             </div>
-            {% endblock %}
-            {% region "bottom" %}
+            {% endblock %}            
         </div>
       </div>
     </body>

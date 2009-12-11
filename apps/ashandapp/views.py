@@ -24,14 +24,14 @@ from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import User 
 from django.contrib.contenttypes.models import ContentType
 
-from rapidsms.webui.utils import render_to_response, paginated
+from django.shortcuts import render_to_response
 
 # myapp/views.py
 from datagrids import UserDataGrid
  
-def datagrids(request, template_name='ashand/datagrids.html'):
+def datagrids(request, template_name='ashandapp/datagrids.html'):
     return UserDataGrid(request).render_to_response(template_name)
 
-def styleguide(request, template_name="ashand/styleguide.html"):
+def styleguide(request, template_name="ashandapp/styleguide.html"):
     context = {}
-    return render_to_response(request, template_name, context)
+    return render_to_response(template_name, context)

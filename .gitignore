@@ -4,3 +4,4 @@ local.ini
 .pydevproject
 rapidsms-django.log*
 rapidsms.log*
+settings_local.py
