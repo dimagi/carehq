@@ -384,7 +384,7 @@ class Filter(models.Model):
             compare_date = utcnow + timedelta(days=self.next_action_date)
             case_query_arr.append(Q(next_action_date__lte=compare_date))
                              
-                             
+        
         #ok, this is getting a little tricky.
         #query CaseEvent and we will get the actual cases.  we will get the id's of the cases and apply
         #those back as a filter
@@ -397,28 +397,27 @@ class Filter(models.Model):
             compare_date = utcnow + timedelta(days=self.last_event_date)
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
 
-        #now, we got the queries built up, let's run the queries
-        
-        cases = Case.objects.all()
+        #now, we got the queries built up, let's run the queries                
+        cases = Case.objects.all()        
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
             #them all in an evaluation to the filter() call a-la the kwargs or something.  since these
             # are ANDED, we want them to be done sequentially (ie, filter(q1,q2,q3...)
-            #negations should be handled by the custom search
+            #negations should be handled by the custom search            
             cases = cases.filter(qu)
         
-        case_events = CaseEvent.objects.all()   
-        for qu in case_event_query_arr:
-            case_events = case_events.filter(qu)
-        
-        #get all the case ids from the case event filters
-        case_events_casesids = case_events.values_list('case',flat=True)
-        
-        
-        if len(case_events_casesids) > 0:
-            cases = cases.filter(id in case_events_casesids)
-        
+        if len(case_event_query_arr) > 0:            
+            case_events = CaseEvent.objects.all()
+            print len(case_events)        
+            for qe in case_event_query_arr:
+                case_events = case_events.filter(qe)
+            
+            #get all the case ids from the case event filters
+            case_events_cases_ids = case_events.values_list('case',flat=True)        
+            
+            if len(case_events_cases_ids) > 0:
+                cases = cases.filter(pk__in=case_events_cases_ids)
         return cases
         
     def __unicode__(self):

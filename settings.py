@@ -1,4 +1,5 @@
 # Django settings for blah project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -33,19 +34,25 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+filepath = os.path.abspath(os.path.dirname(__file__))
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(filepath,'staticmedia')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/media/admin/'
+
+AUX_MEDIA_DIRS = {
+                  'djblets': os.path.join(filepath,'apps','djblets','media'),                                                 
+                 }                    
 
 
 # List of callables that know how to import templates from various sources.
@@ -60,7 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    #'debug_toolbar.middleware.DebugToolbarMiddleware'
 )
 
 ROOT_URLCONF = 'ashand.urls'
@@ -72,13 +79,14 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'ashandapp',
     'casetracker',
-    'debug_toolbar',
+    #'debug_toolbar',
     'django_extensions',
     'djblets.util',
     'djblets.datagrid', 
@@ -114,6 +122,8 @@ DEBUG_TOOLBAR_CONFIG = {
     #'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
     'HIDE_DJANGO_SQL': False,
 }
+
+USE_DJANGO_STATIC_SERVER=True
 
 try:
     from settings_local import *

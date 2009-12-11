@@ -80,23 +80,24 @@ class FilterAdmin(admin.ModelAdmin):
     list_display=('id','description','shared','creator')
     list_filter= ['shared','creator']
 #    inlines=[GridPreferenceInline]
+admin.site.register(Filter, FilterAdmin)
 
 class GridColumnAdmin(admin.ModelAdmin):
     list_display= ('id','name')
-admin.site.register(GridColumn, GridColumnAdmin)
+#admin.site.register(GridColumn, GridColumnAdmin)
 
 class GridPreferenceAdmin(admin.ModelAdmin):
-    list_display= ('id','name')
-admin.site.register(GridPreference, GridPreferenceAdmin)
+    list_display= ('id',)
+#admin.site.register(GridPreference, GridPreferenceAdmin)
 
 class GridSortAdmin(admin.ModelAdmin):
     list_display= ('id','preference','column','order','ascending')
-admin.site.register(GridSort, GridSortAdmin)
+#admin.site.register(GridSort, GridSortAdmin)
 
 class GridOrderAdmin(admin.ModelAdmin):
     list_display = ('id','preference','column','order')
     list_filter = ['preference']
-admin.site.register(GridOrder, GridOrderAdmin)
+#admin.site.register(GridOrder, GridOrderAdmin)
 
 
 admin.site.register(EventActivity, EventActivityAdmin)
@@ -107,4 +108,3 @@ admin.site.register(Status, StatusAdmin)
 admin.site.register(CaseEvent, CaseEventAdmin)
 admin.site.register(Case, CaseReversion)
 
-admin.site.register(Filter, FilterAdmin)

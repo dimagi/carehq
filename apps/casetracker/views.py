@@ -24,7 +24,7 @@ from django.shortcuts import render_to_response
 
 from models import Case, CaseEvent, Filter, GridPreference
 
-from datagrids import CaseDataGrid, CaseEventDataGrid
+from datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 
 
 def all_cases(request, template_name="casetracker/case_datagrid.html"):
@@ -45,9 +45,10 @@ def view_case_events(request, case_id, template_name='casetracker/view_case_even
     return render_to_response(context, template_name)
     
 
-def all_filters(request, template_name='casetracker/all_filters.html'):
+def all_filters(request, template_name="casetracker/filter_datagrid.html"):
     context = {}
-    return render_to_response(context, template_name)
+    return FilterDataGrid(request).render_to_response(template_name)    
+
     
 
 def view_filter(request, filter_id):
