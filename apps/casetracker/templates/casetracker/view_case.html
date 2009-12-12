@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "View Case" %}{% endblock %}
+{% block extrahead %}
+{% include "casetracker/partials/datagrid_media.html" %}
+{% endblock %}
+
+{% block content %}
+<h2>{{case.description}}</h2>
+<ul>
+	<li>ID: {{case.id}}</li>
+	<li>Opened by: {{case.opened_by}}</li>
+	<li>Opened Date: {{case.opened_date}}</li>
+	<li>Priority: {{case.priority}}</li>
+	<li>Last edit date: {{case.last_edit_date}}</li>
+	<li>Last edit by: {{case.last_edit_by}}</li>
+	<li>Last event: {{case.last_case_event.activity}}</li>
+	<li>Last event date: {{case.last_event_date}}</li>
+	<li>Last event by: {{case.last_event_by}}</li>	
+</ul>
+{% with case_events as datagrid %}
+{% include "casetracker/partials/datagrid.html" %}
+{% endwith %}
+{% endblock %}

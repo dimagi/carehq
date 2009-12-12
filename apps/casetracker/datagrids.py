@@ -28,11 +28,14 @@ class CaseDataGrid(DataGrid):
     #last_event_by = Column("Last event by", sortable = True)
     
      
-    def __init__(self, request, gridpref=None):        
+    def __init__(self, request, gridpref=None, qset = None, qtitle = None):        
         if gridpref:
             DataGrid.__init__(self, request, gridpref.filter.get_filter_queryset(), gridpref.filter.description)
         else:
-            DataGrid.__init__(self, request, Case.objects.all(), "All cases")        
+            if qset == None:                
+                DataGrid.__init__(self, request, Case.objects.all(), "All cases")
+            else:
+                DataGrid.__init__(self, request, qset, qtitle)        
         self.default_sort = ['opened_date']
         self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_date',]
      
@@ -52,8 +55,9 @@ class CaseEventDataGrid(DataGrid):
     created_date = Column("created_date", sortable = True)
     created_by = Column("created_by", sortable = True)    
          
-    def __init__(self, request, for_case=None):        
-        if for_case:
+    def __init__(self, request, case_id=None):        
+        if case_id:
+            for_case = Case.objects.get(id=case_id)
             DataGrid.__init__(self, request, CaseEvent.objects.filter(case=for_case), "Events for case %s" % for_case.description)
             self.default_sort = ['-created_date']
             self.default_columns = ['notes', 'activity', 'created_date', 'created_by', ]

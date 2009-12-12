@@ -19,30 +19,39 @@ from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import User 
 from django.contrib.contenttypes.models import ContentType
-
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from models import Case, CaseEvent, Filter, GridPreference
 
 from datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 
+def grid_examples(request, template_name='casetracker/examples.html'):
+    context = {}    
+    filtergrid = FilterDataGrid(request)
+    recent_cases_grid = CaseDataGrid(request, qset=Case.objects.order_by('-opened_date'),qtitle="Recently Opened Cases")
+    recent_cases_grid.paginate_by = 10
+    context['filtergrid'] = filtergrid
+    context['casegrid'] = recent_cases_grid
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 def all_cases(request, template_name="casetracker/case_datagrid.html"):
     context = {}
+    #paginate_by
     return CaseDataGrid(request).render_to_response(template_name)    
 
 def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context = {}
-    return render_to_response(context, template_name)
-    
-
+    events = CaseEventDataGrid(request, case_id)
+    context['case_events'] = events
+    context['case'] = Case.objects.get(id=case_id)
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 def all_case_events(request, template_name='casetracker/case_event_datagrid.html'):
     return CaseEventDataGrid(request).render_to_response(template_name)
  
-def view_case_events(request, case_id, template_name='casetracker/view_case_event.html'):
-    context = {}
-    return render_to_response(context, template_name)
+def view_case_events(request, case_id, template_name='casetracker/case_event_datagrid.html'):
+    return CaseEventDataGrid(request, case_id).render_to_response(template_name)
     
 
 def all_filters(request, template_name="casetracker/filter_datagrid.html"):
