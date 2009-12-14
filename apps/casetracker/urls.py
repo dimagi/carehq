@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('',
-    (r'^$', 'casetracker.views.grid_examples'),
+    (r'^grid_examples$', 'casetracker.views.grid_examples'),
     (r'^cases/$', 'casetracker.views.all_cases'),
     url(r'^case/(?P<case_id>\d+)$', 'casetracker.views.view_case', name="view-case"),    
     

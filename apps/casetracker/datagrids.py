@@ -31,11 +31,13 @@ class CaseDataGrid(DataGrid):
     def __init__(self, request, gridpref=None, qset = None, qtitle = None):        
         if gridpref:
             DataGrid.__init__(self, request, gridpref.filter.get_filter_queryset(), gridpref.filter.description)
-        else:
-            if qset == None:                
-                DataGrid.__init__(self, request, Case.objects.all(), "All cases")
-            else:
-                DataGrid.__init__(self, request, qset, qtitle)        
+        elif gridpref == None and qset != None:
+            if qtitle == None:
+                raise Exception("Error, if passing a queryset into the CaseDataGrid, you must provide some sort of title")
+            DataGrid.__init__(self, request, qset, qtitle)
+        else:                
+            DataGrid.__init__(self, request, Case.objects.all(), "All cases")
+            
         self.default_sort = ['opened_date']
         self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_date',]
      

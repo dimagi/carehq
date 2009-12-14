@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Goodbye{% endblock %}
+{% block content %}
+
+<h1>Thanks for visiting ASHand!</h1>
+
+<p>Please come again.</p>
+
+<a href="{% url "django.contrib.auth.login" %>Log in again</a>
+
+{% endblock %}

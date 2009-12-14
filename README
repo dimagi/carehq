@@ -1,5 +1,16 @@
 ASHand Overall project structure.
 
+Some runtime notes.
+
+settings.py - the basic django settings for the ashand project, which can now be run as a pure django project.
+settings_default.py - Additional specific settings that you should consider setting.
+not visible are settings_local.py which you should set for your specific settings.  These are ignored by git.
+
+to run pure django bootstrap, run the management commands via djmanage.py
+to get access to the rapidsms bootstrap, run the rsmanage.py
+
+For 99% of your usage, you should use the djmanage.py
+
 apps/
 	Django apps that you will make
   

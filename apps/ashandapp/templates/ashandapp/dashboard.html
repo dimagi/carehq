@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block extrahead %}
+{% include "casetracker/partials/datagrid_media.html" %}
+{% endblock %}
+
+{% block content %}
+<h1> Dashboard for {{request.user}}</h1>
+<p>Last login: {{profile.last_login|date}}</p>
+<p>Last login from: {{profile.last_login_from}}</p>
+{% with filter_datagrid as datagrid %}
+{% include "casetracker/partials/datagrid.html" %}
+{% endwith %}
+{% endblock %}

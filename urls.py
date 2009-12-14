@@ -16,10 +16,25 @@ for appname in settings.INSTALLED_APPS:
             urlpatterns += patterns('',
                                     url(r'^admin/(.*)', admin.site.root),)
             continue
+        elif appname == 'django.contrib.auth':
+            #we are putting all the admin urls into the root
+            urls_module = "%s.urls" % (appname)            
+            module = __import__(urls_module, {}, {}, ["urlpatterns"])        
+            # add the explicitly defined urlpatterns
+            urlpatterns += module.urlpatterns                        
+            continue
         
         if hasattr(module,'urls'):                        
+            
+            #subdir all the apps?
+            #urls_module = "%s.urls" % (appname)            
+            #urlpatterns += patterns('',(r'^%s/' % appname, include(urls_module)))                        
+            
+            #or just put them all to root
             urls_module = "%s.urls" % (appname)            
-            urlpatterns += patterns('',(r'^%s/' % appname, include(urls_module)))            
+            module = __import__(urls_module, {}, {}, ["urlpatterns"])
+            urlpatterns += module.urlpatterns       
+            
             #ok, so it has urls, now for debug purposes
             if hasattr(settings,'USE_DJANGO_STATIC_SERVER') and \
             settings.USE_DJANGO_STATIC_SERVER:

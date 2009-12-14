@@ -15,6 +15,11 @@ class UserRevision(VersionAdmin):
 
 admin.site.register(User, UserRevision)
 
+class CaseProfileAdmin(VersionAdmin):
+    list_display = ('user','last_filter','last_login','last_login_from')
+admin.site.register(CaseProfile, CaseProfileAdmin)
+    
+
 #class AshandProfileAdmin(VersionAdmin):
 #    list_display = ('id','firstname','surname', 'user')
 #    list_filter = []    
