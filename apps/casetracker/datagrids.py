@@ -5,7 +5,12 @@ from django.core.urlresolvers import reverse
 
 from djblets.datagrid.grids import Column, DataGrid
 
-class CaseDataGrid(DataGrid):    
+class CaseDataGrid(DataGrid):   
+    """
+    Datagrid for displaying cases.  This can be any query of cases in the Case table.
+    Filters will be doing special queries on the Case table to show their stuff.
+    
+    """ 
     description = Column("Description", sortable = True, link=True, expand=True)            
     category = Column("Category", sortable = True, link=True)
     status = Column("Status", sortable = True, link=True)
@@ -28,8 +33,18 @@ class CaseDataGrid(DataGrid):
     #last_event_by = Column("Last event by", sortable = True)
     
      
-    def __init__(self, request, gridpref=None, qset = None, qtitle = None):        
+    def __init__(self, request, gridpref=None, qset = None, qtitle = None):   
+        """
+        Initialize the Case Data Grid.
+        If you have a grid preference (with a filter), then show that.
+        
+        Else you can run a raw queryset via setting qset and qtitle.
+        """     
         if gridpref:
+            #if there's a grid prefernce, run the filter's queryset
+            #next, get the description
+            #after that, assemble the arrays for column sort and display
+            
             DataGrid.__init__(self, request, gridpref.filter.get_filter_queryset(), gridpref.filter.description)
             
             sort_cols = []

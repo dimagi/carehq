@@ -341,7 +341,7 @@ class Filter(models.Model):
     
     def get_filter_queryset(self):
         """
-        On a given filter instance, we will generate a query 
+        On a given filter instance, we will generate a query set by applying all the FKs.
         """        
         utcnow = datetime.utcnow()
                 
@@ -428,12 +428,22 @@ class Filter(models.Model):
 
 
 class GridColumn(models.Model):
+    """
+    The gridcolumn is the main, flat store for all columns that could be used in a grid.
+    
+    It's flat, the name of the column is directly used in the DataGrid column selector and sort criteria.
+    So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
+    """
     name = models.CharField(max_length=32)
     def __unicode__(self):
         return self.name
 
 
 class GridSort(models.Model):
+    """
+    When a grid preference FKs to a GridColumn, this through model will tell how to represent it
+    when using the column as a sorting column.  In reprsentation it'll beither be name or -name.
+    """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
     ascending = models.BooleanField()
@@ -452,11 +462,20 @@ class GridSort(models.Model):
         return "GridSort - %s %s" % (self.column, ascend)
 
 class GridOrder (models.Model):
+    """
+    When a grid preference FKs to a GridColumn, this through model will tell how to represent it
+    when using the column as a column for display.  This tells us which columns will be arranged in what order
+    for display on the DataGrid.
+    """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")
     order = models.PositiveIntegerField()
 
 class GridPreference(models.Model):
+    """
+    A filter will have a one to one mapping to this model for showing how to display the given grid.
+    
+    """
     filter = models.OneToOneField(Filter)
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
