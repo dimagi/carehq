@@ -35,7 +35,7 @@ for appname in settings.INSTALLED_APPS:
             admin.autodiscover()
             urlpatterns += patterns('',
                                     url(r'^admin/(.*)', admin.site.root),)
-            urlpatterns = setmedia(appname, urlpatterns)
+            urlpatterns = setmedia('admin', urlpatterns)
             continue
         elif appname == 'django.contrib.auth':
             #we are putting all the admin urls into the root
