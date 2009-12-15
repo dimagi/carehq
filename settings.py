@@ -1,5 +1,6 @@
 # Django settings for blah project.
 import os
+import logging
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -67,7 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware'
+    'debug_toolbar.middleware.DebugToolbarMiddleware'
 )
 
 ROOT_URLCONF = 'ashand.urls'
@@ -94,7 +95,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'ashandapp',
     'casetracker',
-    #'debug_toolbar',
+    'debug_toolbar',
     'django_extensions',
     'djblets.util',
     'djblets.datagrid', 
@@ -136,6 +137,6 @@ USE_DJANGO_STATIC_SERVER=True
 try:
     from settings_local import *
 except:
-    print "Local settings not found, loading defaults"
+    logging.error("Local settings not found, loading defaults")
     from settings_default import *
     
