@@ -1,0 +1,107 @@
+[
+  {
+    "pk": 2, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "description"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "category"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "status"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "priority"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "assigned_to"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "opened_by"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "last_edit_by"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "closed_by"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "resolved_by"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "opened_date"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "last_edit_date"
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "resolved_date"
+    }
+  }, 
+  {
+    "pk": 14, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "closed_date"
+    }
+  }, 
+  {
+    "pk": 15, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "next_action"
+    }
+  }, 
+  {
+    "pk": 16, 
+    "model": "casetracker.gridcolumn", 
+    "fields": {
+      "name": "next_action_date"
+    }
+  }
+]

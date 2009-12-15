@@ -91,11 +91,26 @@
 	</target> 
 	
 	<!-- Note, this is extremely dangerous for running on your own environment -->
-	<target name="cleanflush" depends="compile,django-tests-all">
+	<target name="reset_db" depends="compile,django-tests-all">
 		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
-			<arg value="flush" />
+			<arg value="reset_db" />
 			<arg value="--noinput" />
 			</py-run>		
+	</target>
+	
+	<target name="bootstrap_build" depends="reset_db">
+			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<arg value="runscript" />
+				<arg value="utilities.bootstrap_database" />
+			</py-run>		
+			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<arg value="runscript" />
+				<arg value="utilities.generate_cases" />
+			</py-run>
+			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<arg value="loaddata" />
+				<arg value="build-example_filters.json" />
+			</py-run>
 	</target>
 	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">

@@ -429,22 +429,40 @@ class Filter(models.Model):
 
 class GridColumn(models.Model):
     name = models.CharField(max_length=32)
+    def __unicode__(self):
+        return self.name
+
 
 class GridSort(models.Model):
-    column = models.ForeignKey("GridColumn")
-    preference = models.ForeignKey("GridPreference")
+    column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
+    preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
     ascending = models.BooleanField()
     order = models.PositiveIntegerField()
+    @property
+    def sort_display(self):
+        if self.ascending:
+            return self.column.name
+        else:
+            return "-%s" % self.column.name
+    def __unicode__(self):
+        if self.ascending:
+            ascend = "ascending"
+        else:
+            ascend = "descending"
+        return "GridSort - %s %s" % (self.column, ascend)
 
 class GridOrder (models.Model):
-    column = models.ForeignKey("GridColumn")
-    preference = models.ForeignKey("GridPreference")
+    column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
+    preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")
     order = models.PositiveIntegerField()
 
 class GridPreference(models.Model):
     filter = models.OneToOneField(Filter)
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
+    
+    def __unicode__(self):
+        return "Grid Display Preference: %s" % self.filter.description
     
     
 

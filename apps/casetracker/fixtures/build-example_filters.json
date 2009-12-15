@@ -1,0 +1,179 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.filter", 
+    "fields": {
+      "category": null, 
+      "status": null, 
+      "closed_date": null, 
+      "description": "Test Filter", 
+      "opened_by": null, 
+      "creator": 1, 
+      "opened_date": null, 
+      "last_event_by": null, 
+      "resolved_by": null, 
+      "resolved_date": null, 
+      "last_event_type": null, 
+      "priority": null, 
+      "next_action_date": 365, 
+      "assigned_to": null, 
+      "shared": 1, 
+      "last_event_date": null, 
+      "last_edit_date": null, 
+      "closed_by": null, 
+      "last_edit_by": null
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.filter", 
+    "fields": {
+      "category": null, 
+      "status": null, 
+      "closed_date": null, 
+      "description": "[Test] High Priority Cases!", 
+      "opened_by": null, 
+      "creator": 1, 
+      "opened_date": null, 
+      "last_event_by": null, 
+      "resolved_by": null, 
+      "resolved_date": null, 
+      "last_event_type": null, 
+      "priority": 1, 
+      "next_action_date": null, 
+      "assigned_to": null, 
+      "shared": 0, 
+      "last_event_date": null, 
+      "last_edit_date": null, 
+      "closed_by": null, 
+      "last_edit_by": null
+    }
+  },
+  {
+    "pk": 1, 
+    "model": "casetracker.gridpreference", 
+    "fields": {
+      "filter": 1
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.gridpreference", 
+    "fields": {
+      "filter": 2
+    }
+  }
+,
+  {
+    "pk": 1, 
+    "model": "casetracker.gridsort", 
+    "fields": {
+      "column": 16, 
+      "order": 2, 
+      "preference": 1, 
+      "ascending": 0
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.gridsort", 
+    "fields": {
+      "column": 5, 
+      "order": 1, 
+      "preference": 1, 
+      "ascending": 1
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.gridsort", 
+    "fields": {
+      "column": 2, 
+      "order": 2, 
+      "preference": 2, 
+      "ascending": 0
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.gridsort", 
+    "fields": {
+      "column": 11, 
+      "order": 1, 
+      "preference": 2, 
+      "ascending": 0
+    }
+  }
+  ,{
+    "pk": 1, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 2, 
+      "preference": 1, 
+      "order": 1
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 3, 
+      "preference": 1, 
+      "order": 2
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 5, 
+      "preference": 1, 
+      "order": 3
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 6, 
+      "preference": 1, 
+      "order": 4
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 16, 
+      "preference": 1, 
+      "order": 5
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 2, 
+      "preference": 2, 
+      "order": 2
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 11, 
+      "preference": 2, 
+      "order": 1
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "casetracker.gridorder", 
+    "fields": {
+      "column": 5, 
+      "preference": 2, 
+      "order": 3
+    }
+  }
+]

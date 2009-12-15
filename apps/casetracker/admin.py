@@ -82,22 +82,31 @@ class FilterAdmin(admin.ModelAdmin):
 #    inlines=[GridPreferenceInline]
 admin.site.register(Filter, FilterAdmin)
 
+class ColumnSortInline(admin.TabularInline):
+    model = GridSort
+    
+class ColumnOrderInline(admin.TabularInline):
+    model = GridOrder
+
+
 class GridColumnAdmin(admin.ModelAdmin):
     list_display= ('id','name')
-#admin.site.register(GridColumn, GridColumnAdmin)
+admin.site.register(GridColumn, GridColumnAdmin)
 
 class GridPreferenceAdmin(admin.ModelAdmin):
     list_display= ('id',)
-#admin.site.register(GridPreference, GridPreferenceAdmin)
+    inlines = [ColumnSortInline, ColumnOrderInline]
+admin.site.register(GridPreference, GridPreferenceAdmin)
 
 class GridSortAdmin(admin.ModelAdmin):
     list_display= ('id','preference','column','order','ascending')
-#admin.site.register(GridSort, GridSortAdmin)
+admin.site.register(GridSort, GridSortAdmin)
 
 class GridOrderAdmin(admin.ModelAdmin):
     list_display = ('id','preference','column','order')
+    
     list_filter = ['preference']
-#admin.site.register(GridOrder, GridOrderAdmin)
+admin.site.register(GridOrder, GridOrderAdmin)
 
 
 admin.site.register(EventActivity, EventActivityAdmin)
