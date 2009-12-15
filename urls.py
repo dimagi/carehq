@@ -44,6 +44,9 @@ for appname in settings.INSTALLED_APPS:
             # add the explicitly defined urlpatterns
             urlpatterns += module.urlpatterns                        
             continue
+        elif appname == 'debug_toolbar':
+            #another nasty hack due to the recursion explosion with the url resolver
+            continue
         
         if hasattr(module,'urls'):                        
             

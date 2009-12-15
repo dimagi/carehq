@@ -91,7 +91,7 @@
 	</target> 
 	
 	<!-- Note, this is extremely dangerous for running on your own environment -->
-	<target name="reset_db" depends="compile,django-tests-all">
+	<target name="reset_db" depends="clean,compile,django-tests-all">
 		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 			<arg value="reset_db" />
 			<arg value="--noinput" />
@@ -117,7 +117,7 @@
 			</py-run>
 	</target>
 	
-	<target name="syncdb" depends="compile,django-tests-all,setstatic">
+	<target name="syncdb" depends="clean, compile,django-tests-all,setstatic">
 			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 				<arg value="syncdb" />
 				<arg value="--noinput" />

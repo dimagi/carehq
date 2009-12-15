@@ -125,10 +125,10 @@ DEBUG_TOOLBAR_PANELS = (
 #    return True # Always show toolbar, for example purposes only.
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
+    #'INTERCEPT_REDIRECTS': True,
     #'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     #'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
-    'HIDE_DJANGO_SQL': False,
+    #'HIDE_DJANGO_SQL': False,
 }
 
 USE_DJANGO_STATIC_SERVER=True
