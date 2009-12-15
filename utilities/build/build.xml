@@ -95,7 +95,11 @@
 		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 			<arg value="reset_db" />
 			<arg value="--noinput" />
-			</py-run>		
+		</py-run>		
+		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<arg value="syncdb" />
+			<arg value="--noinput" />
+		</py-run>
 	</target>
 	
 	<target name="bootstrap_build" depends="reset_db">
