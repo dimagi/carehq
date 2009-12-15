@@ -65,11 +65,8 @@ class CaseDataGrid(DataGrid):
      
     
     def link_to_object(self, obj, value):
-        if isinstance(obj, Case):
-            
+        if isinstance(obj, Case):            
             return reverse("casetracker.views.view_case", args=[obj.id])            
-            #return reverse("view-case", args=[obj.id])
-            
             
 class CaseEventDataGrid(DataGrid):
     case = Column("Case", sortable = True)
