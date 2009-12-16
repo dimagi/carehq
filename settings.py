@@ -133,6 +133,8 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 USE_DJANGO_STATIC_SERVER=True
+LOGIN_TEMPLATE='registration/login.html'
+LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 
 try:
     from settings_local import *

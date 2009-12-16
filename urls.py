@@ -7,6 +7,14 @@ import logging
 
 urlpatterns =  []
 
+urlpatterns += patterns('',
+                        (r'^accounts/login/$', 'django.contrib.auth.views.login', 
+                                                {"template_name": settings.LOGIN_TEMPLATE }),
+                        (r'^accounts/logout/$', 'django.contrib.auth.views.logout', 
+                                                {"template_name": settings.LOGGEDOUT_TEMPLATE }),
+                        #todo, other auth related urls (password_X, reset)
+                        )
+
 def setmedia(appname, upats):
     if hasattr(settings,'USE_DJANGO_STATIC_SERVER') and \
     settings.USE_DJANGO_STATIC_SERVER:
@@ -21,7 +29,7 @@ def setmedia(appname, upats):
             ))
         if os.path.exists(media_dir):                   
             upats += patterns("", url("^media/%s/(?P<path>.*)$" % appname,
-                "django.views.static.serve", {"document_root": static_dir }
+                "django.views.static.serve", {"document_root": media_dir }
             ))
     return upats
 
@@ -38,11 +46,7 @@ for appname in settings.INSTALLED_APPS:
             urlpatterns = setmedia('admin', urlpatterns)
             continue
         elif appname == 'django.contrib.auth':
-            #we are putting all the admin urls into the root
-            urls_module = "%s.urls" % (appname)            
-            module = __import__(urls_module, {}, {}, ["urlpatterns"])        
-            # add the explicitly defined urlpatterns
-            urlpatterns += module.urlpatterns                        
+            #All auth stuff will be done by hand.
             continue
         elif appname == 'debug_toolbar':
             #another nasty hack due to the recursion explosion with the url resolver
