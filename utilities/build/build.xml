@@ -117,6 +117,14 @@
 			</py-run>
 	</target>
 	
+	
+	<target name="build_demo" depends="reset_db">
+				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+					<arg value="runscript" />
+					<arg value="ashandapp.scripts.demo_load" />
+				</py-run>
+		</target>
+	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">
 			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
 				<arg value="syncdb" />

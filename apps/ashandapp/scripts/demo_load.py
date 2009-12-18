@@ -118,7 +118,7 @@ def run():
     #Demo loading script!
     
     #reset the database
-    call_command('reset_db')
+    call_command('reset_db', interactive=False)
     call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
