@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response
 from datagrids import UserDataGrid
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-
+import logging
 from django.contrib.auth.models import User
 from casetracker.models import Case
 from models import CaseProfile, CareTeam,ProviderLink
@@ -33,8 +33,7 @@ def view_user(request, user_id):
         context['is_patient'] = True
         context['patient'] = patient
         context['careteam'] = CareTeam.objects.get(patient=user)
-        cases = CareTeam.objects.get(patient=user).cases.all()
-        print len(cases)
+        cases = CareTeam.objects.get(patient=user).cases.all()        
         qtitle = "Cases for this patient"
     except:
         template_name = "ashandapp/view_user.html"
@@ -60,7 +59,7 @@ def view_user(request, user_id):
                 
         context['cases_datagrid'] = CaseDataGrid(request, qset=cases,qtitle=qtitle)
     except Exception, e:
-        print "error with the stoopid case data grid %s" % str(e)
+        logging.error( "error with the stoopid case data grid %s" % str(e))
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def view_careteam(request, careteam_id, template_name="ashandapp/view_careteam.html"):    
