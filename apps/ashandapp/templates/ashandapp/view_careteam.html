@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Team View" %} {% endblock %}
+{% block extrahead %}
+{% include "casetracker/partials/datagrid_media.html" %}
+{% endblock %}
+
+{% block content %}
+<h1> Care Team for {{careteam.patient}}</h1>
+<h2>Info</h2>
+<p>Name: {{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</p>
+<p>DOB: {{patient.dob|date}}</p>
+<p>Sex: {{patient.sex}}</p>
+<p>UUID: {{patient.uuid}}</p>
+
+<h2>Care Team</h2>
+<h3>Providers</h3>
+<ul>
+{% for prov, provlink in provider_dict.items %}
+	<li>
+	Name: <a href="{%url ashandapp.views.view_user prov.user.id %}">
+	{{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}</a><br>
+	Title: {{prov.job_title }} with {{prov.affiliation }} <br>
+	{{provlink.role.role }} - {{provlink.role.role_description}}</li>
+{% endfor %}
+</ul>
+
+{% with cases_datagrid as datagrid %}
+{% include "casetracker/partials/datagrid.html" %}
+{% endwith %}
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load djblets_deco %}
+{% block title %}{% endblock %}
+{% block extrahead %}
+{% include "casetracker/partials/datagrid_media.html" %}
+{% endblock %}
+
+{% block content %}
+<h1> View all users</h1>
+{% include "casetracker/partials/datagrid.html" %}
+{% endblock %}

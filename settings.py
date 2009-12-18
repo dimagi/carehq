@@ -95,6 +95,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'ashandapp',
     'casetracker',
+    'provider',
+    'patient',
     'debug_toolbar',
     'django_extensions',
     'djblets.util',
@@ -126,7 +128,7 @@ DEBUG_TOOLBAR_PANELS = (
 #    return True # Always show toolbar, for example purposes only.
 
 DEBUG_TOOLBAR_CONFIG = {
-    #'INTERCEPT_REDIRECTS': True,
+    'INTERCEPT_REDIRECTS': False,
     #'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     #'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
     #'HIDE_DJANGO_SQL': False,

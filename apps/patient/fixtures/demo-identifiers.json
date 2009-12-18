@@ -1,0 +1,32 @@
+[
+  {
+    "pk": 1,
+    "model": "patient.identifiertype",
+    "fields": {
+      "regex": "",
+      "shortname": "MRN",
+      "description": "Medical Record Number",
+      "uuid": "8f2c61f0eb5d11debd52001641e25144"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "patient.identifiertype",
+    "fields": {
+      "regex": "",
+      "shortname": "SSN",
+      "description": "Social Security Number",
+      "uuid": "be38e861eb5d11de966e001641e25144"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "patient.identifiertype",
+    "fields": {
+      "regex": "",
+      "shortname": "NHINCID",
+      "description": "National Record Number",
+      "uuid": "de38e861eb5d11de966e001641e25144"
+    }
+  }
+]

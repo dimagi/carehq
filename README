@@ -11,6 +11,14 @@ to get access to the rapidsms bootstrap, run the rsmanage.py
 
 For 99% of your usage, you should use the djmanage.py
 
+If you want to do some basic testing of patients and a loaded setup, run:
+python djmanage.py runscript ashandapp.scripts.demo_load
+
+It'll prompt you to blow away your database, only do this if you want to populate the db with lots of dummy data.
+The providers in the system will largely be comprised of Star Trek doctors and nurses.  All patients will be comprised of other television characters.
+
+
+
 apps/
 	Django apps that you will make
   

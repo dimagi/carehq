@@ -53,10 +53,12 @@ class CaseDataGrid(DataGrid):
                 sort_cols.append(pref.sort_display)
             self.default_sort =  sort_cols
             self.default_columns = gridpref.display_columns.all().order_by('gridcolumn_displayorder__order').values_list('name',flat=True)
-        elif gridpref == None and qset != None:
+        elif gridpref == None and qset != None:            
             if qtitle == None:
                 raise Exception("Error, if passing a queryset into the CaseDataGrid, you must provide some sort of title")
             DataGrid.__init__(self, request, qset, qtitle)
+            self.default_sort = ['opened_date']
+            self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_by', 'last_edit_date',]
         else:                
             DataGrid.__init__(self, request, Case.objects.all(), "All cases")
             

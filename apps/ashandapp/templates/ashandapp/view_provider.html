@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Provider View{% endblock %}
+{% block extrahead %}
+{% include "casetracker/partials/datagrid_media.html" %}
+{% endblock %}
+
+{% block content %}
+<h1> Provider info for {{selected_user}}</h1>
+<ul>
+{% for prov in providers %}
+<li> {{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}<br>
+	{{prov.job_title }} :: {{prov.affiliation }} </li>
+{%endfor %}
+</ul>
+
+<ul>
+{% for team in care_teams %}
+	<li> <a href="{%url ashandapp.views.view_user team.patient.id%}"> {{team.patient}}</a></li>
+{% endfor %}
+</ul>
+
+{% with cases_datagrid as datagrid %}
+{% include "casetracker/partials/datagrid.html" %}
+{%endwith%}
+
+{% endblock %}

@@ -49,7 +49,7 @@ def run():
     users = []
     NUM_USERS=20
     MAX_REVISIONS=10
-    MAX_INITIAL_CASES = 1000
+    MAX_INITIAL_CASES = 100
     #first, create users
     try:
         for num in range(0,NUM_USERS):
