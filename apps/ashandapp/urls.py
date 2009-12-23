@@ -8,6 +8,6 @@ urlpatterns = patterns('',
     (r'^users/all$', 'ashandapp.views.all_users'),
     (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.view_user'),        
     (r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.view_careteam'),
-    
+    (r'^$', 'ashandapp.views.dashboard'),
 )    
     

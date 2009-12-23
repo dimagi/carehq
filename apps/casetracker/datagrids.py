@@ -58,7 +58,8 @@ class CaseDataGrid(DataGrid):
                 raise Exception("Error, if passing a queryset into the CaseDataGrid, you must provide some sort of title")
             DataGrid.__init__(self, request, qset, qtitle)
             self.default_sort = ['opened_date']
-            self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_by', 'last_edit_date',]
+            #self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_by', 'last_edit_date',]
+            self.default_columns = ['description',  'opened_date','category','priority', 'status','opened_by', 'last_edit_date',]
         else:                
             DataGrid.__init__(self, request, Case.objects.all(), "All cases")
             

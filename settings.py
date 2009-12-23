@@ -68,7 +68,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
 )
 
 ROOT_URLCONF = 'ashand.urls'
@@ -104,6 +105,7 @@ INSTALLED_APPS = (
     'djblets.feedview',
     'djblets.siteconfig',
     'djblets.webapi',
+    'djcaching',
  #   'userprofile',
     'reversion',
 )

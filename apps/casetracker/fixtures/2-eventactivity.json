@@ -114,8 +114,8 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
-      "name": "Resolve Case", 
-      "summary": "Resolve a case",
+      "name": "Answer Question (Resolve)", 
+      "summary": "Answer question to resolve a case",
       "event_class": "resolve"
     }
   },

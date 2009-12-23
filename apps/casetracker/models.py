@@ -4,9 +4,15 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 
 from datetime import datetime, timedelta
+from middleware import threadlocals
+
+from djcaching.models import CachedModel
+from djcaching.managers import CachingManager
 
 
-class CaseAction(models.Model):
+
+#class CaseAction(models.Model):
+class CaseAction(CachedModel):
     """
     A case action is a descriptor for capturing the types of actions you can actuate upon a case.
     These are linked to a case to describe the desired NEXT action to take upon a case.
@@ -20,7 +26,7 @@ class CaseAction(models.Model):
     """
     description = models.CharField(max_length=64)
     #date_bound = models.BooleanField() # does this seem necessary - all cases seem date bound
-    
+    objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
     
@@ -29,7 +35,8 @@ class CaseAction(models.Model):
         verbose_name_plural = "Case Action Types"
 
     
-class Category(models.Model):
+#class Category(models.Model):
+class Category(CachedModel):
     """A category tries to capture the original nature of the opened case
     
     In Ashand, this is akin to the divisions within issue/case/risk.
@@ -46,6 +53,9 @@ class Category(models.Model):
     category = models.CharField(max_length=32)
     plural = models.CharField(max_length=32)    
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
+    
+    objects = CachingManager()
+    
     def __unicode__(self):
         return "%s" % (self.category)
     class Meta:
@@ -53,13 +63,15 @@ class Category(models.Model):
         verbose_name_plural = "Category Types"
 
     
-class Priority(models.Model):
+#class Priority(models.Model):
+class Priority(CachedModel):
     """
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
     """    
     description = models.CharField(max_length=32)
     default = models.BooleanField()    
+    objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
 
@@ -68,7 +80,8 @@ class Priority(models.Model):
         verbose_name_plural = "Priority Types"
 
 
-class Status (models.Model):
+#class Status (models.Model):
+class Status (CachedModel):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
@@ -78,6 +91,7 @@ class Status (models.Model):
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
     
+    objects = CachingManager()
     #query filters can be implemented a la kwarg evaluation:
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419
         
@@ -95,7 +109,8 @@ class Status (models.Model):
     
 
 
-class EventActivity(models.Model):
+#class EventActivity(models.Model):
+class EventActivity(CachedModel):
     """
     An Event Activity describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
@@ -112,7 +127,8 @@ class EventActivity(models.Model):
     EVENT_CLASS_CHOICES = (
         ('open', 'Open/Create'),
         ('view', 'View'),
-        ('edit', 'Edit'),        
+        ('edit', 'Edit'),
+        ('working', 'Working'), #working on case?  this seems a bit ridiculous            
         ('resolve', 'Resolve'),
         ('close', 'Close'),        
         ('reopen', 'Reopen'),
@@ -125,6 +141,8 @@ class EventActivity(models.Model):
     category = models.ForeignKey(Category) # different categories have different event types
     
     event_class = models.TextField(max_length=24, choices=EVENT_CLASS_CHOICES)
+    
+    objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.name)
@@ -169,9 +187,10 @@ class CaseEvent(models.Model):
         verbose_name_plural = "Case Events"
         ordering = ['-created_date']
 
-    
+   
 
 class Case(models.Model):
+#class Case(CachedModel):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
     
@@ -182,6 +201,9 @@ class Case(models.Model):
     
     Changes to these cases will be managed by django-reversion.  Actions revolving around these cases will be done via encounters.
     """    
+    
+    #objects = CachingManager()
+    
     description = models.CharField(max_length=160)
     orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
     category = models.ForeignKey(Category)
@@ -354,17 +376,38 @@ class Filter(models.Model):
             case_query_arr.append(Q(status = self.status))
         if self.priority:
             case_query_arr.append(Q(priority = self.priority))
-        if self.assigned_to:
-            case_query_arr.append(Q(assigned_to = self.assigned_to))        
+        if self.assigned_to:            
+            if self.assigned_to.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user                
+                case_query_arr.append(Q(assigned_to = threadlocals.get_current_user()))
+            else:
+                case_query_arr.append(Q(assigned_to = self.assigned_to))        
         if self.opened_by:
-            case_query_arr.append(Q(opened_by = self.opened_by))
+            if self.opened_by.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user
+                case_query_arr.append(Q(opened_by = threadlocals.get_current_user()))
+            else:
+                case_query_arr.append(Q(opened_by = self.opened_by))            
         if self.last_edit_by:
-            case_query_arr.append(Q(last_edit_by = self.last_edit_by))
+            if self.last_edit_by.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user
+                case_query_arr.append(Q(last_edit_by = threadlocals.get_current_user()))
+            else:
+                case_query_arr.append(Q(last_edit_by = self.last_edit_by))
         if self.resolved_by:
-            case_query_arr.append(Q(resolved_by = self.resolved_by))
+            if self.resolved_by.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user
+                case_query_arr.append(Q(resolved_by = threadlocals.get_current_user()))
+            else:
+                case_query_arr.append(Q(resolved_by = self.resolved_by))            
         if self.closed_by:
-            case_query_arr.append(Q(closed_by = self.closed_by))
-        
+            if self.closed_by.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user
+                case_query_arr.append(Q(closed_by = threadlocals.get_current_user()))
+            else:
+                case_query_arr.append(Q(closed_by = self.closed_by))        
+                
+                
         if self.opened_date:
             compare_date = utcnow + timedelta(days=self.opened_date)
             case_query_arr.append(Q(opened_date__gte=compare_date))
@@ -390,7 +433,11 @@ class Filter(models.Model):
         if self.last_event_type:
             case_event_query_arr.append(Q(activity=self.last_event_type))
         if self.last_event_by:
-            case_event_query_arr.append(Q(activity=self.last_event_by))
+            if self.last_event_by.id == 1: #this is a hackish way of saying it's the reflexive user
+                #run the query with the threadlocals current user
+                case_event_query_arr.append(Q(created_by = threadlocals.get_current_user()))
+            else:
+                case_event_query_arr.append(Q(created_by=self.last_event_by))            
             
         if self.last_event_date:        
             compare_date = utcnow + timedelta(days=self.last_event_date)

@@ -15,7 +15,7 @@ from demopatients import patient_arr
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
 MAX_REVISIONS=2
-MAX_INITIAL_CASES = 25
+MAX_INITIAL_CASES = 10
 
 def create_user(username='mockuser', password='demouser'):    
     user = User()    
@@ -88,11 +88,12 @@ def create_careteam(patient):
         plink.save()
 
 
-def create_case(user, case_no):    
+def create_case(user, all_users, case_no):    
     newcase = Case()
     newcase.description = "test case generated - %d" % case_no
     newcase.opened_by = user
     
+    newcase.assigned_to = all_users[random.randint(0,len(all_users)-1)]
     newcase.category = Category.objects.all()[random.randint(0, Category.objects.all().count()-1)]
     newcase.status = Status.objects.all()[random.randint(0, Status.objects.all().count() -1)]
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
@@ -178,7 +179,7 @@ def run():
             
         #create fictitious cases and case activity by patients and providers.
         for num in range(0,MAX_INITIAL_CASES):            
-            case = create_case(users[random.randint(0,len(users)-1)], num)
+            case = create_case(users[random.randint(0,len(users)-1)], users, num)
             team.cases.add(case)
             num_revisions = random.randint(0,MAX_REVISIONS)
             print "New case created for patient %s, case %d" % (team.patient, num)

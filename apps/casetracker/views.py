@@ -21,6 +21,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.views.decorators.cache import cache_page
 
 from models import Case, CaseEvent, Filter, GridPreference
 
@@ -35,11 +36,13 @@ def grid_examples(request, template_name='casetracker/examples.html'):
     context['casegrid'] = recent_cases_grid
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
+@cache_page(60 * 5)
 def all_cases(request, template_name="casetracker/case_datagrid.html"):
     context = {}
     #paginate_by
     return CaseDataGrid(request).render_to_response(template_name)    
 
+@cache_page(60 * 1)
 def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context = {}
     events = CaseEventDataGrid(request, case_id)

@@ -23,8 +23,8 @@ class CaseProfile(models.Model):
     This will need to be replaced by a more sophisticated tracking (for login and sessions)
     as well as user profile management
     """
-    user = models.ForeignKey(User)
-    last_filter = models.ForeignKey(Filter)
+    user = models.ForeignKey(User, unique=True)
+    last_filter = models.ForeignKey(Filter, null=True)
     last_login = models.DateTimeField()
     last_login_from = models.IPAddressField()
     

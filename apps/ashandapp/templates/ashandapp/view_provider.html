@@ -13,7 +13,7 @@
 	{{prov.job_title }} :: {{prov.affiliation }} </li>
 {%endfor %}
 </ul>
-
+<h2>Patients under {{selected_user}}'s care</h2>
 <ul>
 {% for team in care_teams %}
 	<li> <a href="{%url ashandapp.views.view_user team.patient.id%}"> {{team.patient}}</a></li>
