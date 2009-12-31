@@ -9,6 +9,7 @@ from middleware import threadlocals
 from djcaching.models import CachedModel
 from djcaching.managers import CachingManager
 
+from django.utils.translation import ugettext_lazy as _
 
 
 #class CaseAction(models.Model):
@@ -23,6 +24,8 @@ class CaseAction(CachedModel):
     The main desired actions are
     Follow up w/ subject: A date bound action that says I should follow up with the patient
     To Resolve: A date bound action that says I should finish said case by the next_action_date - which effectively becomes a due date.
+    
+    These should be universal across all categories.
     """
     description = models.CharField(max_length=64)
     #date_bound = models.BooleanField() # does this seem necessary - all cases seem date bound
@@ -37,6 +40,7 @@ class CaseAction(CachedModel):
     
 #class Category(models.Model):
 class Category(CachedModel):
+
     """A category tries to capture the original nature of the opened case
     
     In Ashand, this is akin to the divisions within issue/case/risk.
@@ -53,8 +57,11 @@ class Category(CachedModel):
     category = models.CharField(max_length=32)
     plural = models.CharField(max_length=32)    
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
+   # handler_module = models.CharField(max_length=64, blank=True, null=True, 
+    #                               help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
     objects = CachingManager()
+    
     
     def __unicode__(self):
         return "%s" % (self.category)
@@ -114,6 +121,8 @@ class EventActivity(CachedModel):
     """
     An Event Activity describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
+    
+    These are SPECIFIC to the category that they are a part of.  
     Event Activities.
     
     For example:
@@ -169,8 +178,7 @@ class CaseEvent(models.Model):
     activity = models.ForeignKey(EventActivity)
     
     created_date  = models.DateTimeField()
-    created_by = models.ForeignKey(User)
-    
+    created_by = models.ForeignKey(User)        
     
     def save(self):   
         if self.id == None:     
@@ -214,27 +222,27 @@ class Case(models.Model):
     next_action = models.ForeignKey(CaseAction, null=True)
     
     opened_date  = models.DateTimeField()
-    opened_by = models.ForeignKey(User, related_name="Opened by")
+    opened_by = models.ForeignKey(User, related_name="case_opened_by")
     
     last_edit_date = models.DateTimeField(null=True, blank=True)
-    last_edit_by = models.ForeignKey(User, related_name="Last edit by", null=True, blank=True) 
+    last_edit_by = models.ForeignKey(User, related_name="case_last_edit_by", null=True, blank=True) 
         
     next_action_date = models.DateTimeField(null=True, blank=True)
     
     resolved_date  = models.DateTimeField(null=True, blank=True)
-    resolved_by = models.ForeignKey(User, related_name="Resolved by", null=True, blank=True)
+    resolved_by = models.ForeignKey(User, related_name="case_resolved_by", null=True, blank=True)
         
     closed_date  = models.DateTimeField(null=True, blank=True)
-    closed_by = models.ForeignKey(User, related_name="Closed by", null=True, blank=True)    
+    closed_by = models.ForeignKey(User, related_name="case_closed_by", null=True, blank=True)    
     
-    assigned_to = models.ForeignKey(User, related_name="Assigned to", null=True, blank=True)   
+    assigned_to = models.ForeignKey(User, related_name="case_assigned_to", null=True, blank=True)   
     
     parent_case = models.ForeignKey('self', null=True, blank=True)
     
     
     @property
     def last_case_event(self):
-        if CaseEvent.objects.filter(case=self).order_by('-created_date').count() > 0:
+        if CaseEvent.objects.select_related('case','activity').filter(case=self).order_by('-created_date').count() > 0:
             return CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
         else:
             return None
@@ -363,7 +371,10 @@ class Filter(models.Model):
     
     def get_filter_queryset(self):
         """
-        On a given filter instance, we will generate a query set by applying all the FKs.
+        On a given filter instance, we will generate a query set by applying all the FKs as query objects
+        
+        The return value is a queryset after applying all the query filters and doing a filter with 
+        the case events as well.
         """        
         utcnow = datetime.utcnow()
                 
@@ -444,7 +455,7 @@ class Filter(models.Model):
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
 
         #now, we got the queries built up, let's run the queries                
-        cases = Case.objects.all()        
+        cases = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to').all()        
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
@@ -454,8 +465,7 @@ class Filter(models.Model):
             cases = cases.filter(qu)
         
         if len(case_event_query_arr) > 0:            
-            case_events = CaseEvent.objects.all()
-            print len(case_events)        
+            case_events = CaseEvent.objects.select_related().all()                  
             for qe in case_event_query_arr:
                 case_events = case_events.filter(qe)
             

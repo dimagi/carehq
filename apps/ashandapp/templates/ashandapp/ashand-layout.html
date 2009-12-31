@@ -7,58 +7,64 @@
         <title>{% block title %}{% endblock %}{% block title_suffix %} :: ASHand{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         
-        {% block stylesheets %}
+        {% block stylesheets %}        
+	        <!-- stylesheets -->
+	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand.css" type="text/css">       
+	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/blueprint/screen.css" type="text/css" media="screen, projection">
+	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/blueprint/print.css" type="text/css" media="print">
+	        <!--[if lt IE 8]>
+	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/blueprint/ie.css" type="text/css" media="screen, projection">
+	        <![endif]-->	
+	        
+	        {% block page_stylesheets %}{% endblock %}        
+        {% endblock %} {# stylesheets #}
         
-        <!-- stylesheets -->        
-        <!-- Causing an issue with the djblet ini 
-        <link rel="stylesheet" href="{{MEDIA_URL}}/ashand/css/blueprint/screen.css" type="text/css" media="screen, projection">
-        -->
-        <!-- Causing an issue with the djblet ini 
-        <link rel="stylesheet" href="{{MEDIA_URL}}/ashand/css/blueprint/print.css" type="text/css" media="print">
-        -->
-        <!--[if lt IE 8]>
-        <link rel="stylesheet" href="{{MEDIA_URL}}/ashand/css/blueprint/ie.css" type="text/css" media="screen, projection">
-        <![endif]-->
-
-        {% block page_stylesheets %}{% endblock %}
-        {% endblock %}
         <!-- javascripts (global, app, page) -->
         <script type="text/javascript" src="/static/webapp/javascripts/jquery-1.3.2.min.js"></script>{% for js in javascripts %}
         <script type="text/javascript" src="{{ js }}"></script>{% endfor %}
         
-        
-        
         {% block javascripts %}{% endblock %}
-        {% block extrahead %}{% endblock %}
+        {% block extrahead %}{% endblock %}        
     </head>
-    <body class="container">
-      <div>
-      		{% block header %}
-            <div id="header">
-                {% block auth %}
-                    <div id="auth">
+    <body class="container">      
+      	{% block header %}
+      		<div class="span-24">
+                 {% block branding %}
+                 <div class="span-6 append-12" id="branding">
+                    <h1>
+                        <a title="Return to the Dashboard" href="/">
+                            <span>ASHand</span>
+                        </a>
+                 </div>
+                 {% endblock %} {# branding #}
+                 {% block auth %}
+                    <div class="span-6 last" id="auth">
                         {% if user.is_authenticated %}
                             <p><a href="/accounts/logout/">{% trans "Log out" %} {{ user.username }}</a></p>
                         {% else %}
                             <p><a href="/accounts/login/">{% trans "Log in" %}</a></p>
                         {% endif %}
                     </div>
-                 {% endblock %}
-                <div id="branding">
-                   {% block branding %}
-                    <h1>
-                        <a title="Return to the Dashboard" href="/">
-                            <span>ASHand</span>
-                        </a>
-                   {% endblock %}
-                </div>                
+                 {% endblock %} {# auth #}                                
             {% block page_tabs %}
-            {% endblock %}
+            {% if user.is_authenticated %}
+            <div class="span-24">
+            <ul class="nav span-12">
+            <li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
+            <li><a href="{%url profile %}">Profile</a></li>
+            <li><a href="{%url ashandapp.views.careteam.network.my_network %}">Care Network</a></li>
+            <li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
+            </ul>
+            {% endif %}
             </div>
-            {% endblock %}
+            {% endblock %}{# page tabs#}
+            </div>
             
-            <div id="inner">
-                {% if USE_I18N %}
+            {% endblock %} {#header#}
+            
+            
+            {% if USE_I18N %}
+                <div id="language" class="span-8 prepend-16">
                     <form action="/i18n/setlang/" method="post" style="float:right">
                         <select name="language">
                         {% for lang in LANGUAGES %}
@@ -70,10 +76,13 @@
                         </select>
                     <input type="submit" class="small" value="Submit"/>
                     </form>
-                {% endif %}
-                {% block content %}{% endblock %}
+             </div>
+            {% endif %}
+            
+            <div class="span-24">
+            {% block content %}{% endblock %}
             </div>
-
+            
             {% block footer %}
             <div id="footer">
                 <p class="rights">

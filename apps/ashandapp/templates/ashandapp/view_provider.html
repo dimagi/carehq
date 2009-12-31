@@ -6,22 +6,26 @@
 {% endblock %}
 
 {% block content %}
-<h1> Provider info for {{selected_user}}</h1>
+<h1> Provider {{selected_user}}</h1>
 <ul>
 {% for prov in providers %}
 <li> {{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}<br>
 	{{prov.job_title }} :: {{prov.affiliation }} </li>
 {%endfor %}
 </ul>
-<h2>Patients under {{selected_user}}'s care</h2>
+
+<div class="span-16">
+<h2>Cases</h2>
+{% include "casetracker/partials/cases_ul.html" %}
+</div>
+<div class="span-8 last">
+<h2>{{selected_user}}'s Patients</h2>
 <ul>
 {% for team in care_teams %}
-	<li> <a href="{%url ashandapp.views.view_user team.patient.id%}"> {{team.patient}}</a></li>
+	<li> <a href="{%url ashandapp.views.users.single team.patient.id%}"> {{team.patient}}</a></li>
 {% endfor %}
 </ul>
+</div>
 
-{% with cases_datagrid as datagrid %}
-{% include "casetracker/partials/datagrid.html" %}
-{%endwith%}
 
 {% endblock %}

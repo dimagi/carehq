@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from casetracker.models import Case, Filter
+from patient.models import Patient
+from provider.models import Provider
 import datetime
 
 GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
@@ -55,6 +57,10 @@ class ProviderLink(models.Model):
     role = models.ForeignKey("ProviderRole")
     notes = models.CharField(max_length=512, null=True, blank=True)
     
+    @property
+    def info(self):
+        return Provider.objects.get(user=self.provider)
+    
     def save(self):
         #todo:  do a lookup of the proposed provider
         #and use a lookup or security service of some type to validate that the said provider is 
@@ -99,9 +105,7 @@ class CaregiverLink(models.Model):
     care_team = models.ForeignKey("CareTeam")
     caregiver = models.ForeignKey(User)
     relationship = models.ForeignKey(CareRelationship)
-    notes = models.CharField(max_length=512, null=True, blank=True)
-    
-    
+    notes = models.CharField(max_length=512, null=True, blank=True)    
     
     def save(self):
         #todo:  do a lookup of the proposed caregiver
@@ -120,4 +124,32 @@ class CareTeam(models.Model):
     providers = models.ManyToManyField(User, through='ProviderLink', related_name="provider_users")
     caregivers = models.ManyToManyField(User, through='CaregiverLink', related_name="caregiver_users")
     cases = models.ManyToManyField(Case)
+    
+    @property
+    def patient_obj(self):
+        return Patient.objects.select_related().get(user=self.patient)
+    
+    @property
+    def provider_data(self):
+        return self.providerlink_set.select_related().all()
+
+    @property
+    def caregiver_data(self):
+        return self.caregiverlink_set.all()
+    
+    def get_careteam_user_qset(self):
+        """
+        Really hackish way of getting a union of all the caregivers and providers in the careteam
+        into one queryset
+        """
+        caregiver_ids = self.caregivers.all().values_list('id',flat=True)
+        q_caregivers = Q(id__in=caregiver_ids)
+        
+        provider_ids = self.providers.all().values_list('id',flat=True)
+        q_providers = Q(id__in=provider_ids)
+        
+        return User.objects.filter(q_caregivers | q_providers)
+    
+    def __unicode__(self):
+        return "Careteam for %s" % self.patient.username
     

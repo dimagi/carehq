@@ -3,12 +3,11 @@
 {% load djblets_deco %}
 {% block title %}{%trans "Patient View"%}{% endblock %}
 {% block extrahead %}
-{% include "casetracker/partials/datagrid_media.html" %}
 {% endblock %}
 
 {% block content %}
 <h1> Patient info for {{selected_user}}</h1>
-<a href="{% url ashandapp.views.view_careteam careteam.id %}">Go to care team</a>
+<a href="{% url ashandapp.views.careteam.single careteam.id %}">Go to care team</a>
 
 <h2>Info</h2>
 <p>Name: {{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</p>
@@ -16,7 +15,11 @@
 <p>Sex: {{patient.sex}}</p>
 <p>UUID: {{patient.uuid}}</p>
 
-{% include "casetracker/partials/datagrid.html" %}
-
-
+<h2>Recent Events</h2>
+<ul>
+{% for event in recent_events %}
+<li><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.username}}</a> {{event.activity.name}} 
+<a href="{% url casetracker.views.view_case event.case.id %}">Case {{event.case.id}}</a> on {{event.created_date|date}} {{event.created_date|time}}</li> 
+{%endfor %}
+</ul>
 {% endblock %}

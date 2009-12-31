@@ -66,6 +66,7 @@ class CaseDataGrid(DataGrid):
             self.default_sort = ['opened_date']
             self.default_columns = ['description', 'category', 'opened_by', 'assigned_to', 'last_edit_date',]
      
+        
     
     def link_to_object(self, obj, value):
         if isinstance(obj, Case):            

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block title %}{% trans "Care Team View" %} {% endblock %}
 {% block extrahead %}
-{% include "casetracker/partials/datagrid_media.html" %}
+
 {% endblock %}
 
 {% block content %}
@@ -18,15 +18,17 @@
 <ul>
 {% for prov, provlink in provider_dict.items %}
 	<li>
-	Name: <a href="{%url ashandapp.views.view_user prov.user.id %}">
+	Name: <a href="{%url ashandapp.views.users.single prov.user.id %}">
 	{{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}</a><br>
 	Title: {{prov.job_title }} with {{prov.affiliation }} <br>
 	{{provlink.role.role }} - {{provlink.role.role_description}}</li>
 {% endfor %}
 </ul>
-
-{% with cases_datagrid as datagrid %}
-{% include "casetracker/partials/datagrid.html" %}
-{% endwith %}
-
+<h2>Actions</h2>
+<ul>
+<li><a href="{%url ashandapp.views.cases.inquiry.new_inquiry careteam.id %}">New Inquiry</a></li>
+<li><a href="{%url ashandapp.views.cases.issue.new_issue careteam.id %}">New Issue</a></li>
+</ul>
+<h2>Cases for this patient</h2>
+{% include "casetracker/partials/cases_ul.html" %}
 {% endblock %}

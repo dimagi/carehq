@@ -1,0 +1,5 @@
+<ul>
+{% for case in cases %}
+<li><a href="{%url casetracker.views.view_case case.id %}">{{case.description}} - Opened By: {{case.opened_by}} Edited by: {{case.last_edit_by}} Status: {{case.status}} Priority: {{case.priority}}</a></li>
+{%endfor%}
+</ul>

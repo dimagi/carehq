@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "New Inquiry" %}{% endblock %}
+
+{% block content %}
+<h1> Make an inquiry</h1>
+<form action="" method="POST">
+{{ form.as_ul }}
+<input type="submit" value="Submit" />
+</form>
+{% endblock %}
+
+

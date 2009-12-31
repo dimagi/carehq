@@ -1,0 +1,42 @@
+<div class="span-22">
+<fieldset>
+<legend>{{careteam.patient}}</legend>
+<div class="span-22">
+	<p>Name: {{careteam.patient_obj.first_name}} {{careteam.patient_obj.middle_name}} {{careteam.patient_obj.last_name}}</p>
+	<p>DOB: {{careteam.patient_obj.dob|date}} Sex: {{careteam.patient_obj.sex}} UUID: {{careteam.patient_obj.uuid}}</p>
+</div>
+
+<div class="span-10 prepend-1">
+	<h3>Providers</h3>
+	<ul>
+	{% for pl in careteam.provider_data %}
+		<li>			
+			<a href="{%url ashandapp.views.view_user pl.provider.id %}">
+			{{pl.info.first_name }} {{ pl.info.middle_name }} {{pl.info.last_name }}</a><br>
+			<em>{{pl.info.job_title }} with {{pl.info.affiliation }}</em> <br>
+		</li>
+	{% endfor %}
+	</ul>
+</div>
+
+<div class="span-10 last">
+	<h3>Caregivers</h3>
+	
+	{% if careteam.caregiver_data %}
+	<ul>
+	{% for cglink in careteam.caregiver_data %}
+		<li>
+			<a href="{%url ashandapp.views.view_user cglink.caregiver.id %}">
+			{{cglink.caregiver.first_name }}  {{cglink.caregiver.last_name }}</a><br>
+			<em>{{cglink.relationship }}</em> 
+		</li>
+	{% endfor %}
+	</ul>
+	{%else %}
+	<em>No Caregivers</em>
+	{%endif %}
+	
+	
+</div>
+</fieldset>
+</div>
