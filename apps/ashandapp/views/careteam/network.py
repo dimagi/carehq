@@ -37,11 +37,8 @@ def my_network(request, template_name='ashandapp/care_network.html'):
     if len(providers) > 0:
         is_provider = True
         #care_team_membership = ProviderLink.objects.select_related('care_team','provider','role').filter(provider__id=user.id).values_list("care_team__id",flat=True)
-        care_team_members = ProviderLink.objects.filter(provider__id=user.id)
-        care_team_membership = []
-        for ct in care_team_members:
-            care_team_membership.append(ct.id)
-        context['my_patients_careteams'] = CareTeam.objects.filter(id__in=care_team_membership)    
+        care_team_membership = CareTeam.objects.select_related().filter(providers__in=providers)        
+        context['my_patients_careteams'] = care_team_membership    
     
     context['is_patient'] = is_patient
     context['is_provider'] = is_provider

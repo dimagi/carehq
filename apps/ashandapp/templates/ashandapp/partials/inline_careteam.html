@@ -2,18 +2,18 @@
 <fieldset>
 <legend>{{careteam.patient}}</legend>
 <div class="span-22">
-	<p>Name: {{careteam.patient_obj.first_name}} {{careteam.patient_obj.middle_name}} {{careteam.patient_obj.last_name}}</p>
+	<p>Name: {{careteam.patient.first_name}} {{careteam.patient.last_name}}</p>
 	<p>DOB: {{careteam.patient_obj.dob|date}} Sex: {{careteam.patient_obj.sex}} UUID: {{careteam.patient_obj.uuid}}</p>
 </div>
 
 <div class="span-10 prepend-1">
 	<h3>Providers</h3>
 	<ul>
-	{% for pl in careteam.provider_data %}
+	{% for prov in careteam.providers.all %}
 		<li>			
-			<a href="{%url ashandapp.views.users.single pl.provider.id %}">
-			{{pl.info.first_name }} {{ pl.info.middle_name }} {{pl.info.last_name }}</a><br>
-			<em>{{pl.info.job_title }} with {{pl.info.affiliation }}</em> <br>
+			<a href="{%url ashandapp.views.users.single prov.user.id %}">
+			{{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
+			<em>{{prov.job_title }} with {{prov.affiliation }}</em> <br>
 		</li>
 	{% endfor %}
 	</ul>
