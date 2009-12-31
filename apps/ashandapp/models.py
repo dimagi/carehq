@@ -8,6 +8,7 @@ from patient.models import Patient
 from provider.models import Provider
 import datetime
 
+
 GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 # Create your models here.
 #class AshandProfile(BaseProfile):
@@ -52,8 +53,12 @@ class ProviderRole(models.Model):
 
 
 class ProviderLink(models.Model):
+    """
+    Simple link of a provider object to a careteam.
+    """
     care_team = models.ForeignKey("CareTeam")
-    provider = models.ForeignKey(User)
+    provider = models.ForeignKey(Provider, related_name='providerlink_provider')
+    
     role = models.ForeignKey("ProviderRole")
     notes = models.CharField(max_length=512, null=True, blank=True)
     
@@ -70,7 +75,7 @@ class ProviderLink(models.Model):
 class CareRelationship(models.Model):
     """
     Define a particular caregivers' relationship for the given patient.  This is different from their actual title
-    Though the actual roles may need to be made into their own model
+    Though the actual roles may need to be made into their own model, as should permissions and such.
     """
     RELATIONSHIP_CHOICES = (
                       ('guardian', 'Guardian'),
@@ -102,6 +107,9 @@ class CareRelationship(models.Model):
     notes = models.CharField(max_length=512, null=True, blank=True)
     
 class CaregiverLink(models.Model):
+    """
+    The actual link for a user object to be come a caregiver.
+    """
     care_team = models.ForeignKey("CareTeam")
     caregiver = models.ForeignKey(User)
     relationship = models.ForeignKey(CareRelationship)
@@ -120,9 +128,9 @@ class CareTeam(models.Model):
     
     Cases for this patient will be linked as well thorugh this model.
     """
-    patient = models.ForeignKey(User, related_name='careteam_patient')
-    providers = models.ManyToManyField(User, through='ProviderLink', related_name="provider_users")
-    caregivers = models.ManyToManyField(User, through='CaregiverLink', related_name="caregiver_users")
+    patient = models.ForeignKey(User, related_name='careteam_patient_user')
+    providers = models.ManyToManyField(Provider, through='ProviderLink', related_name="careteam_providers")
+    caregivers = models.ManyToManyField(User, through='CaregiverLink', related_name="careteam_caregiver_users")
     cases = models.ManyToManyField(Case)
     
     @property

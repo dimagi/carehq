@@ -10,7 +10,7 @@
 <a href="{% url ashandapp.views.careteam.single careteam.id %}">Go to care team</a>
 
 <h2>Info</h2>
-<p>Name: {{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</p>
+<p>Name: {{patient.user.first_name}} {{patient.user.middle_name}} {{patient.user.last_name}}</p>
 <p>DOB: {{patient.dob|date}}</p>
 <p>Sex: {{patient.sex}}</p>
 <p>UUID: {{patient.uuid}}</p>

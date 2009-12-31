@@ -36,9 +36,8 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
     provider_dict = {}
     
     for plink in provider_links_raw:
-        puser = plink.provider
-        prov = Provider.objects.filter(user=puser).select_related('user')
-        provider_dict[prov[0]] = plink
+        prov = plink.provider        
+        provider_dict[prov] = plink
     context['provider_dict'] = provider_dict
     
     return render_to_response(template_name, context, context_instance=RequestContext(request))

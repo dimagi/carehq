@@ -344,11 +344,11 @@ class Filter(models.Model):
     status = models.ForeignKey(Status, null=True, blank=True)
     priority = models.ForeignKey(Priority, null=True, blank=True)
     
-    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name="assigned_to")
-    opened_by = models.ForeignKey(User, null=True, blank=True, related_name="opened_by")
-    last_edit_by = models.ForeignKey(User, null=True, blank=True, related_name="last_edit_by")    
-    resolved_by = models.ForeignKey(User, null=True, blank=True, related_name="resolved_by")
-    closed_by = models.ForeignKey(User, null=True, blank=True, related_name="closed_by")
+    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name="filter_assigned_to")
+    opened_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_opened_by")
+    last_edit_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_last_edit_by")    
+    resolved_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_resolved_by")
+    closed_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_closed_by")
         
     opened_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_edit_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)

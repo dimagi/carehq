@@ -63,8 +63,10 @@ def single(request, user_id=None):
         context['cases'] = cases
         
         qtitle = "Cases for this provider"        
-        care_team_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("care_team__id",flat=True)
-        context['care_teams'] = CareTeam.objects.select_related().filter(id__in=care_team_membership)
+        #care_team_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("care_team__id",flat=True)
+        #context['care_teams'] = CareTeam.objects.select_related().filter(id__in=care_team_membership)
+        care_team_membership = CareTeam.objects.filter(providers__in=providers)
+        context['care_teams'] = care_team_membership
          
 #    try:                
 #        context['cases_datagrid'] = CaseDataGrid(request, qset=cases,qtitle=qtitle)

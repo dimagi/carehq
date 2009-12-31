@@ -9,7 +9,7 @@
 <h1> Provider {{selected_user}}</h1>
 <ul>
 {% for prov in providers %}
-<li> {{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}<br>
+<li> {{prov.user.first_name }}  {{prov.user.last_name }}<br>
 	{{prov.job_title }} :: {{prov.affiliation }} </li>
 {%endfor %}
 </ul>

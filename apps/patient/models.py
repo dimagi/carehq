@@ -55,15 +55,12 @@ class Patient(CachedModel):
         )
     
     
-    user = models.OneToOneField(User, related_name='patient_user')
+    user = models.ForeignKey(User, related_name='patient_user', null=True, unique=True, blank=True)
     uuid = models.CharField(_('Unique patient guid'), 
                                         max_length=32, editable=False, unique=True)
 
     identifiers = models.ManyToManyField(IdentifierType, through=PatientIdentifier)
     
-    first_name = models.CharField(_("Patient first name"), max_length=64)
-    middle_name = models.CharField(_("Patient middle name"),max_length=64)
-    last_name = models.CharField(_("Patient last name"),max_length=64, db_index=True)
     dob = models.DateField(_("Date of birth"), null=True, blank=True)
     sex = models.CharField(_("Sex"), choices=GENDER_CHOICES, max_length=1)
     
@@ -71,6 +68,9 @@ class Patient(CachedModel):
     root_patient = models.ForeignKey("self", null=True, blank=True)
     
     objects = CachingManager()
+    
+    def __unicode__(self):
+        return "%s %s" % (self.user.first_name, self.user.last_name)
     
     def save(self):
         if self.id == None:

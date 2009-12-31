@@ -11,13 +11,14 @@ import random
 import uuid
 from django.core.management import call_command
 from demopatients import patient_arr
+from demoproviders import provider_arr
 
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
 MAX_REVISIONS=2
 MAX_INITIAL_CASES = 10
 
-def create_user(username='mockuser', password='demouser'):    
+def create_user(username='mockuser', password='demouser', firstname=None, lastname=None):    
     user = User()    
     user.username = username
     # here, we mimic what the django auth system does
@@ -26,23 +27,37 @@ def create_user(username='mockuser', password='demouser'):
     hashed_pass = hashlib.sha1(salt+password).hexdigest()
     user.password = 'sha1$%s$%s' % (salt, hashed_pass)
     
+    user.first_name = firstname
+    user.last_name=lastname
+    
     user.set_password(password)
     user.save()
     return user
+
+def create_provider(firstname, lastname, job_title, affiliation):
+    firstclean = firstname.replace("'","")
+    lastclean = lastname.replace("'","")
+    prov = Provider()
+    prov.job_title = job_title
+    prov.affiliation = affiliation
+    prov.uuid = uuid.uuid1().hex
+    prov.user = create_user(username=firstclean.lower() + "_" + lastclean.lower(), password='demo', firstname=firstname, lastname = lastname)
+    prov.save()
+    return prov
+    
 
 def create_patient(firstname, middlename, lastname, sex):
     
     firstclean = firstname.replace("'","")
     lastclean = lastname.replace("'","")
-    dob = date(random.randint(1955,2008), random.randint(1,12), random.randint(1,28))    
-    
-    pt = Patient()
-    pt.first_name = firstname
-    pt.middle_name = middlename
-    pt.last_name = lastname
+    dob = date(random.randint(1955,2008), random.randint(1,12), random.randint(1,28))
+        
+    pt = Patient()    
     pt.sex = sex
     pt.dob = dob
-    pt.user = create_user(username=firstclean.lower() + "_" + lastclean.lower(), password='demo')
+    
+    pt.user = create_user(username=firstclean.lower() + "_" + lastclean.lower(), password='demo', firstname=firstname, lastname=lastname)
+    
     pt.is_primary = True
     pt.save()    
     return pt
@@ -75,7 +90,7 @@ def create_careteam(patient):
         
         plink = ProviderLink()
         plink.care_team=team
-        plink.provider = rand_prov.user
+        plink.provider = rand_prov
         
         #set some random role.        
         provider_role = ProviderRole()
@@ -130,33 +145,20 @@ def run():
     call_command('loaddata', '4-status.json')
     call_command('loaddata', '5-gridcolumns.json')
     call_command('loaddata', 'build-example_filters.json')
-    
-    #load all providers
-    call_command('loaddata', 'demo-providers.json')
-    call_command('loaddata', 'demo-identifiers.json')
-
-    #check to make sure all the providers have user objects, as the json doesn't set one
-    for prov in Provider.objects.all():        
-        firstclean = prov.first_name.replace("'","")
-        lastclean = prov.last_name.replace("'","")
-        uname = firstclean.lower() + "_" + lastclean.lower()
         
-        try:
-            user = User.objects.get(username=uname)
-        except:
-            user = create_user(username=uname, password='demo')            
-        
-        if prov.user == None:
-            prov.user = user
-            prov.save()
-    print "created all providers and linked to user objects"
-    
+    call_command('loaddata', 'demo-identifiers.json')    
     
     #create patients    
     for ptarr in patient_arr:
         create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
-    
     print "Created test patients.  Total %d" % Patient.objects.all().count()
+        
+    for provarr in provider_arr:
+        #firstname, lastname, job_title, affiliation        
+        create_provider(provarr[0], provarr[1],provarr[2],provarr[3])
+    print "created all providers"
+    
+    
         
     print "Creating care teams..."
     #create careteam around all patients and link providers to them
@@ -174,8 +176,8 @@ def run():
         users = [team.patient]
         #get the user objects from the providers on this careteam
         for prov in provs:
-            #when you do an all on the providers, they are actually user objects
-            users.append(prov)
+            #when you do an all on the providers, provider objects, so we need to flip over to the User instead.
+            users.append(prov.user)
             
         #create fictitious cases and case activity by patients and providers.
         for num in range(0,MAX_INITIAL_CASES):            

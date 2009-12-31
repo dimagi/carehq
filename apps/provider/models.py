@@ -13,14 +13,9 @@ class Provider(CachedModel):
     """
     In this current iteration, the provider is *really* dumb and simple.
     """
-    user = models.ForeignKey(User, blank=True, null=True) #note, you can be multiple providers for a given user.
+    user = models.ForeignKey(User, related_name='provider_user') #note, you can be multiple providers for a given user.
     uuid = models.CharField(_('Unique provider guid'), 
                                         max_length=32, unique=True, editable=False)
-
-    first_name = models.CharField(_("Provider first name"), max_length=64)
-    middle_name = models.CharField(_("Provider middle name"),max_length=64, blank=True, null=True)
-    last_name = models.CharField(_("Provider last name"),max_length=64, db_index=True)
-    
     #lame example fields
     job_title = models.CharField(max_length=64)
     affiliation = models.CharField(max_length=64)
@@ -28,7 +23,7 @@ class Provider(CachedModel):
     objects = CachingManager()
     
     def __unicode__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return "%s %s" % (self.user.first_name, self.user.last_name)
     
     
     def save(self):

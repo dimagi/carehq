@@ -8,14 +8,14 @@
 <h2>{{case.description}}</h2>
 <ul>
 	<li>ID: {{case.id}}</li>
-	<li>Opened by: <a href="{% url ashandapp.views.view_user case.opened_by.id %}">{{case.opened_by}}</a></li>
+	<li>Opened by: <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by}}</a></li>
 	<li>Opened Date: {{case.opened_date}}</li>
 	<li>Priority: {{case.priority}}</li>
 	<li>Last edit date: {{case.last_edit_date}}</li>
-	<li>Last edit by: <a href="{% url ashandapp.views.view_user case.last_edit_by.id %}">{{case.last_edit_by}}</a></li>
+	<li>Last edit by: <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by}}</a></li>
 	<li>Last event: {{case.last_case_event.activity}}</li>
 	<li>Last event date: {{case.last_event_date}}</li>
-	<li>Last event by: <a href="{% url ashandapp.views.view_user case.last_event_by.id %}">{{case.last_event_by}}</a></li>	
+	<li>Last event by: <a href="{% url ashandapp.views.users.single case.last_event_by.id %}">{{case.last_event_by}}</a></li>	
 </ul>
 
 {% endblock %}

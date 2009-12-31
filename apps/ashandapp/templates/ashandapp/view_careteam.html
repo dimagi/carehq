@@ -8,7 +8,7 @@
 {% block content %}
 <h1> Care Team for {{careteam.patient}}</h1>
 <h2>Info</h2>
-<p>Name: {{patient.first_name}} {{patient.middle_name}} {{patient.last_name}}</p>
+<p>Name: {{patient.user.first_name}} {{patient.user.last_name}}</p>
 <p>DOB: {{patient.dob|date}}</p>
 <p>Sex: {{patient.sex}}</p>
 <p>UUID: {{patient.uuid}}</p>
@@ -19,7 +19,7 @@
 {% for prov, provlink in provider_dict.items %}
 	<li>
 	Name: <a href="{%url ashandapp.views.users.single prov.user.id %}">
-	{{prov.first_name }} {{ prov.middle_name }} {{prov.last_name }}</a><br>
+	{{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
 	Title: {{prov.job_title }} with {{prov.affiliation }} <br>
 	{{provlink.role.role }} - {{provlink.role.role_description}}</li>
 {% endfor %}
