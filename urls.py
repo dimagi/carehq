@@ -39,11 +39,14 @@ for appname in settings.INSTALLED_APPS:
         # import the single "urlpatterns" attribute        
         module = __import__(appname, {}, {}, ['urls'])
         
-        if appname == 'django.contrib.admin':
-            admin.autodiscover()
+        
+        if appname == 'django.contrib.admin':            
             urlpatterns += patterns('',
                                     url(r'^admin/(.*)', admin.site.root),)
+            
             urlpatterns = setmedia('admin', urlpatterns)
+            admin.autodiscover()            
+            
             continue
         elif appname == 'django.contrib.auth':
             #All auth stuff will be done by hand.
