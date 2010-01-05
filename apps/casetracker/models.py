@@ -6,14 +6,14 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from middleware import threadlocals
 
-from djcaching.models import CachedModel
-from djcaching.managers import CachingManager
+#from djcaching.models import CachedModel
+#from djcaching.managers import CachingManager
 
 from django.utils.translation import ugettext_lazy as _
 
 
-#class CaseAction(models.Model):
-class CaseAction(CachedModel):
+class CaseAction(models.Model):
+#class CaseAction(CachedModel):
     """
     A case action is a descriptor for capturing the types of actions you can actuate upon a case.
     These are linked to a case to describe the desired NEXT action to take upon a case.
@@ -29,7 +29,7 @@ class CaseAction(CachedModel):
     """
     description = models.CharField(max_length=64)
     #date_bound = models.BooleanField() # does this seem necessary - all cases seem date bound
-    objects = CachingManager()
+#    objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
     
@@ -38,8 +38,8 @@ class CaseAction(CachedModel):
         verbose_name_plural = "Case Action Types"
 
     
-#class Category(models.Model):
-class Category(CachedModel):
+class Category(models.Model):
+#class Category(CachedModel):
 
     """A category tries to capture the original nature of the opened case
     
@@ -60,7 +60,7 @@ class Category(CachedModel):
    # handler_module = models.CharField(max_length=64, blank=True, null=True, 
     #                               help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
-    objects = CachingManager()
+#    objects = CachingManager()
     
     
     def __unicode__(self):
@@ -70,15 +70,15 @@ class Category(CachedModel):
         verbose_name_plural = "Category Types"
 
     
-#class Priority(models.Model):
-class Priority(CachedModel):
+class Priority(models.Model):
+#class Priority(CachedModel):
     """
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
     """    
     description = models.CharField(max_length=32)
     default = models.BooleanField()    
-    objects = CachingManager()
+    #objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
 
@@ -87,8 +87,8 @@ class Priority(CachedModel):
         verbose_name_plural = "Priority Types"
 
 
-#class Status (models.Model):
-class Status (CachedModel):
+class Status (models.Model):
+#class Status (CachedModel):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
@@ -98,7 +98,7 @@ class Status (CachedModel):
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
     
-    objects = CachingManager()
+ #   objects = CachingManager()
     #query filters can be implemented a la kwarg evaluation:
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419
         
@@ -116,8 +116,8 @@ class Status (CachedModel):
     
 
 
-#class EventActivity(models.Model):
-class EventActivity(CachedModel):
+class EventActivity(models.Model):
+#class EventActivity(CachedModel):
     """
     An Event Activity describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
@@ -151,7 +151,7 @@ class EventActivity(CachedModel):
     
     event_class = models.TextField(max_length=24, choices=EVENT_CLASS_CHOICES)
     
-    objects = CachingManager()
+ #   objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.name)
@@ -533,7 +533,7 @@ class GridPreference(models.Model):
     A filter will have a one to one mapping to this model for showing how to display the given grid.
     
     """
-    filter = models.OneToOneField(Filter)
+    filter = models.OneToOneField(Filter) #this could be just a foreign key and have multiple preferences to a given filter.
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
     

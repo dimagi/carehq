@@ -2,14 +2,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 import uuid
 from django.contrib.auth.models import User
-from djcaching.models import CachedModel
-from djcaching.managers import CachingManager
+#from djcaching.models import CachedModel
+#from djcaching.managers import CachingManager
 
 
 # Create your models here.
 
-#class IdentifierType(models.Model):
-class IdentifierType(CachedModel):
+class IdentifierType(models.Model):
+#class IdentifierType(CachedModel):
     """
     Placeholder for differing identifiers that may be attached to a patient
     """    
@@ -19,7 +19,7 @@ class IdentifierType(CachedModel):
                                         max_length=32, unique=True, editable=False)
 
     regex = models.CharField(max_length=128, blank=True, null=True)
-    objects = CachingManager()
+    #objects = CachingManager()
     def save(self):
         if self.id == None:
             self.uuid = uuid.uuid1().hex
@@ -46,8 +46,8 @@ class PatientIdentifier(models.Model):
         super(PatientIdentifier, self).save()
 
 
-#class Patient(models.Model):    
-class Patient(CachedModel):
+class Patient(models.Model):    
+#class Patient(CachedModel):
     
     GENDER_CHOICES = (
         ('m', 'Male'),
@@ -67,7 +67,7 @@ class Patient(CachedModel):
     is_primary = models.BooleanField(_("Is this patient the primary, merged"), default=True)
     root_patient = models.ForeignKey("self", null=True, blank=True)
     
-    objects = CachingManager()
+#    objects = CachingManager()
     
     def __unicode__(self):
         return "%s %s" % (self.user.first_name, self.user.last_name)
