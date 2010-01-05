@@ -107,7 +107,7 @@ INSTALLED_APPS = (
     'djcaching',
  #   'userprofile',
     'reversion',
-    'django_tables',
+    #'django_tables',
     'django.contrib.admin',
 )
 
