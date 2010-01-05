@@ -88,8 +88,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.request',                               
                                )
 
-INSTALLED_APPS = (
-    'django.contrib.admin',
+INSTALLED_APPS = (    
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -108,6 +107,8 @@ INSTALLED_APPS = (
     'djcaching',
  #   'userprofile',
     'reversion',
+    'django_tables',
+    'django.contrib.admin',
 )
 
 
@@ -139,6 +140,8 @@ DEBUG_TOOLBAR_CONFIG = {
 USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
+LOGIN_REDIRECT_URL = '/'
+
 
 try:
     from settings_local import *
