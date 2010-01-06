@@ -6,6 +6,7 @@ filedir = os.path.dirname(__file__)
 sys.path.append('..')
 sys.path.append(os.path.join(filedir))
 sys.path.append(os.path.join(filedir,'apps'))
+sys.path.append(os.path.join(filedir,'contrib'))
 sys.path.append(os.path.join(filedir,'rapidsms','apps'))
 
 

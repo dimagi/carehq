@@ -70,6 +70,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    'ashandapp.middleware.identity.AshandIdentityMiddleware',
 )
 
 ROOT_URLCONF = 'ashand.urls'

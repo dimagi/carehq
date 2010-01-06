@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block extrahead %}
-{% include "casetracker/partials/datagrid_media.html" %}
+
 {% endblock %}
 
 {% block content %}
@@ -18,9 +18,12 @@
 {% endfor %}
 </ul>
 {%endif%}
-{% with filter_datagrid as datagrid %}
-<div id="blah">
-{% include "casetracker/partials/datagrid.html" %}
-</div>
-{% endwith %}
+{{request.provider.uuid}}
+<br>
+{{request.nonlazyprovider.uuid}}
+
+{{request.is_patient}}
+{{request.patient}}
+{% include "casetracker/partials/list.html" %}
+
 {% endblock %}

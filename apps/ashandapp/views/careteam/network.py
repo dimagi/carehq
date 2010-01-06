@@ -17,6 +17,8 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
 
+from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member
+
 
 @login_required
 def my_network(request, template_name='ashandapp/care_network.html'):
@@ -42,4 +44,41 @@ def my_network(request, template_name='ashandapp/care_network.html'):
     
     context['is_patient'] = is_patient
     context['is_provider'] = is_provider
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+@login_required
+@provider_only
+
+def my_patients(request, template_name='ashandapp/my_patients.html'):
+    """
+    View for providers caring for multiple patients.
+    """
+    context = {}    
+    care_team_membership = CareTeam.objects.select_related().filter(providers=request.provider)        
+    context['my_patients'] = care_team_membership    
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+@caregiver_only
+def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html'):
+    """
+    View for caregivers caring for multiple patients.  effectively this should be similar to the providers "my patients" view
+    """
+    context = {}    
+    care_team_membership = CareTeam.objects.select_related().filter(caregivers=request.user)        
+    context['my_care_recipients'] = care_team_membership    
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+@login_required
+@patient_only
+def my_careteam(request, template_name='ashandapp/my_careteam.html'):
+    #i'm a patient, get my careteam and show providers    
+    context = {}    
+    try:
+        careteam = CareTeam.objects.get(patient=request.user)
+        context['my_careteam'] = careteam          
+    except:                
+        pass
+    
     return render_to_response(template_name, context, context_instance=RequestContext(request))

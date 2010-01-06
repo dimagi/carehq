@@ -12,11 +12,11 @@ class CaseDataGrid(DataGrid):
     
     """ 
     description = Column("Description", sortable = True, link=True, expand=True)            
-    category = Column("Category", sortable = True, link=True)
+    category = Column("Category", sortable = True, link=True, db_field='category.category')
     status = Column("Status", sortable = True, link=True)
-    priority = Column("Priority", sortable = True)
+    priority = Column("Priority", sortable = True, db_field='priority.description')
     assigned_to = Column("Assigned to", sortable = True)
-    opened_by = Column("Opened by", sortable = True)
+    opened_by = Column("Opened by", sortable = True, db_field='opened_by.username')
     last_edit_by = Column("Last edit by", sortable = True)
     closed_by = Column("Closed by", sortable = True)
     resolved_by = Column("Resolved by", sortable = True)

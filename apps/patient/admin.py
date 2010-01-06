@@ -20,8 +20,8 @@ class PatientIdentifierInline(admin.StackedInline):
     model = PatientIdentifier    
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display=('id', 'user','first_name', 'last_name', 'dob', 'uuid', 'is_primary')
-    list_filter = ['last_name']
+    list_display=('id', 'user', 'dob', 'uuid', 'is_primary')
+    list_filter = []
     inlines = [PatientIdentifierInline]
     
 admin.site.register(Patient, PatientAdmin)

@@ -1,0 +1,14 @@
+ <table>
+    <tr>
+        {% for column in table.columns %}        
+        <th><a href="?sort={{ column.name }}">{{ column }}</a></th>
+        {% endfor %}
+    </tr>
+    {% for row in table.rows %}
+        <tr>
+        {% for value in row %}
+            <td>{{ value }}</td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
