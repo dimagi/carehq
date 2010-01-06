@@ -41,12 +41,13 @@ def all_cases(request, template_name="casetracker/case_datagrid.html"):
     context = {}
     #paginate_by
     return CaseDataGrid(request).render_to_response(template_name)    
-
 #@cache_page(60 * 1)
+
 def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context = {}
     #events = CaseEventDataGrid(request, case_id)
     #context['case_events'] = events
+    context['events'] = CaseEvent.objects.filter(case__id=case_id)
     context['case'] = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to').get(id=case_id)
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
@@ -61,7 +62,13 @@ def all_filters(request, template_name="casetracker/filter_datagrid.html"):
     context = {}
     return FilterDataGrid(request).render_to_response(template_name)    
 
-    
+def newsfeed_allcases(request, template_name="casetracker/newsfeed_allcases.html"):
+    context = {}
+    context['cases'] = Case.objects.all()[0:10]
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
+
+
+
 
 def view_filter(request, filter_id):
     context = {}

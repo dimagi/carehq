@@ -33,7 +33,7 @@ class StatusAdmin(admin.ModelAdmin):
 
     
 class EventActivityAdmin(admin.ModelAdmin):
-    list_display=('id', 'name','summary','category','event_class')
+    list_display=('id', 'name','summary','category','event_class', 'phrasing')
     list_filter = ['category','event_class']
     radio_fields = {
         "category": admin.HORIZONTAL,
