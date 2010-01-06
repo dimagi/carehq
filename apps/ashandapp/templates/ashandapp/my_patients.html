@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Patients" %} {% endblock %}
+{% block content %}	
+<h2>My Patients</h2>
+<div class="span-22 prepend-2">
+{% for careteam in my_patients %}	
+	{% include "ashandapp/partials/inline_careteam.html" %}
+{%endfor %}
+</div>
+{% endblock %}

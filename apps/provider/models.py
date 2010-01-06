@@ -18,7 +18,7 @@ class Provider(models.Model):
                                         max_length=32, unique=True, editable=False)
     #lame example fields
     job_title = models.CharField(max_length=64)
-    affiliation = models.CharField(max_length=64)
+    affiliation = models.CharField(max_length=64) #am guessing that a providers' affiliations should be FK'ed if they need to be diversified.
     
  #   objects = CachingManager()
     

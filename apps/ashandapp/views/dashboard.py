@@ -18,6 +18,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
 
+
 @login_required
 #@cache_page(60 * 5)
 def my_dashboard(request, template_name="ashandapp/dashboard.html"):
@@ -37,9 +38,18 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     profile.last_login_from = request.META['REMOTE_ADDR']
     profile.save()        
     
-    filter_datagrid = CaseDataGrid(request, qset=profile.last_filter.get_filter_queryset(), qtitle=profile.last_filter.description)
+#    filter_datagrid = CaseDataGrid(request, qset=profile.last_filter.get_filter_queryset(), qtitle=profile.last_filter.description)    
+#    context['filter_datagrid'] = filter_datagrid
+
+    #print dir(request)
+    #request.provider.uuid = 'blah'
+    #request.provider.save()
     
-    context['filter_datagrid'] = filter_datagrid
+#    request.nonlazyprovider.uuid = 'back'
+#    request.nonlazyprovider.save()
+#    
+    
+    
     context['profile'] = profile    
     context['filter'] = profile.last_filter
     

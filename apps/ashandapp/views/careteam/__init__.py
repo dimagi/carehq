@@ -15,10 +15,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 
+from ashandapp.decorators import is_careteam_member
+
 from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
 
-
+@login_required
+@is_careteam_member
 def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):    
     context = {}
     careteam = CareTeam.objects.get(id=careteam_id)

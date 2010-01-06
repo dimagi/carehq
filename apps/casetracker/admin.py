@@ -94,7 +94,7 @@ class GridColumnAdmin(admin.ModelAdmin):
 admin.site.register(GridColumn, GridColumnAdmin)
 
 class GridPreferenceAdmin(admin.ModelAdmin):
-    list_display= ('id',)
+    list_display= ('id','filter')
     inlines = [ColumnSortInline, ColumnOrderInline]
 admin.site.register(GridPreference, GridPreferenceAdmin)
 
