@@ -1,76 +1,75 @@
-/*** Nav bar styles ***/
+/** Navigation toolbar styles **/
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
 
-ul.nav,
-.nav ul{
-/*Remove all spacings from the list items*/
-	margin: 0;
-	padding: 0;
-	cursor: default;
-	list-style-type: none;
-	display: inline;
+#modernbricksmenu{
+padding: 0;
+
+background: transparent;
+voice-family: "\"}\"";
+voice-family: inherit;
 }
 
-ul.nav{
-	display: table;
-}
-ul.nav>li{
-	display: table-cell;
-	position: relative;
-	padding: 2px 6px;
-}
-
-
-ul.nav>li:hover{
-	padding-right: 1px;
-} [*]
-
-ul.nav li>ul{
-/*Make the sub list items invisible*/
-	display: none;
-	position: absolute;
-	max-width: 40ex;
-	margin-left: -6px;
-	margin-top: 2px;
+#modernbricksmenu ul{
+font: bold 11px Arial;
+margin:0;
+margin-left: 40px; /*margin between first menu item and left browser edge*/
+padding: 0;
+list-style: none;
 }
 
-ul.nav li:hover>ul{
-/*When hovered, make them appear*/
-	display : block;
+#modernbricksmenu li{
+display: inline;
+margin: 0 2px 0 0;
+padding: 0;
+text-transform:uppercase;
 }
 
-.nav ul li a{
-/*Make the hyperlinks as a block element, sort of a hover effect*/
-	display: block;
-	padding: 2px 10px;
+#modernbricksmenu a{
+float: left;
+display: block;
+color: white;
+margin: 0 1px 0 0; /*Margin between each menu item*/
+padding: 5px 10px;
+text-decoration: none;
+letter-spacing: 1px;
+background-color: black; /*Default menu color*/
+border-bottom: 1px solid white;
 }
 
-/*** Menu colors (customizable) ***/
-
-ul.nav,
-.nav ul,
-.nav ul li a{
-	background-color: #fff;
-	color: #369;
+#modernbricksmenu a:hover{
+background-color: gray; /*Menu hover bgcolor*/
 }
 
-
-ul.nav li:hover,
-.nav ul li a:hover{
-	background-color: #369;
-	color: #fff;
+#modernbricksmenu #current a{ /*currently selected tab*/
+background-color: #D25A0B; /*Brown color theme*/ 
+border-color: #D25A0B; /*Brown color theme*/ 
 }
 
-ul.nav li:active,
-.nav ul li a:active{
-	background-color: #036;
-	color: #fff;
+#modernbricksmenuline{
+clear: both;
+padding: 0;
+width: 100%;
+height: 5px;
+line-height: 5px;
+background: #D25A0B; /*Brown color theme*/ 
 }
 
-ul.nav,
-.nav ul{
-	border: 1px solid #369;
+#myform{ /*CSS for sample search box. Remove if desired */
+float: right;
+margin: 0;
+padding: 0;
 }
 
-.nav a{
-	text-decoration: none;
+#myform .textinput{
+width: 190px;
+border: 1px solid gray;
 }
+
+#myform .submit{
+font: bold 11px Verdana;
+height: 22px;
+background-color: lightyellow;
+}
+
+/** End Navigation toolbar styles **/

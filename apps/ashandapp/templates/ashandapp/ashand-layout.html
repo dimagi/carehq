@@ -30,13 +30,42 @@
       	{% block header %}
       		<div class="span-24">
                  {% block branding %}
-                 <div class="span-6 append-12" id="branding">
-                    <h1>
+                 <div class="span-4" id="branding">
+                    <p class="large">
                         <a title="Return to the Dashboard" href="/">
                             <span>ASHand</span>
                         </a>
+                    </p>
                  </div>
-                 {% endblock %} {# branding #}
+                 {% endblock %} {# branding #}                  
+              
+              {% block page_tabs %}
+				{% if user.is_authenticated %}
+				
+				<div id ="modernbricksmenu" class="span-14">
+					<ul>
+					<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
+					<li><a href="{%url profile %}">Profile</a></li>
+					
+					{% if request.is_patient %}
+					<li><a href="{%url ashandapp.views.careteam.network.my_careteam %}">My Care Team</a></li>
+					{% endif%}
+					
+					{% if request.is_provider %}
+					<li><a href="{% url ashandapp.views.careteam.network.my_patients %}">My Patients</a></li>
+					{% endif%}
+					
+					{% if request.is_caregiver %}
+					<li><a href="{%url ashandapp.views.careteam.network.my_care_recipients %}">People I Care For</a></li>
+					{% endif%}
+					
+					<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
+					</ul>
+					{% endif %}
+				</div>				
+				{% endblock %}{# page tabs#}
+                 
+                 
                  {% block auth %}
                     <div class="span-6 last" id="auth">
                         {% if user.is_authenticated %}
@@ -46,18 +75,8 @@
                         {% endif %}
                     </div>
                  {% endblock %} {# auth #}                                
-            {% block page_tabs %}
-            {% if user.is_authenticated %}
-            <div class="span-24">
-            <ul class="nav span-12">
-            <li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
-            <li><a href="{%url profile %}">Profile</a></li>
-            <li><a href="{%url ashandapp.views.careteam.network.my_network %}">Care Network</a></li>
-            <li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
-            </ul>
-            {% endif %}
-            </div>
-            {% endblock %}{# page tabs#}
+            
+            	<div id="modernbricksmenuline" class="span-24">&nbsp;</div>
             </div>
             
             {% endblock %} {#header#}
