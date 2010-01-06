@@ -17,7 +17,6 @@
 (sort by <a href="{% url ashandapp.views.users.single patient.user.id "person"%}">person</a>, <a href="{% url ashandapp.views.users.single patient.user.id "activity"%}">activity</a>, <a href="{% url ashandapp.views.users.single patient.user.id "category"%}">category</a>, <a href="{% url ashandapp.views.users.single patient.user.id%}">none</a>)<br>
 <h2>Recent Events</h2>
 <ul>
-{% if {{
 {% for event in recent_events %}
 <li><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.username}}</a> {{event.activity.name}} 
 <a href="{% url casetracker.views.view_case event.case.id %}">Case {{event.case.id}}</a> on {{event.created_date|date}} {{event.created_date|time}}</li> 
