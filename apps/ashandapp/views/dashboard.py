@@ -17,7 +17,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
-from casetracker.tables import CaseTable
+
 
 @login_required
 #@cache_page(60 * 5)
@@ -49,10 +49,6 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
 #    request.nonlazyprovider.save()
 #    
     
-    cases  = CaseTable(Case) #filterpref=profile.last_filter.gridpreference
-    cases.set_display(profile.last_filter.gridpreference)
-    
-    context['table'] = cases                             
     
     context['profile'] = profile    
     context['filter'] = profile.last_filter
