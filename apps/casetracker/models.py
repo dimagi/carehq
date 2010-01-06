@@ -148,6 +148,7 @@ class EventActivity(models.Model):
     name = models.TextField(max_length=64)
     summary = models.TextField(max_length=512)
     category = models.ForeignKey(Category) # different categories have different event types
+    phrasing = models.CharField(max_length=32, null=True, blank=True)
     
     event_class = models.TextField(max_length=24, choices=EVENT_CLASS_CHOICES)
     

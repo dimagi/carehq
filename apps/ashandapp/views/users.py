@@ -26,7 +26,7 @@ def all(request, template_name='ashandapp/user_datagrid.html'):
 
 #@cache_page(60 * 5)
 @login_required
-def single(request, user_id=None):
+def single(request, user_id=None, sort=None):
     context = {}
     if user_id==None:
         user = request.user
@@ -40,9 +40,10 @@ def single(request, user_id=None):
         context['is_patient'] = True
         context['patient'] = patient
         context['careteam'] = CareTeam.objects.get(patient=user)
-        context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all())
+        context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
         cases = CareTeam.objects.get(patient=user).cases.all()  
         context['cases'] = cases      
+        context['formatting'] = sort
         qtitle = "Cases for this patient"
     except:
         template_name = "ashandapp/view_user.html"
@@ -73,3 +74,4 @@ def single(request, user_id=None):
 #    except Exception, e:
 #        logging.error( "error with the stoopid case data grid %s" % str(e))
     return render_to_response(template_name, context, context_instance=RequestContext(request))
+

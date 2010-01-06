@@ -10,6 +10,9 @@ urlpatterns = patterns ('',
     (r'^events/(?P<case_id>\d+)$', 'casetracker.views.view_case_events'),    
     
     (r'^filters/all/$', 'casetracker.views.all_filters'),
-    (r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter')        
+    (r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter'),
+
+    (r'^newsfeed/cases/$', 'casetracker.views.newsfeed_allcases'),
+    
 )    
     
