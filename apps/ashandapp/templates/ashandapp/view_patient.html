@@ -23,11 +23,22 @@
 {%endfor %}
 </ul>
 <h2>Newsfeed</h2> 
-{% for event in recent_events %}
-<fieldset class="span-22">
-<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> <br>
-<i>{{event.notes}}</i><br>
-{{event.created_date|date}} {{event.created_date|time}}
-</fieldset>
-{%endfor %}
+{% if not formatting %}
+	{% for event in recent_events_feed %}
+		<fieldset class="span-22">
+		<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> <br>
+		<i>{{event.notes}}</i><br>
+		{{event.created_date|date}} {{event.created_date|time}}
+		</fieldset>
+	{% endfor %}
+{% else %}
+	{% for key, value in recent_events_feed.items %}
+		<fieldset class="span-22">
+		<h3>{{key}}</h3>
+		{% for status in {{value}} %}
+			{{status.created_by.get_full_name}} {{status.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{status.activity.category}} {{status.case.id}}</a> <br>	
+		{% endfor %}
+		</fieldset>
+	{% endfor %}
+{% endif %}
 {% endblock %}

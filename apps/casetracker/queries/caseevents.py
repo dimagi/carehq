@@ -26,7 +26,7 @@ def get_latest_for_cases(cases_qset, sort=None):
     return ret
 
 def sort_by_person (a, b):
-    return cmp(a.created_by.first_name[0], b.created_by.first_name[0])
+    return cmp(a.created_by.first_name, b.created_by.first_name)
 
 def sort_by_case (a, b):
     return cmp(a.id, b.id)

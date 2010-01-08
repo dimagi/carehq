@@ -128,7 +128,7 @@
       "name": "Answer Question (Resolve)", 
       "summary": "Answer question to resolve a case",
       "event_class": "resolve",
-       "phrasing": "resolved"
+       "phrasing": "answered"
     }
   },
   {
