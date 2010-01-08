@@ -45,7 +45,7 @@ class CaseEventInline(admin.StackedInline):
 
 class CaseEventAdmin(admin.ModelAdmin):
     list_display=('id','notes','case','activity')
-    list_filter = ['activity','case']
+    list_filter = ['activity',]
 
 
 
@@ -71,7 +71,7 @@ class CaseReversion(VersionAdmin):
     #                "category": admin.HORIZONTAL,
     #                "status": admin.VERTICAL,
     #                }
-    #inlines = [ CaseEventInline, ]
+    inlines = [ CaseEventInline, ]
 
 #class GridPreferenceInline(admin.StackedInline):
 #    model = GridPreference    
@@ -103,8 +103,7 @@ class GridSortAdmin(admin.ModelAdmin):
 admin.site.register(GridSort, GridSortAdmin)
 
 class GridOrderAdmin(admin.ModelAdmin):
-    list_display = ('id','preference','column','order')
-    
+    list_display = ('id','preference','column','order')    
     list_filter = ['preference']
 admin.site.register(GridOrder, GridOrderAdmin)
 

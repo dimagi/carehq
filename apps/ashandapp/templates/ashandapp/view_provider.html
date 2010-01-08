@@ -21,7 +21,7 @@
 <div class="span-8 last">
 <h2>{{selected_user}}'s Patients</h2>
 <ul>
-{% for team in care_teams %}
+{% for team in careteams %}
 	<li> <a href="{%url ashandapp.views.users.single team.patient.id%}"> {{team.patient}}</a></li>
 {% endfor %}
 </ul>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Profile" %}{% endblock %}
+{% block content %}
+<h3> {{request.user.first_name}} {{request.user.last_name}}</h3>
+<strong>{% trans "Basic Information" %} </strong>
+<dl>
+	<dt>{% trans "Email" %}:</dt>
+		<dd>{{request.user.email }}</dd>
+</dl>
+
+
+{% if request.is_provider %}
+<h3>{% trans "Provider Information" %}</h3>
+<dl>
+	<dt>{% trans "Job Title" %}:</dt>
+		<dd>{{request.provider.job_title}}</dd>
+	<dt>{% trans "Affiliation" %}:</dt>
+		<dd>{{request.provider.affiliation}}</dd>		
+</dl>
+{% endif %}
+
+{% if request.is_patient %}
+<h3>{% trans "Patient Information" %}</h3>
+<dl>
+	<dt>{% trans "Date of Birth" %}:</dt>
+		<dd>{{request.patient.dob|date}}</dd>
+	<dt>{% trans "Sex" %}:</dt>
+		<dd>{{request.patient.get_sex_display}}</dd>
+	<dt>{% trans "Identifiers" %}:</dt>
+		<dd>
+		<ul>
+		{% for ident in request.patient.identifiers.items %}
+			<li><strong>{{ident.id_type}}</strong>: {{ident.id_value}}</li>
+		{%endfor %}
+		</ul>
+		</dd>				
+</dl>
+{% endif %}
+
+
+{% endblock %}

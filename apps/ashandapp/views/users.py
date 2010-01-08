@@ -24,6 +24,12 @@ from ashandapp.forms.issue import NewIssueForm
 def all(request, template_name='ashandapp/user_datagrid.html'):
     return UserDataGrid(request).render_to_response(template_name)
 
+
+def my_profile(request, template_name = 'ashandapp/my_profile.html'):
+    user = request.user
+    context = {}        
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
 #@cache_page(60 * 5)
 @login_required
 def single(request, user_id=None, sort=None):
@@ -64,10 +70,10 @@ def single(request, user_id=None, sort=None):
         context['cases'] = cases
         
         qtitle = "Cases for this provider"        
-        #care_team_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("care_team__id",flat=True)
-        #context['care_teams'] = CareTeam.objects.select_related().filter(id__in=care_team_membership)
-        care_team_membership = CareTeam.objects.filter(providers__in=providers)
-        context['care_teams'] = care_team_membership
+        #careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
+        #context['careteams'] = CareTeam.objects.select_related().filter(id__in=careteam_membership)
+        careteam_membership = CareTeam.objects.filter(providers__in=providers)
+        context['careteams'] = careteam_membership
          
 #    try:                
 #        context['cases_datagrid'] = CaseDataGrid(request, qset=cases,qtitle=qtitle)

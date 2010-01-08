@@ -38,9 +38,9 @@ def my_network(request, template_name='ashandapp/care_network.html'):
     providers = Provider.objects.select_related('user').filter(user=request.user)
     if len(providers) > 0:
         is_provider = True
-        #care_team_membership = ProviderLink.objects.select_related('care_team','provider','role').filter(provider__id=user.id).values_list("care_team__id",flat=True)
-        care_team_membership = CareTeam.objects.select_related().filter(providers__in=providers)        
-        context['my_patients_careteams'] = care_team_membership    
+        #careteam_membership = ProviderLink.objects.select_related('careteam','provider','role').filter(provider__id=user.id).values_list("careteam__id",flat=True)
+        careteam_membership = CareTeam.objects.select_related().filter(providers__in=providers)        
+        context['my_patients_careteams'] = careteam_membership    
     
     context['is_patient'] = is_patient
     context['is_provider'] = is_provider
@@ -54,8 +54,8 @@ def my_patients(request, template_name='ashandapp/my_patients.html'):
     View for providers caring for multiple patients.
     """
     context = {}    
-    care_team_membership = CareTeam.objects.select_related().filter(providers=request.provider)        
-    context['my_patients'] = care_team_membership    
+    careteam_membership = CareTeam.objects.select_related().filter(providers=request.provider)        
+    context['my_patients'] = careteam_membership    
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -66,8 +66,8 @@ def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html
     View for caregivers caring for multiple patients.  effectively this should be similar to the providers "my patients" view
     """
     context = {}    
-    care_team_membership = CareTeam.objects.select_related().filter(caregivers=request.user)        
-    context['my_care_recipients'] = care_team_membership    
+    careteam_membership = CareTeam.objects.select_related().filter(caregivers=request.user)        
+    context['my_care_recipients'] = careteam_membership    
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 @login_required

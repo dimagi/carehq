@@ -10,10 +10,10 @@
 <p>Last login: {{profile.last_login|date}}</p>
 <p>Last login from: {{profile.last_login_from}}</p>
 
-{% if care_teams %}
+{% if careteams %}
 <h2>Patients under {{request.user}}'s care</h2>
 <ul>
-{% for team in care_teams %}
+{% for team in careteams %}
 	<li> <a href="{%url ashandapp.views.view_user team.patient.id%}"> {{team.patient}}</a></li>
 {% endfor %}
 </ul>

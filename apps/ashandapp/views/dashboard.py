@@ -64,6 +64,6 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
         
         cases = Case.objects.filter(opened | last_edit | assigned)
         qtitle = "Cases for this provider"        
-        care_team_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("care_team__id",flat=True)
-        context['care_teams'] = CareTeam.objects.filter(id__in=care_team_membership)    
+        careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
+        context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)    
     return render_to_response(template_name, context, context_instance=RequestContext(request))

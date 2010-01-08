@@ -26,8 +26,8 @@
 	<ul>
 	{% for cglink in careteam.caregiver_data %}
 		<li>
-			<a href="{%url ashandapp.views.users.single cglink.caregiver.id %}">
-			{{cglink.caregiver.first_name }}  {{cglink.caregiver.last_name }}</a><br>
+			<a href="{%url ashandapp.views.users.single cglink.user.id %}">
+			{{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
 			<em>{{cglink.relationship }}</em> 
 		</li>
 	{% endfor %}

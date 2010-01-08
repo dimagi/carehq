@@ -5,7 +5,12 @@ from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority,
 
 from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
-from ashandapp.models import CareTeam,ProviderRole,ProviderLink
+from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
+
+from demo_issues import issues_arr
+from demo_questions import question_arr
+from demo_working import working_arr
+from demo_resolve_close import resolve_arr
 
 import random
 import uuid
@@ -15,7 +20,8 @@ from demoproviders import provider_arr
 
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
-MAX_REVISIONS=2
+CAREGIVERS_PER_PATIENT = 3
+MAX_REVISIONS=5
 MAX_INITIAL_CASES = 10
 
 def create_user(username='mockuser', password='demouser', firstname=None, lastname=None):    
@@ -89,7 +95,7 @@ def create_careteam(patient):
         rand_prov = Provider.objects.get(id=rand_prov_id)               
         
         plink = ProviderLink()
-        plink.care_team=team
+        plink.careteam=team
         plink.provider = rand_prov
         
         #set some random role.        
@@ -101,11 +107,37 @@ def create_careteam(patient):
                         
         plink.role = provider_role        
         plink.save()
+        
+        
+    #let's make caregivers now
+    total_caregivers = random.randint(0, CAREGIVERS_PER_PATIENT)    
+    print "\tCreated Providers, assigning %d caregivers" % (total_caregivers)
+    careteam_providers = team.providers.all().values_list('user__id', flat=True)        
+    possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
+    possible_caregivers_arr = [x for x in possible_caregivers_qset]    
+    random.shuffle(possible_caregivers_arr)
+    for num in range(0, total_caregivers):
+        caregiver_user = User.objects.get(id=possible_caregivers_arr[num])
+        cglink = CaregiverLink()
+        cglink.careteam = team
+        #cglink.caregiver = caregiver_user
+        cglink.user = caregiver_user
+        
+        relationship = CareRelationship()
+        relationship.relationship_type = CareRelationship.RELATIONSHIP_CHOICES[random.randint(0, len(CareRelationship.RELATIONSHIP_CHOICES)-1)][0]
+        relationship.notes = ''
+        relationship.save()
+        
+        cglink.relationship = relationship
+        cglink.save()
+        
+        
+    
 
 
 def create_case(user, all_users, case_no):    
     newcase = Case()
-    newcase.description = "test case generated - %d" % case_no
+    
     newcase.opened_by = user
     
     newcase.assigned_to = all_users[random.randint(0,len(all_users)-1)]
@@ -114,16 +146,30 @@ def create_case(user, all_users, case_no):
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
     newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     
+    if newcase.category.category == "Inquiry":
+        newcase.description = question_arr[random.randint(0,len(question_arr))-1]
+    elif newcase.category.category == "Issue":
+        newcase.description = question_arr[random.randint(0,len(question_arr))-1]
+    
+    #newcase.description = "test case generated - %d" % case_no    
     td = timedelta(days=random.randint(0,MAX_DELTA))
     newcase.next_action_date = datetime.utcnow() + td
     
     newcase.save()
     return newcase
 
-def modify_case(case, user, rev_no):    
-    case.description = "modified by %s - rev %d" % (user.username, rev_no)
-    case.last_edit_by = user
-    
+def work_case(case, user):
+    all_descriptions = resolve_arr + working_arr    
+    evt = CaseEvent()
+    evt.activity = EventActivity.objects.all()[random.randint(0,EventActivity.objects.all().count()-1)]
+    evt.case = case
+    evt.notes = all_descriptions[random.randint(0, len(all_descriptions) -1 )]
+    evt.created_by = user 
+    evt.created_date = datetime.utcnow()
+    evt.save()
+
+def modify_case(case, user, rev_no):        
+    case.last_edit_by = user        
     case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     td = timedelta(days=random.randint(0,MAX_DELTA))    
     case.next_action_date = case.next_action_date + td
@@ -173,12 +219,15 @@ def run():
     revision_no = 0
     for team in CareTeam.objects.all():        
         provs = team.providers.all()
+        caregivers = team.caregivers.all()
         users = [team.patient]
         #get the user objects from the providers on this careteam
         for prov in provs:
             #when you do an all on the providers, provider objects, so we need to flip over to the User instead.
             users.append(prov.user)
-            
+        for cg in caregivers:
+            users.append(cg)
+        
         #create fictitious cases and case activity by patients and providers.
         for num in range(0,MAX_INITIAL_CASES):            
             case = create_case(users[random.randint(0,len(users)-1)], users, num)
@@ -188,7 +237,12 @@ def run():
             for rev in range(0,num_revisions):
                 print "\tApplying revision %d - %d" % (rev, revision_no)
                 modding_user = users[random.randint(0,len(users)-1)]
-                modify_case(case, modding_user, revision_no)
+                if random.random() > .1:
+                    #let's bias towards doing work on a case
+                    work_case(case,modding_user)
+                else:
+                    modify_case(case, modding_user, revision_no)
+                    
                 revision_no += 1
    
     

@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     
     #main navigation tabs
     (r'^$', 'ashandapp.views.dashboard.my_dashboard'),
-    url(r'^profile/$', 'ashandapp.views.users.single', name="profile"),
+    url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),
     url(r'^careteam/mine/$', 'ashandapp.views.careteam.network.my_careteam', name='my_careteam'),
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
     url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
