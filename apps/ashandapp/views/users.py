@@ -41,9 +41,66 @@ def single(request, user_id=None, sort=None):
         context['patient'] = patient
         context['careteam'] = CareTeam.objects.get(patient=user)
         context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
+        context['recent_events_feed'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
+        context['formatting'] = False
+
+        
+        formatted_arr = []
+        sorted_dic = {}
+        obj = None
+        if (sort == "person"): 
+            for event in context['recent_events_feed']:
+                if (obj == None):
+                    obj = event
+                    formatted_arr.append(event)
+                elif obj.created_by.get_full_name() == event.created_by.get_full_name():
+                    formatted_arr.append(event)
+                else :
+                    sorted_dic[obj.created_by.get_full_name()].append(formatted_arr)
+                    formatted_arr = []
+                    formatted_arr.append(event)
+                    obj = event
+            if len(formatted_arr):
+                sorted_dic[obj.created_by.get_full_name()].append(formatted_arr)
+        elif (sort == "category"): 
+            for event in context['recent_events_feed']:
+                if (obj == None):
+                    obj = event
+                    formatted_arr.append(event)
+                elif obj.activity.category.category == event.activity.category.category:
+                    formatted_arr.append(event)
+                else :
+                    sorted_dic[obj.activity.category.category].append(formatted_arr)
+                    formatted_arr = []
+                    formatted_arr.append(event)
+                    obj = event
+            if len(formatted_arr):
+                sorted_dic[obj.activity.category.category].append(formatted_arr)
+        elif (sort == "activity"):            
+            for event in context['recent_events_feed']:
+                if (obj == None):
+                    obj = event
+                    formatted_arr.append(event)
+                elif obj.activity.name == event.activity.name:
+                    formatted_arr.append(event)
+                else :
+                    sorted_dic[obj.activity.name].append(formatted_arr)
+                    formatted_arr = []
+                    formatted_arr.append(event)
+                    obj = event
+            if len(formatted_arr):
+                sorted_dic[obj.activity.name].append(formatted_arr)
+                    
+        if len(sorted_dic):
+            context['recent_events_feed'] = sorted_dic
+            context['formatting'] = True
+        
+        print context['recent_events_feed']
+            
         cases = CareTeam.objects.get(patient=user).cases.all()  
-        context['cases'] = cases      
-        context['formatting'] = sort
+        context['cases'] = cases    
+    
+        
         qtitle = "Cases for this patient"
     except:
         template_name = "ashandapp/view_user.html"
@@ -73,5 +130,6 @@ def single(request, user_id=None, sort=None):
 #        context['cases_datagrid'] = CaseDataGrid(request, qset=cases,qtitle=qtitle)
 #    except Exception, e:
 #        logging.error( "error with the stoopid case data grid %s" % str(e))
+    Case.objects.get(id=-1)
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
