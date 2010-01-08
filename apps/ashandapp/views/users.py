@@ -136,6 +136,6 @@ def single(request, user_id=None, sort=None):
 #        context['cases_datagrid'] = CaseDataGrid(request, qset=cases,qtitle=qtitle)
 #    except Exception, e:
 #        logging.error( "error with the stoopid case data grid %s" % str(e))
-    Case.objects.get(id=-1)
+
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
