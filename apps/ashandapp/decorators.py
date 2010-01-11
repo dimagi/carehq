@@ -15,8 +15,8 @@ def is_careteam_member(view_func):
         
         
         if careteam.providers.filter(user=request.user).count() == 0 and careteam.caregivers.filter(id=request.user.id).count() == 0:
-            print "not the patient and not a provider or caregiver!"
-            raise Http404    
+            logging.error("user %s not the patient and not a provider or caregiver for %s" % (request.user, careteam))
+            raise PermissionDenied    
         
         
         return view_func(request, careteam_id, * args, **kwargs)

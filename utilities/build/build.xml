@@ -123,6 +123,10 @@
 					<arg value="runscript" />
 					<arg value="ashandapp.scripts.demo_load" />
 				</py-run>
+				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+					<arg value="runscript" />
+					<arg value="ashandapp.scripts.apache_reload" />
+				</py-run>
 		</target>
 	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">
