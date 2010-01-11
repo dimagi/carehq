@@ -46,7 +46,7 @@ def single(request, user_id=None, sort=None):
         context['is_patient'] = True
         context['patient'] = patient
         context['careteam'] = CareTeam.objects.get(patient=user)
-        context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
+        #context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
         context['recent_events_feed'] = get_latest_for_cases(context['careteam'].cases.all(), sort)
         context['formatting'] = False
 

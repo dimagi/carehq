@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load patient_tags %}
 {% block title %}Provider View{% endblock %}
 {% block extrahead %}
 {% include "casetracker/partials/datagrid_media.html" %}
@@ -14,12 +15,13 @@
 {%endfor %}
 </ul>
 
-<div class="span-16">
+<div class="span-20">
 <h2>Cases</h2>
-{% include "casetracker/partials/cases_ul.html" %}
+{#{% include "casetracker/partials/cases_ul.html" %}#}
+{% include "ashandapp/partials/patient_cases_table.html" %}
 </div>
-<div class="span-8 last">
-<h2>{{selected_user}}'s Patients</h2>
+<div class="span-4 last">
+<h2>Patients</h2>
 <ul>
 {% for team in careteams %}
 	<li> <a href="{%url ashandapp.views.users.single team.patient.id%}"> {{team.patient}}</a></li>

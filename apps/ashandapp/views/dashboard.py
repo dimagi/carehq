@@ -24,30 +24,42 @@ from ashandapp.forms.issue import NewIssueForm
 def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     context = {}
     user = request.user
-    try:
-        profile = CaseProfile.objects.get(user = user)
+    
+    display_filter = None    
         
+    try:
+        profile = CaseProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
         #make the new case profile
         profile = CaseProfile()
         profile.user = user
         profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack 
+        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
     
+    
+    if len(request.GET.items()) > 0:
+            for item in request.GET.items():
+                if item[0] == 'filter':
+                    filter_id = item[1]            
+                    try:
+                        display_filter = Filter.objects.get(id=filter_id)                                                
+                    except:
+                        pass
+                    
+    else:
+        display_filter = profile.last_filter
+    
+    
+    #doing this on very load seems incredibly inefficient.  perhaps update the request object and cache stuff?
     profile.last_login = datetime.utcnow()
     profile.last_login_from = request.META['REMOTE_ADDR']
+    profile.last_filter = display_filter
     profile.save()        
     
-#    filter_datagrid = CaseDataGrid(request, qset=profile.last_filter.get_filter_queryset(), qtitle=profile.last_filter.description)    
-#    context['filter_datagrid'] = filter_datagrid
-
-    #print dir(request)
-    #request.provider.uuid = 'blah'
-    #request.provider.save()
+    shared_filters = Filter.objects.filter(shared=True)
+    context['shared_filters'] = shared_filters
     
-#    request.nonlazyprovider.uuid = 'back'
-#    request.nonlazyprovider.save()
-#    
+    context['display_filter'] = display_filter
     
     
     context['profile'] = profile    
@@ -57,13 +69,13 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     if len(providers) > 0:
         context['providers'] = providers
         
-        #if a provider, do the provider queries        
-        opened = Q(opened_by=user)
-        last_edit = Q(last_edit_by=user)
-        assigned = Q(assigned_to=user)
-        
-        cases = Case.objects.filter(opened | last_edit | assigned)
-        qtitle = "Cases for this provider"        
+        #commenting out because filters should do this now        
+        #opened = Q(opened_by=user)
+        #last_edit = Q(last_edit_by=user)
+        #assigned = Q(assigned_to=user)        
+        #cases = Case.objects.filter(opened | last_edit | assigned)
+        #qtitle = "Cases for this provider"        
+                
         careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
         context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)    
     return render_to_response(template_name, context, context_instance=RequestContext(request))
