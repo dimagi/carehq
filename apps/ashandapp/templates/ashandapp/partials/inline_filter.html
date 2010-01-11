@@ -1,0 +1,15 @@
+{% load filter_tags %}
+<table class="span-24">
+<tr>
+{% for col in filter.gridpreference.display_columns.all %}
+<th>{{col.name|capfirst}}</th>
+{%endfor %}
+</tr>
+{% for case in filter.get_filter_queryset %}
+	<tr>
+	{% for col in filter.gridpreference.display_columns.all %}
+		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
+	{%endfor %}
+	</tr>
+{% endfor %}
+</table>

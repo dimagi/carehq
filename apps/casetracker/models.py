@@ -275,6 +275,7 @@ class Case(models.Model):
             
             #if we're brand new, we'll update the dates in this way:
             self.opened_date = datetime.utcnow()
+            self.last_edit_date = self.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
             self.orig_description = self.description
         else:
             if self.last_edit_by == None:

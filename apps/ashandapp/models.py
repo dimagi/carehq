@@ -56,7 +56,7 @@ class ProviderLink(models.Model):
     """
     Simple link of a provider object to a careteam.
     """
-    care_team = models.ForeignKey("CareTeam")
+    careteam = models.ForeignKey("CareTeam")
     provider = models.ForeignKey(Provider, related_name='providerlink_provider')
     
     role = models.ForeignKey("ProviderRole")
@@ -87,31 +87,20 @@ class CareRelationship(models.Model):
                       ('friend', 'Friend'),
                       ('neighbor', 'Neighbor'),
                       ('other', 'Other'),
-    )
-#    RELATIONSHIP_CHOICES = (
-#        ('Family', (
-#            ('vinyl', 'Vinyl'),
-#            ('cd', 'CD'),
-#            )
-#            ),
-#        ('Video', (
-#                   ('vhs', 'VHS Tape'),
-#                   ('dvd', 'DVD'),
-#                   )
-#            ),
-#        ('unknown', 'Unknown'),
-#    )
-    
+    )    
     relationship_type = models.CharField(choices=RELATIONSHIP_CHOICES,max_length=32)    
     other_description = models.CharField(max_length=64, null=True, blank=True) 
     notes = models.CharField(max_length=512, null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.get_relationship_type_display()
     
 class CaregiverLink(models.Model):
     """
     The actual link for a user object to be come a caregiver.
     """
-    care_team = models.ForeignKey("CareTeam")
-    caregiver = models.ForeignKey(User)
+    careteam = models.ForeignKey("CareTeam")
+    user = models.ForeignKey(User, related_name="caregiverlink_user")
     relationship = models.ForeignKey(CareRelationship)
     notes = models.CharField(max_length=512, null=True, blank=True)    
     
@@ -143,6 +132,9 @@ class CareTeam(models.Model):
 
     @property
     def caregiver_data(self):
+        #if hasattr(self,'_caregiver_data'):
+            #self._caregiver_data = self.caregiverlink_set.all()
+        #return self._caregiver_data
         return self.caregiverlink_set.all()
     
     def get_careteam_user_qset(self):
