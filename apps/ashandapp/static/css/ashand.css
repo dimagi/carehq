@@ -72,4 +72,21 @@ height: 22px;
 background-color: lightyellow;
 }
 
+.message {
+font-size:125%;
+}
+
+.info {
+position:relative;
+left:20px;
+filter:alpha(opacity=50);
+-moz-opacity:0.5;
+-khtml-opacity: 0.5;
+opacity: 0.5;
+}
+
+.container {
+position:relative;
+left:20px
+}
 /** End Navigation toolbar styles **/

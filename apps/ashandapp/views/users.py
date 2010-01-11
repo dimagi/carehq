@@ -55,15 +55,14 @@ def single(request, user_id=None):
         context['is_patient'] = True
         context['patient'] = patient
         context['careteam'] = CareTeam.objects.get(patient=user)
-        context['recent_events'] = get_latest_for_cases(context['careteam'].cases.all())
-        context['recent_events_feed'] = get_latest_for_cases(context['careteam'].cases.all())
+        context['events'] = get_latest_for_cases(context['careteam'].cases.all())
         context['formatting'] = False
         
         sorted_dic = {}
-        sorted_dic = get_sorted_dictionary(sort, context['recent_events_feed'])
+        sorted_dic = get_sorted_dictionary(sort, context['events'])
                     
         if (len(sorted_dic) > 0):
-            context['recent_events_feed'] = sorted_dic
+            context['events'] = sorted_dic
             context['formatting'] = True
                           
         cases = CareTeam.objects.get(patient=user).cases.all()  
