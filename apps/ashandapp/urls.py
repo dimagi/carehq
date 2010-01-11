@@ -5,9 +5,7 @@ urlpatterns = patterns('',
     (r'^styleguide$', 'ashandapp.views.styleguide'),
    
     (r'^users/all$', 'ashandapp.views.users.all'),
-    (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.users.single'),  
-    (r'^users/(?P<user_id>\d+)/(?P<sort>\w+)$', 'ashandapp.views.users.single'),  
-            
+    (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.users.single'),              
                 
     (r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.single'),    
     

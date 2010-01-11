@@ -14,7 +14,7 @@
 <p>DOB: {{patient.dob|date}}</p>
 <p>Sex: {{patient.sex}}</p>
 <p>UUID: {{patient.uuid}}</p><br>
-(sort by <a href="{% url ashandapp.views.users.single patient.user.id "person"%}">person</a>, <a href="{% url ashandapp.views.users.single patient.user.id "activity"%}">activity</a>, <a href="{% url ashandapp.views.users.single patient.user.id "category"%}">category</a>, <a href="{% url ashandapp.views.users.single patient.user.id%}">none</a>)<br>
+(sort by <a href="{% url ashandapp.views.users.single patient.user.id %}?sort=person">person</a>, <a href="{% url ashandapp.views.users.single patient.user.id %}?sort=activity">activity</a>, <a href="{% url ashandapp.views.users.single patient.user.id %}?sort=category">category</a>, <a href="{% url ashandapp.views.users.single patient.user.id %}?sort=case">cases</a>, <a href="{% url ashandapp.views.users.single patient.user.id%}">none</a>)<br>
 <h2>Recent Events</h2>
 <ul>
 {% for event in recent_events %}
@@ -23,11 +23,24 @@
 {%endfor %}
 </ul>
 <h2>Newsfeed</h2> 
-{% for event in recent_events %}
-<fieldset class="span-22">
-<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> <br>
-<i>{{event.notes}}</i><br>
-{{event.created_date|date}} {{event.created_date|time}}
-</fieldset>
-{%endfor %}
+{% if not formatting %}
+	{% for event in recent_events_feed %}
+		<fieldset class="span-22">
+		<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> <br>
+		<i>{{event.notes}}</i><br>
+		{{event.created_date|date}} {{event.created_date|time}}
+		</fieldset>
+	{% endfor %}
+{% else %}
+	{% for key, value in recent_events_feed.items %}
+		<fieldset class="span-22">
+		<h3>{{key}}</h3>
+		{% for event in value%}
+			<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> <br>
+			<i>{{event.notes}}</i><br>
+			{{event.created_date|date}} {{event.created_date|time}}<br><br>
+		{% endfor %}
+		</fieldset>
+	{% endfor %}
+{% endif %}
 {% endblock %}

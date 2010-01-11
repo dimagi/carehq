@@ -286,6 +286,9 @@ class Case(models.Model):
     
     def __unicode__(self):
         return "(Case %s) %s" % (self.id, self.description)
+    def case_name(self):
+        return "Case %s" % self.id
+    
     class Meta:
         verbose_name = "Case"
         verbose_name_plural="Cases"

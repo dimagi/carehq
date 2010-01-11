@@ -27,6 +27,10 @@ from models import Case, CaseEvent, Filter, GridPreference
 
 from datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 
+#use in sorting
+from casetracker.queries.caseevents import sort_by_person, sort_by_case, sort_by_activity, sort_by_category, get_latest_for_cases
+from ashandapp.views.users import get_sorted_dictionary
+
 def grid_examples(request, template_name='casetracker/examples.html'):
     context = {}    
     filtergrid = FilterDataGrid(request)
@@ -47,8 +51,37 @@ def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context = {}
     #events = CaseEventDataGrid(request, case_id)
     #context['case_events'] = events
+    
+    sorting = None
+    try:
+        for key, value in request.GET.items():
+            if key == "sort":
+                sorting = value
+    except:
+        sorting = None
+        
     context['events'] = CaseEvent.objects.filter(case__id=case_id)
     context['case'] = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to').get(id=case_id)
+    context['formatting'] = False
+    
+    ret = context['events'] 
+    
+#    if sorting == "person":
+#        ret.sort(sort_by_person)
+#    elif sorting == "activity":
+#        ret.sort(sort_by_activity)
+##    elif sorting == "category":
+#        ret.sort(sort_by_category)
+#    elif sorting == "case":
+#        ret.sort(sort_by_case)
+    
+#    sorted_dic = {}
+    sorted_dic = get_sorted_dictionary(sorting, ret)
+    
+    if len(sorted_dic) > 0:
+        context['events'] = sorted_dic
+        context['formatting'] = True
+        
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 def all_case_events(request, template_name='casetracker/case_event_datagrid.html'):
@@ -87,5 +120,3 @@ def view_filter(request, filter_id):
         template_name='casetracker/case_datagrid.html'   
         context['cases'] = filter.get_filter_queryset()
         return CaseDataGrid(request, gridpref=gridpref).render_to_response(template_name)
-    
-
