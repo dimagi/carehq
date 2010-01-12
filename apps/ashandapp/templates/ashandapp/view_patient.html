@@ -7,8 +7,9 @@
 
 {% block content %}
 <h1> Patient info for {{selected_user}}</h1>
+{%comment%}
 <a href="{% url ashandapp.views.careteam.single careteam.id %}">Go to care team</a>
-
+{%endcomment%}
 <h2>Info</h2>
 <p>Name: {{patient.user.first_name}} {{patient.user.middle_name}} {{patient.user.last_name}}</p>
 <p>DOB: {{patient.dob|date}}</p>
