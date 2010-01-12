@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     (r'^users/all$', 'ashandapp.views.users.all'),
     (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.users.single'),              
                 
-    (r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.single'),    
+    url(r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.single', name='view-careteam'),    
     
     (r'^careteam/(?P<careteam_id>\d+)/new/inquiry$', 'ashandapp.views.cases.inquiry.new_inquiry'),
     (r'^careteam/(?P<careteam_id>\d+)/new/issue$', 'ashandapp.views.cases.issue.new_issue'),

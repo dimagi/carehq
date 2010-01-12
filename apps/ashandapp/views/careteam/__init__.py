@@ -30,9 +30,7 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
     context['careteam'] = careteam
                 
     cases = careteam.cases.all()
-    context['cases'] = cases
-    #cases_datagrid = CaseDataGrid(request, qset=cases,qtitle="Cases for careteam")
-    #context['cases_datagrid'] = cases_datagrid
+    context['cases'] = cases    
     context['patient']= Patient.objects.get(user=careteam.patient)
     
     provider_links_raw = careteam.providerlink_set.all()

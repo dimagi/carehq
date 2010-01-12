@@ -6,29 +6,20 @@
 {% endblock %}
 
 {% block content %}
-<h1> Care Team for {{careteam.patient}}</h1>
-<h2>Info</h2>
-<p>Name: {{patient.user.first_name}} {{patient.user.last_name}}</p>
-<p>DOB: {{patient.dob|date}}</p>
-<p>Sex: {{patient.sex}}</p>
-<p>UUID: {{patient.uuid}}</p>
-
+<div class="span-24">
 <h2>Care Team</h2>
-<h3>Providers</h3>
-<ul>
-{% for prov, provlink in provider_dict.items %}
-	<li>
-	Name: <a href="{%url ashandapp.views.users.single prov.user.id %}">
-	{{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
-	Title: {{prov.job_title }} with {{prov.affiliation }} <br>
-	{{provlink.role.role }} - {{provlink.role.role_description}}</li>
-{% endfor %}
-</ul>
+{% include "ashandapp/partials/inline_careteam.html" %}
+</div>
+
 <h2>Actions</h2>
 <ul>
 <li><a href="{%url ashandapp.views.cases.inquiry.new_inquiry careteam.id %}">New Inquiry</a></li>
 <li><a href="{%url ashandapp.views.cases.issue.new_issue careteam.id %}">New Issue</a></li>
 </ul>
-<h2>Cases for this patient</h2>
-{% include "casetracker/partials/cases_ul.html" %}
+<div class="span-19">
+<h2>Acvive Cases</h2>
+{% for case in cases %}
+	{% include "ashandapp/partials/active_case.html" %}
+{% endfor %}
+</div>
 {% endblock %}
