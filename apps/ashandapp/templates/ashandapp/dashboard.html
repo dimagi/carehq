@@ -11,11 +11,14 @@
 <p>Last login from: {{profile.last_login_from}}</p>
 
 <h3>Case Filters</h3>
-<ul>
-{% for filter in shared_filters %}
-	<li><a href="{% url my_dashboard %}?filter={{filter.id}}">{{filter.description}}</a></li>
-{% endfor %}	
-</ul>
+
+<div class="nav span-24 append-bottom">
+	<ul>
+	{% for filter in shared_filters %}
+		<li><a href="{% url my_dashboard %}?filter={{filter.id}}">{{filter.description}}</a></li>
+	{% endfor %}	
+	</ul>
+</div>
 <h3>{{display_filter.description}}</h3>
 {% with display_filter as filter %}
 	{% include "ashandapp/partials/inline_filter.html" %}

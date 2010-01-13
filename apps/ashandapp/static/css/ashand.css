@@ -90,3 +90,21 @@ position:relative;
 left:20px
 }
 /** End Navigation toolbar styles **/
+
+
+
+
+#SO style menus
+#hmenus {
+	width:705px;
+	float:left;
+	padding:34px 0 20px 5px;
+	}
+	
+nav {float:left;font-size:125%;}
+.nav ul{margin:0;}
+.nav li{background:#777;display:block;float:left;margin-right:7px;}
+.nav .youarehere{background:#f90;}
+.youarehere a{color:#fff;}
+.nav li:hover{background-color:#f90;}
+.nav a{color:#fff;display:block;font-weight:bold;padding:6px 12px 6px 12px;text-decoration:none;}

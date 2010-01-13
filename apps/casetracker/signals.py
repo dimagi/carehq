@@ -23,7 +23,11 @@ def case_saved(sender, instance, created, **kwargs):
     else:
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
-        notes = "Case edited by " + str(event_creator)
+        
+        if hasattr(instance, 'edit_comment'):
+            notes = instance.edit_comment
+        else:
+            notes = "Case edited by " + str(event_creator)
         qname = Q(event_class='edit')
     try:
         event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)

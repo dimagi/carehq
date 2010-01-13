@@ -141,7 +141,7 @@ class EventActivity(models.Model):
         ('resolve', 'Resolve'),
         ('close', 'Close'),        
         ('reopen', 'Reopen'),
-        
+        ('comment', 'Comment'),
         ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
     )
     
@@ -185,7 +185,7 @@ class CaseEvent(models.Model):
         if self.id == None:     
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
-                self.created_date = datetime.utcnow()                            
+            self.created_date = datetime.utcnow()                            
         super(CaseEvent, self).save()  
     
     def __unicode__(self):
@@ -217,6 +217,8 @@ class Case(models.Model):
     orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
     category = models.ForeignKey(Category)
     status = models.ForeignKey(Status)    
+    
+    body = models.TextField(blank=True,null=True)
     
     priority = models.ForeignKey(Priority)
     

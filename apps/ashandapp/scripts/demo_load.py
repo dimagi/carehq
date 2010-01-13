@@ -137,7 +137,7 @@ def create_careteam(patient):
 
 def create_case(user, all_users, case_no):    
     newcase = Case()
-    
+    newcase.body = "Aliquam ultricies in. Nisl suspendisse ut curabitur nullam, libero magna, id velit quis vitae at. In massa gravida, luctus consequat quis integer, amet amet diam ornare nascetur libero ultrices, lorem urna et. Hac vestibulum, turpis sed sapien cumque. Morbi justo semper lorem gravida, interdum a ante mattis augue at semper, aliquam ridiculus, vulputate repellendus, mi sem in non. Vitae nunc egestas, consectetuer nibh est, ac vestibulum vitae augue ut mauris, ante tortor, velit gravida nisl pellentesque dolor."
     newcase.opened_by = user
     
     newcase.assigned_to = all_users[random.randint(0,len(all_users)-1)]
@@ -169,7 +169,10 @@ def work_case(case, user):
     evt.save()
 
 def modify_case(case, user, rev_no):        
-    case.last_edit_by = user        
+    case.last_edit_by = user
+    
+    #this tests to see if the signal picks up custom attrs added to a model instance.  it does.  not sure how thread safe this will be though.        
+    case.edit_comment = 'random change ' + str(uuid.uuid1().hex)
     case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     td = timedelta(days=random.randint(0,MAX_DELTA))    
     case.next_action_date = case.next_action_date + td
