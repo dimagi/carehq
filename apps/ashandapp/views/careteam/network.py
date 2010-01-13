@@ -72,12 +72,24 @@ def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html
 
 @login_required
 @patient_only
-def my_careteam(request, template_name='ashandapp/my_careteam.html'):
+def my_careteam(request, template_name='ashandapp/view_careteam.html'):
     #i'm a patient, get my careteam and show providers    
     context = {}    
     try:
         careteam = CareTeam.objects.get(patient=request.user)
-        context['my_careteam'] = careteam          
+        context['my_careteam'] = careteam 
+        
+        cases = careteam.cases.all()
+        context['cases'] = cases    
+        context['patient']= Patient.objects.get(user=careteam.patient)
+    
+        provider_links_raw = careteam.providerlink_set.all()
+        provider_dict = {}
+    
+        for plink in provider_links_raw:
+            prov = plink.provider        
+            provider_dict[prov] = plink
+            context['provider_dict'] = provider_dict             
     except:                
         pass
     

@@ -8,6 +8,7 @@
 {% block content %}
 <div class="span-24">
 <h2>Care Team</h2>
+{%with my_careteam as careteam %}
 {% include "ashandapp/partials/inline_careteam.html" %}
 </div>
 
@@ -17,9 +18,8 @@
 <li><a href="{%url ashandapp.views.cases.issue.new_issue careteam.id %}">New Issue</a></li>
 </ul>
 <div class="span-19">
-<h2>Acvive Cases</h2>
-{% for case in cases %}
-	{% include "ashandapp/partials/active_case.html" %}
-{% endfor %}
+<h2>Active Cases</h2>
+{% include "ashandapp/partials/active_case.html" %}
 </div>
+{%endwith%}
 {% endblock %}
