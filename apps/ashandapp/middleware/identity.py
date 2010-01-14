@@ -87,6 +87,12 @@ class AshandIdentityMiddleware(object):
         except ObjectDoesNotExist:
             pass
         
+        
+        careteams = CaregiverLink.objects.all().filter(user=request.user)
+        if careteams.count() > 0:
+            is_caregiver = True
+        
+        
         request.is_provider = is_provider
         request.is_patient = is_patient
         request.is_caregiver = is_caregiver

@@ -28,11 +28,16 @@ def case_saved(sender, instance, created, **kwargs):
             notes = instance.edit_comment
         else:
             notes = "Case edited by " + str(event_creator)
+            
+        if hasattr(instance, 'event_activity'):
+            event_new.activity = instance.event_activity
         qname = Q(event_class='edit')
-    try:
-        event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
-    except:
-        logging.error("Error, a 'New Case' Event Activity does not exist for this system")
+    
+    if event_new.activity == None:
+        try:
+            event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
+        except:
+            logging.error("Error, a 'New Case' Event Activity does not exist for this system")
     
     event_new.created_by = event_creator
     event_new.created_date = event_create_date

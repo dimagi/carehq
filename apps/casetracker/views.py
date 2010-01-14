@@ -6,7 +6,7 @@ import sys
 import os
 import uuid
 import string
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.http import HttpResponse,Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -30,7 +30,7 @@ from datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 #use in sorting
 from casetracker.queries.caseevents import sort_by_person, sort_by_case, sort_by_activity, sort_by_category, get_latest_for_cases
 from ashandapp.views.users import get_sorted_dictionary
-from casetracker.forms import CaseModelForm, CaseCommentForm
+from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
 def _get_next(request):
@@ -53,6 +53,31 @@ def _get_next(request):
         raise Http404 # No next url was supplied in GET or POST.
     return next
 
+
+def close_or_resolve_case(request, case_id, edit_mode=None, template_name = 'casetracker/manage/edit_case.html'):
+    context = {}    
+    case = Case.objects.get(id=case_id)
+    context['case'] = case
+    if request.method == 'POST':
+        form = CaseResolveCloseForm(data=request.POST, case=case, mode=edit_mode)
+        if form.is_valid():
+             
+            status = form.cleaned_data['state']
+            activity = form.cleaned_data['event_activity']
+            comment = form.cleaned_data['comment']
+            
+            
+            case.status = status 
+            case.last_edit_by = request.user
+            case.edit_comment = comment
+            case.event_activity = activity
+            case.save()
+            
+            return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
+    else:
+        context['form'] = CaseResolveCloseForm(case=case, mode=edit_mode)
+        return render_to_response(template_name, context,context_instance=RequestContext(request))
+
 def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html'):
     context = {}    
     edit_mode = None
@@ -64,9 +89,23 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
         form = CaseModelForm(data=request.POST, instance=context['case'], editor_user=request.user, mode=edit_mode)
         if form.is_valid():    
             case = form.save(commit=False)
+            case.edit_comment = '' #set the property to modify
+                        
             if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
                 case.edit_comment = form.cleaned_data["comment"]
             case.last_edit_by = request.user
+            
+            #next, we need to see the mode and flip the fields depending on who does what.
+            if edit_mode == CaseModelForm.EDIT_ASSIGN:
+                case.assigned_date = datetime.utcnow()
+                case.edit_comment += "\nAssigned to %s by %s" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
+            
+            elif edit_mode == CaseModelForm.EDIT_RESOLVE:
+                case.resolved_date = datetime.utcnow()
+                case.resolved_by = request.user
+                 
+            
+            
             case.save()
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
         

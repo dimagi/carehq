@@ -24,10 +24,11 @@ class PriorityAdmin(admin.ModelAdmin):
 
     
 class StatusAdmin(admin.ModelAdmin):
-    list_display=('id', 'description', 'category')
-    list_filter = ['category']
+    list_display=('id', 'description', 'category', 'state_class')
+    list_filter = ['category', 'state_class']
     radio_fields = {
         "category": admin.HORIZONTAL,
+        'state_class': admin.HORIZONTAL,
     }
 
 
@@ -37,6 +38,7 @@ class EventActivityAdmin(admin.ModelAdmin):
     list_filter = ['category','event_class']
     radio_fields = {
         "category": admin.HORIZONTAL,
+        'event_class': admin.HORIZONTAL,
     }
 
 

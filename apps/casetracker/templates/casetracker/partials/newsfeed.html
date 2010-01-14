@@ -1,7 +1,7 @@
-<h2>Newsfeed</h2> 
+<h2>Events</h2> 
 {% if not formatting %}
 	{% for event in events %}
-		<div class = "span-25">
+		<div class = "span-24">
 			<div class = "message">{{event.notes}}</i></div>
 			<div class = "info"><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> on 		{{event.created_date|date}} {{event.created_date|time}} </div><br>		
 		</div>
@@ -10,7 +10,7 @@
 	{% for key, value in events.items %}
 		<h3><b><u>{{key}}</u></b></h3>
 		{% for event in value%}
-		<div class = "span-25">
+		<div class = "span-24">
 			<div class = "container">
 				<div class = "message">{{event.notes}}</i></div>
 				<div class = "info"><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this <a href="{% url casetracker.views.view_case event.case.id %}">{{event.activity.category}} {{event.case.id}}</a> on 		{{event.created_date|date}} {{event.created_date|time}} </div><br>		

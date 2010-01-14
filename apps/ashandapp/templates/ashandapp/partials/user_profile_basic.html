@@ -1,0 +1,7 @@
+{% load i18n %}
+<h3> {{user.first_name}} {{user.last_name}}</h3>
+<strong>{% trans "Basic Information" %} </strong>
+<dl>
+	<dt>{% trans "Email" %}:</dt>
+		<dd>{{user.email }}</dd>
+</dl>

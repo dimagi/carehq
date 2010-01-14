@@ -4,7 +4,17 @@
     "model": "casetracker.status", 
     "fields": {
       "category": 1, 
-      "description": "Active"
+      "description": "Active",
+      "state_class": "open"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 1, 
+      "description": "Resolved (Answered)",
+      "state_class": "resolve"
     }
   }, 
   {
@@ -12,15 +22,8 @@
     "model": "casetracker.status", 
     "fields": {
       "category": 1, 
-      "description": "Resolved (Answered)"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "casetracker.status", 
-    "fields": {
-      "category": 2, 
-      "description": "Active"
+      "description": "Closed (Answered)",
+      "state_class": "close"
     }
   }, 
   {
@@ -28,7 +31,26 @@
     "model": "casetracker.status", 
     "fields": {
       "category": 2, 
-      "description": "Resolved (Responded)"
+      "description": "Active",
+      "state_class": "open"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 2, 
+      "description": "Resolved (Responded)",
+      "state_class": "resolve"
+    }
+  },
+  {
+    "pk": 6, 
+    "model": "casetracker.status", 
+    "fields": {
+      "category": 2, 
+      "description": "Closed (Responded)",
+      "state_class": "close"
     }
   }
 ]

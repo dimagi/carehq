@@ -1,19 +1,30 @@
 {% load filter_tags %}
-<div>
+{% load i18n %}
+
+<div class="span-22"> <!-- careteam header -->
+	<div class="span-10">
+		<h3><a href="{% url view-careteam careteam.id %}">{{careteam.patient.first_name}} {{careteam.patient.last_name}}</a></h3>
+	</div>
+	<div class="span-2 prepend-6">
+		<small><a href="{%url ashandapp.views.users.single careteam.patient.id %}">{%trans "profile"%}</a></small>
+	</div>
+	<div class="span-3 last">
+		<a id="careteam_flipper_{{careteam.id}}" href="javascript:toggle_careteam_block('{{ careteam.id }}')">Show details</a>			
+	</div>
+</div> <!-- end careteam header -->
+	
+<div class="span-22 hidden" id="careteam_block_{{careteam.id}}">		
 	<div class="span-22">
-		<h3><a href="{%url ashandapp.views.users.single careteam.patient.id %}">
-					{{careteam.patient.first_name}} {{careteam.patient.last_name}}
-				</a></h3>
 		<dl>				
-			<dt>DOB:</dt>
+			<dt>{%trans "DOB:"%}</dt>
 				<dd>{{careteam.patient_obj.dob|date}}</dd>
-			<dt>Sex:</dt>
+			<dt>{%trans "Sex:"%}</dt>
 				<dd>{{careteam.patient_obj.get_sex_display}}</dd>
-		</dl>
+		</dl>	
 	</div>
 	
-	<div class="span-10 prepend-2">
-		<h3>Providers</h3>
+	<div class="span-10 prepend-2"> <!-- provider block -->
+		<h3>{%trans "Providers" %}</h3>
 		<ul>
 		{% for prov in careteam.providers.all %}
 			<li>			
@@ -23,23 +34,23 @@
 			</li>
 		{% endfor %}
 		</ul>
-	</div>
-
-	<div class="span-10 last">
-		<h3>Caregivers</h3>
-		
+	</div> <!-- end provider block -->
+	
+	<div class="span-10 last"> <!-- caregiver block -->
+		<h3>{%trans "Caregivers"%}</h3> 		
 		{% if careteam.caregiver_data %}
-		<ul>
-		{% for cglink in careteam.caregiver_data %}
-			<li>
-				<a href="{%url ashandapp.views.users.single cglink.user.id %}">
-				{{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
-				<em>{{cglink.relationship }}</em> 
-			</li>
-		{% endfor %}
-		</ul>
+			<ul>
+			{% for cglink in careteam.caregiver_data %}
+				<li>
+					<a href="{%url ashandapp.views.users.single cglink.user.id %}">
+					{{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
+					<em>{{cglink.relationship }}</em> 
+				</li>
+			{% endfor %}
+			</ul>
 		{%else %}
-		<em>No Caregivers</em>
+			<em>{%trans "No Caregivers"%}</em>
 		{%endif %}	
-	</div>
-</div>
+	</div> <!-- end caregiver block -->
+	
+</div> <!-- end careteam_block_{{careteam.id}} -->

@@ -11,6 +11,25 @@ from middleware import threadlocals
 
 from django.utils.translation import ugettext_lazy as _
 
+CASE_EVENT_CHOICES = (
+        ('open', 'Open/Create'), #case state
+        ('view', 'View'),
+        ('edit', 'Edit'),
+        ('working', 'Working'), #working on case?  this seems a bit ridiculous            
+        ('resolve', 'Resolve'),
+        ('close', 'Close'), #case state        
+        ('reopen', 'Reopen'), #case state
+        ('comment', 'Comment'),
+        ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+    )
+
+#ok, this is a bit nasty, but the rationale is, an actual CASE only really has 3 states. open, resolved and closed
+#the case_state_chjocies are acutal events that happen AROUND a case, that can alter the state of a case.
+CASE_STATES = (
+        ('open', 'Open/Active'),                     
+        ('resolve', 'Resolved'),
+        ('close', 'Closed'),        
+)
 
 class CaseAction(models.Model):
 #class CaseAction(CachedModel):
@@ -57,7 +76,7 @@ class Category(models.Model):
     category = models.CharField(max_length=32)
     plural = models.CharField(max_length=32)    
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
-   # handler_module = models.CharField(max_length=64, blank=True, null=True, 
+    # handler_module = models.CharField(max_length=64, blank=True, null=True, 
     #                               help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
 #    objects = CachingManager()
@@ -97,6 +116,7 @@ class Status (models.Model):
     
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
+    state_class = models.TextField(max_length=24, choices=CASE_STATES)
     
  #   objects = CachingManager()
     #query filters can be implemented a la kwarg evaluation:
@@ -133,24 +153,14 @@ class EventActivity(models.Model):
     sms    
         
     """
-    EVENT_CLASS_CHOICES = (
-        ('open', 'Open/Create'),
-        ('view', 'View'),
-        ('edit', 'Edit'),
-        ('working', 'Working'), #working on case?  this seems a bit ridiculous            
-        ('resolve', 'Resolve'),
-        ('close', 'Close'),        
-        ('reopen', 'Reopen'),
-        ('comment', 'Comment'),
-        ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
-    )
+    
     
     name = models.TextField(max_length=64)
     summary = models.TextField(max_length=512)
     category = models.ForeignKey(Category) # different categories have different event types
     phrasing = models.CharField(max_length=32, null=True, blank=True)
     
-    event_class = models.TextField(max_length=24, choices=EVENT_CLASS_CHOICES)
+    event_class = models.TextField(max_length=24, choices=CASE_EVENT_CHOICES)
     
  #   objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
@@ -239,6 +249,7 @@ class Case(models.Model):
     closed_by = models.ForeignKey(User, related_name="case_closed_by", null=True, blank=True)    
     
     assigned_to = models.ForeignKey(User, related_name="case_assigned_to", null=True, blank=True)   
+    assigned_date = models.DateTimeField(null=True, blank=True)
     
     parent_case = models.ForeignKey('self', null=True, blank=True)
     

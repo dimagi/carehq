@@ -11,8 +11,8 @@
 		<ul>
 			<li><a href="{% url edit-case case.id %}?action=assign">Assign</a></li>
 			<li><a href="{% url edit-case case.id %}?action=edit">Edit</a></li>
-			<li><a href="{% url edit-case case.id %}?action=resolve">Resolve</a></li>
-			<li><a href="{% url edit-case case.id %}?action=close">Close</a></li>
+			<li><a href="{% url resolve-case case.id %}">Resolve</a></li>
+			<li><a href="{% url close-case case.id %}">Close</a></li>
 			{# {% for activity in custom_activity %}#}
 			{#<li>{{activity.name}}</li>#}
 			{#{% endfor %}#}			
@@ -22,28 +22,40 @@
 
 <div class="span-24">
 <h2>{{case.description}}</h2>
-<ul>
-	<li>Body: {{case.body}}</li>
-	<li>ID: {{case.id}}</li>
-	<li>Assigned to: <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to}}</a></li>
-	<li>Opened by: <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by}}</a></li>
-	<li>Opened Date: {{case.opened_date}}</li>
-	<li>Priority: {{case.priority}}</li>
-	<li>Last edit date: {{case.last_edit_date}}</li>
-	{% if case.last_edit_by %} {#this is a nasty hack, last eidt shoudn't be null#}
-	<li>Last edit by: <a href="{% url ashandapp.views.users.single case.last_edit_by.id %}">{{case.last_edit_by}}</a></li>
+<dl>
+	<dd>{{case.body}}</dd>
+	<dt>{% trans "Opened by" %}:</dt>
+	<dd>
+		<a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.first_name}} {{case.opened_by.last_name}}</a> on {{case.opened_date|date}}
+	</dd>
+	
+	
+	<dt>{% trans "Assigned to" %}:</dt>
+	<dd> 
+	{% if case.assigned_to %}		
+		<a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.first_name}} {{case.assigned_to.last_name}}</a> on {{case.assigned_date|date}}
+	{% else %}
+		<a href="{% url edit-case case.id %}?action=assign">Assign</a>
 	{% endif %}
-	<li>Last event: {{case.last_case_event.activity}}</li>
-	<li>Last event date: {{case.last_event_date}}</li>
-	<li>Last event by: <a href="{% url ashandapp.views.users.single case.last_event_by.id %}">{{case.last_event_by}}</a></li>	
-</ul>
+	</dd>
+	
+	
+	{% if case.last_edit_by %} {#this is a nasty hack, last edit shoudn't be null#}
+	<dt>{% trans "Last edited by" %}:</dt>
+	<dd> 
+		<a href="{% url ashandapp.views.users.single case.last_edit_by.id %}">{{case.last_edit_by.first_name}} {{case.last_edit_by.last_name}}</a> {{case.last_edit_date|timesince}} ago
+	</dd>
+	{% endif %}
+	
+	
+</dl>
+
 
 {% include "casetracker/manage/comment.html"%}
 <br>
 <br>
 <hr>
 </div>
-
 (sort by <a href="{% url casetracker.views.view_case case.id %}?sort=person">person</a>, <a href="{% url casetracker.views.view_case case.id %}?sort=activity">activity</a>, <a href="{% url casetracker.views.view_case case.id %}?sort=category">category</a>, <a href="{% url casetracker.views.view_case case.id %}?sort=case">cases</a>, <a href="{% url casetracker.views.view_case case.id%}">none</a>)<br>
 {% include "casetracker/partials/newsfeed.html" %}
 {% endblock %}

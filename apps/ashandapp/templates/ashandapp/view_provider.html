@@ -7,13 +7,25 @@
 {% endblock %}
 
 {% block content %}
-<h1> Provider {{selected_user}}</h1>
-<ul>
-{% for prov in providers %}
-<li> {{prov.user.first_name }}  {{prov.user.last_name }}<br>
-	{{prov.job_title }} :: {{prov.affiliation }} </li>
-{%endfor %}
-</ul>
+<h2> Provider Profile</h2>
+{% with selected_user as user %}
+	{% include "ashandapp/partials/user_profile_basic.html" %}
+{% endwith %}
+
+{% if selected_is_provider %}
+	{% with selected_provider as provider %}
+		{% include "ashandapp/partials/user_profile_provider.html" %}
+	{%endwith%}
+	
+	{% if common_careteams %}
+		<h3>{% trans "Shared Patients" %}({{common_careteams|length}})</h3>
+		{% for careteam in common_careteams %}
+			{% include "ashandapp/partials/inline_careteam.html" %}
+		{% endfor %}	
+	{% endif %}
+{% endif %}
+
+
 
 <div class="span-20">
 <h2>Cases</h2>

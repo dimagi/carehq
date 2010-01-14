@@ -1,0 +1,16 @@
+{% load i18n %}
+<h3>{% trans "Patient Information" %}</h3>
+<dl>
+	<dt>{% trans "Date of Birth" %}:</dt>
+		<dd>{{patient.dob|date}}</dd>
+	<dt>{% trans "Sex" %}:</dt>
+		<dd>{{patient.get_sex_display}}</dd>
+	<dt>{% trans "Identifiers" %}:</dt>
+		<dd>
+			<ul>
+				{% for ident in patient.identifiers.items %}
+					<li><strong>{{ident.id_type}}</strong>: {{ident.id_value}}</li>
+				{%endfor %}
+			</ul>
+		</dd>				
+</dl>
