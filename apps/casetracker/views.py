@@ -29,7 +29,6 @@ from datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 
 #use in sorting
 from casetracker.queries.caseevents import sort_by_person, sort_by_case, sort_by_activity, sort_by_category, get_latest_for_cases
-from ashandapp.views.users import get_sorted_dictionary
 from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
@@ -52,6 +51,71 @@ def _get_next(request):
     if not next or next == request.path:
         raise Http404 # No next url was supplied in GET or POST.
     return next
+
+def get_sorted_dictionary(sort, arr):
+    sorted_dic = {} #sorted dictionary of organized events for newsfeed
+    obj = None 
+        
+    if (sort == "person"): 
+        for event in arr:
+            if (obj == None):
+                obj = event
+                if not sorted_dic.has_key(obj.created_by.get_full_name()):
+                    sorted_dic[obj.created_by.get_full_name()] = []
+                sorted_dic[obj.created_by.get_full_name()].append(obj)
+            elif obj.created_by.get_full_name() == event.created_by.get_full_name():
+                sorted_dic[obj.created_by.get_full_name()].append(event)
+            else :
+                obj = event
+                if not sorted_dic.has_key(obj.created_by.get_full_name()): 
+                    sorted_dic[obj.created_by.get_full_name()] = []
+                sorted_dic[obj.created_by.get_full_name()].append(obj)
+    elif (sort == "category"): 
+        for event in arr:
+            if (obj == None):
+                obj = event
+                if not sorted_dic.has_key(obj.activity.category.category):
+                    sorted_dic[obj.activity.category.category] = []
+                sorted_dic[obj.activity.category.category].append(obj)
+            elif obj.activity.category.category == event.activity.category.category:
+                sorted_dic[obj.activity.category.category].append(event)
+            else :
+                obj = event
+                if not sorted_dic.has_key(obj.activity.category.category):
+                    sorted_dic[obj.activity.category.category] = []
+                sorted_dic[obj.activity.category.category].append(obj)
+    elif (sort == "activity"):            
+        for event in arr:
+            if (obj == None):
+                obj = event
+                if not sorted_dic.has_key(obj.activity.name):
+                    sorted_dic[obj.activity.name] = []
+                sorted_dic[obj.activity.name].append(obj)
+            elif obj.activity.name == event.activity.name:
+                sorted_dic[obj.activity.name].append(event)                
+            else :
+                obj = event
+                if not sorted_dic.has_key(obj.activity.name):
+                    sorted_dic[obj.activity.name] = [] 
+                sorted_dic[obj.activity.name].append(obj)                
+    elif (sort == "case"):            
+        for event in arr:
+            if (obj == None):
+                obj = event
+                if not sorted_dic.has_key(obj.case.case_name_url()):
+                    sorted_dic[obj.case.case_name_url()] = []
+                sorted_dic[obj.case.case_name_url()].append(obj)
+            elif obj.case.id == event.case.id:
+                sorted_dic[obj.case.case_name_url()].append(event)                
+            else :
+                obj = event
+                if not sorted_dic.has_key(obj.case.case_name_url()):
+                    sorted_dic[obj.case.case_name_url()] = [] 
+                sorted_dic[obj.case.case_name_url()].append(obj) 
+    
+    return sorted_dic
+
+
 
 
 def close_or_resolve_case(request, case_id, edit_mode=None, template_name = 'casetracker/manage/edit_case.html'):

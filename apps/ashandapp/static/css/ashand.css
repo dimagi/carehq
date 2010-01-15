@@ -33,17 +33,18 @@ margin: 0 1px 0 0; /*Margin between each menu item*/
 padding: 5px 10px;
 text-decoration: none;
 letter-spacing: 1px;
-background-color: black; /*Default menu color*/
+background-color: #eeb34e; 
 border-bottom: 1px solid white;
 }
 
 #modernbricksmenu a:hover{
-background-color: gray; /*Menu hover bgcolor*/
+background-color: #a68f36; /*Brown color theme*/ 
+border-color: #a68f36; /*Brown color theme*/
 }
 
 #modernbricksmenu #current a{ /*currently selected tab*/
-background-color: #D25A0B; /*Brown color theme*/ 
-border-color: #D25A0B; /*Brown color theme*/ 
+background-color: #a68f36; /*Brown color theme*/ 
+border-color: #a68f36; /*Brown color theme*/ 
 }
 
 #modernbricksmenuline{
@@ -52,7 +53,7 @@ padding: 0;
 width: 100%;
 height: 5px;
 line-height: 5px;
-background: #D25A0B; /*Brown color theme*/ 
+background: #dd9417;  
 }
 
 #myform{ /*CSS for sample search box. Remove if desired */
@@ -93,6 +94,53 @@ left:20px
 /** End Navigation toolbar styles **/
 
 
+
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+
+#modernbricksmenu2{
+padding: 0; 
+background: transparent;
+voice-family: "\"}\"";
+voice-family: inherit;
+}
+
+#modernbricksmenu2 ul{
+margin:0;
+margin-left: 20px; /*margin between first menu item and left browser edge*/
+padding: 0;
+list-style: none;
+}
+
+#modernbricksmenu2 li{
+display: inline;
+margin: 0 2px 0 0;
+padding: 0;
+text-transform:uppercase;
+}
+
+#modernbricksmenu2 a{
+float: left;
+display: block;
+font: bold 11px Arial;
+color: white;
+text-decoration: none;
+margin: 0 1px 0 0; /*Margin between each menu item*/
+padding: 5px 10px;
+background-color: #ee8d4e; /*Brown color theme*/ 
+border-top: 1px solid white;
+}
+
+#modernbricksmenu2 a:hover{
+background-color: #D25A0B; /*Brown color theme*/ 
+color: white;
+}
+
+#modernbricksmenu2 #current a{ /*currently selected tab*/
+background-color: #eea779; /*Brown color theme*/ 
+color: white;
+border-color: #eea779; /*Brown color theme*/ 
+}
 
 
 #SO style menus

@@ -27,7 +27,7 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
     careteam = CareTeam.objects.get(id=careteam_id)
     #careteam.
     
-    context['my_careteam'] = careteam
+    context['current_careteam'] = careteam
                 
     cases = careteam.cases.all()
     context['cases'] = cases    

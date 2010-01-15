@@ -17,7 +17,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
-
+from casetracker.views import get_sorted_dictionary 
  
 
 @cache_page(60 * 5)
@@ -140,65 +140,3 @@ def single(request, user_id=None):
          
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
-def get_sorted_dictionary(sort, arr):
-    sorted_dic = {} #sorted dictionary of organized events for newsfeed
-    obj = None 
-        
-    if (sort == "person"): 
-        for event in arr:
-            if (obj == None):
-                obj = event
-                if not sorted_dic.has_key(obj.created_by.get_full_name()):
-                    sorted_dic[obj.created_by.get_full_name()] = []
-                sorted_dic[obj.created_by.get_full_name()].append(obj)
-            elif obj.created_by.get_full_name() == event.created_by.get_full_name():
-                sorted_dic[obj.created_by.get_full_name()].append(event)
-            else :
-                obj = event
-                if not sorted_dic.has_key(obj.created_by.get_full_name()): 
-                    sorted_dic[obj.created_by.get_full_name()] = []
-                sorted_dic[obj.created_by.get_full_name()].append(obj)
-    elif (sort == "category"): 
-        for event in arr:
-            if (obj == None):
-                obj = event
-                if not sorted_dic.has_key(obj.activity.category.category):
-                    sorted_dic[obj.activity.category.category] = []
-                sorted_dic[obj.activity.category.category].append(obj)
-            elif obj.activity.category.category == event.activity.category.category:
-                sorted_dic[obj.activity.category.category].append(event)
-            else :
-                obj = event
-                if not sorted_dic.has_key(obj.activity.category.category):
-                    sorted_dic[obj.activity.category.category] = []
-                sorted_dic[obj.activity.category.category].append(obj)
-    elif (sort == "activity"):            
-        for event in arr:
-            if (obj == None):
-                obj = event
-                if not sorted_dic.has_key(obj.activity.name):
-                    sorted_dic[obj.activity.name] = []
-                sorted_dic[obj.activity.name].append(obj)
-            elif obj.activity.name == event.activity.name:
-                sorted_dic[obj.activity.name].append(event)                
-            else :
-                obj = event
-                if not sorted_dic.has_key(obj.activity.name):
-                    sorted_dic[obj.activity.name] = [] 
-                sorted_dic[obj.activity.name].append(obj)                
-    elif (sort == "case"):            
-        for event in arr:
-            if (obj == None):
-                obj = event
-                if not sorted_dic.has_key(obj.case.case_name()):
-                    sorted_dic[obj.case.case_name()] = []
-                sorted_dic[obj.case.case_name()].append(obj)
-            elif obj.case.id == event.case.id:
-                sorted_dic[obj.case.case_name()].append(event)                
-            else :
-                obj = event
-                if not sorted_dic.has_key(obj.case.case_name()):
-                    sorted_dic[obj.case.case_name()] = [] 
-                sorted_dic[obj.case.case_name()].append(obj) 
-    
-    return sorted_dic

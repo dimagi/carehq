@@ -1,0 +1,64 @@
+{% load filter_tags %}
+{% load i18n %}
+{% comment %}
+This file is remarkably similar to partials/inline_careteam
+the idea is that the careteam_menu should exist on top when within the context of a patient's cases and care issues
+{%endcomment%}
+
+<div class="span-20"> <!-- careteam header -->
+	<div class="span-3">
+		<h4><a href="{% url view-careteam current_careteam.id %}">{{current_careteam.patient.first_name}} {{current_careteam.patient.last_name}}</a></h4>
+	</div>
+	<div class="span-17 last">		
+		<div id="modernbricksmenu">
+			<ul>
+				<li><a href="{%url ashandapp.views.users.single current_careteam.patient.id %}">{%trans "profile"%}</a></li>
+				<li><a href="">Cases</a></li>
+				<li><a href="">Care Plan</a></li>
+				<li><a id="careteam_flipper_{{current_careteam.id}}" href="javascript:toggle_careteam_block('{{ current_careteam.id }}_menu')">Show details</a></li>							
+			</ul>
+		</div>					
+	</div>
+</div> <!-- end careteam header -->
+	
+<div class="span-20 hidden" id="careteam_block_{{current_careteam.id}}_menu">		
+	<div class="span-20">
+		<dl>				
+			<dt>{%trans "DOB:"%}</dt>
+				<dd>{{current_careteam.patient_obj.dob|date}}</dd>
+			<dt>{%trans "Sex:"%}</dt>
+				<dd>{{current_careteam.patient_obj.get_sex_display}}</dd>
+		</dl>	
+	</div>
+	
+	<div class="span-10"> <!-- provider block -->
+		<h3>{%trans "Providers" %}</h3>
+		<ul>
+		{% for prov in current_careteam.providers.all %}
+			<li>			
+				<a href="{%url ashandapp.views.users.single prov.user.id %}">
+				{{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
+				<em>{{prov.job_title }} with {{prov.affiliation }}</em> <br>
+			</li>
+		{% endfor %}
+		</ul>
+	</div> <!-- end provider block -->
+	
+	<div class="span-10 last"> <!-- caregiver block -->
+		<h3>{%trans "Caregivers"%}</h3> 		
+		{% if current_careteam.caregiver_data %}
+			<ul>
+			{% for cglink in current_careteam.caregiver_data %}
+				<li>
+					<a href="{%url ashandapp.views.users.single cglink.user.id %}">
+					{{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
+					<em>{{cglink.relationship }}</em> 
+				</li>
+			{% endfor %}
+			</ul>
+		{%else %}
+			<em>{%trans "No Caregivers"%}</em>
+		{%endif %}	
+	</div> <!-- end caregiver block -->
+	
+</div> <!-- end careteam_block_{{current_careteam.id}} -->

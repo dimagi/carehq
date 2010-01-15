@@ -51,32 +51,34 @@
                  </div>
                  {% endblock %} {# branding #}                  
               
-              	{% block page_tabs %}
-				{% if user.is_authenticated %}
-				
-				<div class="span-20 last">
-					<div id ="modernbricksmenu" class="span-20 last">
-					<ul>
-					<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
-					<li><a href="{%url my_profile %}">Profile</a></li>
-					
-					{% if request.is_patient %}
-					<li><a href="{%url ashandapp.views.careteam.network.my_careteam %}">My Care Team</a></li>
-					{% endif%}
-					
-					{% if request.is_provider %}
-					<li><a href="{% url ashandapp.views.careteam.network.my_patients %}">My Patients</a></li>
-					{% endif%}
-					
-					{% if request.is_caregiver %}
-					<li><a href="{%url ashandapp.views.careteam.network.my_care_recipients %}">People I Care For</a></li>
-					{% endif%}
-					
-					<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
-					</ul>
-					{% endif %}
+              	{% block page_tabs %}					
+              	{% if user.is_authenticated %}			
+				<div class="span-20 last">				
+					<div id ="modernbricksmenu2" class="span-20 last">					
+						<ul>
+						<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
+						<li><a href="{%url my_profile %}">Profile</a></li>
+						
+						{% if request.is_patient %}
+						<li><a href="{%url ashandapp.views.careteam.network.my_careteam %}">My Care Team</a></li>
+						{% endif%}
+						
+						{% if request.is_provider %}
+						<li><a href="{% url ashandapp.views.careteam.network.my_patients %}">My Patients</a></li>
+						{% endif%}
+						
+						{% if request.is_caregiver %}
+						<li><a href="{%url ashandapp.views.careteam.network.my_care_recipients %}">People I Care For</a></li>
+						{% endif%}
+						
+						<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
+						</ul>					
 					</div>
-					<div id="modernbricksmenuline">&nbsp;</div>
+					<div id="modernbricksmenuline">&nbsp;</div>		
+						{% if current_careteam %}			
+							{% include "ashandapp/careteam/careteam_menu.html" %}
+						{%endif %}
+					{% endif %}
 				</div>				
 				{% endblock %}{# page tabs#}
                  

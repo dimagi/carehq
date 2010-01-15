@@ -20,25 +20,7 @@
 {% endcomment %}
 
 {% if is_provider_for %}
-
-<ul> Sort by:
-	<li>
-		<a href="{% url ashandapp.views.users.single selected_user.id %}?sort=person">person</a>
-	</li>
-	<li>
-		<a href="{% url ashandapp.views.users.single selected_user.id %}?sort=activity">activity</a>
-	</li>
-	<li>
-		<a href="{% url ashandapp.views.users.single selected_user.id %}?sort=category">category</a>
-	</li>
-	<li>
-		<a href="{% url ashandapp.views.users.single selected_user.id %}?sort=case">cases</a>
-	</li>
-	<li>
-		<a href="{% url ashandapp.views.users.single selected_user.id %}">date</a>)
-	</li>
-</ul>
-
+{% include "casetracker/partials/newsfeed.html" %}
 {%endif%}
-{# {% include "casetracker/partials/newsfeed.html" %}#}
+
 {% endblock %}

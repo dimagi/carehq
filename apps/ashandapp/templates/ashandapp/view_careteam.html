@@ -6,16 +6,18 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="span-24">
 <h2>Care Team</h2>
-{%with my_careteam as careteam %}
+{%with current_careteam as careteam %}
 {% include "ashandapp/partials/inline_careteam.html" %}
 </div>
 
+
 <h2>Actions</h2>
 <ul>
-<li><a href="{%url ashandapp.views.cases.inquiry.new_inquiry careteam.id %}">New Inquiry</a></li>
-<li><a href="{%url ashandapp.views.cases.issue.new_issue careteam.id %}">New Issue</a></li>
+<li><a href="{%url ashandapp.views.cases.inquiry.new_inquiry current_careteam.id %}">New Inquiry</a></li>
+<li><a href="{%url ashandapp.views.cases.issue.new_issue current_careteam.id %}">New Issue</a></li>
 </ul>
 <div class="span-19">
 <h2>Active Cases</h2>

@@ -8,6 +8,7 @@ from middleware import threadlocals
 
 #from djcaching.models import CachedModel
 #from djcaching.managers import CachingManager
+from django.core.urlresolvers import reverse
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -301,7 +302,13 @@ class Case(models.Model):
     def __unicode__(self):
         return "(Case %s) %s" % (self.id, self.description)
     def case_name(self):
-        return "Case %s" % self.id
+        #return "Case %s" % self.id
+        return self.description
+    
+    def case_name_url(self):
+        #return "Case %s" % self.id
+        #reverse("casetracker.views.view_case", args=[obj.id])
+        return '<a href="%s">%s</a>' % (reverse('view-case', args=[self.id]), self.description)
     
     class Meta:
         verbose_name = "Case"

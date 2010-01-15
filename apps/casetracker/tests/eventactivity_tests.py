@@ -1,6 +1,6 @@
 from django.test import TestCase
 from casetracker.models import Category, EventActivity
-
+from casetracker.models import CASE_EVENT_CHOICES
 class EventActivityVerificationTest(TestCase):
     fixtures = ['0-caseaction.json',
                 '1-category.json',
@@ -16,7 +16,7 @@ class EventActivityVerificationTest(TestCase):
         #A test that verifies that each event activity, it has an appropriate 
         #New Case, Edit Case, Resolve Case, Close Case, Reopen
         #and that they are non zero and the special cases are only 1.
-        classes = EventActivity.EVENT_CLASS_CHOICES
+        classes = CASE_EVENT_CHOICES
         for cat in Category.objects.all():
             activities = EventActivity.objects.filter(category=cat)
             for class_tuple in classes:
