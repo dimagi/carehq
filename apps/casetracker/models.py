@@ -9,8 +9,13 @@ from middleware import threadlocals
 #from djcaching.models import CachedModel
 #from djcaching.managers import CachingManager
 from django.core.urlresolvers import reverse
-
+import uuid
 from django.utils.translation import ugettext_lazy as _
+
+
+def make_uuid():
+    return uuid.uuid1().hex
+
 
 CASE_EVENT_CHOICES = (
         ('open', 'Open/Create'), #case state
@@ -183,7 +188,7 @@ class CaseEvent(models.Model):
     It is meant to capture outside the scope of the case table itself, the actions and their accompanying
     examples of what happened to a case.
     """
-    
+    id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     case = models.ForeignKey("Case")    
     notes = models.TextField(blank=True)
     #activity = models.ForeignKey(EventActivity, limit_choices_to = {'category': "case__category"})    
@@ -197,6 +202,7 @@ class CaseEvent(models.Model):
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
             self.created_date = datetime.utcnow()                            
+            self.id = uuid.uuid1().hex
         super(CaseEvent, self).save()  
     
     def __unicode__(self):
@@ -220,9 +226,13 @@ class Case(models.Model):
     The scope of these cases are currently attached to the actual agents that need to work on them.
     
     Changes to these cases will be managed by django-reversion.  Actions revolving around these cases will be done via encounters.
+    
+    The uuid should be the primary key, but for the synchronization framework, having a uuid key do all the queries
+    and potentially be the primary key should be a top priority.    
     """    
     
     #objects = CachingManager()
+    id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     
     description = models.CharField(max_length=160)
     orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
@@ -230,6 +240,7 @@ class Case(models.Model):
     status = models.ForeignKey(Status)    
     
     body = models.TextField(blank=True,null=True)
+        
     
     priority = models.ForeignKey(Priority)
     
@@ -283,7 +294,7 @@ class Case(models.Model):
     
     
     def save(self):        
-        if self.id == None:
+        if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
             if self.opened_by == None or self.description == None:
                 raise Exception("Missing fields in Case creation - opened by and description")            
             

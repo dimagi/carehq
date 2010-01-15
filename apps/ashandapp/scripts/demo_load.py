@@ -139,6 +139,7 @@ def create_case(user, all_users, case_no):
     newcase = Case()
     newcase.body = "Aliquam ultricies in. Nisl suspendisse ut curabitur nullam, libero magna, id velit quis vitae at. In massa gravida, luctus consequat quis integer, amet amet diam ornare nascetur libero ultrices, lorem urna et. Hac vestibulum, turpis sed sapien cumque. Morbi justo semper lorem gravida, interdum a ante mattis augue at semper, aliquam ridiculus, vulputate repellendus, mi sem in non. Vitae nunc egestas, consectetuer nibh est, ac vestibulum vitae augue ut mauris, ante tortor, velit gravida nisl pellentesque dolor."
     newcase.opened_by = user
+    newcase.last_edit_by = user
     
     newcase.assigned_to = all_users[random.randint(0,len(all_users)-1)]
     newcase.assigned_date = datetime.utcnow() - timedelta(days=random.randint(0,720))

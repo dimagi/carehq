@@ -7,7 +7,7 @@ from casetracker.models import Case, Filter
 from patient.models import Patient
 from provider.models import Provider
 import datetime
-
+import uuid
 
 GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 # Create your models here.

@@ -15,6 +15,7 @@ def case_saved(sender, instance, created, **kwargs):
     """
     event_new = CaseEvent()
     event_new.case = instance
+    
     if created:        
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
@@ -33,11 +34,11 @@ def case_saved(sender, instance, created, **kwargs):
             event_new.activity = instance.event_activity
         qname = Q(event_class='edit')
     
-    if event_new.activity == None:
-        try:
-            event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
-        except:
-            logging.error("Error, a 'New Case' Event Activity does not exist for this system")
+    
+    try:
+        event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
+    except:
+        logging.error("Error, a 'New Case' Event Activity does not exist for this system")
     
     event_new.created_by = event_creator
     event_new.created_date = event_create_date

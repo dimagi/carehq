@@ -1,6 +1,7 @@
 from django.test import TestCase
 from datetime import datetime
 import hashlib
+import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category
 
@@ -34,10 +35,13 @@ class EventActivityVerificationTest(TestCase):
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
         
+        
         user = User.objects.get(username='mockuser')
         newcase = Case()
         newcase.description = "this is a case made by the test case"
         newcase.opened_by = user
+        newcase.assigned_date = datetime.utcnow()
+        newcase.assigned_to = user
         
         newcase.category = Category.objects.all()[0]
         newcase.status = Status.objects.all()[0]
@@ -50,7 +54,7 @@ class EventActivityVerificationTest(TestCase):
         self.assertEqual(CaseEvent.objects.all().count(), oldevents + 1)
         
         #verify that the case count created has created a new caseevent
-        events = CaseEvent.objects.filter(case=newcase)        
+        events = CaseEvent.objects.filter(case=newcase)
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
         self.assertEqual("open", events[0].activity.event_class)
