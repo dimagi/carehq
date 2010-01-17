@@ -38,9 +38,7 @@ class NewInquiryForm(forms.Form):
         if careteam != None:
             self.fields['other_recipient'].queryset = careteam.get_careteam_user_qset()
         
-    def clean_message(self):
-        pass
-    
+   
     def clean(self):
         return self.cleaned_data
     

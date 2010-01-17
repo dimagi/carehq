@@ -14,11 +14,9 @@ from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
+
 from django.core.urlresolvers import reverse
-
 from django.http import HttpResponseRedirect
-
-
 from ashandapp.forms.inquiry import NewInquiryForm
 
 def new_inquiry(request, careteam_id, template_name="ashandapp/activities/inquiry/new_inquiry.html"):

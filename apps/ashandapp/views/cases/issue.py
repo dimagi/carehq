@@ -15,11 +15,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 
-from ashandapp.forms.inquiry import NewInquiryForm
 from ashandapp.forms.issue import NewIssueForm
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-
-def new_issue(request, careteam_id, template_name="ashandapp/activities/inquiry/new_issue.html"):
-    context = {}
-    context['form'] = NewIssueForm(careteam = CareTeam.objects.get(id=careteam_id))
+def new_issue(request, careteam_id, template_name="ashandapp/activities/issue/new_issue.html"):
+    context = {}    
+    careteam=CareTeam.objects.get(id=careteam_id)
+    context['form'] = NewIssueForm(careteam=careteam)
+    
+    if request.method == 'POST':
+        form = NewIssueForm(data=request.POST, careteam=CareTeam.objects.get(id=careteam_id))
+        if form.is_valid():
+            newcase = form.get_case(request)
+            newcase.save()
+            careteam.cases.add(newcase)
+            
+            return HttpResponseRedirect(reverse('view-careteam', kwargs= {'careteam_id': careteam_id}))
+    
     return render_to_response(template_name, context, context_instance=RequestContext(request))

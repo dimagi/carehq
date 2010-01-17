@@ -2,11 +2,13 @@
 # vim: ai ts=4 sts=4 et sw=4
 
 from django import forms
-from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status
+from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category
 from ashandapp.models import CareTeam
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
+from django.forms import widgets
+
 
 
 class NewIssueForm(forms.Form):
@@ -16,26 +18,40 @@ class NewIssueForm(forms.Form):
                          ('healthmonitor', "Health Monitor" ),
                          ('other', "Other" ),
                          )
-    message = forms.CharField(required=True, 
+    description = forms.CharField(max_length=160,
+                                  required=True, 
                               error_messages = {'required': 
-                                                'You must enter a message'})
+                                                'You must enter a short description'})
+    body = forms.CharField(required=True,
+                           error_messages = {'required': 'You must enter a message body'},
+                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))          
     
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-                                      error_messages = {'required': 
-                                                'Please select a priority for this inquiry'})    
+                                      error_messages = {'required': 'Please select a priority for this inquiry'})    
+    
     source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
     def __init__(self, careteam=None, *args, **kwargs):
         super(NewIssueForm, self).__init__(*args, **kwargs)
-        self.careteam = careteam
+        #self.careteam = careteam
         
-
-    def clean_message(self):
-        pass
     
     def clean(self):
-        #check recipient and other_recipient validation     
-        pass
+        return self.cleaned_data
+    
+    def get_case(self, request):
+        if not self.is_valid():
+            raise Exception("Error, trying to generate case from inquiry form when form is not valid!")
+        newcase = Case()
+        newcase.category = Category.objects.get(category='issue')
+        newcase.priority = self.cleaned_data['priority']
+        newcase.opened_by = request.user
+        newcase.status = Status.objects.filter(category=newcase.category).get(description='Active')
+        newcase.description = self.cleaned_data['description']
+        newcase.body = self.cleaned_data['body']
+        
+        return newcase
+    
     
 class InquiryResponseForm(forms.Form):
     forms.CharField(required=True, 
