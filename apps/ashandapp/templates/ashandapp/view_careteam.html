@@ -11,6 +11,7 @@
 <h2>Care Team</h2>
 {%with current_careteam as careteam %}
 {% include "ashandapp/partials/inline_careteam.html" %}
+{%endwith%}
 </div>
 
 
@@ -23,5 +24,4 @@
 <h2>Active Cases</h2>
 {% include "ashandapp/partials/active_case.html" %}
 </div>
-{%endwith%}
 {% endblock %}
