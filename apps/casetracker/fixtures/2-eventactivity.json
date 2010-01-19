@@ -7,7 +7,7 @@
       "name": "Edit Case", 
       "summary": "Edit a case",
       "event_class": "edit",
-      "phrasing": "editted"
+      "phrasing": "edited"
     }
   }, 
   {

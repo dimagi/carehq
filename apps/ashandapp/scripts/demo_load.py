@@ -144,7 +144,8 @@ def create_case(user, all_users, case_no):
     newcase.assigned_to = all_users[random.randint(0,len(all_users)-1)]
     newcase.assigned_date = datetime.utcnow() - timedelta(days=random.randint(0,720))
     
-    newcase.category = Category.objects.all()[random.randint(0, Category.objects.all().count()-1)]
+    #newcase.category = Category.objects.all()[random.randint(0, Category.objects.all().count()-1)]
+    newcase.category = Category.objects.all()[random.randint(0, 1)] #right now only support issue/question categories, so only the first two categories
     newcase.status = Status.objects.all()[random.randint(0, Status.objects.all().count() -1)]
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
     newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
