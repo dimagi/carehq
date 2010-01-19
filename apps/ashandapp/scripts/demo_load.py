@@ -149,7 +149,7 @@ def create_case(user, all_users, case_no):
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
     newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     
-    if newcase.category.category == "Inquiry":
+    if newcase.category.category == "Question":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]
     elif newcase.category.category == "Issue":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]

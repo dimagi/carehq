@@ -10,8 +10,8 @@ from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
 
 
-class NewInquiryForm(forms.Form):
-    """Initial creation of an inquiry case will be governed by this form"""
+class NewQuestionForm(forms.Form):
+    """Initial creation of an question case will be governed by this form"""
     RECIPIENT_CHOICES = (('careteam', "Entire Care Team" ),
                          ('providers', "Just Providers" ),
                          ('caregivers', "Just Caregivers" ),
@@ -28,13 +28,13 @@ class NewInquiryForm(forms.Form):
                           )
     
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-                                      error_messages = {'required': 'Please select a priority for this inquiry'})    
+                                      error_messages = {'required': 'Please select a priority for this question'})    
     
     recipient = forms.ChoiceField(choices=RECIPIENT_CHOICES, required=True)
     other_recipient = forms.ModelChoiceField(queryset=User.objects.all(), required=False)    
     
     def __init__(self, careteam=None, *args, **kwargs):
-        super(NewInquiryForm, self).__init__(*args, **kwargs)                
+        super(NewQuestionForm, self).__init__(*args, **kwargs)                
         if careteam != None:
             self.fields['other_recipient'].queryset = careteam.get_careteam_user_qset()
         
@@ -44,9 +44,9 @@ class NewInquiryForm(forms.Form):
     
     def get_case(self, request):
         if not self.is_valid():
-            raise Exception("Error, trying to generate case from inquiry form when form is not valid!")
+            raise Exception("Error, trying to generate case from question form when form is not valid!")
         newcase = Case()
-        newcase.category = Category.objects.get(category='inquiry')
+        newcase.category = Category.objects.get(category='question')
         newcase.priority = self.cleaned_data['priority']
         newcase.opened_by = request.user
         newcase.status = Status.objects.filter(category=newcase.category).get(description='Active')
@@ -55,7 +55,7 @@ class NewInquiryForm(forms.Form):
         
         return newcase
     
-class InquiryResponseForm(forms.Form):
+class QuestionResponseForm(forms.Form):
     forms.CharField(required=True, 
                               error_messages = {'required': 
                                                 'You must enter a message'}) 

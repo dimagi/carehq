@@ -17,7 +17,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.decorators import is_careteam_member
 
-from ashandapp.forms.inquiry import NewInquiryForm
+from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
 
 @login_required
@@ -25,7 +25,6 @@ from ashandapp.forms.issue import NewIssueForm
 def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):    
     context = {}
     careteam = CareTeam.objects.get(id=careteam_id)
-    #careteam.
     
     context['current_careteam'] = careteam
                 

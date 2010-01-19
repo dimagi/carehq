@@ -71,7 +71,7 @@ class Category(models.Model):
     In Ashand, this is akin to the divisions within issue/case/risk.
     
     Simple setups will be:
-    Inquiry
+    Question
     Issue    
     
     Schedule Item    
@@ -117,7 +117,7 @@ class Status (models.Model):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
-    ie, a bug's status states will be fundamentally different from a Feature or Inquiry.
+    ie, a bug's status states will be fundamentally different from a Feature or Question.
     """
     
     description = models.CharField(max_length=64)

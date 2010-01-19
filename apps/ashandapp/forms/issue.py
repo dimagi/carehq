@@ -12,7 +12,7 @@ from django.forms import widgets
 
 
 class NewIssueForm(forms.Form):
-    """Initial creation of an inquiry case will be governed by this form"""
+    """Initial creation of an issue case will be governed by this form"""
     ISSUE_CHOICES = (('caregiver', "Caregiver Concern" ),
                          ('careplan', "Care Plan Issue" ),
                          ('healthmonitor', "Health Monitor" ),
@@ -27,7 +27,7 @@ class NewIssueForm(forms.Form):
                            widget = widgets.Textarea(attrs={'cols':50,'rows':10}))          
     
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-                                      error_messages = {'required': 'Please select a priority for this inquiry'})    
+                                      error_messages = {'required': 'Please select a priority for this issue'})    
     
     source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
@@ -41,7 +41,7 @@ class NewIssueForm(forms.Form):
     
     def get_case(self, request):
         if not self.is_valid():
-            raise Exception("Error, trying to generate case from inquiry form when form is not valid!")
+            raise Exception("Error, trying to generate case from issue form when form is not valid!")
         newcase = Case()
         newcase.category = Category.objects.get(category='issue')
         newcase.priority = self.cleaned_data['priority']
@@ -53,7 +53,7 @@ class NewIssueForm(forms.Form):
         return newcase
     
     
-class InquiryResponseForm(forms.Form):
+class IssueResponseForm(forms.Form):
     forms.CharField(required=True, 
                               error_messages = {'required': 
                                                 'You must enter a message'}) 

@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 
-from ashandapp.forms.inquiry import NewInquiryForm
+from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
 
 from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member

@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     #careteam specific links
     url(r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.single', name='view-careteam'),
             
-    (r'^careteam/(?P<careteam_id>\d+)/new/inquiry$', 'ashandapp.views.cases.inquiry.new_inquiry'),
+    (r'^careteam/(?P<careteam_id>\d+)/new/question$', 'ashandapp.views.cases.question.new_question'),
     (r'^careteam/(?P<careteam_id>\d+)/new/issue$', 'ashandapp.views.cases.issue.new_issue'),
 
 )    

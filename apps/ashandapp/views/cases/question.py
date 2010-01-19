@@ -17,15 +17,15 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from ashandapp.forms.inquiry import NewInquiryForm
+from ashandapp.forms.question import NewQuestionForm
 
-def new_inquiry(request, careteam_id, template_name="ashandapp/activities/inquiry/new_inquiry.html"):
+def new_question(request, careteam_id, template_name="ashandapp/activities/question/new_question.html"):
     context = {}
     careteam=CareTeam.objects.get(id=careteam_id)
-    context['form'] = NewInquiryForm(careteam=careteam)
+    context['form'] = NewQuestionForm(careteam=careteam)
     
     if request.method == 'POST':
-        form = NewInquiryForm(data=request.POST, careteam=CareTeam.objects.get(id=careteam_id))
+        form = NewQuestionForm(data=request.POST, careteam=CareTeam.objects.get(id=careteam_id))
         if form.is_valid():
             newcase = form.get_case(request)
             newcase.save()

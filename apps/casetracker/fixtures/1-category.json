@@ -3,8 +3,8 @@
     "pk": 1, 
     "model": "casetracker.category", 
     "fields": {
-      "category": "Inquiry", 
-      "plural": "Inquiries", 
+      "category": "Question", 
+      "plural": "Questions", 
       "default_status": null
     }
   }, 
@@ -14,6 +14,51 @@
     "fields": {
       "category": "Issue", 
       "plural": "Issues", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Medication", 
+      "plural": "medications", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Appointment", 
+      "plural": "appointments", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Instruction", 
+      "plural": "instructions", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Laboratory", 
+      "plural": "laboratory", 
+      "default_status": null
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "Measurement", 
+      "plural": "measurements", 
       "default_status": null
     }
   }
