@@ -108,7 +108,9 @@ INSTALLED_APPS = (
     #'djcaching', # removing due to the fact that local dev enivornments without memecached puke
  #   'userprofile',
     'reversion',
+    'careplan',
     #'django_tables',
+    
     'django.contrib.admin',
 )
 

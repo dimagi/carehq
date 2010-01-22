@@ -166,16 +166,18 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
             
             elif edit_mode == CaseModelForm.EDIT_RESOLVE:
                 case.resolved_date = datetime.utcnow()
-                case.resolved_by = request.user
-                 
-            
+                case.resolved_by = request.user            
             
             case.save()
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
+        else:
+            context['form'] = form
         
     else:
         context['form'] = CaseModelForm(instance=context['case'], editor_user = request.user, mode=edit_mode)
-        return render_to_response(template_name, context,context_instance=RequestContext(request))
+    
+    
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 
 def grid_examples(request, template_name='casetracker/examples.html'):

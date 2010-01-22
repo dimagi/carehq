@@ -81,6 +81,34 @@ class EventActivityVerificationTest(TestCase):
         dbcase = Case.objects.all().get(description='i just changed it, foo')
         self.assertEqual(dbcase.id, case.id)        
         self.assertEqual(dbcase.orig_description, "this is a case made by the test case")
+    
+    def _makeCase(self, user):        
+        newcase = Case()
+        newcase.description = uuid.uuid1().hex
+        newcase.opened_by = user
+        newcase.assigned_date = datetime.utcnow()
+        newcase.assigned_to = user
+        
+        newcase.category = Category.objects.all()[0]
+        newcase.status = Status.objects.all()[0]
+        newcase.priority = Priority.objects.all()[0]
+        
+        newcase.save()
+        return newcase
+    
+    def testCaseCreateChildCases(self):
+        self.testCreateCase()
+        user = User.objects.get(username='mockuser')
+        case = Case.objects.all().get(description = "this is a case made by the test case")
+        CHILD_CASES=10
+        for num in range(0,CHILD_CASES):
+            newcase = self._makeCase(user)
+            newcase.parent_case = case
+            newcase.last_edit_by = user
+            newcase.save()
+            
+        self.assertEqual(case.child_cases.count(), CHILD_CASES)
+        
         
         
         

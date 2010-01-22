@@ -79,7 +79,7 @@ class Category(models.Model):
         Order
         Prescription    
     """
-    category = models.CharField(max_length=32)
+    category = models.SlugField()
     plural = models.CharField(max_length=32)    
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
     # handler_module = models.CharField(max_length=64, blank=True, null=True, 
@@ -101,11 +101,12 @@ class Priority(models.Model):
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
     """    
+    magnitude = models.IntegerField()
     description = models.CharField(max_length=32)
     default = models.BooleanField()    
     #objects = CachingManager()
     def __unicode__(self):
-        return "%d - %s" % (self.id, self.description)
+        return "%d - %s" % (self.magnitude, self.description)
 
     class Meta:
         verbose_name = "Priority Type"
@@ -118,8 +119,7 @@ class Status (models.Model):
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
     ie, a bug's status states will be fundamentally different from a Feature or Question.
-    """
-    
+    """    
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
@@ -156,11 +156,8 @@ class EventActivity(models.Model):
     
     email
     make a phone call
-    sms    
-        
-    """
-    
-    
+    sms         
+    """    
     name = models.TextField(max_length=64)
     summary = models.TextField(max_length=512)
     category = models.ForeignKey(Category) # different categories have different event types
@@ -198,7 +195,7 @@ class CaseEvent(models.Model):
     created_by = models.ForeignKey(User)        
     
     def save(self):   
-        if self.id == None:     
+        if self.created_date == None:     
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
             self.created_date = datetime.utcnow()                            
@@ -263,7 +260,7 @@ class Case(models.Model):
     assigned_to = models.ForeignKey(User, related_name="case_assigned_to", null=True, blank=True)   
     assigned_date = models.DateTimeField(null=True, blank=True)
     
-    parent_case = models.ForeignKey('self', null=True, blank=True)
+    parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
     
     @property
@@ -576,8 +573,7 @@ class GridPreference(models.Model):
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
     
     def __unicode__(self):
-        return "Grid Display Preference: %s" % self.filter.description
-    
+        return "Grid Display Preference: %s" % self.filter.description    
     
 
 
