@@ -232,8 +232,8 @@ def view_case(request, case_id, template_name='casetracker/view_case.html'):
     #the case_id lookups probably should NOT be used as a long term solution, use the uuid field.  keeping the ID field there
     #as per the django autoincrement for the time being, but long term for synchronization purposes, all events must be uuid'ed and 
     #queries must be guids.
-    thecase = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to').get(id=case_id)
-    context['events'] = CaseEvent.objects.filter(case=thecase)
+    thecase = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to','priority','category','status').get(id=case_id)
+    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
     context['case'] = thecase
     context['formatting'] = False
     context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='custom')

@@ -8,6 +8,7 @@ sys.path.append(os.path.join(filedir))
 sys.path.append(os.path.join(filedir,'apps'))
 sys.path.append(os.path.join(filedir,'contrib'))
 sys.path.append(os.path.join(filedir,'rapidsms','apps'))
+sys.path.append(os.path.join(filedir,'lib'))
 
 
 #rapidsms lib stuff

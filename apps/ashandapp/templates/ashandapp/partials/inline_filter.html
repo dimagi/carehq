@@ -6,10 +6,11 @@
 <th>{{col.name|capfirst}}</th>
 {%endfor %}
 </tr>
+{{filter.get_filter_queryset|length}}
 {% for case in filter.get_filter_queryset %}
 	<tr>
-	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-	{% for col in filter.gridpreference.display_columns.all %}
+	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.id}}</a></td>
+	{% for col in gridpreference.display_columns.all %}
 		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
 	{%endfor %}
 	</tr>

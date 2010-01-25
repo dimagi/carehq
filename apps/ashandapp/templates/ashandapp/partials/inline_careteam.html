@@ -3,7 +3,7 @@
 
 <div class="span-22"> <!-- careteam header -->
 	<div class="span-10">
-		<h3><a href="{% url view-careteam careteam.id %}">{{careteam.patient.first_name}} {{careteam.patient.last_name}}</a></h3>
+		<h3><a href="{% url view-careteam careteam.id %}">{{careteam.patient.last_name}}, {{careteam.patient.first_name}}</a></h3>
 	</div>
 	<div class="span-2 prepend-6">
 		<small><a href="{%url ashandapp.views.users.single careteam.patient.id %}">{%trans "profile"%}</a></small>
@@ -15,7 +15,9 @@
 	
 <div class="span-22 hidden" id="careteam_block_{{careteam.id}}">		
 	<div class="span-22">
-		<dl>				
+		<dl>			
+			<dt>{%trans "Primary Provider Contact:"%}</dt>
+				<dd>{{careteam.primary_provider}}</dd>
 			<dt>{%trans "DOB:"%}</dt>
 				<dd>{{careteam.patient_obj.dob|date}}</dd>
 			<dt>{%trans "Sex:"%}</dt>

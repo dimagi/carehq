@@ -54,7 +54,7 @@ def my_patients(request, template_name='ashandapp/my_patients.html'):
     View for providers caring for multiple patients.
     """
     context = {}    
-    careteam_membership = CareTeam.objects.select_related().filter(providers=request.provider)        
+    careteam_membership = CareTeam.objects.select_related().filter(providers=request.provider).order_by('patient__last_name')
     context['my_patients'] = careteam_membership    
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 

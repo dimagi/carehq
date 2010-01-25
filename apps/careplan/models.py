@@ -15,6 +15,16 @@ def make_time():
     return datetime.utcnow()
 
 
+class TemplatePlanItemLink(models.Model):
+    plan = models.ForeignKey("BasePlan")
+    item = models.ForeignKey("BasePlanItem")
+    order = models.PositiveIntegerField()
+    
+class CarePlanItemLink(models.Model):
+    plan = models.ForeignKey("CarePlan")
+    item = models.ForeignKey("PlanItem")
+    order = models.PositiveIntegerField()
+
 #make this a reversion counter
 class BasePlan(models.Model):
     """Main Container for the care plan and is the actual instance that links
@@ -30,7 +40,7 @@ class BasePlan(models.Model):
     version = models.PositiveIntegerField(default=1)
         
     title = models.CharField(max_length=160)
-    plan_items = models.ManyToManyField("BasePlanItem") #make this a through?
+    plan_items = models.ManyToManyField("BasePlanItem", through=TemplatePlanItemLink) #make this a through?
     
     created_by = models.ForeignKey(User, blank=True, null=True, related_name='baseplan_created_by')
     created_date = models.DateTimeField(default=make_time)
@@ -40,6 +50,11 @@ class BasePlan(models.Model):
     
     def __unicode__(self):
         return "[Plan Template] %s" % (self.title)
+    
+    class Meta:
+        verbose_name = "Base Plan"
+        verbose_name_plural = "Base Plans"
+        ordering = ['title','created_date']
 
 
 class PlanCategory(models.Model):
@@ -52,6 +67,11 @@ class PlanCategory(models.Model):
     
     def __unicode__(self):
         return "[Category] " + self.name
+    
+    class Meta:
+        verbose_name = "Plan Category"
+        verbose_name_plural = "Plan Categories"
+        ordering = ['name']
 
 
 class PlanTag(models.Model):
@@ -62,10 +82,16 @@ class PlanTag(models.Model):
     
     def __unicode__(self):
         return self.tag
+    
+    class Meta:
+        verbose_name = "Plan Tag Metadata"
+        verbose_name_plural = "Plan Tags"
+        
 
 
 class BasePlanItem(models.Model):
     """Substantive actionable items within a careplan.  ie, take medication directly.  """
+    id = models.CharField(_('BasePlan Item Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     name = models.CharField(max_length=160)
     category = models.ManyToManyField(PlanCategory, related_name="baseplan_category", null=True, blank=True)    
     tags = models.ManyToManyField(PlanTag, blank=True, null=True)
@@ -90,6 +116,11 @@ class BasePlanItem(models.Model):
     def __unicode__(self):
         return self.name  
     
+    class Meta:
+        verbose_name = "Base Plan Item"
+        verbose_name_plural = "Base Plan Items"
+        ordering = ['name']
+    
     
 class PlanRule(models.Model):
     """
@@ -101,6 +132,11 @@ class PlanRule(models.Model):
     description = models.TextField()
     module = models.CharField(max_length=255)
     method = models.CharField(max_length=128)
+    
+    class Meta:
+        verbose_name = "Plan Rule"
+        verbose_name_plural = "Plan Rules"
+        ordering = ['name',]
 
 
 #section, specific instances of careplans.
@@ -111,6 +147,7 @@ class CarePlanCaseLink(models.Model):
 class PlanItem(models.Model):
     
     #subclassing PlanItem makes it tricky with the foriegnkey parentage, so we're copying verbatim
+    id = models.CharField(_('Plan Item Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True)
     name = models.CharField(max_length=160)
     category = models.ManyToManyField(PlanCategory, related_name="planitem_category", null=True, blank=True)    
     tags = models.ManyToManyField(PlanTag, null=True, blank=True)
@@ -122,6 +159,11 @@ class PlanItem(models.Model):
                                       related_name='baseplan_inheritors')
     def __unicode__(self):
         return "[Template Item] " + self.name
+    
+    class Meta:
+        verbose_name = "Care Plan Instance Item"
+        verbose_name_plural = "Care Plan Instance Items"
+        ordering = ['name']
 
 
     #@staticmethod
@@ -159,7 +201,7 @@ class CarePlan(models.Model):
     version = models.PositiveIntegerField(default=1)
         
     title = models.CharField(max_length=160)
-    plan_items = models.ManyToManyField("PlanItem") #overide the base classes definition
+    plan_items = models.ManyToManyField("PlanItem", through=CarePlanItemLink) #overide the base classes definition
     
     created_by = models.ForeignKey(User, blank=True, null=True, related_name='careplan_created_by')
     created_date = models.DateTimeField(default=make_time)
@@ -169,6 +211,11 @@ class CarePlan(models.Model):
     
     def __unicode__(self):
         return "[Care Plan] %s" % (self.title)
+    
+    class Meta:
+        verbose_name = "Care Plan Instance"
+        verbose_name_plural = "Care Plan Instances"
+        ordering = ['title','modified_date']
     
     @classmethod
     def create_from_template(base_plan, save=False, creator_user=None):
