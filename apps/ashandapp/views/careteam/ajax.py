@@ -27,5 +27,5 @@ def view_careteam_cases(request, careteam_id, template_name="ashandapp/careteam/
     careteam = CareTeam.objects.get(id=careteam_id)
     cases = careteam.cases.all()
     context['cases'] = cases    
-    context['patient']= Patient.objects.get(user=careteam.patient)    
+    context['patient']= careteam.patient    
     return render_to_response(template_name, context, context_instance=RequestContext(request))

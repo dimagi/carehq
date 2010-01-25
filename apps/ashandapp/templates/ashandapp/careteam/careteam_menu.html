@@ -7,12 +7,12 @@ the idea is that the careteam_menu should exist on top when within the context o
 
 <div class="span-20"> <!-- careteam header -->
 	<div class="span-3">
-		<h4><a href="{% url view-careteam current_careteam.id %}">{{current_careteam.patient.first_name}} {{current_careteam.patient.last_name}}</a></h4>
+		<h4><a href="{% url view-careteam current_careteam.id %}">{{current_careteam.patient.user.first_name}} {{current_careteam.patient.user.last_name}}</a></h4>
 	</div>
 	<div class="span-17 last">		
 		<div id="modernbricksmenu">
 			<ul>
-				<li><a href="{%url ashandapp.views.users.single current_careteam.patient.id %}">{%trans "profile"%}</a></li>
+				<li><a href="{%url ashandapp.views.users.single current_careteam.patient.user.id %}">{%trans "profile"%}</a></li>
 				<li><a href="">Cases</a></li>
 				<li><a href="">Care Plan</a></li>
 				<li><a id="careteam_flipper_{{current_careteam.id}}" href="javascript:toggle_careteam_block('{{ current_careteam.id }}_menu')">Show details</a></li>							
@@ -25,9 +25,9 @@ the idea is that the careteam_menu should exist on top when within the context o
 	<div class="span-20">
 		<dl>				
 			<dt>{%trans "DOB:"%}</dt>
-				<dd>{{current_careteam.patient_obj.dob|date}}</dd>
+				<dd>{{current_careteam.patient.dob|date}}</dd>
 			<dt>{%trans "Sex:"%}</dt>
-				<dd>{{current_careteam.patient_obj.get_sex_display}}</dd>
+				<dd>{{current_careteam.patient.get_sex_display}}</dd>
 		</dl>	
 	</div>
 	

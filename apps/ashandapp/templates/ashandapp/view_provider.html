@@ -26,7 +26,7 @@
 {% endif %}
 
 
-
+{%comment %}
 <div class="span-20">
 <h2>Cases</h2>
 {#{% include "casetracker/partials/cases_ul.html" %}#}
@@ -36,10 +36,10 @@
 <h2>Patients</h2>
 <ul>
 {% for team in careteams %}
-	<li> <a href="{%url ashandapp.views.users.single team.patient.id%}"> {{team.patient}}</a></li>
+	<li> <a href="{%url ashandapp.views.users.single team.patient.user.id%}"> {{team.patient}}</a></li>
 {% endfor %}
 </ul>
 </div>
-
+{%endcomment %}
 
 {% endblock %}

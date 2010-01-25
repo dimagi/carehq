@@ -14,14 +14,14 @@ urlpatterns = patterns('',
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
     url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
     
-    (r'^careteamtab/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.tabbed.view_careteam'),
-    url(r'^careteamtab/(?P<careteam_id>\d+)/ajax/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='show-cases-ajax'),
+    (r'^careteamtab/(?P<careteam_id>[0-9a-f]{32})$', 'ashandapp.views.careteam.tabbed.view_careteam'),
+    url(r'^careteamtab/(?P<careteam_id>[0-9a-f]{32})/ajax/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='show-cases-ajax'),
     
     #careteam specific links
-    url(r'^careteam/(?P<careteam_id>\d+)$', 'ashandapp.views.careteam.single', name='view-careteam'),
+    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})$', 'ashandapp.views.careteam.single', name='view-careteam'),
             
-    (r'^careteam/(?P<careteam_id>\d+)/new/question$', 'ashandapp.views.cases.question.new_question'),
-    (r'^careteam/(?P<careteam_id>\d+)/new/issue$', 'ashandapp.views.cases.issue.new_issue'),
+    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/question$', 'ashandapp.views.cases.question.new_question'),
+    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/issue$', 'ashandapp.views.cases.issue.new_issue'),
 
 )    
     

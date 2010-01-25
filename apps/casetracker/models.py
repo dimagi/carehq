@@ -3,6 +3,9 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
 from datetime import datetime, timedelta
 from middleware import threadlocals
 
@@ -106,7 +109,7 @@ class Priority(CachedModel):
     default = models.BooleanField()    
     objects = CachingManager()
     def __unicode__(self):
-        return "%d - %s" % (self.magnitude, self.description)
+        return "%d" % (self.magnitude)
 
     class Meta:
         verbose_name = "Priority Type"
@@ -261,7 +264,11 @@ class Case(CachedModel):
     assigned_date = models.DateTimeField(null=True, blank=True)
     
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
-    
+
+    #generic linkage to arbitrary objects
+    object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
+    object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
+    content_object = generic.GenericForeignKey('object_type', 'object_uuid')
     
     @property
     def last_case_event(self):
@@ -523,8 +530,11 @@ class GridColumn(models.Model):
     """
     The gridcolumn is the main, flat store for all columns that could be used in a grid.
     
-    It's flat, the name of the column is directly used in the DataGrid column selector and sort criteria.
+    It's flat, the name of the column is directly used in the Case column selector and sort criteria.
     So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
+    
+    In other words, the GridColumn's name MUST be a property of case and casefilter for it to be useful.
+    
     """
     name = models.CharField(max_length=32)
     def __unicode__(self):
@@ -534,7 +544,10 @@ class GridColumn(models.Model):
 class GridSort(models.Model):
     """
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
-    when using the column as a sorting column.  In reprsentation it'll beither be name or -name.
+    when using the column as a sorting column.  In representation it'll be either be name or -name.
+    
+    The gridcolumn presents the actual case property of the Case queryset you pass into the ordering() method.
+    The filter queryset will be built using these strings.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
@@ -558,6 +571,9 @@ class GridOrder (models.Model):
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
     when using the column as a column for display.  This tells us which columns will be arranged in what order
     for display on the DataGrid.
+    
+    The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
+    in this through model.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")

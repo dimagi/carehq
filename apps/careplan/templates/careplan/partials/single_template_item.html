@@ -11,6 +11,12 @@
         {% for cat in base_plan_item.category.all %}
             <dd>{{cat}}</dd>
         {%endfor%}
+    {% if base_plan_item.parent %}
+    <dt>Parent Item:</dt>
+        <dd>
+            <a href="{% url careplan.views.view_template_item base_plan_item.parent.id %}">{{base_plan_item.parent}}</a></dd>
+    {% endif %}
+    
     {% if show_children %}    
     <dt>Sub Items:</dt>
         {% for subitem in base_plan_item.child_base_plans.all %}   
@@ -21,9 +27,8 @@
                 </div>
                 {%endwith %}        
             {%endwith %}
-        {% endfor %}
-    
-    {%endif %}        
+        {% endfor %}    
+    {%endif %}  
 </dl>
 </div>
      

@@ -18,7 +18,7 @@ def view_careteam(request, careteam_id, template_name="ashandapp/view_careteam_t
     context['careteam'] = careteam                
     cases = careteam.cases.all()
     context['cases'] = cases    
-    context['patient']= Patient.objects.get(user=careteam.patient)
+    context['patient']= careteam.patient
     context['careplan'] = """Lorem ipsum dolor sit amet,  Nulla nec tortor. Donec id elit quis purus consectetur consequat. 
                             Nam congue semper tellus. Sed erat dolor, dapibus sit amet, venenatis ornare, ultrices ut, nisi. Aliquam ante. Suspendisse scelerisque dui nec velit. 
                             Duis augue augue, gravida euismod, vulputate ac, facilisis id, sem.  Morbi in orci. Nulla purus lacus, pulvinar vel, malesuada ac, mattis nec, quam. 

@@ -12,6 +12,9 @@ import uuid
 from djcaching.models import CachedModel
 from djcaching.managers import CachingManager
 
+def make_uuid():
+    return uuid.uuid1().hex
+
 
 GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 # Create your models here.
@@ -40,6 +43,7 @@ class ProviderRole(models.Model):
     Define a particular providers' role for the given patient.  This is different from their actual title
     Though the actual roles may need to be made into their own model
     """
+    
     ROLE_CHOICES = (
                       ('oncologist', 'Oncologist'),
                       ('pcp', 'Primary Care Physician'),
@@ -51,6 +55,8 @@ class ProviderRole(models.Model):
                       ('lab', 'Laboratory'),
                       ('other', 'Other'),
                       )
+    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     role = models.CharField(choices = ROLE_CHOICES, max_length=32)
     role_description = models.CharField(max_length=64, null=True, blank=True) 
     notes = models.CharField(max_length=512, null=True, blank=True)
@@ -65,6 +71,8 @@ class ProviderLink(CachedModel):
     """
     Simple link of a provider object to a careteam.
     """
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    
     objects = CachingManager()
     
     careteam = models.ForeignKey("CareTeam")
@@ -104,6 +112,8 @@ class CareRelationship(CachedModel):
                       ('other', 'Other'),
     )    
     objects = CachingManager()
+    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     relationship_type = models.CharField(choices=RELATIONSHIP_CHOICES,max_length=32)    
     other_description = models.CharField(max_length=64, null=True, blank=True) 
     notes = models.CharField(max_length=512, null=True, blank=True)
@@ -116,7 +126,10 @@ class CaregiverLink(CachedModel):
     """
     The actual link for a user object to be come a caregiver.
     """
+    
     objects = CachingManager()
+    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey("CareTeam")
     user = models.ForeignKey(User, related_name="caregiverlink_user")
     relationship = models.ForeignKey(CareRelationship)
@@ -132,6 +145,7 @@ class CareTeamCaseLink(models.Model):
     """
     This is a through model to facilitate the querying of cases in a careteam.
     """
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey('CareTeam')
     case = models.ForeignKey(Case)
 
@@ -144,7 +158,9 @@ class CareTeam(CachedModel):
     Cases for this patient will be linked as well thorugh this model.
     """
     objects = CachingManager()
-    patient = models.ForeignKey(User, related_name='careteam_patient_user')
+    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    patient = models.ForeignKey(Patient, related_name='my_careteam')
     providers = models.ManyToManyField(Provider, through='ProviderLink', related_name="careteam_providers")
     caregivers = models.ManyToManyField(User, through='CaregiverLink', related_name="careteam_caregiver_users")
     cases = models.ManyToManyField(Case, through='CareTeamCaseLink')
@@ -176,11 +192,6 @@ class CareTeam(CachedModel):
             self._primary_provider = None
         
         return self._primary_provider
-            
-    
-    @property
-    def patient_obj(self):
-        return Patient.objects.select_related().get(user=self.patient)
     
     @property
     def provider_data(self):
@@ -213,6 +224,6 @@ class CareTeam(CachedModel):
     
     def __unicode__(self):
         if not hasattr(self, '_stringname'):            
-            self._stringname = "Careteam for %s" % self.patient.username
+            self._stringname = "Careteam for %s" % self.patient.user.username
         return self._stringname
     

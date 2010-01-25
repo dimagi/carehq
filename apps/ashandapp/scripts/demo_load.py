@@ -97,7 +97,7 @@ def set_random_identifiers(patient):
 def create_careteam(patient):
     print "\tCreate care team for patient %s" % patient.user
     team = CareTeam()
-    team.patient = patient.user    
+    team.patient = patient   
     team.save()
     total_providers = random.randint(0,PROVIDERS_PER_PATIENT)
     all_providers = Provider.objects.all().values_list('id', flat=True)
@@ -196,8 +196,7 @@ def run():
     #Demo loading script!
     
     #reset the database
-    import time
-    #call_command('reset_db', interactive=False)    
+    call_command('reset_db', interactive=False)    
     call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
@@ -210,6 +209,8 @@ def run():
     call_command('loaddata', 'build-example_filters.json')
         
     call_command('loaddata', 'demo-identifiers.json')    
+    call_command('loaddata', 'careplan-templates.json')
+    
     
     #create patients    
     for ptarr in patient_arr:
@@ -236,7 +237,7 @@ def run():
     for team in CareTeam.objects.all():        
         provs = team.providers.all()
         caregivers = team.caregivers.all()
-        users = [team.patient]
+        users = [team.patient.user]
         #get the user objects from the providers on this careteam
         for prov in provs:
             #when you do an all on the providers, provider objects, so we need to flip over to the User instead.

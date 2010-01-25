@@ -28,7 +28,7 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
                 
     cases = careteam.cases.all()
     context['cases'] = cases    
-    context['patient']= Patient.objects.get(user=careteam.patient)
+    context['patient']= careteam.patient
     
     provider_links_raw = careteam.providerlink_set.all()
     provider_dict = {}

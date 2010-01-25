@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-
+{% comment %}
 <div class="span-24">
 <h2>Care Team</h2>
 {%with current_careteam as careteam %}
@@ -14,13 +14,14 @@
 {%endwith%}
 </div>
 
+{% endcomment %}
 
 <h2>Actions</h2>
-<ul>
+<ul class="nav">
 <li><a href="{%url ashandapp.views.cases.question.new_question current_careteam.id %}">New Question</a></li>
 <li><a href="{%url ashandapp.views.cases.issue.new_issue current_careteam.id %}">New Issue</a></li>
 </ul>
-<div class="span-19">
+<div class="span-24">
 <h2>Active Cases</h2>
 {% include "ashandapp/partials/active_case.html" %}
 </div>
