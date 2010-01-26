@@ -404,7 +404,6 @@ class Filter(models.Model):
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
     #http://stackoverflow.com/questions/353489/cleaner-way-to-query-on-a-dynamic-number-of-columns-in-django
        
-    #separate parameter - if true returns two arrays for pending and completed case displays
     def get_filter_queryset(self):
         """
         On a given filter instance, we will generate a query set by applying all the FKs as query objects

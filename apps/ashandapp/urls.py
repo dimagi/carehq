@@ -9,6 +9,8 @@ urlpatterns = patterns('',
     
     #main navigation tabs
     url(r'^$', 'ashandapp.views.dashboard.my_dashboard', name='my_dashboard'),
+    url(r'^tabbed/$', 'ashandapp.views.dashboard.my_dashboard_tab', name='my_dashboard_tab'),
+    url(r'^tabbed/json/$', 'ashandapp.views.dashboard.get_json_for_paging', name='json_string'),
     url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),
     url(r'^careteam/mine/$', 'ashandapp.views.careteam.network.my_careteam', name='my_careteam'),
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
