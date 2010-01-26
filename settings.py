@@ -105,7 +105,7 @@ INSTALLED_APPS = (
     'djblets.feedview',
     'djblets.siteconfig',
     'djblets.webapi',
-    #'djcaching', # removing due to the fact that local dev enivornments without memecached puke
+    'djcaching', # removing due to the fact that local dev enivornments without memecached puke
  #   'userprofile',
     'reversion',
     'careplan',
