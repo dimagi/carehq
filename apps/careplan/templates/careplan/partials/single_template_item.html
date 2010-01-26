@@ -1,34 +1,42 @@
-<div class="span-10">
-<h3>
-    <a href="{% url careplan.views.view_template_item base_plan_item.id %}">
-    {{base_plan_item.name}}</a>
-</h3>
-
-<dl>
-    <dt>Description:</dt>
-    <dd>{{base_plan_item.description}}</dd>
-    <dt>Categories:</dt>
-        {% for cat in base_plan_item.category.all %}
-            <dd>{{cat}}</dd>
-        {%endfor%}
-    {% if base_plan_item.parent %}
-    <dt>Parent Item:</dt>
-        <dd>
-            <a href="{% url careplan.views.view_template_item base_plan_item.parent.id %}">{{base_plan_item.parent}}</a></dd>
-    {% endif %}
+<div class="span-16">
+    <div class="span-16">
+        <div class="span-6">
+            <div class="span-6">
+                <h3>
+                    <a href="{% url careplan.views.view_template_item base_plan_item.id %}">{{base_plan_item.name}}</a>
+                </h3>
+            </div>
+            {% if not show_children %}
+                <div class="span-5 prepend-1">
+                {% if base_plan_item.parent %}
+                    <p em>Subitem of <a href="{% url careplan.views.view_template_item base_plan_item.parent.id %}">{{base_plan_item.parent}}</a></em>    
+                {% endif %}            
+                </div>
+            {% endif %}
+        </div>        
+        <div class="span-5">
+            <strong>Description</strong><br>
+            {{base_plan_item.description}}
+        </div>
+        <div class="span-5 last">
+            <strong>Categories</strong><br>
+            {% for cat in base_plan_item.category.all %}
+                {{cat}}<br>
+            {%endfor%}        
+        </div>
+    </div>
     
     {% if show_children %}    
-    <dt>Sub Items:</dt>
-        {% for subitem in base_plan_item.child_base_plans.all %}   
+    <div class="span-14 prepend-2">
+                
+        {% for subitem in base_plan_item.child_base_plans.all %}           
             {% with "careplan/partials/single_template_item.html" as recurse_template %}            
                 {% with subitem as base_plan_item %}
-                <div class="prepend-2">
                     {% include  recurse_template %}
-                </div>
                 {%endwith %}        
             {%endwith %}
-        {% endfor %}    
-    {%endif %}  
-</dl>
+        {% endfor %}            
+    </div>
+    {%endif %}
 </div>
      
