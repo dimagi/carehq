@@ -19,6 +19,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
+from ashandapp.templatetags.filter_tags import case_column
 
 @login_required
 def get_json_for_paging(request):
@@ -68,14 +69,14 @@ def get_json_for_paging(request):
     #adding user
     for case in display_filter:
         json_string += "["
-        json_string += "\"%s %s\"," % (case.careteam_set.get().patient.first_name, case.careteam_set.get().patient.last_name)
+        json_string += "\"%s %s\"," % (case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
         for col in filter.gridpreference.display_columns.all():
-            json_string +=  "\"%s\"," % getattr(case, col.name)
+            json_string +=  "\"%s\"," % case_column(case, col.name)
         json_string += "],"
   
     #closing json_string
     json_string += "] }"
-    
+
     return HttpResponse(json_string)
 
 @login_required
@@ -136,6 +137,7 @@ def my_dashboard_tab(request, template_name="ashandapp/test.html"):
                 
         careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
         context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)  
+        
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 @login_required
