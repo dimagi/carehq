@@ -2,7 +2,14 @@
 {% load i18n %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block extrahead %}
-
+<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.7.2.custom.css" type="text/css">
+<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript"> 
+			$(function(){				
+				// Tabs
+				$('#tabs').tabs();
+				});
+</script> 
 {% endblock %}
 
 {% block content %}
@@ -13,16 +20,13 @@
 {% endcomment %}
 
 <h3>Case Filters</h3>
-<div class="nav span-24 append-bottom">
+
+
+<div id="tabs" class="span-24"> 
 	<ul>
 	{% for filter in shared_filters %}
-		<li><a href="{% url my_dashboard %}?filter={{filter.id}}">{{filter.description}}</a></li>
+		<li><a href="{% url my_dashboard_tab %}?filter={{filter.id}}">{{filter.description}}</a></li>
 	{% endfor %}	
 	</ul>
-</div>
-<h3>{{display_filter.description}}</h3>
-{% with display_filter as filter %}
-	{% include "ashandapp/partials/inline_filter.html" %}
-{% endwith %}
-
 {% endblock %}
+</div>
