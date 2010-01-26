@@ -29,7 +29,7 @@ def get_json_for_paging(request):
     display_filter = None    
     start_index = None
     length = None
-    
+
     try:
         profile = CaseProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
