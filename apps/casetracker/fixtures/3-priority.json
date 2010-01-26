@@ -3,6 +3,7 @@
     "pk": 1, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 1,
       "default": 0, 
       "description": "Critical"
     }
@@ -11,6 +12,7 @@
     "pk": 2, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 2,
       "default": 0, 
       "description": "Serious"
     }
@@ -19,6 +21,7 @@
     "pk": 3, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 3,
       "default": 1, 
       "description": "Will Do"
     }
@@ -27,6 +30,7 @@
     "pk": 4, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 4,
       "default": 0, 
       "description": "Need in Future"
     }
@@ -35,6 +39,7 @@
     "pk": 5, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 5,
       "default": 0, 
       "description": "Helpful in Future"
     }
@@ -43,6 +48,7 @@
     "pk": 6, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 6,
       "default": 0, 
       "description": "Address If Time"
     }
@@ -51,6 +57,7 @@
     "pk": 7, 
     "model": "casetracker.priority", 
     "fields": {
+      "magnitude": 7,
       "default": 0, 
       "description": "TBD"
     }

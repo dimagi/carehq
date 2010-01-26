@@ -5,9 +5,7 @@
 {% block content %}
 <h1> Ask a question</h1>
 <form action="" method="POST">
-<table>
-{{ form.as_table }}
-</table>
+{% include "ashandapp/partials/inline_form.html" %}
 <input type="submit" value="Submit" />
 </form>
 {% endblock %}

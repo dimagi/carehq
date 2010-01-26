@@ -3,11 +3,14 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+
 from datetime import datetime, timedelta
 from middleware import threadlocals
 
-#from djcaching.models import CachedModel
-#from djcaching.managers import CachingManager
+from djcaching.models import CachedModel
+from djcaching.managers import CachingManager
 from django.core.urlresolvers import reverse
 import uuid
 from django.utils.translation import ugettext_lazy as _
@@ -37,8 +40,8 @@ CASE_STATES = (
         ('close', 'Closed'),        
 )
 
-class CaseAction(models.Model):
-#class CaseAction(CachedModel):
+#class CaseAction(models.Model):
+class CaseAction(CachedModel):
     """
     A case action is a descriptor for capturing the types of actions you can actuate upon a case.
     These are linked to a case to describe the desired NEXT action to take upon a case.
@@ -54,7 +57,7 @@ class CaseAction(models.Model):
     """
     description = models.CharField(max_length=64)
     #date_bound = models.BooleanField() # does this seem necessary - all cases seem date bound
-#    objects = CachingManager()
+    objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
     
@@ -63,8 +66,8 @@ class CaseAction(models.Model):
         verbose_name_plural = "Case Action Types"
 
     
-class Category(models.Model):
-#class Category(CachedModel):
+#class Category(models.Model):
+class Category(CachedModel):
 
     """A category tries to capture the original nature of the opened case
     
@@ -79,13 +82,13 @@ class Category(models.Model):
         Order
         Prescription    
     """
-    category = models.CharField(max_length=32)
+    category = models.SlugField()
     plural = models.CharField(max_length=32)    
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
     # handler_module = models.CharField(max_length=64, blank=True, null=True, 
     #                               help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
-#    objects = CachingManager()
+    objects = CachingManager()
     
     
     def __unicode__(self):
@@ -95,17 +98,18 @@ class Category(models.Model):
         verbose_name_plural = "Category Types"
 
     
-class Priority(models.Model):
-#class Priority(CachedModel):
+#class Priority(models.Model):
+class Priority(CachedModel):
     """
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
     """    
+    magnitude = models.IntegerField()
     description = models.CharField(max_length=32)
     default = models.BooleanField()    
-    #objects = CachingManager()
+    objects = CachingManager()
     def __unicode__(self):
-        return "%d - %s" % (self.id, self.description)
+        return "%d" % (self.magnitude)
 
     class Meta:
         verbose_name = "Priority Type"
@@ -118,8 +122,7 @@ class Status (models.Model):
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
     ie, a bug's status states will be fundamentally different from a Feature or Question.
-    """
-    
+    """    
     description = models.CharField(max_length=64)
     category = models.ForeignKey(Category)
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
@@ -142,8 +145,8 @@ class Status (models.Model):
     
 
 
-class EventActivity(models.Model):
-#class EventActivity(CachedModel):
+#class EventActivity(models.Model):
+class EventActivity(CachedModel):
     """
     An Event Activity describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
@@ -156,11 +159,8 @@ class EventActivity(models.Model):
     
     email
     make a phone call
-    sms    
-        
-    """
-    
-    
+    sms         
+    """    
     name = models.TextField(max_length=64)
     summary = models.TextField(max_length=512)
     category = models.ForeignKey(Category) # different categories have different event types
@@ -168,7 +168,7 @@ class EventActivity(models.Model):
     
     event_class = models.TextField(max_length=24, choices=CASE_EVENT_CHOICES)
     
- #   objects = CachingManager()
+    objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.name)
@@ -198,7 +198,7 @@ class CaseEvent(models.Model):
     created_by = models.ForeignKey(User)        
     
     def save(self):   
-        if self.id == None:     
+        if self.created_date == None:     
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
             self.created_date = datetime.utcnow()                            
@@ -215,8 +215,8 @@ class CaseEvent(models.Model):
 
    
 
-class Case(models.Model):
-#class Case(CachedModel):
+#class Case(models.Model):
+class Case(CachedModel):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
     
@@ -231,7 +231,7 @@ class Case(models.Model):
     and potentially be the primary key should be a top priority.    
     """    
     
-    #objects = CachingManager()
+    objects = CachingManager()
     id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     
     description = models.CharField(max_length=160)
@@ -263,8 +263,12 @@ class Case(models.Model):
     assigned_to = models.ForeignKey(User, related_name="case_assigned_to", null=True, blank=True)   
     assigned_date = models.DateTimeField(null=True, blank=True)
     
-    parent_case = models.ForeignKey('self', null=True, blank=True)
-    
+    parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
+
+    #generic linkage to arbitrary objects
+    object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
+    object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
+    content_object = generic.GenericForeignKey('object_type', 'object_uuid')
     
     @property
     def last_case_event(self):
@@ -398,7 +402,7 @@ class Filter(models.Model):
     last_event_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(User, null=True, blank=True)
     
-    
+        
     #this should come in as a dictionary of key-value pairs that are compatible with a 
     #django query when resolved as a kwargs.
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
@@ -491,7 +495,7 @@ class Filter(models.Model):
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
 
         #now, we got the queries built up, let's run the queries                
-        cases = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to').all()        
+        cases = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to','status','category','priority','carteam_set').all()        
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
@@ -525,8 +529,11 @@ class GridColumn(models.Model):
     """
     The gridcolumn is the main, flat store for all columns that could be used in a grid.
     
-    It's flat, the name of the column is directly used in the DataGrid column selector and sort criteria.
+    It's flat, the name of the column is directly used in the Case column selector and sort criteria.
     So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
+    
+    In other words, the GridColumn's name MUST be a property of case and casefilter for it to be useful.
+    
     """
     name = models.CharField(max_length=32)
     def __unicode__(self):
@@ -536,7 +543,10 @@ class GridColumn(models.Model):
 class GridSort(models.Model):
     """
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
-    when using the column as a sorting column.  In reprsentation it'll beither be name or -name.
+    when using the column as a sorting column.  In representation it'll be either be name or -name.
+    
+    The gridcolumn presents the actual case property of the Case queryset you pass into the ordering() method.
+    The filter queryset will be built using these strings.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
@@ -560,6 +570,9 @@ class GridOrder (models.Model):
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
     when using the column as a column for display.  This tells us which columns will be arranged in what order
     for display on the DataGrid.
+    
+    The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
+    in this through model.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")
@@ -567,16 +580,15 @@ class GridOrder (models.Model):
 
 class GridPreference(models.Model):
     """
-    A filter will have a one to one mapping to this model for showing how to display the given grid.
-    
+    A filter will have a one to one mapping to this model for showing how to display the given grid.    
     """
-    filter = models.OneToOneField(Filter) #this could be just a foreign key and have multiple preferences to a given filter.
+    filter = models.OneToOneField(Filter, related_name='gridpreference') #this could be just a foreign key and have multiple preferences to a given filter.
+    
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
     
     def __unicode__(self):
-        return "Grid Display Preference: %s" % self.filter.description
-    
+        return "Grid Display Preference: %s" % self.filter.description    
     
 
 

@@ -65,7 +65,7 @@ def single(request, user_id=None):
         context['selected_is_patient'] = False
     
     if context['selected_is_patient']:        
-        careteam = CareTeam.objects.get(patient=user)
+        careteam = CareTeam.objects.get(patient__user=user)
         context['selected_careteam'] = careteam
         
         #now see what the request.user's relationship is to the patient
@@ -93,7 +93,7 @@ def single(request, user_id=None):
                 context['events'] = sorted_dic
                 context['formatting'] = True
                               
-            cases = CareTeam.objects.get(patient=user).cases.all()  
+            cases = CareTeam.objects.get(patient__user=user).cases.all()  
             context['cases'] = cases    
 
     

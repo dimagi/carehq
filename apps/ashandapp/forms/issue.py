@@ -33,7 +33,8 @@ class NewIssueForm(forms.Form):
     
     def __init__(self, careteam=None, *args, **kwargs):
         super(NewIssueForm, self).__init__(*args, **kwargs)
-        #self.careteam = careteam
+        if careteam != None:
+            self._careteam = careteam
         
     
     def clean(self):
@@ -49,6 +50,9 @@ class NewIssueForm(forms.Form):
         newcase.status = Status.objects.filter(category=newcase.category).get(description='Active')
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
+        
+        newcase.assigned_to = self._careteam.primary_provider
+        newcase.assigned_date = datetime.utcnow()
         
         return newcase
     

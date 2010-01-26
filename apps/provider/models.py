@@ -4,29 +4,33 @@ from django.utils.translation import ugettext_lazy as _
 import uuid
 from django.contrib.auth.models import User
 
-#from djcaching.models import CachedModel
-#from djcaching.managers import CachingManager
+from djcaching.models import CachedModel
+from djcaching.managers import CachingManager
+
+def make_uuid():
+    return uuid.uuid1().hex
 
 
-class Provider(models.Model):
-#class Provider(CachedModel):
+
+#class Provider(models.Model):
+class Provider(CachedModel):
     """
     In this current iteration, the provider is *really* dumb and simple.
     """
+    
+    id = models.CharField(_('Provider Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    
     user = models.ForeignKey(User, related_name='provider_user') #note, you can be multiple providers for a given user.
-    uuid = models.CharField(_('Unique provider guid'), 
-                                        max_length=32, unique=True, editable=False)
+
     #lame example fields
     job_title = models.CharField(max_length=64)
     affiliation = models.CharField(max_length=64) #am guessing that a providers' affiliations should be FK'ed if they need to be diversified.
     
- #   objects = CachingManager()
+    objects = CachingManager()
     
     def __unicode__(self):
         return "%s %s" % (self.user.first_name, self.user.last_name)
     
     
     def save(self):
-        if self.id == None:
-            self.uuid = uuid.uuid1().hex
         super(Provider, self).save()

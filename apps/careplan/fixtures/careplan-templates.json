@@ -1,0 +1,536 @@
+[
+  {
+    "pk": 4, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Appointments", 
+      "description": "Appointment categories"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Care Goal", 
+      "description": "care goals"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Dietary", 
+      "description": "asdfqwer"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Fitness", 
+      "description": "adsfasdf"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Laboratory", 
+      "description": "lab care plan items"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Medication", 
+      "description": "stuff about medication"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Mental Health", 
+      "description": "possible sources of mental duress"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Patient Instructions", 
+      "description": "Instructions fro patient"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Side Effect Management", 
+      "description": "asdfqwer"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "careplan.plancategory", 
+    "fields": {
+      "name": "Symptoms", 
+      "description": "Symptoms"
+    }
+  }, 
+  {
+    "pk": "f35632ac076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        3
+      ], 
+      "tags": [], 
+      "name": "Adherence", 
+      "parent": "f35632c1076c11dfa56d001641e25144", 
+      "description": "Adherence goals"
+    }
+  }, 
+  {
+    "pk": "f35632ad076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        9
+      ], 
+      "tags": [], 
+      "name": "Anxiety", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Sources of Anxiety"
+    }
+  }, 
+  {
+    "pk": "f35632ae076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Appointments", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Appointment care goals"
+    }
+  }, 
+  {
+    "pk": "f35632af076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Back Pain", 
+      "parent": "f35632cb076c11dfa56d001641e25144", 
+      "description": "Back pain"
+    }
+  }, 
+  {
+    "pk": "f35632b0076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Confusion", 
+      "parent": "f35632cb076c11dfa56d001641e25144", 
+      "description": "feelings of confusion"
+    }
+  }, 
+  {
+    "pk": "f35632b1076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [], 
+      "tags": [], 
+      "name": "Contact Info", 
+      "parent": "f35632bf076c11dfa56d001641e25144", 
+      "description": "Get contact info of patient"
+    }
+  }, 
+  {
+    "pk": "f35632b2076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        8
+      ], 
+      "tags": [], 
+      "name": "Decrease overall fatigue", 
+      "parent": "be944876079c11dfa56d001641e25144", 
+      "description": "fatigue management"
+    }
+  }, 
+  {
+    "pk": "f35632b3076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        10
+      ], 
+      "tags": [], 
+      "name": "Diarrhea Management", 
+      "parent": "f35632ca076c11dfa56d001641e25144", 
+      "description": "asdfqwre"
+    }
+  }, 
+  {
+    "pk": "f35632b4076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        7
+      ], 
+      "tags": [], 
+      "name": "Dietary Comfort", 
+      "parent": "f35632b6076c11dfa56d001641e25144", 
+      "description": "Candy for poor taste"
+    }
+  }, 
+  {
+    "pk": "f35632b5076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        7, 
+        2
+      ], 
+      "tags": [], 
+      "name": "Dietary Education", 
+      "parent": "f35632b6076c11dfa56d001641e25144", 
+      "description": "education on food and diet"
+    }
+  }, 
+  {
+    "pk": "f35632b6076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Dietary Goals", 
+      "parent": null, 
+      "description": "dietary goals"
+    }
+  }, 
+  {
+    "pk": "f35632b7076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Disease Management", 
+      "parent": null, 
+      "description": "Disease management care goal"
+    }
+  }, 
+  {
+    "pk": "f35632b8076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        2, 
+        10
+      ], 
+      "tags": [], 
+      "name": "Drug-induced neuropathy", 
+      "parent": "f35632ca076c11dfa56d001641e25144", 
+      "description": "Increased risk of falls and burns.  should "
+    }
+  }, 
+  {
+    "pk": "f35632b9076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        9
+      ], 
+      "tags": [], 
+      "name": "Fear of recurrence", 
+      "parent": "f35632ad076c11dfa56d001641e25144", 
+      "description": "Social work"
+    }
+  }, 
+  {
+    "pk": "be944876079c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Fitness", 
+      "parent": null, 
+      "description": "Fitness care goals"
+    }
+  }, 
+  {
+    "pk": "f35632bf076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Home Care", 
+      "parent": null, 
+      "description": "Home based care plan"
+    }
+  }, 
+  {
+    "pk": "f35632c0076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [], 
+      "tags": [], 
+      "name": "Imaging", 
+      "parent": "f35632ba076c11dfa56d001641e25144", 
+      "description": "Imaging for investigations"
+    }
+  }, 
+  {
+    "pk": "f35632c2076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Instructions", 
+      "parent": "f35632bf076c11dfa56d001641e25144", 
+      "description": "Instructions from patient"
+    }
+  }, 
+  {
+    "pk": "f35632ba076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [], 
+      "tags": [], 
+      "name": "Investigations", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Investigations/observations on patient"
+    }
+  }, 
+  {
+    "pk": "f35632bb076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        5
+      ], 
+      "tags": [], 
+      "name": "Labs", 
+      "parent": "f35632ba076c11dfa56d001641e25144", 
+      "description": "Laboraory visits\r\n(week after nadir visit)"
+    }
+  }, 
+  {
+    "pk": "f35632bc076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Lifestyle Management", 
+      "parent": null, 
+      "description": "asfdsdf"
+    }
+  }, 
+  {
+    "pk": "f35632bd076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        4
+      ], 
+      "tags": [], 
+      "name": "Logistics", 
+      "parent": "f35632ae076c11dfa56d001641e25144", 
+      "description": "logistics around appointments"
+    }
+  }, 
+  {
+    "pk": "f35632be076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        7
+      ], 
+      "tags": [], 
+      "name": "Maintain Weight", 
+      "parent": "f35632b6076c11dfa56d001641e25144", 
+      "description": "maintain curent weight"
+    }
+  }, 
+  {
+    "pk": "f35632c9076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        3
+      ], 
+      "tags": [], 
+      "name": "Medical Side Effect Management", 
+      "parent": "f35632c1076c11dfa56d001641e25144", 
+      "description": "Managing side effects"
+    }
+  }, 
+  {
+    "pk": "f35632c1076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        3
+      ], 
+      "tags": [], 
+      "name": "Medication Management", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Management of all aspects of medication"
+    }
+  }, 
+  {
+    "pk": "f35632c3076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "PE", 
+      "parent": "f35632cb076c11dfa56d001641e25144", 
+      "description": "pe"
+    }
+  }, 
+  {
+    "pk": "f35632c4076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        3
+      ], 
+      "tags": [], 
+      "name": "Pharmacy Refills", 
+      "parent": "f35632ac076c11dfa56d001641e25144", 
+      "description": "Refilling medications at pharmacy"
+    }
+  }, 
+  {
+    "pk": "f35632c5076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Rash", 
+      "parent": "f35632ca076c11dfa56d001641e25144", 
+      "description": "rash management"
+    }
+  }, 
+  {
+    "pk": "f35632c6076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [], 
+      "tags": [], 
+      "name": "Reason to call", 
+      "parent": "f35632bf076c11dfa56d001641e25144", 
+      "description": "reason to call"
+    }
+  }, 
+  {
+    "pk": "f35632c7076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Scheduling", 
+      "parent": "f35632ae076c11dfa56d001641e25144", 
+      "description": "Appointment Scheduling care goals"
+    }
+  }, 
+  {
+    "pk": "f35632c8076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Shortness of breath", 
+      "parent": "f35632cb076c11dfa56d001641e25144", 
+      "description": "shortness of breath"
+    }
+  }, 
+  {
+    "pk": "f35632ca076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Side effect prevention", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Pre-emptive management of side effects by lifestyle changes."
+    }
+  }, 
+  {
+    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Symptoms", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Common symptoms to watch out for with this patient disease/problem profile"
+    }
+  }, 
+  {
+    "pk": "f35632cc076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        3
+      ], 
+      "tags": [], 
+      "name": "Taking Meds Correctly", 
+      "parent": "f35632ac076c11dfa56d001641e25144", 
+      "description": "Time and route"
+    }
+  }, 
+  {
+    "pk": "f35632cd076c11dfa56d001641e25144", 
+    "model": "careplan.baseplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        8
+      ], 
+      "tags": [], 
+      "name": "Weight Training", 
+      "parent": "be944876079c11dfa56d001641e25144", 
+      "description": "Weight training"
+    }
+  }
+]

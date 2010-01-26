@@ -174,7 +174,7 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     profile.last_filter = display_filter
     profile.save()        
     
-    shared_filters = Filter.objects.filter(shared=True)
+    shared_filters = Filter.objects.select_related('gridpreference').filter(shared=True)
     context['shared_filters'] = shared_filters
     
     context['display_filter'] = display_filter
@@ -182,6 +182,7 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     
     context['profile'] = profile    
     context['filter'] = profile.last_filter
+    context['gridpreference'] = context['filter'].gridpreference
     
     providers = Provider.objects.filter(user=user)
     if len(providers) > 0:
@@ -194,6 +195,6 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
         #cases = Case.objects.filter(opened | last_edit | assigned)
         #qtitle = "Cases for this provider"        
                 
-        careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
+        careteam_membership = ProviderLink.objects.filter(provider=request.provider).values_list("careteam__id",flat=True)
         context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)    
     return render_to_response(template_name, context, context_instance=RequestContext(request))

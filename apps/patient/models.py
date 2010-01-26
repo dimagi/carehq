@@ -2,38 +2,37 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 import uuid
 from django.contrib.auth.models import User
-#from djcaching.models import CachedModel
-#from djcaching.managers import CachingManager
+from djcaching.models import CachedModel
+from djcaching.managers import CachingManager
 
+
+def make_uuid():
+    return uuid.uuid1().hex
 
 # Create your models here.
 
-class IdentifierType(models.Model):
-#class IdentifierType(CachedModel):
+#class IdentifierType(models.Model):
+class IdentifierType(CachedModel):
     """
     Placeholder for differing identifiers that may be attached to a patient
     """    
+    id = models.CharField(_('Identifier Type Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     description = models.CharField(max_length=64)
     shortname = models.CharField(max_length=32)
-    uuid = models.CharField(_('Id Type Guid'), 
-                                        max_length=32, unique=True, editable=False)
-
+    
     regex = models.CharField(max_length=128, blank=True, null=True)
-    #objects = CachingManager()
+    objects = CachingManager()
     def save(self):
-        if self.id == None:
-            self.uuid = uuid.uuid1().hex
         super(IdentifierType, self).save()
 
 class PatientIdentifier(models.Model):
+    id = models.CharField(_('Identifier Instance Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     id_type = models.ForeignKey("IdentifierType")
     patient = models.ForeignKey("Patient")
     
     id_value = models.CharField(max_length=128)
     
-    uuid = models.CharField(_('ID instance Guid'), 
-                                        max_length=32, unique=True, editable=False)
-
+    
     
     #link_date = models.DateTimeField()
     #link_by = models.ForeignKey(User)
@@ -41,24 +40,20 @@ class PatientIdentifier(models.Model):
 
     #todo:  put an update procedure that points all the patient instances to the actual root patient
     def save(self):
-        if self.id == None:
-            self.uuid = uuid.uuid1().hex
         super(PatientIdentifier, self).save()
 
 
-class Patient(models.Model):    
-#class Patient(CachedModel):
+#class Patient(models.Model):    
+class Patient(CachedModel):
     
     GENDER_CHOICES = (
         ('m', 'Male'),
         ('f', 'Female'),
         )
     
-    
+    id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     user = models.ForeignKey(User, related_name='patient_user', null=True, unique=True, blank=True)
-    uuid = models.CharField(_('Unique patient guid'), 
-                                        max_length=32, editable=False, unique=True)
-
+    
     identifiers = models.ManyToManyField(IdentifierType, through=PatientIdentifier)
     
     dob = models.DateField(_("Date of birth"), null=True, blank=True)
@@ -67,14 +62,12 @@ class Patient(models.Model):
     is_primary = models.BooleanField(_("Is this patient the primary, merged"), default=True)
     root_patient = models.ForeignKey("self", null=True, blank=True)
     
-#    objects = CachingManager()
+    objects = CachingManager()
     
     def __unicode__(self):
         return "%s %s" % (self.user.first_name, self.user.last_name)
     
     def save(self):
-        if self.id == None:
-            self.uuid = uuid.uuid1().hex
         super(Patient, self).save()
     
     def get_root_patient(self):

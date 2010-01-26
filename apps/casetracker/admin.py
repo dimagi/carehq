@@ -49,6 +49,8 @@ class CaseEventAdmin(admin.ModelAdmin):
     list_display=('id','notes','case','activity')
     list_filter = ['activity',]
 
+class CaseInline(admin.StackedInline):
+    model = Case
 
 
 class CaseReversion(VersionAdmin):

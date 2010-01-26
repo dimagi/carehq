@@ -10,7 +10,7 @@ def is_careteam_member(view_func):
         careteam = CareTeam.objects.get(id=careteam_id)
         
         #if it's the patient just return immediately
-        if careteam.patient == request.user:
+        if careteam.patient.user == request.user:
             return view_func(request, careteam_id, *args, **kwargs)        
         
         

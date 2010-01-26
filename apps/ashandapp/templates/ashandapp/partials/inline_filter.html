@@ -1,15 +1,20 @@
 {% load filter_tags %}
+
 <table class="span-24">
 <tr>
 <th>Patient</th>
 {% for col in filter.gridpreference.display_columns.all %}
-<th>{{col.name|capfirst}}</th>
+<th>
+
+{% pretty_column col.name %}
+
+</th>
 {%endfor %}
 </tr>
 {% for case in filter.get_filter_queryset %}
 	<tr>
-	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-	{% for col in filter.gridpreference.display_columns.all %}
+	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.user.last_name}}, {{case.careteam_set.get.patient.user.first_name}}</a></td>
+	{% for col in gridpreference.display_columns.all %}
 		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
 	{%endfor %}
 	</tr>

@@ -27,10 +27,12 @@ def new_issue(request, careteam_id, template_name="ashandapp/activities/issue/ne
     if request.method == 'POST':
         form = NewIssueForm(data=request.POST, careteam=CareTeam.objects.get(id=careteam_id))
         if form.is_valid():
-            newcase = form.get_case(request)
+            newcase = form.get_case(request)        
             newcase.save()
             careteam.cases.add(newcase)
             
             return HttpResponseRedirect(reverse('view-careteam', kwargs= {'careteam_id': careteam_id}))
+        else:
+            context['form'] = form
     
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+    return render_to_response(template_name, context, context_instance=RequestContext(request)) 

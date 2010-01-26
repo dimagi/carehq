@@ -43,6 +43,8 @@ class CaseModelForm(forms.ModelForm):
     EDIT_ASSIGN = 'assign'
     EDIT_MODIFY_ALL = 'edit'
     EDIT_SET_ACTION = 'set_action'
+    EDIT_RESOLVE = 'resolved_by'
+    
         
     description = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     body = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':8}))
