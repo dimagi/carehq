@@ -55,12 +55,20 @@ def get_json_for_paging(request):
     else:
         display_filter = profile.last_filter
     
+    profile.last_login = datetime.utcnow()
+    profile.last_login_from = request.META['REMOTE_ADDR']
+    profile.last_filter = display_filter
+    profile.save()       
+    
     filter = display_filter
+    
+    # add pagination later...
+    display_filter = display_filter.get_filter_queryset()
     # add conditional to only work if display and start not null
-    try:
-        display_filter = display_filter.get_filter_queryset()[start_index:start_index + length]
-    except:
-        display_filter = display_filter.get_filter_queryset()[start_index:]  
+#    try:
+#        display_filter = display_filter.get_filter_queryset()[start_index:start_index + length]
+#    except:
+#        display_filter = display_filter.get_filter_queryset()[start_index:]  
     
     
     #build json_string with information from data    
@@ -71,7 +79,11 @@ def get_json_for_paging(request):
         json_string += "["
         json_string += "\"%s %s\"," % (case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
         for col in filter.gridpreference.display_columns.all():
-            json_string +=  "\"%s\"," % case_column(case, col.name)
+            table_entry = case_column(case, col.name)
+            if len(table_entry) > 45:
+                table_entry = table_entry[0:45] + "..."
+            json_string +=  "\"%s\"," % (table_entry)
+            print json_string
         json_string += "],"
   
     #closing json_string

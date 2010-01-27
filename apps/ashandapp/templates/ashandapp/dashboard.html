@@ -14,8 +14,10 @@
 
 {% block content %}
 <h2> Dashboard for {{request.user.first_name}} {{request.user.last_name}}</h2>
+{% comment %}
 <p>Last login: {{profile.last_login|date}}</p>
 <p>Last login from: {{profile.last_login_from}}</p>
+{% endcomment %}
 
 <h3>Case Filters</h3>
 
