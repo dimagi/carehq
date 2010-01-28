@@ -1,92 +1,36 @@
 {% load filter_tags %}
-
 <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table.css" type="text/css">
-<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.datatables.js"></script>
-<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_page.css" type="text/css">
 <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.js"></script>
 <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table_jui.css" type="text/css">
-<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.datatables.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.dataTables.min.js"></script>
 
-
+{% with display_filter as filter %}
 <script type="text/javascript">
 $(document).ready(function() {
 	$('.example{{display_filter.id}}').dataTable( {
+		"bJQueryUI": true,
 		"bProcessing": true,
 		"sAjaxSource": "{% url json_string %}",
-		"sPaginationType": "full_numbers"
+		"sPaginationType": "two_button",
+		"bAutoWidth": false
 	} );
 } );
+
+$(document).write("hello\n")
 </script>
 
-{% comment %}
-<table class="sortable"><thead>
-<tr>
-<th>Patient</th>
-{% with display_filter as filter %}
-{% for col in filter.gridpreference.display_columns.all %}
-<th class="sorted" ><a href = "{% url my_dashboard_tab %}?filter={{filter.id}}&field_name={{col}}" rel="tabs">{{col.name|capfirst}}</a></th>
-{%endfor %}
-</tr></thead>
-{% if sorted_display %}
-{% for case in sorted_display %}
-	<tr>
-	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-	{% for col in filter.gridpreference.display_columns.all %}
-		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
-	{%endfor %}
-	</tr>
-{% endfor %}
-{% else %}
-{% for case in filter.get_filter_queryset %}
-	<tr>
-	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-	{% for col in filter.gridpreference.display_columns.all %}
-		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
-	{%endfor %}
-	</tr>
-{% endfor %}
-{%endif%}
-{% endwith %}
 
-</table>
-{% endcomment %}
-
-{% with display_filter as filter %}
 <table class="example{{display_filter.id}}">
 	<thead>
 		<tr>
 			<th>Patient</th>
 			{% for col in filter.gridpreference.display_columns.all %}
-				<th>{{col.name|capfirst}}</th>
+				<th>{% pretty_column col.name %}</th>
 			{%endfor %}
 		</tr>
 	</thead>
-{% comment %}
-	<tbody>
-	{% if sorted_display %}
-		{% for case in sorted_display %}
-			<tr>
-				<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-				{% for col in filter.gridpreference.display_columns.all %}
-					<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
-				{%endfor %}
-			</tr>
-		{% endfor %}
-	{% else %}	
-		{% for case in filter.get_filter_queryset %}
-			<tr>
-				<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.first_name}} {{case.careteam_set.get.patient.last_name}}</a></td>
-				{% for col in filter.gridpreference.display_columns.all %}
-				<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
-		{%endfor %}
-		</tr>
-		{% endfor %}
-	{%endif%}
-	</tbody>
-{% endcomment %}	
 
-{{json_string}}
+
 </table>
-
 {% endwith %}
 
