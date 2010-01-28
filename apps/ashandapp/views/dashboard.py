@@ -83,7 +83,6 @@ def get_json_for_paging(request):
             if len(table_entry) > 45:
                 table_entry = table_entry[0:45] + "..."
             json_string +=  "\"%s\"," % (table_entry)
-            print json_string
         json_string += "],"
   
     #closing json_string
