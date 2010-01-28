@@ -5,12 +5,13 @@
 <h2>Templates</h2>
 
 <h2>Care Item Templates</h2>
-{% for base_plan_item in plan_items %}
 <div class="span-24 last">
-    {% include "careplan/partials/single_template_item.html" %}
+<ul>
+{% for plan_item in plan_items %}
+    {% include "careplan/partials/single_item_view.html" %}
+{%endfor%}
+</ul>    
 </div>
-{%endfor%}    
-
 {% endblock %}
 
 

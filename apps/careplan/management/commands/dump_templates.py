@@ -5,7 +5,7 @@ import sys
 import os
 
 from django.core import serializers
-from careplan.models import BasePlan, PlanCategory, PlanTag, BasePlanItem
+from careplan.models import TemplateCarePlan, PlanCategory, PlanTag, TemplateCarePlanItem
 
 
 
@@ -16,7 +16,7 @@ class Command(BaseCommand):
  
     def handle(self, *scripts, **options):        
                 
-        models = [BasePlan, PlanCategory, PlanTag, BasePlanItem]
+        models = [TemplateCarePlan, PlanCategory, PlanTag, TemplateCarePlanItem]
         
         
         all_data = []

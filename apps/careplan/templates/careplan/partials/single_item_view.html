@@ -3,24 +3,24 @@
         <div class="span-6">
             <div class="span-6">
                 <h3>
-                    <a href="{% url careplan.views.view_template_item base_plan_item.id %}">{{base_plan_item.name}}</a>
+                    <a href="{{plan_item.get_absolute_url }}">{{plan_item.name}}</a>
                 </h3>
             </div>
             {% if not show_children %}
                 <div class="span-5 prepend-1">
-                {% if base_plan_item.parent %}
-                    <p em>Subitem of <a href="{% url careplan.views.view_template_item base_plan_item.parent.id %}">{{base_plan_item.parent}}</a></em>    
+                {% if plan_item.parent %}
+                    <p em>Subitem of <a href="{{plan_item.parent.get_absolute_url }}">{{plan_item.parent.name}}</a></em>    
                 {% endif %}            
                 </div>
             {% endif %}
         </div>        
         <div class="span-5">
             <strong>Description</strong><br>
-            {{base_plan_item.description}}
+            {{plan_item.description}}
         </div>
         <div class="span-5 last">
             <strong>Categories</strong><br>
-            {% for cat in base_plan_item.category.all %}
+            {% for cat in plan_item.category.all %}
                 {{cat}}<br>
             {%endfor%}        
         </div>
@@ -29,9 +29,9 @@
     {% if show_children %}    
     <div class="span-14 prepend-2">
                 
-        {% for subitem in base_plan_item.child_base_plans.all %}           
+        {% for subitem in plan_item.child_template_items.all %}           
             {% with "careplan/partials/single_template_item.html" as recurse_template %}            
-                {% with subitem as base_plan_item %}
+                {% with subitem as plan_item %}
                     {% include  recurse_template %}
                 {%endwith %}        
             {%endwith %}
