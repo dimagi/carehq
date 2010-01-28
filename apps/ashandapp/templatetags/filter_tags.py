@@ -25,7 +25,14 @@ dirty_column_map = {
 "next_action":"Next Action",
 "next_action_date":"Follow Up Date",
 }
- 
+
+@register.simple_tag 
+def get_sType(case):
+# BAD - hardcoded for only one instance. have to make smarter to detect time
+    if pretty_column(case) == "Follow Up Date":
+        return "\"pretty_time\""
+    return "\"html\""
+
 @register.simple_tag
 def pretty_column(column):
     if dirty_column_map.has_key(column):

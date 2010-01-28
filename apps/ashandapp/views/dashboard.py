@@ -20,6 +20,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
 from ashandapp.templatetags.filter_tags import case_column
+from datetime import datetime
 
 @login_required
 def get_json_for_paging(request):
@@ -77,14 +78,22 @@ def get_json_for_paging(request):
     #adding user
     for case in display_filter:
         json_string += "["
-        json_string += "\"%s %s\"," % (case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
+        json_string += "\"<a href = 'users/%s'>%s %s</a>\"," % (case.careteam_set.get().patient.user.id, case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
         for col in filter.gridpreference.display_columns.all():
             table_entry = case_column(case, col.name)
             if len(table_entry) > 45:
                 table_entry = table_entry[0:45] + "..."
-            json_string +=  "\"%s\"," % (table_entry)
+            # terribly hardcoded...quick fix to add links
+            if (col.name == "description"):
+                json_string +=  "\"<a href = 'case/%s'>%s</a>\"," % (case.id, table_entry)
+            else:
+                json_string += "\"%s\"," % table_entry
         json_string += "],"
-  
+    
+    #terribly inefficient, but quick fix to allow sorting of links....
+#    json_string += " ], \"aoColumns\": [ null,"
+#    for col in filter.gridpreference.display_columns.all():
+#        json_string += "{\"sType\": \"html\"},"
     #closing json_string
     json_string += "] }"
 
