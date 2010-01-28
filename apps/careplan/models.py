@@ -5,6 +5,8 @@ from casetracker.models import Case
 from patient.models import Patient
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
+
 
 # Create your models here.
 
@@ -13,49 +15,6 @@ def make_uuid():
 
 def make_time():
     return datetime.utcnow()
-
-
-class TemplatePlanItemLink(models.Model):
-    plan = models.ForeignKey("BasePlan")
-    item = models.ForeignKey("BasePlanItem")
-    order = models.PositiveIntegerField()
-    
-class CarePlanItemLink(models.Model):
-    plan = models.ForeignKey("CarePlan")
-    item = models.ForeignKey("PlanItem")
-    order = models.PositiveIntegerField()
-
-#make this a reversion counter
-class BasePlan(models.Model):
-    """Main Container for the care plan and is the actual instance that links
-    back to a patient.
-    
-    A CarePlan is comprised of an owner (the user in question), and the sections it is filled with
-    At the root, a care plan that is described as a template will not be linkable to a user.  If it needs to be linked
-    to a user, then a brand new instance will be generated from it.
-    """
-    
-    id = models.CharField(_('BasePlan Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True)
-    
-    version = models.PositiveIntegerField(default=1)
-        
-    title = models.CharField(max_length=160)
-    plan_items = models.ManyToManyField("BasePlanItem", through=TemplatePlanItemLink) #make this a through?
-    
-    created_by = models.ForeignKey(User, blank=True, null=True, related_name='baseplan_created_by')
-    created_date = models.DateTimeField(default=make_time)
-    
-    modified_by =  models.ForeignKey(User, blank=True, null=True, related_name='baseplan_modified_by')
-    modified_date = models.DateTimeField(default=make_time)
-    
-    def __unicode__(self):
-        return "[Plan Template] %s" % (self.title)
-    
-    class Meta:
-        verbose_name = "Base Plan"
-        verbose_name_plural = "Base Plans"
-        ordering = ['title','created_date']
-
 
 class PlanCategory(models.Model):
     """
@@ -73,7 +32,6 @@ class PlanCategory(models.Model):
         verbose_name_plural = "Plan Categories"
         ordering = ['name']
 
-
 class PlanTag(models.Model):
     """
     A particular Plan Item probably has tag classification too with regard to related pieces of information.      
@@ -86,18 +44,94 @@ class PlanTag(models.Model):
     class Meta:
         verbose_name = "Plan Tag Metadata"
         verbose_name_plural = "Plan Tags"
-        
 
 
-class BasePlanItem(models.Model):
-    """Substantive actionable items within a careplan.  ie, take medication directly.  """
-    id = models.CharField(_('BasePlan Item Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+class PlanRule(models.Model):
+    """
+    A Plan Rule is a container for custom code to operate upon a plan.
+    The example for a plan rule would be scheduling recurring visits based on a certain condition,
+    or scheduling visits for a pregnancy 2,4,6,8 months from the expected conception date.
+    """
     name = models.CharField(max_length=160)
-    category = models.ManyToManyField(PlanCategory, related_name="baseplan_category", null=True, blank=True)    
+    description = models.TextField()
+    module = models.CharField(max_length=255)
+    method = models.CharField(max_length=128)
+    
+    class Meta:
+        verbose_name = "Plan Rule"
+        verbose_name_plural = "Plan Rules"
+        ordering = ['name',]
+
+class TemplateCarePlanItemLink(models.Model):
+    plan = models.ForeignKey("TemplateCarePlan")
+    item = models.ForeignKey("TemplateCarePlanItem")
+    order = models.PositiveIntegerField()
+    class Meta:
+        ordering  =['order',]
+    
+class CarePlanItemLink(models.Model):
+    plan = models.ForeignKey("CarePlan")
+    item = models.ForeignKey("CarePlanItem")
+    order = models.PositiveIntegerField()
+    
+    class Meta:
+        ordering  =['order',]
+
+
+#make this a reversion counter
+class TemplateCarePlan(models.Model):
+    """Main Container for the care plan and is the actual instance that links
+    back to a patient.
+    
+    A CarePlan is comprised of an owner (the user in question), and the sections it is filled with
+    At the root, a care plan that is described as a template will not be linkable to a user.  If it needs to be linked
+    to a user, then a brand new instance will be generated from it.
+    """
+    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    
+    version = models.PositiveIntegerField(default=1)
+        
+    title = models.CharField(max_length=160)
+    plan_items = models.ManyToManyField("TemplateCarePlanItem", through=TemplateCarePlanItemLink) #make this a through?
+    
+    created_by = models.ForeignKey(User, blank=True, null=True, related_name='templatecareplan_created_by')
+    created_date = models.DateTimeField(default=make_time)
+    
+    modified_by =  models.ForeignKey(User, blank=True, null=True, related_name='templatecareplan_modified_by')
+    modified_date = models.DateTimeField(default=make_time)
+    
+    
+    def get_absolute_url(self):
+        return reverse('careplan.views.caretemplates.single_careplan', kwargs={"plan_id":self.id})
+    
+    def __unicode__(self):
+        return "[Plan Template] %s" % (self.title)
+    
+    class Meta:
+        verbose_name = "Template Care Plan"
+        verbose_name_plural = "Template Care Plans"
+        ordering = ['title','created_date']
+
+
+
+class TemplateCarePlanItem(models.Model):
+    """Substantive actionable items within a careplan.  ie, take medication directly.  """
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    name = models.CharField(max_length=160)
+    category = models.ManyToManyField(PlanCategory, related_name="templatecareplanitem_category", null=True, blank=True)    
     tags = models.ManyToManyField(PlanTag, blank=True, null=True)
     description = models.TextField()
-    parent = models.ForeignKey('self', null=True, blank=True, related_name = 'child_base_plans')  
+    parent = models.ForeignKey('self', null=True, blank=True, related_name = 'child_template_items')  
     
+    @property
+    def children(self):
+        if not hasattr(self, '_children'):
+            self._children = self.child_template_items.all()
+        return self._children
+    
+    def get_absolute_url(self):
+        return reverse('careplan.views.caretemplates.single_careplan_item', kwargs={"item_id":self.id})
     
     def indent_name(self):
         indent = ''
@@ -117,46 +151,35 @@ class BasePlanItem(models.Model):
         return self.name  
     
     class Meta:
-        verbose_name = "Base Plan Item"
-        verbose_name_plural = "Base Plan Items"
+        verbose_name = "Template Care Plan Item"
+        verbose_name_plural = "Template Care Plan Items"
         ordering = ['name']
     
     
-class PlanRule(models.Model):
-    """
-    A Plan Rule is a container for custom code to operate upon a plan.
-    The example for a plan rule would be scheduling recurring visits based on a certain condition,
-    or scheduling visits for a pregnancy 2,4,6,8 months from the expected conception date.
-    """
-    name = models.CharField(max_length=160)
-    description = models.TextField()
-    module = models.CharField(max_length=255)
-    method = models.CharField(max_length=128)
-    
-    class Meta:
-        verbose_name = "Plan Rule"
-        verbose_name_plural = "Plan Rules"
-        ordering = ['name',]
-
 
 #section, specific instances of careplans.
 class CarePlanCaseLink(models.Model):
-    plan_item = models.ForeignKey("PlanItem")
+    careplan_item = models.ForeignKey("CarePlanItem")
     case = models.ForeignKey(Case)
+    
 
-class PlanItem(models.Model):
+class CarePlanItem(models.Model):
     
     #subclassing PlanItem makes it tricky with the foriegnkey parentage, so we're copying verbatim
-    id = models.CharField(_('Plan Item Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True)
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True)
     name = models.CharField(max_length=160)
-    category = models.ManyToManyField(PlanCategory, related_name="planitem_category", null=True, blank=True)    
+    category = models.ManyToManyField(PlanCategory, related_name="careplanitem_category", null=True, blank=True)    
     tags = models.ManyToManyField(PlanTag, null=True, blank=True)
     description = models.TextField()
     parent = models.ForeignKey('self', null=True, blank=True, related_name = 'child_plans')    
     
     cases = models.ManyToManyField(Case, through="CarePlanCaseLink")
-    from_template = models.ForeignKey(BasePlanItem, blank=True, null=True, 
-                                      related_name='baseplan_inheritors')
+    from_template = models.ForeignKey(TemplateCarePlanItem, blank=True, null=True, 
+                                      related_name='template_inheritors')
+
+    def get_absolute_url(self):
+        return reverse('careplan.views.planinstances.view_careplan_item', kwargs={"item_id":self.id})
+
     def __unicode__(self):
         return "[Template Item] " + self.name
     
@@ -164,6 +187,12 @@ class PlanItem(models.Model):
         verbose_name = "Care Plan Instance Item"
         verbose_name_plural = "Care Plan Instance Items"
         ordering = ['name']
+    
+    @property
+    def children(self):
+        if not hasattr(self, '_children'):
+            self._children = self.child_plans.all()
+        return self._children
 
 
     #@staticmethod
@@ -171,11 +200,11 @@ class PlanItem(models.Model):
     def create_from_template(base_item, parent_item=None):
         """
         Factory method to generate a new plan item from a template
-        base_item is the BasePlanItem instance
+        base_item is the TemplateCarePlanItem instance
         parent_item is a PlanItem instance parent if you're generating this programmatically
         save = do we save this to db before returning?
         """
-        new_item = PlanItem()
+        new_item = CarePlanItem()
         new_item.id = uuid.uuid1().hex
         new_item.category = base_item.category
         new_item.tags.add(base_item.tags.all())
@@ -188,7 +217,7 @@ class PlanItem(models.Model):
         
         if base_item.child_plans.all().count > 0:
             for child_item in base_item.child_plans.all():
-                PlanItem.create_from_template(child_item, parent_item=base_item)        
+                CarePlanItem.create_from_template(child_item, parent_item=base_item)        
         
         return new_item
 
@@ -196,18 +225,22 @@ class CarePlan(models.Model):
     id = models.CharField(_('CarePlan Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True)
     
     patient = models.ForeignKey(Patient)    
-    from_template = models.ForeignKey(BasePlan, null=True, blank=True)    
+    from_template = models.ForeignKey(TemplateCarePlan, null=True, blank=True)    
         
     version = models.PositiveIntegerField(default=1)
         
     title = models.CharField(max_length=160)
-    plan_items = models.ManyToManyField("PlanItem", through=CarePlanItemLink) #overide the base classes definition
+    plan_items = models.ManyToManyField("CarePlanItem", through=CarePlanItemLink) #overide the base classes definition
     
     created_by = models.ForeignKey(User, blank=True, null=True, related_name='careplan_created_by')
     created_date = models.DateTimeField(default=make_time)
     
     modified_by =  models.ForeignKey(User, blank=True, null=True, related_name='careplan_modified_by')
     modified_date = models.DateTimeField(default=make_time)
+    
+    
+    def get_absolute_url(self):
+        return reverse('careplan.views.planinstances.single_careplan', kwargs={"plan_id":self.id})
     
     def __unicode__(self):
         return "[Care Plan] %s" % (self.title)
@@ -220,7 +253,7 @@ class CarePlan(models.Model):
     @classmethod
     def create_from_template(base_plan, save=False, creator_user=None):
         """
-        Generate a careplan from a BasePlan template
+        Generate a careplan from a TemplateCarePlan template
         """
         
         if save:
@@ -234,7 +267,7 @@ class CarePlan(models.Model):
         
         new_plan.title = base_plan.title
         for base_item in base_plan.plan_items.all():            
-            new_item= PlanItem.create_from_template(base_item, parent_item=None)            
+            new_item= CarePlanItem.create_from_template(base_item, parent_item=None)            
             new_plan.plans.add(new_item)
         
         if creator_user:

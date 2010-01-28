@@ -1,5 +1,17 @@
 [
   {
+    "pk": "3eb96a6e0abc11dfa56d001641e25144", 
+    "model": "careplan.templatecareplan", 
+    "fields": {
+      "modified_date": "2010-01-26 20:48:58", 
+      "modified_by": 2, 
+      "title": "Breast Cancer", 
+      "created_by": 2, 
+      "version": 1, 
+      "created_date": "2010-01-26 20:48:58"
+    }
+  }, 
+  {
     "pk": 4, 
     "model": "careplan.plancategory", 
     "fields": {
@@ -81,7 +93,7 @@
   }, 
   {
     "pk": "f35632ac076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1, 
@@ -95,7 +107,7 @@
   }, 
   {
     "pk": "f35632ad076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         9
@@ -108,7 +120,7 @@
   }, 
   {
     "pk": "f35632ae076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -121,7 +133,7 @@
   }, 
   {
     "pk": "f35632af076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         6
@@ -134,7 +146,7 @@
   }, 
   {
     "pk": "f35632b0076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         6
@@ -147,7 +159,7 @@
   }, 
   {
     "pk": "f35632b1076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [], 
       "tags": [], 
@@ -158,7 +170,7 @@
   }, 
   {
     "pk": "f35632b2076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         8
@@ -171,7 +183,7 @@
   }, 
   {
     "pk": "f35632b3076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         10
@@ -184,7 +196,7 @@
   }, 
   {
     "pk": "f35632b4076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         7
@@ -197,7 +209,7 @@
   }, 
   {
     "pk": "f35632b5076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         7, 
@@ -211,7 +223,7 @@
   }, 
   {
     "pk": "f35632b6076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -224,7 +236,7 @@
   }, 
   {
     "pk": "f35632b7076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -237,7 +249,7 @@
   }, 
   {
     "pk": "f35632b8076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         2, 
@@ -251,7 +263,7 @@
   }, 
   {
     "pk": "f35632b9076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         9
@@ -264,7 +276,7 @@
   }, 
   {
     "pk": "be944876079c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -277,7 +289,7 @@
   }, 
   {
     "pk": "f35632bf076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -290,7 +302,7 @@
   }, 
   {
     "pk": "f35632c0076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [], 
       "tags": [], 
@@ -301,7 +313,7 @@
   }, 
   {
     "pk": "f35632c2076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         2
@@ -314,7 +326,7 @@
   }, 
   {
     "pk": "f35632ba076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [], 
       "tags": [], 
@@ -325,7 +337,7 @@
   }, 
   {
     "pk": "f35632bb076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         5
@@ -338,7 +350,7 @@
   }, 
   {
     "pk": "f35632bc076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -351,7 +363,7 @@
   }, 
   {
     "pk": "f35632bd076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         4
@@ -364,7 +376,7 @@
   }, 
   {
     "pk": "f35632be076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1, 
@@ -378,7 +390,7 @@
   }, 
   {
     "pk": "f35632c9076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         3
@@ -391,7 +403,7 @@
   }, 
   {
     "pk": "f35632c1076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         3
@@ -404,7 +416,7 @@
   }, 
   {
     "pk": "f35632c3076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         6
@@ -417,7 +429,7 @@
   }, 
   {
     "pk": "f35632c4076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1, 
@@ -431,7 +443,7 @@
   }, 
   {
     "pk": "f35632c5076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         2
@@ -444,7 +456,7 @@
   }, 
   {
     "pk": "f35632c6076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [], 
       "tags": [], 
@@ -455,7 +467,7 @@
   }, 
   {
     "pk": "f35632c7076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1
@@ -468,7 +480,7 @@
   }, 
   {
     "pk": "f35632c8076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         6
@@ -481,7 +493,7 @@
   }, 
   {
     "pk": "f35632ca076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         2
@@ -494,7 +506,7 @@
   }, 
   {
     "pk": "f35632cb076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         6
@@ -507,7 +519,7 @@
   }, 
   {
     "pk": "f35632cc076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1, 
@@ -521,7 +533,7 @@
   }, 
   {
     "pk": "f35632cd076c11dfa56d001641e25144", 
-    "model": "careplan.baseplanitem", 
+    "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
         1, 

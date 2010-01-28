@@ -20,33 +20,30 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
-from careplan.models import BasePlan, PlanCategory, PlanTag, BasePlanItem, PlanRule 
-from careplan.models import CarePlanCaseLink, PlanItem, CarePlan
+from careplan.models import TemplateCarePlan, PlanCategory, PlanTag, TemplateCarePlanItem, PlanRule 
+from careplan.models import CarePlanCaseLink, CarePlanItem, CarePlan
 
 
 
-def all_template_items(request, template_name = "careplan/template_items.html"):
-    context = {}    
     
-    roots_only = False
-    for item in request.GET.items():
-        if item[0] == 'roots':
-            roots_only=True
-            
-    if roots_only:            
-        context['show_children'] = True
-        context['plan_items'] = BasePlanItem.objects.all().filter(parent=None)
-    else:
-        context['show_children'] = False 
-        context['plan_items'] = BasePlanItem.objects.all()
-        
-    return render_to_response(template_name, context,context_instance=RequestContext(request))
-
-def view_template_item(request, template_id, template_name = "careplan/template_items.html"):
+def all_careplans(request, template_name = "careplan/all_careplans.html"):
     context = {}    
     context['show_children'] = True
-    context['plan_items'] = BasePlanItem.objects.filter(id=template_id)
-    
-    pi = BasePlanItem.objects.filter(id=template_id)[0]
+    context['careplans'] = CarePlan.objects.all()        
     return render_to_response(template_name, context,context_instance=RequestContext(request))
+
+
+    
+def single_careplan(request, plan_id, template_name = "careplan/view_careplan.html"):
+    context = {}
+    context['show_children'] = True    
+    context['careplan'] = CarePlan.objects.get(id=plan_id)
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
+
+def single_careplan_item(request, item_id, template_name = "careplan/careplan_items.html"):
+    context = {}    
+    context['show_children'] = True
+    context['plan_items'] = CarePlanItem.objects.filter(id=item_id)    
+    return render_to_response(template_name, context,context_instance=RequestContext(request))
+
 
