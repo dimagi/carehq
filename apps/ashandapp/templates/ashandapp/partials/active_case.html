@@ -20,17 +20,17 @@
 {%endcomment%}
 <table>
 <tr>
-<td class = "span-2"><b>Priority</b></td>
-<td class ="span-3"><b>Last Edit</b></td>
-<td class = "span-12 prepend-1"><b>Case Description</b></td>
+<th>Priority</th>
+<th>Last Edit</th>
+<th>Case Description</th>
 </tr>
 {% for case in cases %}
 <tr>
-<td class = "span-2">{{case.priority.id}}</td>
-<td class = "span-3">{{case.last_edit_date|timesince}}</td>
-<td class = "span-12 prepend-1">
+<td>{{case.priority.id}}</td>
+<td>{{case.last_edit_date|timesince}}</td>
+<td>   
 	<span class="large"><a href="{% url view-case case.id %}">{{case.description}}</a></span><br>	
-	<div class = "info">Assigned to: {{case.assigned_to.get_full_name}}</div>		
+	<div class = "info">Assigned to: {{case.assigned_to.get_full_name}}</div>			
 </td>
 </tr>	
 {% endfor %}

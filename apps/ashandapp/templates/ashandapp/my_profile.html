@@ -10,13 +10,17 @@
 
 {% if request.is_provider %}
 	{% with request.provider as provider %}
+	   <div class="span-12 last">
 		{% include "ashandapp/partials/user_profile_provider.html" %}
+	   </div>
 	{% endwith %}
 {% endif %}
 
 {% if request.is_patient %}
 	{% with request.patient as patient %}
+	<div class="span-12 last">
 		{% include "ashandapp/partials/user_profile_patient.html" %}
+	</div>
 	{% endwith %}	
 {% endif %}
 

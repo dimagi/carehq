@@ -2,27 +2,112 @@
 {% load i18n %}
 {% block title %}{% trans "Care Team View" %} {% endblock %}
 {% block extrahead %}
-
+<script type="text/javascript"> 
+            $(function(){                
+                // Tabs
+                $('#tabs').tabs();
+                });
+</script> 
 {% endblock %}
 
 {% block content %}
-{% comment %}
-<div class="span-24">
-<h2>Care Team</h2>
+
 {%with current_careteam as careteam %}
-{% include "ashandapp/partials/inline_careteam.html" %}
-{%endwith%}
-</div>
-
-{% endcomment %}
-
-<h2>Actions</h2>
-<ul class="nav">
+{# pulling from the inline_careteam but we want to custom display it here #}
+<div class="span-24"
+<div class="span-18"> <!-- careteam header -->    
+ <h3><a href="{% url view-careteam careteam.id %}"> {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s</a> Care Team</h3>
+ <table>
+     <tr>
+        <th>DOB</th>
+        <th>Sex</th>
+        <th>Primary Provider</th> 
+     </tr>
+     <tr>     
+        <td>{{careteam.patient.dob|date}}</td> 
+        <td>{{careteam.patient.get_sex_display}}</td>
+        <td>
+            {% if careteam.primary_provider %}
+                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+            {% else %}
+                Not Set
+            {% endif %}
+        </td>
+    </tr> 
+</table>
+</div> <!-- end careteam header -->
+{%endwith %}
+<div class="span-6 last">
+<ul>
 <li><a href="{%url ashandapp.views.cases.question.new_question current_careteam.id %}">New Question</a></li>
 <li><a href="{%url ashandapp.views.cases.issue.new_issue current_careteam.id %}">New Issue</a></li>
 </ul>
-<div class="span-24">
-<h2>Active Cases</h2>
-{% include "ashandapp/partials/active_case.html" %}
 </div>
+
+</div>
+
+<div id="tabs" class="span-24"> 
+    <ul> 
+        <li><a href="#tabs-1">Care Team</a></li> 
+        <li><a href="#tabs-2">Cases</a></li> 
+        <li><a href="#tabs-3">Care Plan</a></li> 
+{#        <li><a href="{% url show-cases-ajax careteam.id%}">Ajax Cases</a></li> #}
+    </ul> 
+    <div id="tabs-1">
+        {% with current_careteam as careteam %}
+        <div class="span-24"><!-- careteam tab block -->
+            <div class="span-12"><!--provider block -->
+                <h3>{%trans "Providers" %}</h3>
+                <ul>
+                {% for prov in careteam.providers.all %}
+                    <li>            
+                        <a href="{%url ashandapp.views.users.single prov.user.id %}">
+                        {{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
+                        <em>{{prov.job_title }} with {{prov.affiliation }}</em> <br>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div> <!-- end provider block -->
+        
+            <div class="span-12 last"> <!-- caregiver block -->
+            <h3>{%trans "Caregivers"%}</h3>         
+            {% if careteam.caregiver_data %}
+                <ul>
+                {% for cglink in careteam.caregiver_data %}
+                    <li>
+                        <a href="{%url ashandapp.views.users.single cglink.user.id %}">
+                        {{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
+                        <em>{{cglink.relationship }}</em> 
+                    </li>
+                {% endfor %}
+                </ul>
+            {%else %}
+                <em>{%trans "No Caregivers"%}</em>
+            {%endif %}    
+            </div> <!-- end caregiver block -->
+        </div> <!-- end careteam tab block -->
+        {%endwith %}
+    </div> <!-- end tabs-1 -->
+    <div id="tabs-2">        
+        <h2>Active Cases</h2>
+        {% include "ashandapp/partials/active_case.html" %}                    
+    </div> 
+    <div id="tabs-3">
+        {# {{careplan}}#} 
+         
+         <h2>{{careplan.title}}</h2>
+            <dl>
+                <dt>Created by:</dt> <dd>{{careplan.created_by}}</dd>
+                <dt>Created date:</dt> <dd>{{careplan.created_date|date}}</dd>    
+            </dl>
+            <ul>
+            {% for itemlink in plan_items %}
+                {% with itemlink.item  as plan_item %}    
+                    {% include "careplan/partials/compact_careplan_item_li.html" %}    
+                {%endwith%}
+            {%endfor%}
+            </ul> 
+    </div>
+</div> <!-- end tabs -->
+
 {% endblock %}

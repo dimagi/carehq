@@ -48,7 +48,6 @@ def my_network(request, template_name='ashandapp/care_network.html'):
 
 @login_required
 @provider_only
-
 def my_patients(request, template_name='ashandapp/my_patients.html'):
     """
     View for providers caring for multiple patients.
@@ -76,8 +75,8 @@ def my_careteam(request, template_name='ashandapp/view_careteam.html'):
     #i'm a patient, get my careteam and show providers    
     context = {}    
     try:
-        careteam = CareTeam.objects.get(patient=request.user)
-        context['my_careteam'] = careteam 
+        careteam = CareTeam.objects.get(patient__user=request.user)
+        context['current_careteam'] = careteam 
         
         cases = careteam.cases.all()
         context['cases'] = cases    

@@ -1,7 +1,29 @@
 {% load i18n %}
-<h3> {{user.first_name}} {{user.last_name}}</h3>
-<strong>{% trans "Basic Information" %} </strong>
+<div class="span-24">
+	<fieldset>
+	<div class="span-2 border">
+	   <img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+	</div>
+	<div class="span-18 prepend-1">
+	<h2>{{user.first_name}} {{user.last_name}}</h2>
+	</div>
+	<div class="span-2 last">
+	{% ifequal request.user user %}
+		<p class="span-2 quiet">(this is you)</p>
+	{% else %}
+	   &nbsp;
+	{% endifequal %}	
+	</div>
+	</fieldset>
+</div>
+<div class="span-11 box">
+
+<h3>{% trans "Basic Information" %} </h3>
 <dl>
 	<dt>{% trans "Email" %}:</dt>
 		<dd>{{user.email }}</dd>
+	<dt>{% trans "Member Since" %}:</dt>
+		<dd>{{user.date_joined|date }}</dd>
 </dl>
+
+</div>

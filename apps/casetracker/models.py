@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.db import models
 
 from django.db.models import Q
@@ -14,6 +16,9 @@ from djcaching.managers import CachingManager
 from django.core.urlresolvers import reverse
 import uuid
 from django.utils.translation import ugettext_lazy as _
+
+
+#from django.db.models.fields.related import RelatedManager, ManyRelatedManager
 
 
 def make_uuid():
@@ -189,7 +194,7 @@ class CaseEvent(models.Model):
     examples of what happened to a case.
     """
     id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    case = models.ForeignKey("Case")    
+    case = models.ForeignKey("Case", related_name='case_events')    
     notes = models.TextField(blank=True)
     #activity = models.ForeignKey(EventActivity, limit_choices_to = {'category': "case__category"})    
     activity = models.ForeignKey(EventActivity)
@@ -294,8 +299,41 @@ class Case(CachedModel):
         else:
             return None
     
+    def _get_related_objects(self):
+        props = dir(self)
+        qset_arr = []
+        for prop in props:
+            #print prop
+            if prop == "_base_manager":
+                continue
+            elif prop == "objects":
+                continue           
+            elif prop == "last_event_date" or prop == "last_event_by" or prop=="last_case_event":
+                continue
+            elif prop == "related_objects":
+                continue
+            elif prop == '_get_related_objects':
+                continue
+            elif prop == 'Meta':
+                continue 
+            elif prop == 'case_events': #skip stuff within myself
+                continue
+            
+            propclass = getattr(self, prop)
+            
+            cls = propclass.__class__.__name__
+            
+            if cls == 'RelatedManager' or cls == 'ManyRelatedManager':                
+                qset_arr.append(propclass.all())            
+        return list(chain(*qset_arr))
     
-    
+    @property
+    def related_objects(self):
+        if not hasattr(self, '_related_objects'):
+            self._related_objects = self._get_related_objects()
+        return self._related_objects
+        
+        
     
     def save(self):        
         if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date

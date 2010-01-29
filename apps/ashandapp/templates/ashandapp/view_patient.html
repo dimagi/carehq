@@ -9,12 +9,12 @@
 {% with selected_user as user %}
 {% include "ashandapp/partials/user_profile_basic.html" %}
 {%endwith %}
-
-<hr>
 {% with selected_patient as patient %}
+<div class="span-12 last">
 {% include "ashandapp/partials/user_profile_patient.html" %}
+</div>
 {%endwith%}
-
+<hr>
 {% comment %}
 <a href="{% url ashandapp.views.careteam.single careteam.id %}">{%trans "Go to care team" %}</a>
 {% endcomment %}

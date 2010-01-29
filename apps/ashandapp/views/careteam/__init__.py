@@ -17,6 +17,8 @@ from datetime import datetime
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 from ashandapp.decorators import is_careteam_member
 
+from careplan.models import TemplateCarePlan
+
 
 @login_required
 @is_careteam_member
@@ -30,12 +32,13 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
     context['cases'] = cases    
     context['patient']= careteam.patient
     
-    provider_links_raw = careteam.providerlink_set.all()
-    provider_dict = {}
+    context['careteam'] = careteam                
+    cases = careteam.cases.all()
+    context['cases'] = cases    
     
-    for plink in provider_links_raw:
-        prov = plink.provider        
-        provider_dict[prov] = plink
-    context['provider_dict'] = provider_dict
+    context['careplan'] = TemplateCarePlan.objects.all()[0]
+    context['show_children'] = True
+    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()    
+    
     
     return render_to_response(template_name, context, context_instance=RequestContext(request))

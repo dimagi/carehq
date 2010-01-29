@@ -35,7 +35,7 @@ def create_user(username='mockuser', password='demouser', firstname=None, lastna
     
     user.first_name = firstname
     user.last_name=lastname
-    
+    user.email = '%s_%s@ashand.com' % (firstname, lastname)
     user.set_password(password)
     user.save()
     return user

@@ -16,8 +16,16 @@
 <div class="span-22 hidden" id="careteam_block_{{careteam.id}}">		
 	<div class="span-22">
 		<dl>			
+		    
 			<dt>{%trans "Primary Provider Contact:"%}</dt>
-				<dd>{{careteam.primary_provider}}</dd>
+			    {% if careteam.primary_provider %}
+				<dd>
+				<a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">
+				{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</dd>
+				</a>
+				{% else %}
+				<dd>Not Set</dd>
+				{% endif %}
 			<dt>{%trans "DOB:"%}</dt>
 				<dd>{{careteam.patient.dob|date}}</dd>
 			<dt>{%trans "Sex:"%}</dt>

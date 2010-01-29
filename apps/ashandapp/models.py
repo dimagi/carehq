@@ -179,15 +179,15 @@ class CareTeam(CachedModel):
             return self._primary_provider
         
         if self.providerlink_set.all().count() == 1:
-            self._primary_provider = self.providerlink_set.all()[0].provider.user
+            self._primary_provider = self.providerlink_set.all()[0].provider
         
         triage_nurse = self.providerlink_set.all().filter(role__role='nurse-triage')
         if len(triage_nurse) > 0:
-            self._primary_provider = triage_nurse[0].provider.user
+            self._primary_provider = triage_nurse[0].provider
         
         pcp = self.providerlink_set.all().filter(role__role='pcp')
         if len(pcp) > 0:            
-            self._primary_provider = pcp[0].provider.user
+            self._primary_provider = pcp[0].provider
         else:
             self._primary_provider = None
         
