@@ -14,6 +14,6 @@ from patient.models import Patient
 from careplan.models import PlanCategory, PlanRule, TemplateCarePlan, TemplateCarePlanItem, CarePlan, CarePlanItem 
 
 
-def CareplanForm(forms.ModelForm):
+class CareplanForm(forms.ModelForm):
     class Meta:
         model = CarePlan 
