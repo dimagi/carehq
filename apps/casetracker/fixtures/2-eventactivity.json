@@ -6,7 +6,7 @@
       "category": 2, 
       "name": "Edit Case", 
       "summary": "Edit a case",
-      "event_class": "edit",
+      "event_class": "event-edit",
       "phrasing": "edited"
     }
   }, 
@@ -17,7 +17,7 @@
       "category": 2, 
       "name": "Email", 
       "summary": "email on an issue",
-      "event_class": "custom",
+      "event_class": "event-custom",
       "phrasing": "emailed"
     }
   }, 
@@ -28,7 +28,7 @@
       "category": 2, 
       "name": "Phone Call", 
       "summary": "Make a phone call",
-      "event_class": "custom",
+      "event_class": "event-custom",
       "phrasing": "called"
     }
   }, 
@@ -39,7 +39,7 @@
       "category": 2, 
       "name": "SMS", 
       "summary": "Send an SMS",
-      "event_class": "custom",
+      "event_class": "event-custom",
       "phrasing" : "text messaged"
     }
   }, 
@@ -50,7 +50,7 @@
       "category": 1, 
       "name": "SMS", 
       "summary": "Send an SMS",
-      "event_class": "custom",
+      "event_class": "event-custom",
       "phrasing": "text messaged"
     }
   }, 
@@ -61,7 +61,7 @@
       "category": 1, 
       "name": "Phone Call", 
       "summary": "Make a phone call",
-      "event_class": "custom",
+      "event_class": "event-custom",
       "phrasing": "called"
     }
   }, 
@@ -72,7 +72,7 @@
       "category": 1, 
       "name": "New Case", 
       "summary": "Created a new case",
-      "event_class": "open",
+      "event_class": "event-open",
       "phrasing": "opened"
     }
   }, 
@@ -83,7 +83,7 @@
       "category": 2, 
       "name": "New Case", 
       "summary": "Created a new case",
-      "event_class": "open",
+      "event_class": "event-open",
       "phrasing": "opened"
     }
   }, 
@@ -94,7 +94,7 @@
       "category": 1, 
       "name": "Edit Case", 
       "summary": "Edit a case",
-      "event_class": "edit",
+      "event_class": "event-edit",
       "phrasing": "edited"      
     }
   },  
@@ -105,7 +105,7 @@
       "category": 1, 
       "name": "View Case", 
       "summary": "View a case",
-      "event_class": "view",
+      "event_class": "event-view",
       "phrasing": "viewed" 
     }
   },
@@ -116,7 +116,7 @@
       "category": 2, 
       "name": "View Case", 
       "summary": "View a case",
-      "event_class": "view",
+      "event_class": "event-view",
       "phrasing": "viewed"
     }
   },
@@ -127,7 +127,7 @@
       "category": 1, 
       "name": "Answer Question (Resolve)", 
       "summary": "Answer question to resolve a case",
-      "event_class": "resolve",
+      "event_class": "event-resolve",
        "phrasing": "answered"
     }
   },
@@ -138,7 +138,7 @@
       "category": 2, 
       "name": "Resolve Case", 
       "summary": "Resolve a case",
-      "event_class": "resolve",
+      "event_class": "event-resolve",
       "phrasing": "resolved"
     }
   },
@@ -149,7 +149,7 @@
       "category": 1, 
       "name": "Close Case", 
       "summary": "Close a case",
-      "event_class": "close",
+      "event_class": "event-close",
       "phrasing": "closed"
     }
   },
@@ -160,7 +160,7 @@
       "category": 2, 
       "name": "Close Case", 
       "summary": "Close a case",
-      "event_class": "close",
+      "event_class": "event-close",
       "phrasing": "closed"
     }
   },
@@ -171,7 +171,7 @@
       "category": 1, 
       "name": "Reopen Case", 
       "summary": "Reopen a case",
-      "event_class": "reopen",
+      "event_class": "event-reopen",
       "phrasing": "reopened"
     }
   },
@@ -182,7 +182,7 @@
       "category": 2, 
       "name": "Reopen Case", 
       "summary": "Reopen a case",
-      "event_class": "reopen",
+      "event_class": "event-reopen",
       "phrasing": "reopened"
     }
   }

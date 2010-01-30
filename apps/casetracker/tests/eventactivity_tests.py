@@ -28,7 +28,7 @@ class EventActivityVerificationTest(TestCase):
                     self.fail("Fixture setup error.  For category %s, there are zero activities of class: %s" % (str(cat), class_tuple[1]))
                 
                 #next, if it's open/edit/reopen, we need to make sure there is only one of that type
-                if storage_name == 'open' or storage_name == 'edit' or storage_name == 'reopen':
+                if storage_name == 'event-open' or storage_name == 'event-edit' or storage_name == 'event-reopen':
                     count = activities.filter(event_class=storage_name).count()
                     if count != 1:                        
                         self.fail("Fixture setup error: %s has been listed twice, it can only exist once per category (%s)" % (class_tuple[0], str(cat)))

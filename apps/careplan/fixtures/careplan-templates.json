@@ -1,17 +1,5 @@
 [
   {
-    "pk": "3eb96a6e0abc11dfa56d001641e25144", 
-    "model": "careplan.templatecareplan", 
-    "fields": {
-      "modified_date": "2010-01-26 20:48:58", 
-      "modified_by": 2, 
-      "title": "Breast Cancer", 
-      "created_by": 2, 
-      "version": 1, 
-      "created_date": "2010-01-26 20:48:58"
-    }
-  }, 
-  {
     "pk": 4, 
     "model": "careplan.plancategory", 
     "fields": {
@@ -92,30 +80,68 @@
     }
   }, 
   {
-    "pk": "f35632ac076c11dfa56d001641e25144", 
+    "pk": "f35632b6076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
-        1, 
-        3
+        1
       ], 
       "tags": [], 
-      "name": "Adherence", 
-      "parent": "f35632c1076c11dfa56d001641e25144", 
-      "description": "Adherence goals"
+      "name": "Dietary Goals", 
+      "parent": null, 
+      "description": "dietary goals"
     }
   }, 
   {
-    "pk": "f35632ad076c11dfa56d001641e25144", 
+    "pk": "f35632b7076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
-        9
+        1
       ], 
       "tags": [], 
-      "name": "Anxiety", 
-      "parent": "f35632bc076c11dfa56d001641e25144", 
-      "description": "Sources of Anxiety"
+      "name": "Disease Management", 
+      "parent": null, 
+      "description": "Disease management care goal"
+    }
+  }, 
+  {
+    "pk": "be944876079c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Fitness", 
+      "parent": null, 
+      "description": "Fitness care goals"
+    }
+  }, 
+  {
+    "pk": "f35632bc076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Lifestyle Management", 
+      "parent": null, 
+      "description": "asfdsdf"
+    }
+  }, 
+  {
+    "pk": "f35632bf076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Home Care", 
+      "parent": null, 
+      "description": "Home based care plan"
     }
   }, 
   {
@@ -130,6 +156,46 @@
       "parent": "f35632b7076c11dfa56d001641e25144", 
       "description": "Appointment care goals"
     }
+  },   
+  {
+    "pk": "f35632c1076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        3
+      ], 
+      "tags": [], 
+      "name": "Medication Management", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Management of all aspects of medication"
+    }
+  },
+  {
+    "pk": "f35632ac076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1, 
+        3
+      ], 
+      "tags": [], 
+      "name": "Adherence", 
+      "parent": "f35632c1076c11dfa56d001641e25144", 
+      "description": "Adherence goals"
+    }
+  }, 
+  {
+    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Symptoms", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Common symptoms to watch out for with this patient disease/problem profile"
+    }
   }, 
   {
     "pk": "f35632af076c11dfa56d001641e25144", 
@@ -142,6 +208,33 @@
       "name": "Back Pain", 
       "parent": "f35632cb076c11dfa56d001641e25144", 
       "description": "Back pain"
+    }
+  },
+  {
+    "pk": "f35632ad076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        9
+      ], 
+      "tags": [], 
+      "name": "Anxiety", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Sources of Anxiety"
+    }
+  }, 
+  
+  {
+    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Symptoms", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Common symptoms to watch out for with this patient disease/problem profile"
     }
   }, 
   {
@@ -182,6 +275,19 @@
     }
   }, 
   {
+    "pk": "f35632ca076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Side effect prevention", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Pre-emptive management of side effects by lifestyle changes."
+    }
+  },
+  {
     "pk": "f35632b3076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
@@ -221,32 +327,7 @@
       "description": "education on food and diet"
     }
   }, 
-  {
-    "pk": "f35632b6076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Dietary Goals", 
-      "parent": null, 
-      "description": "dietary goals"
-    }
-  }, 
-  {
-    "pk": "f35632b7076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Disease Management", 
-      "parent": null, 
-      "description": "Disease management care goal"
-    }
-  }, 
+  
   {
     "pk": "f35632b8076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -275,29 +356,14 @@
     }
   }, 
   {
-    "pk": "be944876079c11dfa56d001641e25144", 
+    "pk": "f35632ba076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
-      "category": [
-        1
-      ], 
+      "category": [], 
       "tags": [], 
-      "name": "Fitness", 
-      "parent": null, 
-      "description": "Fitness care goals"
-    }
-  }, 
-  {
-    "pk": "f35632bf076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Home Care", 
-      "parent": null, 
-      "description": "Home based care plan"
+      "name": "Investigations", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Investigations/observations on patient"
     }
   }, 
   {
@@ -324,17 +390,7 @@
       "description": "Instructions from patient"
     }
   }, 
-  {
-    "pk": "f35632ba076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [], 
-      "tags": [], 
-      "name": "Investigations", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Investigations/observations on patient"
-    }
-  }, 
+  
   {
     "pk": "f35632bb076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -347,20 +403,7 @@
       "parent": "f35632ba076c11dfa56d001641e25144", 
       "description": "Laboraory visits\r\n(week after nadir visit)"
     }
-  }, 
-  {
-    "pk": "f35632bc076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Lifestyle Management", 
-      "parent": null, 
-      "description": "asfdsdf"
-    }
-  }, 
+  },   
   {
     "pk": "f35632bd076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -374,6 +417,8 @@
       "description": "logistics around appointments"
     }
   }, 
+   
+  
   {
     "pk": "f35632be076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -401,19 +446,7 @@
       "description": "Managing side effects"
     }
   }, 
-  {
-    "pk": "f35632c1076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        3
-      ], 
-      "tags": [], 
-      "name": "Medication Management", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Management of all aspects of medication"
-    }
-  }, 
+   
   {
     "pk": "f35632c3076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -427,6 +460,7 @@
       "description": "pe"
     }
   }, 
+ 
   {
     "pk": "f35632c4076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -490,33 +524,8 @@
       "parent": "f35632cb076c11dfa56d001641e25144", 
       "description": "shortness of breath"
     }
-  }, 
-  {
-    "pk": "f35632ca076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        2
-      ], 
-      "tags": [], 
-      "name": "Side effect prevention", 
-      "parent": "f35632bc076c11dfa56d001641e25144", 
-      "description": "Pre-emptive management of side effects by lifestyle changes."
-    }
-  }, 
-  {
-    "pk": "f35632cb076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        6
-      ], 
-      "tags": [], 
-      "name": "Symptoms", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Common symptoms to watch out for with this patient disease/problem profile"
-    }
-  }, 
+  },  
+  
   {
     "pk": "f35632cc076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -543,6 +552,18 @@
       "name": "Weight Training", 
       "parent": "be944876079c11dfa56d001641e25144", 
       "description": "Weight training"
+    }
+  },
+    {
+    "pk": "3eb96a6e0abc11dfa56d001641e25144", 
+    "model": "careplan.templatecareplan", 
+    "fields": {
+      "modified_date": "2010-01-26 20:48:58", 
+      "modified_by": 2, 
+      "title": "Breast Cancer", 
+      "created_by": 2, 
+      "version": 1, 
+      "created_date": "2010-01-26 20:48:58"
     }
   }
 ]

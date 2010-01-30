@@ -12,6 +12,8 @@ import uuid
 from djcaching.models import CachedModel
 from djcaching.managers import CachingManager
 
+from casetracker import constants
+
 def make_uuid():
     return uuid.uuid1().hex
 
@@ -223,18 +225,24 @@ class CareTeam(CachedModel):
 
 
     #Region, convenience functions for cases
+    def active_cases(self):
+        """
+        Return a queryset of the cases in this careteam that are active
+        """
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_OPEN)
+    
+    
     def resolved_cases(self):
         """
         Return a queryset of the cases in this careteam that are resolved
         """
-        return self.cases.all().filter(status__state_class='resolve')
-        
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_RESOLVED)
     
     def closed_cases(self):
         """
         Return a queryset of all closed cases for this careteam
         """
-        return self.cases.all().filter(status__state_class='close')
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_CLOSED)
     
     
     def all_cases(self):

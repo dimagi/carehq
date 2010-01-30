@@ -22,13 +22,15 @@ from demoproviders import provider_arr
 
 from bootstrap import load_fixtures
 
+from casetracker import constants
+
 from factory import create_user, create_provider, create_or_get_provider_role, create_patient, set_random_identifiers
 
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
 CAREGIVERS_PER_PATIENT = 3
-MAX_REVISIONS=5
-MAX_INITIAL_CASES = 10
+MAX_REVISIONS=7
+MAX_INITIAL_CASES = 7
 
 
 def create_careteam(patient):
@@ -36,7 +38,7 @@ def create_careteam(patient):
     team = CareTeam()
     team.patient = patient   
     team.save()
-    total_providers = random.randint(0,PROVIDERS_PER_PATIENT)
+    total_providers = random.randint(1,PROVIDERS_PER_PATIENT)
     all_providers = Provider.objects.all().values_list('id', flat=True)
     prov_arr = [x for x in all_providers]
     random.shuffle(prov_arr)
@@ -56,7 +58,7 @@ def create_careteam(patient):
         
         
     #let's make caregivers now
-    total_caregivers = random.randint(0, CAREGIVERS_PER_PATIENT)    
+    total_caregivers = random.randint(1, CAREGIVERS_PER_PATIENT)    
     print "\tCreated Providers, assigning %d caregivers" % (total_caregivers)
     careteam_providers = team.providers.all().values_list('user__id', flat=True)        
     possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
@@ -92,7 +94,11 @@ def create_case(user, all_users, case_no):
     
     #newcase.category = Category.objects.all()[random.randint(0, Category.objects.all().count()-1)]
     newcase.category = Category.objects.all()[random.randint(0, 1)] #right now only support issue/question categories, so only the first two categories
-    newcase.status = Status.objects.all()[random.randint(0, Status.objects.all().count() -1)]
+    #newcase.status = Status.objects.all()[random.randint(0, Status.objects.all().count() -1)]
+    
+    #set the default opened case
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+    
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
     newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     
@@ -118,14 +124,28 @@ def work_case(case, user):
     evt.created_date = datetime.utcnow()
     evt.save()
 
-def modify_case(case, user, rev_no):        
-    case.last_edit_by = user
-    
+def resolve_or_close_case(case, user, rev_no):        
+    case.last_edit_by = user    
     #this tests to see if the signal picks up custom attrs added to a model instance.  it does.  not sure how thread safe this will be though.        
-    case.edit_comment = 'random change ' + str(uuid.uuid1().hex)
-    case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
-    td = timedelta(days=random.randint(0,MAX_DELTA))    
-    case.next_action_date = case.next_action_date + td
+    action = ""
+    close = False
+    if random.random() >= .33:
+        action = "resolving case"
+        close = False
+    else:
+        action = "closing case"
+        close = True
+        
+    case.edit_comment = action
+    case.resolved_by = user
+    if close:
+        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_CLOSED)[0]
+        case.closed_by = user
+    else:
+        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_RESOLVED)[0]
+    #case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
+    #td = timedelta(days=random.randint(0,MAX_DELTA))    
+    #case.next_action_date = case.next_action_date + td    
     case.save()        
 
 def run():
@@ -137,8 +157,7 @@ def run():
     call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
-    load_fixtures()
-    
+    load_fixtures()    
     
     #create patients    
     for ptarr in patient_arr:
@@ -183,11 +202,11 @@ def run():
             for rev in range(0,num_revisions):
                 print "\tApplying revision %d - %d" % (rev, revision_no)
                 modding_user = users[random.randint(0,len(users)-1)]
-                if random.random() > .1:
+                if random.random() >= .25:
                     #let's bias towards doing work on a case
                     work_case(case,modding_user)
                 else:
-                    modify_case(case, modding_user, revision_no)
+                    resolve_or_close_case(case, modding_user, revision_no)
                     
                 revision_no += 1
    

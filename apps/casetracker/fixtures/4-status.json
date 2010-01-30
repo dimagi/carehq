@@ -5,7 +5,7 @@
     "fields": {
       "category": 1, 
       "description": "Active",
-      "state_class": "open"
+      "state_class": "state-open"
     }
   }, 
   {
@@ -14,7 +14,7 @@
     "fields": {
       "category": 1, 
       "description": "Resolved (Answered)",
-      "state_class": "resolve"
+      "state_class": "state-resolved"
     }
   }, 
   {
@@ -23,7 +23,7 @@
     "fields": {
       "category": 1, 
       "description": "Closed (Answered)",
-      "state_class": "close"
+      "state_class": "state-closed"
     }
   }, 
   {
@@ -32,7 +32,7 @@
     "fields": {
       "category": 2, 
       "description": "Active",
-      "state_class": "open"
+      "state_class": "state-open"
     }
   }, 
   {
@@ -41,7 +41,7 @@
     "fields": {
       "category": 2, 
       "description": "Resolved (Responded)",
-      "state_class": "resolve"
+      "state_class": "state-resolved"
     }
   },
   {
@@ -50,7 +50,7 @@
     "fields": {
       "category": 2, 
       "description": "Closed (Responded)",
-      "state_class": "close"
+      "state_class": "state-closed"
     }
   }
 ]

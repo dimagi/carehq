@@ -17,6 +17,7 @@ from django.core.urlresolvers import reverse
 import uuid
 from django.utils.translation import ugettext_lazy as _
 
+import constants as constants
 
 #from django.db.models.fields.related import RelatedManager, ManyRelatedManager
 
@@ -25,24 +26,28 @@ def make_uuid():
     return uuid.uuid1().hex
 
 
+
 CASE_EVENT_CHOICES = (
-        ('open', 'Open/Create'), #case state
-        ('view', 'View'),
-        ('edit', 'Edit'),
-        ('working', 'Working'), #working on case?  this seems a bit ridiculous            
-        ('resolve', 'Resolve'),
-        ('close', 'Close'), #case state        
-        ('reopen', 'Reopen'), #case state
-        ('comment', 'Comment'),
-        ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+        (constants.CASE_EVENT_OPEN, 'Open/Create'), #case statust state
+        (constants.CASE_EVENT_VIEW, 'View'),
+        (constants.CASE_EVENT_EDIT, 'Edit'),
+        (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous                
+        (constants.CASE_EVENT_REOPEN, 'Reopen'), #case state
+        (constants.CASE_EVENT_COMMENT, 'Comment'),
+        (constants.CASE_EVENT_CUSTOM, 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+        
+        (constants.CASE_EVENT_RESOLVE, 'Resolve'), #case status state
+        (constants.CASE_EVENT_CLOSE, 'Close'), #case status state
     )
 
 #ok, this is a bit nasty, but the rationale is, an actual CASE only really has 3 states. open, resolved and closed
 #the case_state_chjocies are acutal events that happen AROUND a case, that can alter the state of a case.
+
+
 CASE_STATES = (
-        ('open', 'Open/Active'),                     
-        ('resolve', 'Resolved'),
-        ('close', 'Closed'),        
+        (constants.CASE_STATE_OPEN, 'Open/Active'),                     
+        (constants.CASE_STATE_RESOLVED, 'Resolved'),
+        (constants.CASE_STATE_CLOSED, 'Closed'),        
 )
 
 #class CaseAction(models.Model):
@@ -171,7 +176,7 @@ class EventActivity(CachedModel):
     category = models.ForeignKey(Category) # different categories have different event types
     phrasing = models.CharField(max_length=32, null=True, blank=True)
     
-    event_class = models.TextField(max_length=24, choices=CASE_EVENT_CHOICES)
+    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES)
     
     objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
@@ -351,12 +356,12 @@ class Case(CachedModel):
 
             #now, we need to check the status change being done to this.
             state_class = self.status.state_class
-            if state_class == 'resolve': #from choices of CASE_STATES
+            if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
                 if self.resolved_by == None:
                     raise Exception("Case state is now resolved, you must set a resolved_by")
                 else:
                     self.resolved_date = datetime.utcnow()
-            elif state_class == 'close':
+            elif state_class == constants.CASE_STATE_CLOSED:
                 if self.closed_by == None:
                     raise Exception("Case state is now resolved, you must set a resolved_by")
                 else:

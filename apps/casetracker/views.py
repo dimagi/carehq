@@ -236,7 +236,7 @@ def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
     context['case'] = thecase
     context['formatting'] = False
-    context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='custom')
+    context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
     
     
     ret = context['events'] 
