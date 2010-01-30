@@ -220,6 +220,28 @@ class CareTeam(CachedModel):
             
             self._careteam_qset = User.objects.filter(q_caregivers | q_providers).exclude(username='ashand-reflexive')
         return self._careteam_qset
+
+
+    #Region, convenience functions for cases
+    def resolved_cases(self):
+        """
+        Return a queryset of the cases in this careteam that are resolved
+        """
+        return self.cases.all().filter(status__state_class='resolve')
+        
+    
+    def closed_cases(self):
+        """
+        Return a queryset of all closed cases for this careteam
+        """
+        return self.cases.all().filter(status__state_class='close')
+    
+    
+    def all_cases(self):
+        """
+        return all cases for this careteam
+        """
+        return self.cases.all()
         
     
     def __unicode__(self):

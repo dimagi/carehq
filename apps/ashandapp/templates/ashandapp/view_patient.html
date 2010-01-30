@@ -3,8 +3,6 @@
 {% block title %}{% trans "Patient View" %}{% endblock %}
 
 {% block content %}
-<h1> Patient info for {{selected_user}}</h1>
-
 {# basic information #}
 {% with selected_user as user %}
 {% include "ashandapp/partials/user_profile_basic.html" %}

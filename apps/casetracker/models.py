@@ -348,7 +348,26 @@ class Case(CachedModel):
             if self.last_edit_by == None:
                 raise Exception("Missing fields in Case edit - last_edit_by")            
 
+
+            #now, we need to check the status change being done to this.
+            state_class = self.status.state_class
+            if state_class == 'resolve': #from choices of CASE_STATES
+                if self.resolved_by == None:
+                    raise Exception("Case state is now resolved, you must set a resolved_by")
+                else:
+                    self.resolved_date = datetime.utcnow()
+            elif state_class == 'close':
+                if self.closed_by == None:
+                    raise Exception("Case state is now resolved, you must set a resolved_by")
+                else:
+                    #ok, closed by is set, let's double check that it's been resolved
+                    if self.resolved_by == None:
+                        raise Exception("Error, this case must be resolved before it can be closed")
+                    self.closed_date = datetime.utcnow()            
+
             self.last_edit_date = datetime.utcnow()            
+            
+            
                     
         super(Case, self).save()        
     
