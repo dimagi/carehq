@@ -4,6 +4,8 @@ import hashlib
 import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category
+from casetracker import constants
+
 
 def create_user(username='mockuser', password='mockmock'):    
     user = User()    
@@ -57,7 +59,7 @@ class EventActivityVerificationTest(TestCase):
         events = CaseEvent.objects.filter(case=newcase)
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
-        self.assertEqual("event-open", events[0].activity.event_class)
+        self.assertEqual(constants.CASE_EVENT_OPEN, events[0].activity.event_class)
     
     def testCaseModifyDescription(self):
         self.testCreateCase()
@@ -74,7 +76,7 @@ class EventActivityVerificationTest(TestCase):
         self.assertEqual(2, events.count())
         
         #the top one due to the sort ordering should be the one we just did
-        self.assertEqual("edit", events[1].activity.event_class)
+        self.assertEqual(constants.CASE_EVENT_EDIT, events[1].activity.event_class)
         
         
         #quickly verify that the original description is still unchanged
