@@ -48,9 +48,12 @@
 
 <div id="tabs" class="span-24"> 
     <ul> 
-        <li><a href="#tabs-1">Care Team</a></li> 
-        <li><a href="#tabs-2">Cases</a></li> 
-        <li><a href="#tabs-3">Care Plan</a></li> 
+        <li><a href="#tabs-1">Care Team</a></li>         
+        <li><a href="#tabs-2">Care Plan</a></li>
+        <li><a href="#tabs-3">Active Cases</a></li>
+        <li><a href="#tabs-4">Resolved Cases</a></li> 
+        <li><a href="#tabs-5">Closed Cases</a></li>
+        <li><a href="#tabs-6">All Cases</a></li>
 {#        <li><a href="{% url show-cases-ajax careteam.id%}">Ajax Cases</a></li> #}
     </ul> 
     <div id="tabs-1">
@@ -87,12 +90,8 @@
             </div> <!-- end caregiver block -->
         </div> <!-- end careteam tab block -->
         {%endwith %}
-    </div> <!-- end tabs-1 -->
-    <div id="tabs-2">        
-        <h2>Active Cases</h2>
-        {% include "ashandapp/partials/active_case.html" %}                    
-    </div> 
-    <div id="tabs-3">
+    </div> <!-- end tabs-1 -->    
+    <div id="tabs-2">
         {# {{careplan}}#} 
          
          <h2>{{careplan.title}}</h2>
@@ -108,6 +107,26 @@
             {%endfor%}
             </ul> 
     </div>
+    <div id="tabs-3">        
+    	{% with careteam.active_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="tabs-4">        
+        {% with careteam.resolved_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="tabs-5">        
+        {% with careteam.closed_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="tabs-6">        
+        {% with careteam.all_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
 </div> <!-- end tabs -->
 
 {% endblock %}
