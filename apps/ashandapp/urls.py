@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
     url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
     
-    url(r'^careteamtab/(?P<careteam_id>[0-9a-f]{32})/ajax/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='show-cases-ajax'),
+    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/ajax/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='show-cases-ajax'),
     
     #careteam specific links
     url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})$', 'ashandapp.views.careteam.single', name='view-careteam'),
