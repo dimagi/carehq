@@ -217,7 +217,7 @@ class CareTeam(CachedModel):
             caregiver_ids = self.caregivers.all().values_list('id',flat=True)
             q_caregivers = Q(id__in=caregiver_ids)
             
-            provider_ids = self.providers.all().values_list('id',flat=True)
+            provider_ids = self.providers.all().values_list('user__id',flat=True)
             q_providers = Q(id__in=provider_ids)
             
             self._careteam_qset = User.objects.filter(q_caregivers | q_providers).exclude(username='ashand-reflexive')
