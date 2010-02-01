@@ -16,13 +16,13 @@
 	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/blueprint/ie.css" type="text/css" media="screen, projection">
 	        <![endif]-->
             
-            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.7.2.custom.css" type="text/css">	        
+            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.8rc1.custom.css" type="text/css">	        
 	        {% block page_stylesheets %}{% endblock %}        
         {% endblock %} {# stylesheets #}
         
         <!-- javascripts (global, app, page) -->
-        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.3.2.min.js"></script>        
-        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.7.2.custom.min.js"></script>    
+        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.4.1.min.js"></script>        
+        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.8rc1.custom.min.js"></script>    
         {% for js in javascripts %}<script type="text/javascript" src="{{ js }}"></script>{% endfor %}
         
         {% block javascripts %}
@@ -112,7 +112,7 @@
                     Copyright &copy; {% now "Y" %} <a href="http://dimagi.com">Dimagi Inc.</a><br />                   
                 </p>
                 
-                {#<a href="javascript:void($('.container').toggleClass('showgrid'));">Toggle BP Grid</a>#}
+                <a href="javascript:void($('.container').toggleClass('showgrid'));">Toggle BP Grid</a>
                 
             </div>
             {% endblock %}            

@@ -7,7 +7,6 @@ sys.path.append('..')
 
 sys.path.append(os.path.join(filedir))
 sys.path.append(os.path.join(filedir,'apps'))
-#sys.path.append(os.path.join(filedir,'apps','djblets'))
 sys.path.append(os.path.join(filedir,'rapidsms'))
 sys.path.append(os.path.join(filedir,'rapidsms','apps'))
 

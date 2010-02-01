@@ -14,7 +14,7 @@
 
 {%with current_careteam as careteam %}
 {# pulling from the inline_careteam but we want to custom display it here #}
-<div class="span-24"
+<div class="span-24">
 <div class="span-18"> <!-- careteam header -->    
  <h3><a href="{% url view-careteam careteam.id %}"> {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s</a> Care Team</h3>
  <table>
@@ -38,10 +38,12 @@
 </div> <!-- end careteam header -->
 {%endwith %}
 <div class="span-6 last">
-<ul>
-<li><a href="{%url ashandapp.views.cases.question.new_question current_careteam.id %}">New Question</a></li>
-<li><a href="{%url ashandapp.views.cases.issue.new_issue current_careteam.id %}">New Issue</a></li>
-</ul>
+<h4>Actions</h4>
+<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a><br>
+<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}">New Issue</a><br>
+<br>
+<a href="">Invite provider</a><br>
+<a href="">Invite caregiver</a><br>
 </div>
 
 </div>
@@ -59,9 +61,9 @@
     <div id="tabs-1">
         {% with current_careteam as careteam %}
         <div class="span-24"><!-- careteam tab block -->
-            <div class="span-12"><!--provider block -->
-                <h3>{%trans "Providers" %}</h3>
-                <ul>
+            <div class="span-9"><!--provider block -->
+                <h3>{%trans "Providers" %}</h3>                
+                <ul class="span-12">
                 {% for prov in careteam.providers.all %}
                     <li>            
                         <a href="{%url ashandapp.views.users.single prov.user.id %}">
@@ -72,7 +74,7 @@
                 </ul>
             </div> <!-- end provider block -->
         
-            <div class="span-12 last"> <!-- caregiver block -->
+            <div class="span-9"> <!-- caregiver block -->
             <h3>{%trans "Caregivers"%}</h3>         
             {% if careteam.caregiver_data %}
                 <ul>
@@ -88,8 +90,14 @@
                 <em>{%trans "No Caregivers"%}</em>
             {%endif %}    
             </div> <!-- end caregiver block -->
+            
+            <div class="span-6 last">            
+            
+            </div>
+            
         </div> <!-- end careteam tab block -->
         {%endwith %}
+        
     </div> <!-- end tabs-1 -->    
     <div id="tabs-2">
         {# {{careplan}}#} 
