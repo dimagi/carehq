@@ -8,7 +8,6 @@ from casetracker.models import Case, Filter
 from ashandapp.models import CaseProfile, CareTeam, ProviderLink
 from provider.models import Provider
 from patient.models import Patient
-from casetracker.datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,8 +28,7 @@ def new_question(request, careteam_id, template_name="ashandapp/activities/quest
         if form.is_valid():
             newcase = form.get_case(request)            
             newcase.save()
-            
-            careteam.cases.add(newcase)
+            careteam.add_case(newcase)
             
             return HttpResponseRedirect(reverse('view-careteam', kwargs= {'careteam_id': careteam_id}))
         else:

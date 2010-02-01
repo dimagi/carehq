@@ -8,7 +8,6 @@ from casetracker.models import Case, Filter
 from ashandapp.models import CaseProfile, CareTeam,ProviderLink
 from provider.models import Provider
 from patient.models import Patient
-from casetracker.datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
@@ -38,7 +37,7 @@ def single(request, careteam_id, template_name="ashandapp/view_careteam.html"):
     
     context['careplan'] = TemplateCarePlan.objects.all()[0]
     context['show_children'] = True
-    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()    
+    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()
     
     
     return render_to_response(template_name, context, context_instance=RequestContext(request))

@@ -631,7 +631,7 @@ class GridOrder (models.Model):
     """
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
     when using the column as a column for display.  This tells us which columns will be arranged in what order
-    for display on the DataGrid.
+    for display on the data table.
     
     The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
     in this through model.

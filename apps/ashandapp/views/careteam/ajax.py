@@ -8,7 +8,6 @@ from casetracker.models import Case, Filter
 from ashandapp.models import CaseProfile, CareTeam,ProviderLink
 from provider.models import Provider
 from patient.models import Patient
-from casetracker.datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist

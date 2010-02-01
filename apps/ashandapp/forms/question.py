@@ -9,34 +9,22 @@ from django.contrib.auth.models import User
 from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
 
+from ashandapp.forms import CareTeamCaseFormBase
+from casetracker import constants
 
-class NewQuestionForm(forms.ModelForm):
+class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""
     RECIPIENT_CHOICES = (('primary', "Care Team Primary" ),                         
                          ('specific', "Specific Care Team member" ),
                          )
-    description = forms.CharField(max_length=160,
-                              required = True, 
-                              error_messages = {'required': 
-                                                'You must enter a short description'})
-    
-    body = forms.CharField(required=True,
-                           error_messages = {'required': 'You must enter a message body'},
-                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}),                            
-                          )
-    
-    priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-                                      error_messages = {'required': 'Please select a priority for this question'})    
-    
+        
     recipient = forms.ChoiceField(choices=RECIPIENT_CHOICES, required=True)
     other_recipient = forms.ModelChoiceField(queryset=User.objects.all(), required=False)    
     
+    
     def __init__(self, careteam=None, *args, **kwargs):
-        super(NewQuestionForm, self).__init__(*args, **kwargs)          
-        if careteam != None:
-            self._careteam = careteam
-            self.fields['other_recipient'].queryset = careteam.get_careteam_user_qset()
-        
+        super(NewQuestionForm, self).__init__(careteam=careteam,*args, **kwargs)          
+        self.fields['other_recipient'].queryset = careteam.get_careteam_user_qset()        
    
     def clean(self):
         return self.cleaned_data
@@ -60,12 +48,12 @@ class NewQuestionForm(forms.ModelForm):
         newcase.category = Category.objects.get(category='question')
         newcase.priority = self.cleaned_data['priority']
         newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).get(description='Active')
+        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
         if self.cleaned_data['recipient'] == 'primary':            
-            newcase.assigned_to = self._careteam.primary_provider
+            newcase.assigned_to = self._careteam.primary_provider.user
         elif self.cleaned_data['recipient'] == 'specific':            
             newcase.assigned_to = self.cleaned_data['other_recipient']
                     

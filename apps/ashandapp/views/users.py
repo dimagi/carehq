@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from ashandapp.datagrids import UserDataGrid
+
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 import logging
@@ -8,7 +8,7 @@ from casetracker.models import Case, Filter
 from ashandapp.models import CaseProfile, CareTeam, ProviderLink, CaregiverLink
 from provider.models import Provider
 from patient.models import Patient
-from casetracker.datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
+
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,8 +21,8 @@ from casetracker.views import get_sorted_dictionary
  
 
 @cache_page(60 * 5)
-def all(request, template_name='ashandapp/user_datagrid.html'):
-    return UserDataGrid(request).render_to_response(template_name)
+def all(request, template_name='ashandapp/user_datagrid.html'):    
+    pass
 
 
 def my_profile(request, template_name = 'ashandapp/my_profile.html'):
