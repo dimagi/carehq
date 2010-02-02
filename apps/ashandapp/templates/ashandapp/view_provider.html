@@ -7,21 +7,24 @@
 {% endblock %}
 
 {% block content %}
-<h2> Provider Profile</h2>
 {% with selected_user as user %}
 	{% include "ashandapp/partials/user_profile_basic.html" %}
 {% endwith %}
 
 {% if selected_is_provider %}
 	{% with selected_provider as provider %}
+	<div class="span-12 last">
 		{% include "ashandapp/partials/user_profile_provider.html" %}
+	</div>
 	{%endwith%}
-	
+<hr>	
 	{% if common_careteams %}
+	<div class="span-24">
 		<h3>{% trans "Shared Patients" %}({{common_careteams|length}})</h3>
 		{% for careteam in common_careteams %}
 			{% include "ashandapp/partials/inline_careteam.html" %}
 		{% endfor %}	
+	</div>
 	{% endif %}
 {% endif %}
 

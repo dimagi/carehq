@@ -48,7 +48,7 @@ class EventActivityVerificationTest(TestCase):
         events = CaseEvent.objects.filter(case=newcase)
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
-        self.assertEqual("open", events[0].activity.event_class)
+        self.assertEqual("event-open", events[0].activity.event_class)
     
     
     

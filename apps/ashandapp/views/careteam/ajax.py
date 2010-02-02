@@ -8,7 +8,6 @@ from casetracker.models import Case, Filter
 from ashandapp.models import CaseProfile, CareTeam,ProviderLink
 from provider.models import Provider
 from patient.models import Patient
-from casetracker.datagrids import CaseDataGrid, CaseEventDataGrid, FilterDataGrid
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,10 +21,11 @@ from ashandapp.forms.issue import NewIssueForm
 
 @login_required
 @is_careteam_member
-def view_careteam_cases(request, careteam_id, template_name="ashandapp/careteam/view_cases_ajax.html"):    
+def view_careteam_cases(request, careteam_id, template_name="ashandapp/careteam/careteam_cases_ajax.html"):    
     context = {}
     careteam = CareTeam.objects.get(id=careteam_id)
     cases = careteam.cases.all()
     context['cases'] = cases    
     context['patient']= careteam.patient    
+    context['careteam'] = careteam
     return render_to_response(template_name, context, context_instance=RequestContext(request))

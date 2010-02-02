@@ -5,9 +5,14 @@
 {% if user.is_authenticated %}
 <p>You're already logged in!</p>
 {% else %}
-<div id="loginblock">
-    <h2>ASHand</h2>
+<div class="span-24">
+<div class="span-10 prepend-2 note">
+<h2>ASHand</h2>
+<p>ASHand is a tool to help coordinate medical care between you, doctors, and people you care about</p>
+</div>
+<div class="span-10 prepend-2 last">    
     <h4>Please sign in</h4>
+    <fieldset>
     <form method="post" action=".">
         <table>
             <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
@@ -16,10 +21,11 @@
         {% if form.errors %}
             <p><font color="red">Your username and password didn't match. Please try again.</font></p>
         {% endif %}
-        <input type="submit" value="Login" />
+        <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
-    <br>
+    </fieldset>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

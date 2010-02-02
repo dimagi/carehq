@@ -1,0 +1,35 @@
+<script type="text/javascript"> 
+            $(function(){                
+                // Tabs
+                $('#subtabs').tabs();                
+                });
+</script>
+<div id="subtabs" class="span-23"> 
+    <ul> 
+    <li><a href="#subtabs-1">Active Cases</a></li>
+        <li><a href="#subtabs-2">Resolved Cases</a></li> 
+        <li><a href="#subtabs-3">Closed Cases</a></li>
+        <li><a href="#subtabs-4">All Cases</a></li>
+    </ul>
+    
+    <div id="subtabs-1">        
+        {% with careteam.active_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="subtabs-2">        
+        {% with careteam.resolved_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="subtabs-3">        
+        {% with careteam.closed_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+    <div id="subtabs-4">        
+        {% with careteam.all_cases as cases %}
+        {% include "ashandapp/partials/active_case.html" %}
+        {% endwith %}                    
+    </div> 
+</div>

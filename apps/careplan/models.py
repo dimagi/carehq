@@ -164,6 +164,14 @@ class CarePlanCaseLink(models.Model):
     
 
 class CarePlanItem(models.Model):
+    CAREPLAN_ITEM_STATES = (
+                            ('new', 'New'),
+                            ('active', 'Active'),                            
+                            ('closed-completed','Completed'),
+                            ('closed-resolved', 'Resolved'),
+                            ('closed-cancelled', 'Cancelled'),
+                            ('removed', 'Removed'),
+                            )
     
     #subclassing PlanItem makes it tricky with the foriegnkey parentage, so we're copying verbatim
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True)
@@ -176,6 +184,8 @@ class CarePlanItem(models.Model):
     cases = models.ManyToManyField(Case, through="CarePlanCaseLink")
     from_template = models.ForeignKey(TemplateCarePlanItem, blank=True, null=True, 
                                       related_name='template_inheritors')
+    
+    state = models.CharField(choices=CAREPLAN_ITEM_STATES, max_length=16)
 
     def get_absolute_url(self):
         return reverse('careplan.views.planinstances.view_careplan_item', kwargs={"item_id":self.id})

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
 
+from casetracker import constants
 
 class CaseCommentForm(forms.Form):    
     comment = forms.CharField(required=True,
@@ -28,7 +29,7 @@ class CaseResolveCloseForm(forms.Form):
     def __init__(self, case=None, mode=None, *args, **kwargs):
         super(CaseResolveCloseForm, self).__init__(*args, **kwargs)
         
-        if mode != 'resolve' and mode != 'close':
+        if mode != constants.CASE_STATE_RESOLVED and mode != constants.CASE_STATE_CLOSED:
             raise Exception("Error, the mode %s being called is invalid!" % (mode))
         
         if case is None:
@@ -39,6 +40,10 @@ class CaseResolveCloseForm(forms.Form):
         
 
 class CaseModelForm(forms.ModelForm):
+    """
+    A form to modify a case instance.
+    The constants below try to establish a way to flip the active fields depending on the context of how to change it.  The idea here is that not all fields should be presentable to the user.
+    """
     
     EDIT_ASSIGN = 'assign'
     EDIT_MODIFY_ALL = 'edit'

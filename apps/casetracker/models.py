@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.db import models
 
 from django.db.models import Q
@@ -15,29 +17,37 @@ from django.core.urlresolvers import reverse
 import uuid
 from django.utils.translation import ugettext_lazy as _
 
+import constants as constants
+
+#from django.db.models.fields.related import RelatedManager, ManyRelatedManager
+
 
 def make_uuid():
     return uuid.uuid1().hex
 
 
+
 CASE_EVENT_CHOICES = (
-        ('open', 'Open/Create'), #case state
-        ('view', 'View'),
-        ('edit', 'Edit'),
-        ('working', 'Working'), #working on case?  this seems a bit ridiculous            
-        ('resolve', 'Resolve'),
-        ('close', 'Close'), #case state        
-        ('reopen', 'Reopen'), #case state
-        ('comment', 'Comment'),
-        ('custom', 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+        (constants.CASE_EVENT_OPEN, 'Open/Create'), #case statust state
+        (constants.CASE_EVENT_VIEW, 'View'),
+        (constants.CASE_EVENT_EDIT, 'Edit'),
+        (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous                
+        (constants.CASE_EVENT_REOPEN, 'Reopen'), #case state
+        (constants.CASE_EVENT_COMMENT, 'Comment'),
+        (constants.CASE_EVENT_CUSTOM, 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+        
+        (constants.CASE_EVENT_RESOLVE, 'Resolve'), #case status state
+        (constants.CASE_EVENT_CLOSE, 'Close'), #case status state
     )
 
 #ok, this is a bit nasty, but the rationale is, an actual CASE only really has 3 states. open, resolved and closed
 #the case_state_chjocies are acutal events that happen AROUND a case, that can alter the state of a case.
+
+
 CASE_STATES = (
-        ('open', 'Open/Active'),                     
-        ('resolve', 'Resolved'),
-        ('close', 'Closed'),        
+        (constants.CASE_STATE_OPEN, 'Open/Active'),                     
+        (constants.CASE_STATE_RESOLVED, 'Resolved'),
+        (constants.CASE_STATE_CLOSED, 'Closed'),        
 )
 
 #class CaseAction(models.Model):
@@ -166,7 +176,7 @@ class EventActivity(CachedModel):
     category = models.ForeignKey(Category) # different categories have different event types
     phrasing = models.CharField(max_length=32, null=True, blank=True)
     
-    event_class = models.TextField(max_length=24, choices=CASE_EVENT_CHOICES)
+    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES)
     
     objects = CachingManager()
     #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
@@ -189,7 +199,7 @@ class CaseEvent(models.Model):
     examples of what happened to a case.
     """
     id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    case = models.ForeignKey("Case")    
+    case = models.ForeignKey("Case", related_name='case_events')    
     notes = models.TextField(blank=True)
     #activity = models.ForeignKey(EventActivity, limit_choices_to = {'category': "case__category"})    
     activity = models.ForeignKey(EventActivity)
@@ -294,8 +304,41 @@ class Case(CachedModel):
         else:
             return None
     
+    def _get_related_objects(self):
+        props = dir(self)
+        qset_arr = []
+        for prop in props:
+            #print prop
+            if prop == "_base_manager":
+                continue
+            elif prop == "objects":
+                continue           
+            elif prop == "last_event_date" or prop == "last_event_by" or prop=="last_case_event":
+                continue
+            elif prop == "related_objects":
+                continue
+            elif prop == '_get_related_objects':
+                continue
+            elif prop == 'Meta':
+                continue 
+            elif prop == 'case_events': #skip stuff within myself
+                continue
+            
+            propclass = getattr(self, prop)
+            
+            cls = propclass.__class__.__name__
+            
+            if cls == 'RelatedManager' or cls == 'ManyRelatedManager':                
+                qset_arr.append(propclass.all())            
+        return list(chain(*qset_arr))
     
-    
+    @property
+    def related_objects(self):
+        if not hasattr(self, '_related_objects'):
+            self._related_objects = self._get_related_objects()
+        return self._related_objects
+        
+        
     
     def save(self):        
         if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
@@ -310,7 +353,26 @@ class Case(CachedModel):
             if self.last_edit_by == None:
                 raise Exception("Missing fields in Case edit - last_edit_by")            
 
+
+            #now, we need to check the status change being done to this.
+            state_class = self.status.state_class
+            if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+                if self.resolved_by == None:
+                    raise Exception("Case state is now resolved, you must set a resolved_by")
+                else:
+                    self.resolved_date = datetime.utcnow()
+            elif state_class == constants.CASE_STATE_CLOSED:
+                if self.closed_by == None:
+                    raise Exception("Case state is now resolved, you must set a resolved_by")
+                else:
+                    #ok, closed by is set, let's double check that it's been resolved
+                    if self.resolved_by == None:
+                        raise Exception("Error, this case must be resolved before it can be closed")
+                    self.closed_date = datetime.utcnow()            
+
             self.last_edit_date = datetime.utcnow()            
+            
+            
                     
         super(Case, self).save()        
     
@@ -569,7 +631,7 @@ class GridOrder (models.Model):
     """
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
     when using the column as a column for display.  This tells us which columns will be arranged in what order
-    for display on the DataGrid.
+    for display on the data table.
     
     The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
     in this through model.

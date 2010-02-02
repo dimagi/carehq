@@ -1,8 +1,7 @@
 from django.conf.urls.defaults import *
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
-urlpatterns = patterns ('',
-    (r'^grid_examples$', 'casetracker.views.grid_examples'),
+urlpatterns = patterns ('',    
     (r'^case/all/$', 'casetracker.views.all_cases'),
     
     url(r'^case/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case', name="view-case"),
@@ -13,11 +12,10 @@ urlpatterns = patterns ('',
     url(r'^case/(?P<case_id>[0-9a-f]{32})/edit$', 'casetracker.views.edit_case', name="edit-case"),
     url(r'^case/(?P<case_id>[0-9a-f]{32})/comment$', 'casetracker.views.case_comment', name="case-comment"),
     
-    (r'^events/all/$', 'casetracker.views.all_case_events'),
-    (r'^events/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case_events'),    
-    
-    (r'^filters/all/$', 'casetracker.views.all_filters'),
-    (r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter'),
+    #(r'^events/all/$', 'casetracker.views.all_case_events'),    
+    #(r'^events/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case_events'),    
+    #(r'^filters/all/$', 'casetracker.views.all_filters'), #these need to come back in a non djblet format
+    #(r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter'), #need to refactor to test in a non djblet format
 
     (r'^newsfeed/cases/$', 'casetracker.views.newsfeed_allcases'),
     

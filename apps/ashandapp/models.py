@@ -12,6 +12,8 @@ import uuid
 from djcaching.models import CachedModel
 from djcaching.managers import CachingManager
 
+from casetracker import constants
+
 def make_uuid():
     return uuid.uuid1().hex
 
@@ -179,15 +181,15 @@ class CareTeam(CachedModel):
             return self._primary_provider
         
         if self.providerlink_set.all().count() == 1:
-            self._primary_provider = self.providerlink_set.all()[0].provider.user
+            self._primary_provider = self.providerlink_set.all()[0].provider
         
         triage_nurse = self.providerlink_set.all().filter(role__role='nurse-triage')
         if len(triage_nurse) > 0:
-            self._primary_provider = triage_nurse[0].provider.user
+            self._primary_provider = triage_nurse[0].provider
         
         pcp = self.providerlink_set.all().filter(role__role='pcp')
         if len(pcp) > 0:            
-            self._primary_provider = pcp[0].provider.user
+            self._primary_provider = pcp[0].provider
         else:
             self._primary_provider = None
         
@@ -215,11 +217,39 @@ class CareTeam(CachedModel):
             caregiver_ids = self.caregivers.all().values_list('id',flat=True)
             q_caregivers = Q(id__in=caregiver_ids)
             
-            provider_ids = self.providers.all().values_list('id',flat=True)
+            provider_ids = self.providers.all().values_list('user__id',flat=True)
             q_providers = Q(id__in=provider_ids)
             
             self._careteam_qset = User.objects.filter(q_caregivers | q_providers).exclude(username='ashand-reflexive')
         return self._careteam_qset
+
+
+    #Region, convenience functions for cases
+    def active_cases(self):
+        """
+        Return a queryset of the cases in this careteam that are active
+        """
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_OPEN)
+    
+    
+    def resolved_cases(self):
+        """
+        Return a queryset of the cases in this careteam that are resolved
+        """
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_RESOLVED)
+    
+    def closed_cases(self):
+        """
+        Return a queryset of all closed cases for this careteam
+        """
+        return self.cases.all().filter(status__state_class=constants.CASE_STATE_CLOSED)
+    
+    
+    def all_cases(self):
+        """
+        return all cases for this careteam
+        """
+        return self.cases.all()
         
     
     def __unicode__(self):

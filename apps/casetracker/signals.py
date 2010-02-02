@@ -20,7 +20,7 @@ def case_saved(sender, instance, created, **kwargs):
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
         notes = "New case created by " + str(event_creator)
-        qname = Q(event_class='open')
+        qname = Q(event_class='event-open')
     else:
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
@@ -32,7 +32,7 @@ def case_saved(sender, instance, created, **kwargs):
             
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity
-        qname = Q(event_class='edit')
+        qname = Q(event_class='event-edit')
     
     
     try:

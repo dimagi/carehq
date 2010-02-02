@@ -52,7 +52,7 @@ MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 AUX_MEDIA_DIRS = {
-                  'djblets': os.path.join(filepath,'apps','djblets','media'),                                                 
+                  #'djblets': os.path.join(filepath,'apps','djblets','media'),                                                 
                  }                    
 
 
@@ -100,11 +100,6 @@ INSTALLED_APPS = (
     'patient',
     'debug_toolbar',
     'django_extensions',
-    'djblets.util',
-    'djblets.datagrid', 
-    'djblets.feedview',
-    'djblets.siteconfig',
-    'djblets.webapi',
     'djcaching', # removing due to the fact that local dev enivornments without memecached puke
  #   'userprofile',
     'reversion',

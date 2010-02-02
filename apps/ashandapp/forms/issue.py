@@ -9,32 +9,20 @@ from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
 from django.forms import widgets
 
+from casetracker import constants 
+from ashandapp.forms import CareTeamCaseFormBase
 
-
-class NewIssueForm(forms.Form):
+class NewIssueForm(CareTeamCaseFormBase):
     """Initial creation of an issue case will be governed by this form"""
     ISSUE_CHOICES = (('caregiver', "Caregiver Concern" ),
                          ('careplan', "Care Plan Issue" ),
                          ('healthmonitor', "Health Monitor" ),
                          ('other', "Other" ),
                          )
-    description = forms.CharField(max_length=160,
-                                  required=True, 
-                              error_messages = {'required': 
-                                                'You must enter a short description'})
-    body = forms.CharField(required=True,
-                           error_messages = {'required': 'You must enter a message body'},
-                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))          
-    
-    priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-                                      error_messages = {'required': 'Please select a priority for this issue'})    
-    
     source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
     def __init__(self, careteam=None, *args, **kwargs):
-        super(NewIssueForm, self).__init__(*args, **kwargs)
-        if careteam != None:
-            self._careteam = careteam
+        super(NewIssueForm, self).__init__(careteam=careteam, *args, **kwargs)
         
     
     def clean(self):
@@ -47,11 +35,11 @@ class NewIssueForm(forms.Form):
         newcase.category = Category.objects.get(category='issue')
         newcase.priority = self.cleaned_data['priority']
         newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).get(description='Active')
+        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        newcase.assigned_to = self._careteam.primary_provider
+        newcase.assigned_to = self._careteam.primary_provider.user
         newcase.assigned_date = datetime.utcnow()
         
         return newcase
