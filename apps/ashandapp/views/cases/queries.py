@@ -77,7 +77,7 @@ def json_caregiver_cases(request):
     
     return a 3-tuple of (tabdisplay, columns, queryset)    
     """
-    careteams = CaregiverLink.objects.all().filter(user = request.user).values('careteam')
+    careteams = CaregiverLink.objects.all().filter(user = request.user).values_list('careteam__id', flat=True)
     careteam_cases = CareTeamCaseLink.objects.all().filter(careteam__in=careteams).values_list('case__id', flat=True)
     qset= Case.objects.all().filter(id__in=careteam_cases)
     columns = ['description','assigned_to','last_event_by', 'last_event_date']    
