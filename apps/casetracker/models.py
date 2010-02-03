@@ -735,6 +735,8 @@ class GridPreference(models.Model):
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
     
+    
+    
     def __unicode__(self):
         return "Grid Display Preference: %s" % self.filter.description    
     
@@ -742,6 +744,22 @@ class GridPreference(models.Model):
         verbose_name = "Filter Grid Display Preference"
         verbose_name_plural = "Filter Grid Display Preferences"
         ordering = ['filter']
+        
+    @property
+    def get_display_columns(self):
+        """
+        returns the display columns in order of the through class's definition
+        """
+        col_orders = self.gridpreference_displayorder.all().values('column')
+        return GridColumn.objects.all().filter(id__in=col_orders)
+    
+    @property
+    def get_sort_columns(self):
+        """
+        returns the display columns in order of the through class's definition
+        """
+        col_sort_orders = self.gridpreference_sort.all().values('column')
+        return GridColumn.objects.all().filter(id__in=col_sort_orders)    
     
 
 class Message(models.Model):    

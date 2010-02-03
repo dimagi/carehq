@@ -5,19 +5,13 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.http import HttpResponse
-from django.contrib.auth.models import User
-from casetracker.models import Case, Filter
+from casetracker.models import Filter
 
-from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
-
 from provider.models import Provider
-from patient.models import Patient
+
 
 from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship
 from ashandapp.models import CaseProfile, CareTeam, ProviderLink
@@ -85,7 +79,7 @@ def get_json_for_paging(request):
     for case in display_filter:
         json_string += "["
         json_string += "\"<a href = 'users/%s'>%s %s</a>\"," % (case.careteam_set.get().patient.user.id, case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
-        for col in filter.gridpreference.display_columns.all():
+        for col in filter.gridpreference.get_display_columns:
             table_entry = case_column(case, col.name)
             if len(table_entry) > 45:
                 table_entry = table_entry[0:45] + "..."
@@ -107,7 +101,7 @@ def get_json_for_paging(request):
 
 @login_required
 #@cache_page(60 * 5)
-def my_dashboard_tab(request, template_name="ashandapp/test.html"): 
+def my_dashboard_tab(request, template_name="ashandapp/filter_datatable.html"): 
  
     context = {}
     user = request.user
