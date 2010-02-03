@@ -9,7 +9,7 @@
 $(document).ready(function() {
 	$('.example{{display_filter.id}}').dataTable( {
 		"bJQueryUI": true,
-		"bProcessing": true,
+		"bProcessing": "<img src = '/Users/james/Desktop/load.gif'>",
 		"sAjaxSource": "{% url json_string %}",
 		"sPaginationType": "two_button",
 		"bAutoWidth": false,
@@ -18,12 +18,18 @@ $(document).ready(function() {
 		              {% for col in filter.gridpreference.display_columns.all %}
 		              {"sType": {% get_sType col.name %}},
 		              {%endfor%}
-		      		]
+		      		],
+		"oLanguage": {
+		      	     "sZeroRecords": "Please wait - loading data from server"
+		      	   	 },
+	    "fnInitComplete": function ( oSettings ) {
+		      	     oSettings.oLanguage.sZeroRecords = "No matching records found"
+		      	     }
 	} );
 
-	
 } );
 
+	
 jQuery.fn.dataTableExt.oSort['pretty_time-desc'] = function(a, b) {
 	if (a.indexOf("ago") >= 0) {
 		a = a.replace("ago", "");

@@ -50,7 +50,7 @@ def get_json_for_paging(request):
             for item in request.GET.items():
                 if item[0] == 'filter':
                     filter_id = item[1]    
-                if item[0] == 'iDisplayStart':
+                if item[0] == 'start':
                     start_index = item[1]
                 if item[0] == 'iDisplayLength':
                     length = item[1]        
@@ -60,6 +60,7 @@ def get_json_for_paging(request):
                         pass
     else:
         display_filter = profile.last_filter
+    
     
     profile.last_login = datetime.utcnow()
     profile.last_login_from = request.META['REMOTE_ADDR']
