@@ -43,6 +43,7 @@ def create_careteam(patient):
     prov_arr = [x for x in all_providers]
     random.shuffle(prov_arr)
     print "\tCreated Patient, assigning %d providers" % total_providers
+    first_provider = True
     for num in range(0,total_providers):
         rand_prov_id = prov_arr[num]
         rand_prov = Provider.objects.get(id=rand_prov_id)               
@@ -50,8 +51,12 @@ def create_careteam(patient):
         plink = ProviderLink()
         plink.careteam=team
         plink.provider = rand_prov
-        
-        provider_role = create_or_get_provider_role()
+
+        if first_provider:
+            provider_role = create_or_get_provider_role(is_primary=True)
+            first_provider=False
+        else:
+            provider_role = create_or_get_provider_role(is_primary=False)
                         
         plink.role = provider_role        
         plink.save()

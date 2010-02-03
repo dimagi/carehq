@@ -24,6 +24,9 @@ dirty_column_map = {
 "closed_date":"Closed Date",
 "next_action":"Next Action",
 "next_action_date":"Follow Up Date",
+"last_case_event": "Last Event",
+"last_event_date": "Event Date",
+"last_event_by": "Last Event By",
 }
 
 @register.simple_tag 

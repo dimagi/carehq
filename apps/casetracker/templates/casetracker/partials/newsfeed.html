@@ -1,22 +1,29 @@
-(sort by <a href="{{request.path}}?sort=person">person</a>, <a href="{{request.path}}?sort=activity">activity</a>, <a href="{{request.path}}?sort=category">category</a>, <a href="{{request.path}}?sort=case">cases</a>, <a href="{{request.path}}">Date</a>)<br>
-<h2>Events</h2> 
+<h3>History</h3> 
+Sort by: <a href="{{request.path}}?sort=person">Person</a> | 
+        <a href="{{request.path}}?sort=activity">Action</a> | 
+        {% if not case %}
+        <a href="{{request.path}}?sort=category">Category</a> |
+        <a href="{{request.path}}?sort=case">Cases</a> |
+        {% endif %} 
+        <a href="{{request.path}}">Date</a><br>
+<br>																												    
 {% if not formatting %}
 	{% for event in events %}
-		<div class = "span-24">
+		<div class = "span-18">
 			<div class = "message">{{event.notes}}</i></div>
 			<div class = "info"><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this {{event.activity.category|lower}}: <a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> on 		{{event.created_date|date}} {{event.created_date|time}} </div><br>		
 		</div>
 	{% endfor %}
 {% else %}
 	{% for key, value in events.items %}
+	<div class="span-18">
 		<h3><b>{{key|safe}}</b></h3>
 		{% for event in value%}
-		<div class = "span-24">
-			<div class = "container">
+		<div class = "span-17 prepend-1">
 				<div class = "message">{{event.notes}}</i></div>
 				<div class = "info"><a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> {{event.activity.phrasing}} this {{event.activity.category|lower}}: <a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> on {{event.created_date|date}} {{event.created_date|time}} </div><br>		
-			</div>
 		</div>
 		{% endfor %}
+	</div>
 	{% endfor %}
 {% endif %}

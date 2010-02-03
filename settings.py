@@ -94,18 +94,20 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'ashandapp',
-    'casetracker',
+    'reversion',    
+    
+    
+    #section ashand apps
+    'casetracker',    
     'provider',
     'patient',
+    'ashandapp',
+    'careplan',
+    #end ashand apps
+    
     'debug_toolbar',
     'django_extensions',
-    'djcaching', # removing due to the fact that local dev enivornments without memecached puke
- #   'userprofile',
-    'reversion',
-    'careplan',
-    #'django_tables',
-    
+    'djcaching', # removing due to the fact that local dev enivornments without memecached puke        
     'django.contrib.admin',
 )
 

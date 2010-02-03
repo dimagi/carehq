@@ -53,7 +53,10 @@ class NewQuestionForm(CareTeamCaseFormBase):
         newcase.body = self.cleaned_data['body']
         
         if self.cleaned_data['recipient'] == 'primary':            
-            newcase.assigned_to = self._careteam.primary_provider.user
+            if self._careteam.primary_provider:
+                newcase.assigned_to = self._careteam.primary_provider.user
+            else:                        
+                newcase.assigned_to = request.user
         elif self.cleaned_data['recipient'] == 'specific':            
             newcase.assigned_to = self.cleaned_data['other_recipient']
                     

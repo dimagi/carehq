@@ -8,4 +8,3 @@ register = template.Library()
 def patient_for_case(case):    
     return CareTeam.objects.get(cases=case).patient
 
-

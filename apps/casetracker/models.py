@@ -1,5 +1,6 @@
 from itertools import chain
 
+import logging
 from django.db import models
 
 from django.db.models import Q
@@ -18,6 +19,8 @@ import uuid
 from django.utils.translation import ugettext_lazy as _
 
 import constants as constants
+from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
+
 
 #from django.db.models.fields.related import RelatedManager, ManyRelatedManager
 
@@ -50,6 +53,77 @@ CASE_STATES = (
         (constants.CASE_STATE_CLOSED, 'Closed'),        
 )
 
+    
+#class Category(models.Model):
+class Category(CachedModel):
+    """
+    The Category is the central piece of the casetracker model tree.
+    
+    All cases must embody a certain category.
+    
+    A category then is the bridge between the existence of a case in the database and how it is handled between the database
+    and other types within pythonland.
+    
+    So, in ashand, you define different cases as different classes of "case-able" information.
+    So, a case can be an issue, question, or alerts from some therapeutic monitor or scheduling - the list goes on.
+    
+    To keep the purity of the casetracker app, other models that wish to add itself to the casetracker.
+    
+    Simple setups will be:
+    Question
+    Issue    
+    
+    Schedule Item    
+        Appointment
+        Order
+        Prescription    
+    """
+    category = models.SlugField()
+    plural = models.CharField(max_length=32)    
+    default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
+    
+    handler_module = models.CharField(max_length=128, blank=True, null=True, 
+                                      help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
+    
+    handler_class = models.CharField(max_length=64, blank=True, null=True,
+                                     help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
+    
+    objects = CachingManager()
+    
+    @property
+    def handler(self):
+        """
+        Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
+        """
+        handler = None
+        if not hasattr(self, '_handler'):
+            if self.handler_module == None or self.handler_class==None:
+                handler = DefaultCategoryHandler()
+            else:                            
+                try:
+                    hmod = __import__(self.handler_module, {},{},[''])
+                    if hasattr(hmod, self.handler_class):
+                        hclass = getattr(hmod, self.handler_class)
+                        if issubclass(hclass, CategoryHandlerBase):
+                            handler=hclass()                                                                 
+                except Exception, e:
+                    logging.error("Unable to import the handler class for category %s: %s" % (self.category, e))
+                
+                if handler == None:
+                    handler = DefaultCategoryHandler()
+            self._handler = handler        
+        return self._handler
+        
+        
+    
+    def __unicode__(self):
+        return "%s" % (self.category)
+    class Meta:
+        verbose_name = "Category Type"
+        verbose_name_plural = "Category Types"
+
+
+
 #class CaseAction(models.Model):
 class CaseAction(CachedModel):
     """
@@ -66,7 +140,6 @@ class CaseAction(CachedModel):
     These should be universal across all categories.
     """
     description = models.CharField(max_length=64)
-    #date_bound = models.BooleanField() # does this seem necessary - all cases seem date bound
     objects = CachingManager()
     def __unicode__(self):
         return "%d - %s" % (self.id, self.description)
@@ -75,37 +148,6 @@ class CaseAction(CachedModel):
         verbose_name = "Case Action Type"
         verbose_name_plural = "Case Action Types"
 
-    
-#class Category(models.Model):
-class Category(CachedModel):
-
-    """A category tries to capture the original nature of the opened case
-    
-    In Ashand, this is akin to the divisions within issue/case/risk.
-    
-    Simple setups will be:
-    Question
-    Issue    
-    
-    Schedule Item    
-        Appointment
-        Order
-        Prescription    
-    """
-    category = models.SlugField()
-    plural = models.CharField(max_length=32)    
-    default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
-    # handler_module = models.CharField(max_length=64, blank=True, null=True, 
-    #                               help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
-    
-    objects = CachingManager()
-    
-    
-    def __unicode__(self):
-        return "%s" % (self.category)
-    class Meta:
-        verbose_name = "Category Type"
-        verbose_name_plural = "Category Types"
 
     
 #class Priority(models.Model):
@@ -126,8 +168,8 @@ class Priority(CachedModel):
         verbose_name_plural = "Priority Types"
 
 
-class Status (models.Model):
-#class Status (CachedModel):
+#class Status (models.Model):
+class Status (CachedModel):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
@@ -137,7 +179,7 @@ class Status (models.Model):
     category = models.ForeignKey(Category)
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
     
- #   objects = CachingManager()
+    objects = CachingManager()
     #query filters can be implemented a la kwarg evaluation:
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419
         
@@ -179,7 +221,7 @@ class EventActivity(CachedModel):
     event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES)
     
     objects = CachingManager()
-    #activity_method = models.CharField(max_length=512, null=True) # this can be some sort of func call?
+    
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.name)
 
@@ -201,7 +243,7 @@ class CaseEvent(models.Model):
     id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     case = models.ForeignKey("Case", related_name='case_events')    
     notes = models.TextField(blank=True)
-    #activity = models.ForeignKey(EventActivity, limit_choices_to = {'category': "case__category"})    
+    
     activity = models.ForeignKey(EventActivity)
     
     created_date  = models.DateTimeField()
@@ -246,6 +288,7 @@ class Case(CachedModel):
     
     description = models.CharField(max_length=160)
     orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
+    
     category = models.ForeignKey(Category)
     status = models.ForeignKey(Status)    
     
@@ -279,6 +322,34 @@ class Case(CachedModel):
     object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
     object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
     content_object = generic.GenericForeignKey('object_type', 'object_uuid')
+    
+    @property
+    def is_new(self):
+        if self.assigned_to == None or self.status.state_class == constants.CASE_STATE_NEW:
+            return True
+        else:
+            return False
+    
+    @property
+    def is_active(self):
+        if self.status.state_class == constants.CASE_STATE_OPEN:
+            return True
+        else:
+            return False 
+    
+    @property
+    def is_resolved(self):
+        if self.status.state_class == constants.CASE_STATE_RESOLVED or self.status.state_class==constants.CASE_STATE_CLOSED:
+            return True
+        else:
+            return False
+    
+    @property
+    def is_closed(self):
+        if self.status.state_class==constants.CASE_STATE_CLOSED:
+            return True
+        else:
+            return False    
     
     @property
     def last_case_event(self):
@@ -340,7 +411,10 @@ class Case(CachedModel):
         
         
     
-    def save(self):        
+    def save(self):
+        """
+        Save a case
+        """        
         if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
             if self.opened_by == None or self.description == None:
                 raise Exception("Missing fields in Case creation - opened by and description")            
@@ -348,11 +422,11 @@ class Case(CachedModel):
             #if we're brand new, we'll update the dates in this way:
             self.opened_date = datetime.utcnow()
             self.last_edit_date = self.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
+            self.last_edit_by = self.opened_by
             self.orig_description = self.description
         else:
             if self.last_edit_by == None:
-                raise Exception("Missing fields in Case edit - last_edit_by")            
-
+                raise Exception("Missing fields in Case edit - last_edit_by")
 
             #now, we need to check the status change being done to this.
             state_class = self.status.state_class
@@ -626,6 +700,12 @@ class GridSort(models.Model):
         else:
             ascend = "descending"
         return "GridSort - %s %s" % (self.column, ascend)
+    
+    class Meta:
+        verbose_name = "Grid column sort ordering"
+        verbose_name_plural = "Grid column sort order definitions"
+        ordering = ['order']
+    
 
 class GridOrder (models.Model):
     """
@@ -639,6 +719,12 @@ class GridOrder (models.Model):
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")
     order = models.PositiveIntegerField()
+    
+    class Meta:
+        verbose_name = "Grid column display ordering"
+        verbose_name_plural = "Grid column display order definitions"
+        ordering = ['order']
+    
 
 class GridPreference(models.Model):
     """
@@ -652,6 +738,39 @@ class GridPreference(models.Model):
     def __unicode__(self):
         return "Grid Display Preference: %s" % self.filter.description    
     
+    class Meta:
+        verbose_name = "Filter Grid Display Preference"
+        verbose_name_plural = "Filter Grid Display Preferences"
+        ordering = ['filter']
+    
+
+class Message(models.Model):    
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    subject = models.CharField(max_length=255)
+    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?    
+    is_public = models.BooleanField(default=False)    
+    body = models.TextField()
+    
+    author = models.ForeignKey(User, related_name='messages_authored')
+    recipients = models.ManyToManyField(User, related_name='messages_received') #straight recipients, no bcc's here
+    
+    #cased = generic.GenericRelation(TaggedItem)
+    parent_message = models.ForeignKey('self', related_name='replies')
+    
+    
+    
+    def can_read(self, user):
+        """
+        Can the given User object read this message? This depends on the public flag, and authorship
+        """         
+        if self.is_public:
+            return True
+        else:
+            if self.author == user or self.recipients.all().filter(id=user.id):
+                return True
+            else:
+                return False
+
 
 
 #We recognize this is a nasty practice to do an import, but we hate putting signal code

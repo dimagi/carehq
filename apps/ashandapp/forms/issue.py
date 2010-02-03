@@ -39,7 +39,10 @@ class NewIssueForm(CareTeamCaseFormBase):
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        newcase.assigned_to = self._careteam.primary_provider.user
+        if self._careteam.primary_provider:
+            newcase.assigned_to = self._careteam.primary_provider.user
+        else:
+            newcase.assigned_to = request.user
         newcase.assigned_date = datetime.utcnow()
         
         return newcase

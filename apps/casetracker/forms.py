@@ -19,8 +19,8 @@ class CaseCommentForm(forms.Form):
     
 
 class CaseResolveCloseForm(forms.Form):    
-    event_activity = forms.ModelChoiceField(queryset=EventActivity.objects.all(), required=True)
-    state = forms.ModelChoiceField(queryset = Status.objects.all(), required=True)
+   #event_activity = forms.ModelChoiceField(label='Reason', queryset=EventActivity.objects.all(), required=True)
+    state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True)
     comment = forms.CharField(required=True,
                            error_messages = {'required': 'You must enter a comment'},
                            widget = widgets.TextInput(attrs={'cols':70,'rows':5}),                            
@@ -36,7 +36,7 @@ class CaseResolveCloseForm(forms.Form):
             raise Exception("Error, you must pass in a valid case to process this form") 
         
         self.fields['state'].queryset = Status.objects.filter(category=case.category).filter(state_class=mode)
-        self.fields['event_activity'].queryset = EventActivity.objects.filter(category=case.category).filter(event_class=mode)
+        #self.fields['event_activity'].queryset = EventActivity.objects.filter(category=case.category)
         
 
 class CaseModelForm(forms.ModelForm):

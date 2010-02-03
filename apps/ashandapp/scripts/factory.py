@@ -35,14 +35,13 @@ def create_provider(firstname, lastname, job_title, affiliation):
     prov.save()
     return prov
 
-def create_or_get_provider_role():
+def create_or_get_provider_role(is_primary=False):
     #set some random role.
-    role = ProviderRole.ROLE_CHOICES[random.randint(0, len(ProviderRole.ROLE_CHOICES)-1)][0]
+    if is_primary:
+        role = 'nurse-triage'
+    else:
+        role = ProviderRole.ROLE_CHOICES[random.randint(0, len(ProviderRole.ROLE_CHOICES)-1)][0]
 
-#    try:
-#        provider_role = ProviderRole.objects.get(role=role)
-#    except:    
-#    do we neeed to make this a unique instance per person?
     provider_role = ProviderRole()
     provider_role.role = role 
     provider_role.role_description = "unique instance %s" % (uuid.uuid1().hex)

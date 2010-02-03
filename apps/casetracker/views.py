@@ -206,7 +206,7 @@ def case_comment(request, case_id, template_name='casetracker/view_case.html'):
     
     return HttpResponseRedirect(_get_next(request))
 
-def view_case(request, case_id, template_name='casetracker/view_case.html'):
+def view_case(request, case_id): #template_name='casetracker/view_case.html'
     context = {}
     
     sorting = None
@@ -226,6 +226,7 @@ def view_case(request, case_id, template_name='casetracker/view_case.html'):
     context['formatting'] = False
     context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
     
+    template_name = thecase.category.handler.get_view_template()    
     
     ret = context['events'] 
     

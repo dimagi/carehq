@@ -1,26 +1,31 @@
-from django.shortcuts import render_to_response
+from datetime import datetime
+import logging
 
+from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-import logging
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam,ProviderLink
-from provider.models import Provider
-from patient.models import Patient
 
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
+from django.core.urlresolvers import reverse
+
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 
+from provider.models import Provider
+from patient.models import Patient
+
+from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship
+from ashandapp.models import CaseProfile, CareTeam, ProviderLink
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
 from ashandapp.templatetags.filter_tags import case_column
-from datetime import datetime
+from ashandapp.views.cases import queries
+
 
 @login_required
 def get_json_for_paging(request):
@@ -165,8 +170,10 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     context = {}
     user = request.user
     
-    display_filter = None    
-        
+    
+    ########################
+    #get the shared filters
+    display_filter = None        
     try:
         profile = CaseProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
@@ -187,36 +194,49 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
                         pass
                     
     else:
-        display_filter = profile.last_filter
-    
-    
-    #doing this on very load seems incredibly inefficient.  perhaps update the request object and cache stuff?
+        display_filter = profile.last_filter    
     profile.last_login = datetime.utcnow()
     profile.last_login_from = request.META['REMOTE_ADDR']
     profile.last_filter = display_filter
     profile.save()        
     
     shared_filters = Filter.objects.select_related('gridpreference').filter(shared=True)
-    context['shared_filters'] = shared_filters
-    
+    context['shared_filters'] = shared_filters    
     context['display_filter'] = display_filter
     
     
     context['profile'] = profile    
     context['filter'] = profile.last_filter
     context['gridpreference'] = context['filter'].gridpreference
+    ############################
     
-    providers = Provider.objects.filter(user=user)
-    if len(providers) > 0:
-        context['providers'] = providers
+    
+    
+    #get the specific case querysets based upon the user logged in.
+    context['user_grids'] = []
+    
+    #if a patient, get their careteam's cases
+    if request.is_patient:
+        pass
+    
+    #if a caregiver, get querysets for all the patients that they care for
+    if request.is_caregiver:        
+        context['user_grids'].append(('caregiver_cases', 'My Patient Cases', ['patient','description','opened_date','priority'], reverse('view-cases-for-caregiver-json')))    
+    
+    if request.is_provider:
+        #if a provider/nurse, get the inbound triage for all their patients
+        #if a doctor, just get all cases for all their patients
+        careteam_links = ProviderLink.objects.filter(provider=request.provider)    
+        if careteam_links.count() > 0:
+            
+            context['user_grids'].append(('patient_cases', 'All My Patient Cases',['patient','description','assigned_to','last_event_by', 'last_event_date', 'next_action_date'],reverse('view-cases-for-provider-json')))
+            
+            triage_cases = careteam_links.filter(role__role='nurse-triage')
+            
+            if triage_cases.count() > 0:
+                context['user_grids'].append(('triage_cases', 'Patient Case Triage',['patient','description','opened_date','priority'],reverse('view-cases-for-triage-json')))
         
-        #commenting out because filters should do this now        
-        #opened = Q(opened_by=user)
-        #last_edit = Q(last_edit_by=user)
-        #assigned = Q(assigned_to=user)        
-        #cases = Case.objects.filter(opened | last_edit | assigned)
-        #qtitle = "Cases for this provider"        
-                
-        careteam_membership = ProviderLink.objects.filter(provider=request.provider).values_list("careteam__id",flat=True)
-        context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)    
+        
+    
+            
     return render_to_response(template_name, context, context_instance=RequestContext(request))

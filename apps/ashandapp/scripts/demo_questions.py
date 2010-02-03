@@ -14,5 +14,10 @@ question_arr = [
                 "How long will the next visit last?",
                 "Can other caregivers and loved ones be present at next visit?",
                 "Is oral chemotherapy taken by itself, or with other treatments?",
-                "How much grace period is there for me to take my medicine around the scheduled time?",                
+                "How much grace period is there for me to take my medicine around the scheduled time?",
+                "Patient seems to be rapidly gaining weight",
+                "Patient seems to be rapidly losing weight",
+                "Patient has trouble hearing me, is this temporary?",
+                "Patient's skin is going crazy, help!",
+                "Patient keeps mentioning abnormal muscle weakness, anything more I can do?",                
                 ]

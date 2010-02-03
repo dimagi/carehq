@@ -205,8 +205,7 @@ class CarePlanItem(models.Model):
         return self._children
 
 
-    #@staticmethod
-    @classmethod
+    @staticmethod
     def create_from_template(base_item, parent_item=None):
         """
         Factory method to generate a new plan item from a template
@@ -216,8 +215,8 @@ class CarePlanItem(models.Model):
         """
         new_item = CarePlanItem()
         new_item.id = uuid.uuid1().hex
-        new_item.category = base_item.category
-        new_item.tags.add(base_item.tags.all())
+        new_item.category.add(*list(base_item.category.all()))
+        new_item.tags.add(*list(base_item.tags.all()))
         new_item.description = base_item.description        
         new_item.from_template = base_item
         if parent_item != None:
@@ -225,9 +224,9 @@ class CarePlanItem(models.Model):
 
         new_item.save()
         
-        if base_item.child_plans.all().count > 0:
-            for child_item in base_item.child_plans.all():
-                CarePlanItem.create_from_template(child_item, parent_item=base_item)        
+        if base_item.children.count > 0:
+            for child_item in base_item.children:
+                CarePlanItem.create_from_template(child_item, parent_item=new_item)        
         
         return new_item
 
@@ -260,13 +259,13 @@ class CarePlan(models.Model):
         verbose_name_plural = "Care Plan Instances"
         ordering = ['title','modified_date']
     
-    @classmethod
-    def create_from_template(base_plan, save=False, creator_user=None):
+    @staticmethod
+    def create_from_template(base_plan, patient, title=None, save_data=False, creator_user=None):
         """
         Generate a careplan from a TemplateCarePlan template
         """
         
-        if save:
+        if save_data:
             if creator_user==None:
                 raise Exception("Error, if you are saving this on creation from a template, you must enter a user")
         
@@ -274,11 +273,20 @@ class CarePlan(models.Model):
         new_plan.id = uuid.uuid1().hex
         new_plan.from_template = base_plan
         new_plan.version = 1
+        new_plan.patient = patient
+        
+        if not title:
+            new_plan.title=base_plan.title + " from template"
+        
+        links = []
         
         new_plan.title = base_plan.title
-        for base_item in base_plan.plan_items.all():            
+        for temp_item_link in base_plan.templatecareplanitemlink_set.all():            
+            base_item = temp_item_link.item
             new_item= CarePlanItem.create_from_template(base_item, parent_item=None)            
-            new_plan.plans.add(new_item)
+            #new_plan.plan_items.add(new_item)
+            links.append(CarePlanItemLink(plan=new_plan, item=new_item, order=temp_item_link.order))
+            #CareTeamCaseLink(case=case, careteam=self).save()
         
         if creator_user:
             new_plan.created_by = creator_user
@@ -287,8 +295,10 @@ class CarePlan(models.Model):
             new_plan.modified_by = creator_user
             new_plan.modified_date= datetime.utcnow()        
         
-        if save:
+        if save_data:
             new_plan.save()
+            for link in links:
+                link.save()
         return new_plan
     
 

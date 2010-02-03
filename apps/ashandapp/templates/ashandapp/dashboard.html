@@ -22,6 +22,19 @@
 
 <div id="tabs" class="span-24"> 
 	<ul>
+		   
+	   
+	   {% for tabid, tab_title, columns, json_qset_url in user_grids %}	       	       
+	       
+	       	
+	       <li>
+	           <a href="{{json_qset_url}}">{{tab_title}}</a>        
+	       </li>
+	       
+	   {% endfor %}	   
+	   
+	
+	
 	{% for filter in shared_filters %}
 		<li><a href="{% url my_dashboard_tab %}?filter={{filter.id}}">{{filter.description}}</a></li>
 	{% endfor %}	

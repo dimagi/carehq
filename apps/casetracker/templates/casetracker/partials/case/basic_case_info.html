@@ -1,0 +1,29 @@
+{% load i18n %}
+<div class="span-18">  <!-- case info block -->
+        <div class="span-18">
+            <h2>{{case.description}}</h2>
+            <hr>
+            <p>{{case.body}}</p>
+        </div>
+        
+        <div class="span-12 prepend-6">
+            <div class="span-4">
+                <strong>{% trans "assigned" %}</strong> {{case.assigned_date|date}}<br>
+                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.first_name}} {{case.assigned_to.last_name}}</a>            
+            </div>
+            
+            <div class="span-4">
+                <strong>{% trans "opened" %}</strong> {{case.opened_date|date}}<br>
+                <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.first_name}} {{case.opened_by.last_name}}</a>            
+            </div>            
+            
+            <div class="span-4 last">
+                <strong>{% trans "edited" %}</strong> {{case.last_edit_date|timesince}} ago<br>
+                <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by.first_name}} {{case.last_edit_by.last_name}}</a>            
+            </div>        
+        </div>
+        
+        <div class="span-18">
+            {% include "casetracker/manage/comment.html"%}
+        </div>
+</div> <!-- end case info block -->    

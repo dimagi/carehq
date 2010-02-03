@@ -10,8 +10,10 @@ runserver = ''
 for line in lines:
     if line.count('127.0.0.1:8000') > 0 or line.count('0.0.0.0:8000') > 0:
         runserver=line
+        print "found running instance"
         break
 if runserver == '':
+    print "cound not find open port"
     sys.exit()
 splits = runserver.split(' ')
 

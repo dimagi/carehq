@@ -22,7 +22,9 @@ issues_arr = [
 "Redness at IV site",
 "Patient is experiencing hearing loss",
 "Bleeding gums",   
-"Fingernail color has been changing"
+"Fingernail color has been changing",
+"Chronic itching",
+"Patient is complaining of consistent ringing in ears",
 ]
 
 #source, http://www.cancerconsultants.com/when-to-call-your-doctor/
