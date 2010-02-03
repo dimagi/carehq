@@ -750,7 +750,7 @@ class GridPreference(models.Model):
         """
         returns the display columns in order of the through class's definition
         """
-        col_orders = self.gridpreference_displayorder.all().values('column')
+        col_orders = self.gridpreference_displayorder.all().values_list('column__id', flat=True)
         return GridColumn.objects.all().filter(id__in=col_orders)
     
     @property
@@ -758,7 +758,7 @@ class GridPreference(models.Model):
         """
         returns the display columns in order of the through class's definition
         """
-        col_sort_orders = self.gridpreference_sort.all().values('column')
+        col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
         return GridColumn.objects.all().filter(id__in=col_sort_orders)    
     
 
