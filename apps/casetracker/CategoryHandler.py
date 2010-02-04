@@ -20,9 +20,18 @@ class CategoryHandlerBase(object):
     def get_view_template(self):
         pass
     
+    def process_context(self, case, request, context, *args, **kwargs):
+        """
+        Sets additional context variables when processing this case in a view
+        """
+        context['can_edit'] = True
+        context['can_assign'] = True
+        context['can_resolve'] = True
+        context['can_close'] = True
+        return context
     
-    
-    
+    def get_user_list_choices(self, case):
+        return None
     #lifecycle management?
 
 
@@ -35,3 +44,10 @@ class DefaultCategoryHandler(CategoryHandlerBase):
     
     def get_view_template(self):
         return "casetracker/view_case.html"
+    
+    def process_context(self, case, request, context, *args, **kwargs):
+        return context
+    
+    def get_user_list_choices(self, case):
+        return None
+        

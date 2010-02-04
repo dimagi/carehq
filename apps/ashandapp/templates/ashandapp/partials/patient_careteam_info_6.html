@@ -1,0 +1,5 @@
+<div class="span-5 box">
+<strong>For: {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}</strong><br>
+<a href="{% url view-careteam careteam.id %}">View Care Team</a><br>
+<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">View Profile</a>
+</div>

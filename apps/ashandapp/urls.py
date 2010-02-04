@@ -6,7 +6,7 @@ urlpatterns = patterns('',
    
     (r'^users/all$', 'ashandapp.views.users.all'),
     (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.users.single'),
-    
+    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
     
     
     

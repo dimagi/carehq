@@ -11,19 +11,34 @@
 	<div class="span-18">	
 	{% include "casetracker/partials/case/basic_case_info.html" %}	
 	<hr>
-	<div class="span-6 prepend-12">
+	<div class="span-6 prepend-12">	
 			{% if case.is_active or case.is_new %}
+
+			{% if can_assign %}						
 	        <a href="{% url edit-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
-	        <a href="{% url edit-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
+	        {%endif%}
+	        
+	        {% if can_edit %}
+	        <a href="{% url edit-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>
+	        {% endif %}
+	        
+	        {% if can_resolve%}        
 	        <a href="{% url resolve-case case.id %}" class="fg-button ui-state-default ui-corner-all">Resolve</a>
 	        {% endif %}
 	        
-	        {% if case.is_resolved %}        
+	        {% endif %}
+	        
+	        {% if case.is_resolved %}
+	        
+			{% if can_close and not case.is_closed %}        
 	        <a href="{% url close-case case.id %}" class="fg-button ui-state-default ui-corner-all">Close</a>
+	        {% endif %}
 	        {% endif %}
 	        
 	        {% if case.is_closed %}
+			{% if can_close %}
 	        <a href="#" class="fg-button ui-state-default ui-corner-all">Reopen</a>
+			{% endif %}
 	        {% endif %}
 	</div>
 	<div class="span-18">	
@@ -34,8 +49,11 @@
 	
 	
 	<div class="span-6 last"> <!-- specialized category block -->
-		<h3>Issue Info</h3>
-		{% patient_for_case case %}
+	<h3>This Issue</h3>
+	{% for careteam in case_careteams %}
+	{% include "ashandapp/partials/patient_careteam_info_6.html" %}
+	{% endfor %}
+		
 	</div> <!-- end case link block -->
 </div> <!-- end top container -->
 

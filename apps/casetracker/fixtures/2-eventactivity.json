@@ -4,10 +4,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "edited", 
       "name": "Edit Case", 
-      "summary": "Edit a case",
-      "event_class": "event-edit",
-      "phrasing": "edited"
+      "event_class": "event-edit", 
+      "summary": "Edit a case"
     }
   }, 
   {
@@ -15,10 +15,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "emailed", 
       "name": "Email", 
-      "summary": "email on an issue",
-      "event_class": "event-custom",
-      "phrasing": "emailed"
+      "event_class": "event-custom", 
+      "summary": "email on an issue"
     }
   }, 
   {
@@ -26,10 +26,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "called", 
       "name": "Phone Call", 
-      "summary": "Make a phone call",
-      "event_class": "event-custom",
-      "phrasing": "called"
+      "event_class": "event-custom", 
+      "summary": "Make a phone call"
     }
   }, 
   {
@@ -37,10 +37,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "text messaged", 
       "name": "SMS", 
-      "summary": "Send an SMS",
-      "event_class": "event-custom",
-      "phrasing" : "text messaged"
+      "event_class": "event-custom", 
+      "summary": "Send an SMS"
     }
   }, 
   {
@@ -48,10 +48,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "text messaged", 
       "name": "SMS", 
-      "summary": "Send an SMS",
-      "event_class": "event-custom",
-      "phrasing": "text messaged"
+      "event_class": "event-custom", 
+      "summary": "Send an SMS"
     }
   }, 
   {
@@ -59,10 +59,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "called", 
       "name": "Phone Call", 
-      "summary": "Make a phone call",
-      "event_class": "event-custom",
-      "phrasing": "called"
+      "event_class": "event-custom", 
+      "summary": "Make a phone call"
     }
   }, 
   {
@@ -70,10 +70,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "opened", 
       "name": "New Case", 
-      "summary": "Created a new case",
-      "event_class": "event-open",
-      "phrasing": "opened"
+      "event_class": "event-open", 
+      "summary": "Created a new case"
     }
   }, 
   {
@@ -81,10 +81,10 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "opened", 
       "name": "New Case", 
-      "summary": "Created a new case",
-      "event_class": "event-open",
-      "phrasing": "opened"
+      "event_class": "event-open", 
+      "summary": "Created a new case"
     }
   }, 
   {
@@ -92,98 +92,120 @@
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "edited", 
       "name": "Edit Case", 
-      "summary": "Edit a case",
-      "event_class": "event-edit",
-      "phrasing": "edited"      
+      "event_class": "event-edit", 
+      "summary": "Edit a case"
     }
-  },  
+  }, 
   {
     "pk": 10, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "viewed", 
       "name": "View Case", 
-      "summary": "View a case",
-      "event_class": "event-view",
-      "phrasing": "viewed" 
+      "event_class": "event-view", 
+      "summary": "View a case"
     }
-  },
+  }, 
   {
     "pk": 11, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "viewed", 
       "name": "View Case", 
-      "summary": "View a case",
-      "event_class": "event-view",
-      "phrasing": "viewed"
+      "event_class": "event-view", 
+      "summary": "View a case"
     }
-  },
+  }, 
   {
     "pk": 12, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "answered", 
       "name": "Answer Question (Resolve)", 
-      "summary": "Answer question to resolve a case",
-      "event_class": "event-resolve",
-       "phrasing": "answered"
+      "event_class": "event-resolve", 
+      "summary": "Answer question to resolve a case"
     }
-  },
+  }, 
   {
     "pk": 13, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "resolved", 
       "name": "Resolve Case", 
-      "summary": "Resolve a case",
-      "event_class": "event-resolve",
-      "phrasing": "resolved"
+      "event_class": "event-resolve", 
+      "summary": "Resolve a case"
     }
-  },
+  }, 
   {
     "pk": 14, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "closed", 
       "name": "Close Case", 
-      "summary": "Close a case",
-      "event_class": "event-close",
-      "phrasing": "closed"
+      "event_class": "event-close", 
+      "summary": "Close a case"
     }
-  },
+  }, 
   {
     "pk": 15, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "closed", 
       "name": "Close Case", 
-      "summary": "Close a case",
-      "event_class": "event-close",
-      "phrasing": "closed"
+      "event_class": "event-close", 
+      "summary": "Close a case"
     }
-  },
+  }, 
   {
     "pk": 16, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 1, 
+      "phrasing": "reopened", 
       "name": "Reopen Case", 
-      "summary": "Reopen a case",
-      "event_class": "event-reopen",
-      "phrasing": "reopened"
+      "event_class": "event-reopen", 
+      "summary": "Reopen a case"
     }
-  },
+  }, 
   {
     "pk": 17, 
     "model": "casetracker.eventactivity", 
     "fields": {
       "category": 2, 
+      "phrasing": "reopened", 
       "name": "Reopen Case", 
-      "summary": "Reopen a case",
-      "event_class": "event-reopen",
-      "phrasing": "reopened"
+      "event_class": "event-reopen", 
+      "summary": "Reopen a case"
+    }
+  }, 
+  {
+    "pk": 18, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 1, 
+      "phrasing": "commented", 
+      "name": "Comment", 
+      "event_class": "event-comment", 
+      "summary": "Comment"
+    }
+  }, 
+  {
+    "pk": 19, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 2, 
+      "phrasing": "commented", 
+      "name": "Comment", 
+      "event_class": "event-comment", 
+      "summary": "comment"
     }
   }
 ]

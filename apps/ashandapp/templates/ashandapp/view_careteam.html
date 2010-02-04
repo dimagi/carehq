@@ -16,14 +16,16 @@
 {# pulling from the inline_careteam but we want to custom display it here #}
 <div class="span-24">
 <div class="span-18"> <!-- careteam header -->    
- <h3><a href="{% url view-careteam careteam.id %}"> {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s</a> Care Team</h3>
+ <h3>{{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s Care Team</h3>
  <table>
      <tr>
+        <th>Profile</th>
         <th>DOB</th>
         <th>Sex</th>
         <th>Primary Provider</th> 
      </tr>
      <tr>     
+        <td><a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">{%trans "View Profile"%}</a>
         <td>{{careteam.patient.dob|date}}</td> 
         <td>{{careteam.patient.get_sex_display}}</td>
         <td>
@@ -54,13 +56,6 @@
         <li><a href="#tabs-1">Care Team</a></li>         
         <li><a href="#tabs-2">Care Plan</a></li>
         <li><a href="{% url ashandapp.views.careteam.ajax.view_careteam_cases current_careteam.id %}">Cases</a></li>
-        {% comment %}
-        <li><a href="#tabs-3">Active Cases</a></li>
-        <li><a href="#tabs-4">Resolved Cases</a></li> 
-        <li><a href="#tabs-5">Closed Cases</a></li>
-        <li><a href="#tabs-6">All Cases</a></li>
-        {% endcomment %}
-{#        <li><a href="{% url show-cases-ajax careteam.id%}">Ajax Cases</a></li> #}
     </ul> 
     <div id="tabs-1">
         {% with current_careteam as careteam %}

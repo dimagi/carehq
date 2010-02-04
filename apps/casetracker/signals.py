@@ -2,6 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.db.models import Q
 from models import Case, CaseEvent, EventActivity
 import logging
+from casetracker import constants
 
 def case_saved(sender, instance, created, **kwargs):
     """
@@ -20,7 +21,12 @@ def case_saved(sender, instance, created, **kwargs):
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
         notes = "New case created by " + str(event_creator)
-        qname = Q(event_class='event-open')
+        qname = Q(event_class=constants.CASE_EVENT_OPEN)
+        try:
+            event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
+        except:
+            logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded ")
+
     else:
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
@@ -32,13 +38,12 @@ def case_saved(sender, instance, created, **kwargs):
             
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity
-        qname = Q(event_class='event-edit')
-    
-    
-    try:
-        event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
-    except:
-        logging.error("Error, a 'New Case' Event Activity does not exist for this system")
+        else:    
+            qname = Q(event_class=constants.CASE_EVENT_EDIT)    
+            try:
+                event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
+            except:
+                logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded ")
     
     event_new.created_by = event_creator
     event_new.created_date = event_create_date

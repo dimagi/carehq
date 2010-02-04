@@ -8,9 +8,9 @@ lines = fullcmd.split('\n')
 
 runserver = ''
 for line in lines:
-    if line.count('127.0.0.1:8000') > 0 or line.count('0.0.0.0:8000') > 0:
+    if line.count(':8000') > 0:# or line.count('0.0.0.0:8000') > 0:
         runserver=line
-        print "found running instance"
+        print "found running instance " + line
         break
 if runserver == '':
     print "cound not find open port"
@@ -25,9 +25,9 @@ for item in splits:
     else:
         distilled.append(item)
 
-if distilled[-1].count('python') > 0:
-    pid = distilled[-1].split('/')[0]
-    killer = os.popen('kill ' + pid)
-    killed = killer.read()
-    print killed
-    print "python task killed"
+#if distilled[-1].count('python') > 0:
+pid = distilled[-1].split('/')[0]
+killer = os.popen('kill ' + pid)
+killed = killer.read()
+print killed
+print "python task killed"

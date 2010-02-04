@@ -9,8 +9,12 @@ def load_fixtures():
     call_command('loaddata', '0-caseaction.json')
     call_command('loaddata', '1-category.json')
     call_command('loaddata', '2-eventactivity.json')
+    
     call_command('loaddata', '3-priority.json')
     #call_command('loaddata', '4-status.json') # switching to autogenerate the different status.
+    
+    
+    
     
     states = {"Active/Open (default)": constants.CASE_STATE_OPEN, "Resolved (default)": constants.CASE_STATE_RESOLVED, "Closed (default)": constants.CASE_STATE_CLOSED}
     for cat in Category.objects.all():

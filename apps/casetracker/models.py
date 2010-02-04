@@ -353,11 +353,15 @@ class Case(CachedModel):
     
     @property
     def last_case_event(self):
-        if CaseEvent.objects.select_related('case','activity').filter(case=self).order_by('-created_date').count() > 0:
-            return CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
+        if not getattr(self, '_last_case_event', None):        
+            if CaseEvent.objects.select_related('case','activity').filter(case=self).order_by('-created_date').count() > 0:
+                self._last_case_event = CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
+                return self._last_case_event
+            else:
+                return None
         else:
-            return None
-        
+            return self._last_case_event
+            
         
     @property
     def last_event_date(self):

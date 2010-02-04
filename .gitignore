@@ -6,3 +6,5 @@ rapidsms-django.log*
 rapidsms.log*
 settings_local.py
 *.py~
+.tmp_*
+.json~

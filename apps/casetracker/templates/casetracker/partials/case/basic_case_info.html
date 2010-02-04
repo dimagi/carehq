@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load case_tags %}
 <div class="span-18">  <!-- case info block -->
         <div class="span-18">
             <h2>{{case.description}}</h2>
@@ -6,21 +7,37 @@
             <p>{{case.body}}</p>
         </div>
         
-        <div class="span-12 prepend-6">
+        <div class="span-18 prepend-2">
+        	{% if case.is_open %}
             <div class="span-4">
-                <strong>{% trans "assigned" %}</strong> {{case.assigned_date|date}}<br>
-                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.first_name}} {{case.assigned_to.last_name}}</a>            
-            </div>
-            
-            <div class="span-4">
-                <strong>{% trans "opened" %}</strong> {{case.opened_date|date}}<br>
-                <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.first_name}} {{case.opened_by.last_name}}</a>            
+                <strong>{% trans "Opened" %}</strong> {{case.opened_date|date}}<br>
+                <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.get_full_name}}</a>            
+            </div>			
+			<div class="span-4">
+                <strong>{% trans "Assigned" %}</strong> {{case.assigned_date|date}}<br>
+                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.get_full_name}}</a>            
             </div>            
-            
-            <div class="span-4 last">
-                <strong>{% trans "edited" %}</strong> {{case.last_edit_date|timesince}} ago<br>
-                <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by.first_name}} {{case.last_edit_by.last_name}}</a>            
+			
+            <div class="span-4">
+                <strong>{% trans "Edited" %}</strong> {% time_interval case.last_edit_date %}<br>
+                by <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by.get_full_name}}</a>            
             </div>        
+			{% endif %}
+			
+			{% if case.is_resolved and not case.is_closed%}
+			<div class="span-4 notice">
+                <strong>{% trans "Resolved" %}</strong> {{case.resolved_date|date}}<br>
+                by <a href="{% url ashandapp.views.users.single  case.resolved_by.id %}">{{case.resolved_by.get_full_name}}</a>            
+            </div>
+			{% endif %}
+			
+			{% if case.is_closed %}
+			<div class="span-4 notice">
+                <strong>{% trans "Closed" %}</strong> {{case.closed_date|date}}<br>
+                by <a href="{% url ashandapp.views.users.single  case.closed_by.id %}">{{case.closed_by.get_full_name}}</a>            
+            </div>
+			{% endif %}
+			
         </div>
         
         <div class="span-18">

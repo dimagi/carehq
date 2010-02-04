@@ -24,8 +24,14 @@ from ashandapp.forms.issue import NewIssueForm
 def view_careteam_cases(request, careteam_id, template_name="ashandapp/careteam/careteam_cases_ajax.html"):    
     context = {}
     careteam = CareTeam.objects.get(id=careteam_id)
-    cases = careteam.cases.all()
-    context['cases'] = cases    
+    #cases = careteam.cases.all()
+    
+    context['active_columns'] = ['category', 'description','priority','assigned_to', 'next_action', 'next_action_date']
+    context['resolved_columns'] = ['category', 'description', 'resolved_by', 'resolved_date']
+    context['closed_columns'] = ['category', 'description','closed_by', 'closed_date']
+    context['all_columns'] = ['category', 'description','priority','assigned_to', 'status', 'last_case_event', 'last_event_date']
+        
+    #context['cases'] = cases    
     context['patient']= careteam.patient    
     context['careteam'] = careteam
     return render_to_response(template_name, context, context_instance=RequestContext(request))

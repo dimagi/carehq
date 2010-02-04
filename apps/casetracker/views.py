@@ -24,7 +24,7 @@ from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
 from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity
-
+from casetracker import constants
 
 #use in sorting
 from casetracker.queries.caseevents import sort_by_person, sort_by_case, sort_by_activity, sort_by_category, get_latest_for_cases
@@ -120,20 +120,36 @@ def get_sorted_dictionary(sort, arr):
 def close_or_resolve_case(request, case_id, edit_mode=None, template_name = 'casetracker/manage/edit_case.html'):
     context = {}    
     case = Case.objects.get(id=case_id)
+    
+    if edit_mode == constants.CASE_STATE_CLOSED:
+        context['edit_headline'] = "Close " + case.category.category
+        event_class = constants.CASE_EVENT_CLOSE
+        
+    elif edit_mode == constants.CASE_STATE_RESOLVED:
+        context['edit_headline'] = "Resolve " + case.category.category
+        event_class = constants.CASE_EVENT_RESOLVE
+    
     context['case'] = case
     if request.method == 'POST':
         form = CaseResolveCloseForm(data=request.POST, case=case, mode=edit_mode)
         if form.is_valid():
              
             status = form.cleaned_data['state']
-            activity = form.cleaned_data['event_activity']
+            #activity = form.cleaned_data['event_activity']
             comment = form.cleaned_data['comment']
             
-            
+            #just grab the first close/resolve event class
+            activity = EventActivity.objects.filter(category=case.category).filter(event_class=event_class)[0]
             case.status = status 
             case.last_edit_by = request.user
             case.edit_comment = comment
             case.event_activity = activity
+            
+            if edit_mode == constants.CASE_STATE_CLOSED:
+                case.closed_by=request.user
+            elif edit_mode == constants.CASE_STATE_RESOLVED:
+                case.resolved_by=request.user
+
             case.save()
             
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
@@ -147,7 +163,15 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
     for key, value in request.GET.items():
         if key == "action":
             edit_mode = value    
-    context['case'] = Case.objects.get(id=case_id)    
+
+    oldcase = Case.objects.get(id=case_id)
+    
+    if edit_mode == "assign":
+        context['edit_headline'] = "Assign " + oldcase.category.category    
+    elif edit_mode == "edit":
+        context['edit_headline'] = "Edit " + oldcase.category.category            
+    
+    context['case'] = oldcase     
     if request.method == 'POST':
         form = CaseModelForm(data=request.POST, instance=context['case'], editor_user=request.user, mode=edit_mode)
         if form.is_valid():    
@@ -161,7 +185,7 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
             #next, we need to see the mode and flip the fields depending on who does what.
             if edit_mode == CaseModelForm.EDIT_ASSIGN:
                 case.assigned_date = datetime.utcnow()
-                case.edit_comment += "\nAssigned to %s by %s" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
+                case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
             
             elif edit_mode == CaseModelForm.EDIT_RESOLVE:
                 case.resolved_date = datetime.utcnow()
@@ -199,7 +223,7 @@ def case_comment(request, case_id, template_name='casetracker/view_case.html'):
             evt = CaseEvent()
             evt.case = case
             evt.notes = comment
-            evt.activity = EventActivity.objects.filter(category=case.category)[0]
+            evt.activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_COMMENT)[0]
             evt.created_by = request.user            
             evt.save()
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
@@ -223,11 +247,12 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
     thecase = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to','priority','category','status').get(id=case_id)
     context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
     context['case'] = thecase
-    context['formatting'] = False
+    context['formatting'] = False    
+    
     context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
     
     template_name = thecase.category.handler.get_view_template()    
-    
+    context = thecase.category.handler.process_context(thecase,request,context)
     ret = context['events'] 
     
 #    if sorting == "person":

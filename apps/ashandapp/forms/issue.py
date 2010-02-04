@@ -19,6 +19,15 @@ class NewIssueForm(CareTeamCaseFormBase):
                          ('healthmonitor', "Health Monitor" ),
                          ('other', "Other" ),
                          )
+    
+    description = forms.CharField(label="Issue", widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    
+    body = forms.CharField(label="Description", required=True,
+                           help_text="Please describe this issue in detail (required)",
+                           error_messages = {'required': 'You must enter a description'},
+                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
+    
+
     source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
     def __init__(self, careteam=None, *args, **kwargs):

@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.template import Context, Template
 
+from casetracker.models import EventActivity, CaseEvent, Status, CaseAction
 from datetime import datetime
 register = template.Library() 
  
@@ -13,16 +14,19 @@ dirty_column_map = {
 "category":"Category",
 "status":"Status",
 "priority":"Priority",
-"assigned_to":"Assigned To",
-"opened_by":"Opened By",
-"last_edit_by":"Edited By",
-"closed_by":"Closed By",
-"resolved_by":"Resolved By",
-"opened_date":"Opened",
+
+"assigned_to":"Assigned",
+"opened_by":"Opened",
+"last_edit_by":"Edited",
+"resolved_by":"Resolved",
+"closed_by":"Closed",
+
+"opened_date":"Opened Date",
 "last_edit_date":"Edit Date",
 "resolved_date":"Resolved Date",
 "closed_date":"Closed Date",
-"next_action":"Next Action",
+
+"next_action": "Next Action",
 "next_action_date":"Follow Up Date",
 "last_case_event": "Last Event",
 "last_event_date": "Event Date",
@@ -65,6 +69,13 @@ def case_column(case, column):
             
         elif isinstance(data, User):
             datastring = "%s %s" % (data.first_name, data.last_name)
+        elif isinstance (data, CaseAction):
+            return data.description
+        elif isinstance(data, CaseEvent):
+            return data.activity.get_event_class_display()
+        elif isinstance(data, Status):
+            return data.get_state_class_display()
+
         else:
             datastring = unicode(data)
         return datastring

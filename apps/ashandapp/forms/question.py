@@ -14,31 +14,17 @@ from casetracker import constants
 
 class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""
-    RECIPIENT_CHOICES = (('primary', "Care Team Primary" ),                         
-                         ('specific', "Specific Care Team member" ),
-                         )
-        
-    recipient = forms.ChoiceField(choices=RECIPIENT_CHOICES, required=True)
-    other_recipient = forms.ModelChoiceField(queryset=User.objects.all(), required=False)    
     
+    description = forms.CharField(label="Question", widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    
+   
     
     def __init__(self, careteam=None, *args, **kwargs):
-        super(NewQuestionForm, self).__init__(careteam=careteam,*args, **kwargs)          
-        self.fields['other_recipient'].queryset = careteam.get_careteam_user_qset()        
-   
+        super(NewQuestionForm, self).__init__(careteam=careteam,*args, **kwargs)   
+           
     def clean(self):
         return self.cleaned_data
     
-    def clean_other_recipient(self):
-        if self.cleaned_data['recipient'] == 'specific':
-            if self.cleaned_data.has_key('other_recipient'):
-                return self.cleaned_data['other_recipient']
-            else:
-                raise ValidationError(message="Please choose a specific CareTeam member to target")
-                
-        else:
-            return self.cleaned_data['recipient']
-            
         
     
     def get_case(self, request):
@@ -52,14 +38,15 @@ class NewQuestionForm(CareTeamCaseFormBase):
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        if self.cleaned_data['recipient'] == 'primary':            
-            if self._careteam.primary_provider:
-                newcase.assigned_to = self._careteam.primary_provider.user
-            else:                        
-                newcase.assigned_to = request.user
-        elif self.cleaned_data['recipient'] == 'specific':            
-            newcase.assigned_to = self.cleaned_data['other_recipient']
-                    
+        newcase.assigned_to = self.cleaned_data['recipient']
+#        if self.cleaned_data['recipient'] == 'primary':            
+#            if self._careteam.primary_provider:
+#                newcase.assigned_to = self._careteam.primary_provider.user
+#            else:                        
+#                newcase.assigned_to = request.user
+#        elif self.cleaned_data['recipient'] == 'specific':            
+#            newcase.assigned_to = self.cleaned_data['other_recipient']
+
         newcase.assigned_date = datetime.utcnow()
         
         
