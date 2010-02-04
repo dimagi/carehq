@@ -95,8 +95,8 @@ class AshandIdentityMiddleware(object):
         
         request.is_provider = is_provider
         request.is_patient = is_patient
-        request.is_caregiver = is_caregiver
-        
+        request.is_caregiver = is_caregiver        
+              
         return None
             
         

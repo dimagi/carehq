@@ -557,5 +557,50 @@
       "parent": "be944876079c11dfa56d001641e25144", 
       "description": "Weight training"
     }
+  },
+  {
+    "pk": 1, 
+    "model": "careplan.templatecareplanitemlink", 
+    "fields": {
+      "item": "f35632bf076c11dfa56d001641e25144", 
+      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
+      "order": 1
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "careplan.templatecareplanitemlink", 
+    "fields": {
+      "item": "f35632b7076c11dfa56d001641e25144", 
+      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
+      "order": 2
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "careplan.templatecareplanitemlink", 
+    "fields": {
+      "item": "f35632b6076c11dfa56d001641e25144", 
+      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
+      "order": 3
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "careplan.templatecareplanitemlink", 
+    "fields": {
+      "item": "be944876079c11dfa56d001641e25144", 
+      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
+      "order": 4
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "careplan.templatecareplanitemlink", 
+    "fields": {
+      "item": "f35632bc076c11dfa56d001641e25144", 
+      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
+      "order": 5
+    }
   }
 ]

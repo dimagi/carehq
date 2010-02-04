@@ -61,7 +61,7 @@ def do_get_json(cases_qset, columns):
 
 
 @login_required
-@provider_only
+#@provider_only
 def view_json_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html"):
     context = {}        
     context['json_qset_url'] = reverse('cases-for-caregiver-json')
@@ -70,16 +70,18 @@ def view_json_caregiver_cases(request, template_name="ashandapp/cases/bare_query
 
 
 @login_required
-@caregiver_only
+#@caregiver_only
 def json_caregiver_cases(request):
     """
     Return a case queryset 3-tuple of all the patients that this caregiver is working on.
     
     return a 3-tuple of (tabdisplay, columns, queryset)    
     """
+    #print 'json_caregiver_cases'
     careteams = CaregiverLink.objects.all().filter(user = request.user).values_list('careteam__id', flat=True)
     careteam_cases = CareTeamCaseLink.objects.all().filter(careteam__in=careteams).values_list('case__id', flat=True)
     qset= Case.objects.all().filter(id__in=careteam_cases)
+    #print qset
     columns = ['description','assigned_to','last_event_by', 'last_event_date']    
     return  do_get_json(qset, columns)
     
@@ -107,7 +109,7 @@ def _get_careteam_triage_qset(careteam):
 
 
 @login_required
-@provider_only
+#@provider_only
 def view_json_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
     context = {}        
     context['json_qset_url'] = reverse('cases-for-triage-json')

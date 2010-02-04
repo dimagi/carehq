@@ -186,13 +186,13 @@ class CareTeam(CachedModel):
         triage_nurse = self.providerlink_set.all().filter(role__role='nurse-triage')
         if len(triage_nurse) > 0:
             self._primary_provider = triage_nurse[0].provider
-        
-        pcp = self.providerlink_set.all().filter(role__role='pcp')
-        if len(pcp) > 0:            
-            self._primary_provider = pcp[0].provider
         else:
-            self._primary_provider = None
-        
+            pcp = self.providerlink_set.all().filter(role__role='pcp')
+            if len(pcp) > 0:            
+                self._primary_provider = pcp[0].provider
+            else:
+                self._primary_provider = None
+            
         return self._primary_provider
     
     @property

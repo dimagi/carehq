@@ -19,10 +19,15 @@ class CaseProfileAdmin(VersionAdmin):
     list_display = ('user','last_filter','last_login','last_login_from')
 admin.site.register(CaseProfile, CaseProfileAdmin)
     
-    
-class CareTeamAdmin(admin.ModelAdmin):
-    list_display=('patient',)
-admin.site.register(CareTeam, CareTeamAdmin)
+
+class ProviderLinkAdminInline(admin.TabularInline):#StackedInlineTabularInline
+    model = ProviderLink
+    extra = 1
+
+class CaregiverLinkAdminInline(admin.TabularInline):#StackedInline
+    model = CaregiverLink
+    extra = 1
+
 
 class ProviderRoleAdmin(admin.ModelAdmin):
     list_display=('role',)
@@ -44,6 +49,15 @@ class CareTeamCaseLinkAdmin(admin.ModelAdmin):
 admin.site.register(CareTeamCaseLink, CareTeamCaseLinkAdmin)
     
 
+class CareTeamAdmin(admin.ModelAdmin):
+    list_display=('patient',)    
+    inlines = [ProviderLinkAdminInline, CaregiverLinkAdminInline]
+admin.site.register(CareTeam, CareTeamAdmin)
+
+class CareRelationshipAdmin(admin.ModelAdmin):
+    list_display=('relationship_type','other_description','notes')
+    list_filter = ['relationship_type']
+admin.site.register(CareRelationship, CareRelationshipAdmin)
 
 
 #class AshandProfileAdmin(VersionAdmin):
