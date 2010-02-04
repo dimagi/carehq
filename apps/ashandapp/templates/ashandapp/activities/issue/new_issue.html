@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block title %}{% trans "New Issue" %}{% endblock %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/admin/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="/media/admin/css/global.css"/>
+<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
+{%endblock %}
 
 {% block content %}
 <h1>Raise an issue</h1>
-
+<div class="error">
+<strong>Note</strong>:  If this issue is an emergency or life threatening 
+condition that needs immediate response, immediately seek medical attention by calling 911 
+or going to the Emergency Room.  This system is meant for long term communication and care management, 
+not real-time critical alerts.	
+</div>
 <form action="" method="POST">
 {% include "ashandapp/partials/inline_form.html" %}
 <input type="submit" value="Submit" />

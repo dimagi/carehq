@@ -65,7 +65,7 @@ def do_get_json(cases_qset, columns):
 def view_json_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html"):
     context = {}        
     context['json_qset_url'] = reverse('cases-for-caregiver-json')
-    context['columns'] = ['description','assigned_to','last_event_by', 'last_event_date']
+    context['columns'] = ['description','status','last_case_event','last_event_by', 'last_event_date']
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -82,7 +82,7 @@ def json_caregiver_cases(request):
     careteam_cases = CareTeamCaseLink.objects.all().filter(careteam__in=careteams).values_list('case__id', flat=True)
     qset= Case.objects.all().filter(id__in=careteam_cases)
     #print qset
-    columns = ['description','assigned_to','last_event_by', 'last_event_date']    
+    columns = ['description','status', 'last_case_event','last_event_by', 'last_event_date']    
     return  do_get_json(qset, columns)
     
     

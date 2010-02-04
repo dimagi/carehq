@@ -20,10 +20,12 @@ class NewIssueForm(CareTeamCaseFormBase):
                          ('other', "Other" ),
                          )
     
-    description = forms.CharField(label="Issue", widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    description = forms.CharField(label="Issue", 
+                                  help_text="What's the problem? (required)",
+                                  widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     
     body = forms.CharField(label="Description", required=True,
-                           help_text="Please describe this issue in detail (required)",
+                           help_text="Please provide some more details on this issue (required)",
                            error_messages = {'required': 'You must enter a description'},
                            widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
     

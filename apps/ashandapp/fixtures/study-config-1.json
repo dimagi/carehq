@@ -1269,7 +1269,7 @@
       "is_active": 1, 
       "is_superuser": 0, 
       "is_staff": 0, 
-      "last_login": "2010-02-04 10:47:29", 
+      "last_login": "2010-02-04 12:47:19", 
       "groups": [], 
       "user_permissions": [], 
       "password": "sha1$92d42$70c51a113f4e75263dd28bbde05d91a709732c2b", 
@@ -1395,7 +1395,7 @@
       "is_active": 1, 
       "is_superuser": 0, 
       "is_staff": 0, 
-      "last_login": "2010-02-04 10:44:07", 
+      "last_login": "2010-02-04 12:55:54", 
       "groups": [], 
       "user_permissions": [], 
       "password": "sha1$83d25$2e5ffeb9c14346b46d5917cad7d22bea8b496858", 
@@ -1896,11 +1896,27 @@
     }
   }, 
   {
+    "pk": "ac7ef9e770a5d7a31675fd2b1fc50b07", 
+    "model": "sessions.session", 
+    "fields": {
+      "expire_date": "2010-02-18 12:47:19", 
+      "session_data": "gAJ9cQEoVRJfYXV0aF91c2VyX2JhY2tlbmRxAlUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRxA1UNX2F1dGhfdXNlcl9pZHEEigKgAHUuNWZkZGJhNmY4NTlkNWM1OGNk\nZGE2ZGJhMjY1ZmE3YWE=\n"
+    }
+  }, 
+  {
     "pk": "6aa86c4b6c0e88a82f90b78e01008df6", 
     "model": "sessions.session", 
     "fields": {
       "expire_date": "2010-02-18 12:12:23", 
       "session_data": "gAJ9cQEoVRJfYXV0aF91c2VyX2JhY2tlbmRxAlUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRxA1UNX2F1dGhfdXNlcl9pZHEEigKbAHUuMjA3Y2UzNDJiNjBlMmI2ODY1\nY2RkMDAxMzgyNGZhYzk=\n"
+    }
+  }, 
+  {
+    "pk": "5407c7d35045b86dcad675e24dca0123", 
+    "model": "sessions.session", 
+    "fields": {
+      "expire_date": "2010-02-18 12:55:54", 
+      "session_data": "gAJ9cQEoVRJfYXV0aF91c2VyX2JhY2tlbmRxAlUpZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5k\ncy5Nb2RlbEJhY2tlbmRxA1UNX2F1dGhfdXNlcl9pZHEEigKZAHUuZmEzYmU4OGQ5MWU5ZDA0MTBh\nOWIwNjgxNDQ2OGE0Mjc=\n"
     }
   }, 
   {
@@ -2555,6 +2571,137 @@
     }
   }, 
   {
+    "pk": "f48015c211b611dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "384b9a5211b611dfa56d001641e25144", 
+      "notes": "Please refer to the care plan under Skin Problems.  If you have any more questions, let's talk it through at the next visit.", 
+      "created_date": "2010-02-04 17:58:52", 
+      "created_by": 155, 
+      "activity": 13
+    }
+  }, 
+  {
+    "pk": "c554638411b611dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "384b9a5211b611dfa56d001641e25144", 
+      "notes": "Can you provide some protocols on how to address this for the caregiver? (Assigned to Gregory House by Alyssa Ogawa)", 
+      "created_date": "2010-02-04 17:57:33", 
+      "created_by": 160, 
+      "activity": 1
+    }
+  }, 
+  {
+    "pk": "384b9a5311b611dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "384b9a5211b611dfa56d001641e25144", 
+      "notes": "New case created by dorothy_day", 
+      "created_date": "2010-02-04 17:53:37", 
+      "created_by": 153, 
+      "activity": 8
+    }
+  }, 
+  {
+    "pk": "0b4b4b3911b611dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "e004280111b411dfa56d001641e25144", 
+      "notes": "thanks!", 
+      "created_date": "2010-02-04 17:52:21", 
+      "created_by": 153, 
+      "activity": 18
+    }
+  }, 
+  {
+    "pk": "7ec3738411b511dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "e004280111b411dfa56d001641e25144", 
+      "notes": "Yes, you may attend, you're the caregiver!", 
+      "created_date": "2010-02-04 17:48:25", 
+      "created_by": 160, 
+      "activity": 12
+    }
+  }, 
+  {
+    "pk": "71b20c1f11b511dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "e004280111b411dfa56d001641e25144", 
+      "notes": "all your's alyssa", 
+      "created_date": "2010-02-04 17:48:03", 
+      "created_by": 155, 
+      "activity": 18
+    }
+  }, 
+  {
+    "pk": "e004280211b411dfa56d001641e25144", 
+    "model": "casetracker.caseevent", 
+    "fields": {
+      "case": "e004280111b411dfa56d001641e25144", 
+      "notes": "New case created by dorothy_day", 
+      "created_date": "2010-02-04 17:43:59", 
+      "created_by": 153, 
+      "activity": 7
+    }
+  }, 
+  {
+    "pk": "384b9a5211b611dfa56d001641e25144", 
+    "model": "casetracker.case", 
+    "fields": {
+      "category": 2, 
+      "status": 6, 
+      "object_uuid": null, 
+      "next_action": 3, 
+      "description": "Rashes are getting out of control", 
+      "parent_case": null, 
+      "opened_date": "2010-02-04 17:53:37", 
+      "assigned_to": 155, 
+      "body": "It's getting quite worrisome, how do I know what to do when it flares up some more?!", 
+      "closed_date": null, 
+      "resolved_date": "2010-02-04 17:58:52", 
+      "priority": 1, 
+      "next_action_date": "2010-02-05 12:57:18", 
+      "orig_description": "Rashes are getting out of control", 
+      "resolved_by": 155, 
+      "object_type": null, 
+      "opened_by": 153, 
+      "last_edit_date": "2010-02-04 17:58:52", 
+      "closed_by": null, 
+      "assigned_date": "2010-02-04 17:57:33", 
+      "last_edit_by": 155
+    }
+  }, 
+  {
+    "pk": "e004280111b411dfa56d001641e25144", 
+    "model": "casetracker.case", 
+    "fields": {
+      "category": 1, 
+      "status": 22, 
+      "object_uuid": null, 
+      "next_action": null, 
+      "description": "Can I be present at the next visit?", 
+      "parent_case": null, 
+      "opened_date": "2010-02-04 17:43:59", 
+      "assigned_to": 160, 
+      "body": "As the caregiver, just checking.", 
+      "closed_date": null, 
+      "resolved_date": "2010-02-04 17:48:25", 
+      "priority": 4, 
+      "next_action_date": null, 
+      "orig_description": "Can I be present at the next visit?", 
+      "resolved_by": 160, 
+      "object_type": null, 
+      "opened_by": 153, 
+      "last_edit_date": "2010-02-04 17:48:25", 
+      "closed_by": null, 
+      "assigned_date": "2010-02-04 17:43:59", 
+      "last_edit_by": 160
+    }
+  }, 
+  {
     "pk": 1, 
     "model": "casetracker.filter", 
     "fields": {
@@ -2988,9 +3135,9 @@
     "model": "ashandapp.caseprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
-      "last_login": "2010-02-04 16:41:53", 
+      "last_login": "2010-02-04 17:59:17", 
       "user": 153, 
-      "last_filter": 2
+      "last_filter": 1
     }
   }, 
   {
@@ -2998,9 +3145,9 @@
     "model": "ashandapp.caseprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
-      "last_login": "2010-02-04 16:46:38", 
+      "last_login": "2010-02-04 17:59:07", 
       "user": 160, 
-      "last_filter": 2
+      "last_filter": 1
     }
   }, 
   {
@@ -3008,7 +3155,7 @@
     "model": "ashandapp.caseprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
-      "last_login": "2010-02-04 17:12:25", 
+      "last_login": "2010-02-04 17:57:44", 
       "user": 155, 
       "last_filter": 1
     }
@@ -3126,6 +3273,22 @@
       "notes": "", 
       "user": 154, 
       "relationship": "7ecb83d811a311dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "e004280311b411dfa56d001641e25144", 
+    "model": "ashandapp.careteamcaselink", 
+    "fields": {
+      "careteam": "a13628da11a111dfa56d001641e25144", 
+      "case": "e004280111b411dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "384b9a5411b611dfa56d001641e25144", 
+    "model": "ashandapp.careteamcaselink", 
+    "fields": {
+      "careteam": "a13628da11a111dfa56d001641e25144", 
+      "case": "384b9a5211b611dfa56d001641e25144"
     }
   }, 
   {
