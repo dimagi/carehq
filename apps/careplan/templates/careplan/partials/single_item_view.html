@@ -1,42 +1,30 @@
-<div class="span-16">
-    <div class="span-16">
-        <div class="span-6">
-            <div class="span-6">
-                <h3>
-                    <a href="{{plan_item.get_absolute_url }}">{{plan_item.name}}</a>
-                </h3>
-            </div>
-            {% if not show_children %}
-                <div class="span-5 prepend-1">
-                {% if plan_item.parent %}
-                    <p em>Subitem of <a href="{{plan_item.parent.get_absolute_url }}">{{plan_item.parent.name}}</a></em>    
-                {% endif %}            
-                </div>
-            {% endif %}
-        </div>        
-        <div class="span-5">
-            <strong>Description</strong><br>
-            {{plan_item.description}}
-        </div>
-        <div class="span-5 last">
+<div class="span-24">
+    <div class="span-24">
+        <div class="span-8">
+            <h2>
+                {#<a href="{{plan_item.get_absolute_url }}">{{plan_item.name}}</a>#}
+				{{plan_item.name}}
+            </h2>
+        </div>	
+        <div class="span-8">
             <strong>Categories</strong><br>
             {% for cat in plan_item.category.all %}
                 {{cat}}<br>
             {%endfor%}        
         </div>
-    </div>
-    
-    {% if show_children %}    
-    <div class="span-14 prepend-2">
-                
-        {% for subitem in plan_item.child_template_items.all %}           
-            {% with "careplan/partials/single_template_item.html" as recurse_template %}            
-                {% with subitem as plan_item %}
-                    {% include  recurse_template %}
-                {%endwith %}        
-            {%endwith %}
-        {% endfor %}            
-    </div>
-    {%endif %}
-</div>
+		<div class="span-7 prepend-1 last">
+            {% if plan_item.parent %}
+                <em>Subitem of <a href="{{plan_item.parent.get_absolute_url }}">{{plan_item.parent.name}}</a></em>    
+            {% endif %}        
+        </div>
+		<hr>   
+	</div>     
+    <div class="span-24">
+    	
+        <h3>Description</h3>
+		{% autoescape off %}
+        	{{plan_item.description}}
+		{% endautoescape%}
+    </div>        
+ </div>
      

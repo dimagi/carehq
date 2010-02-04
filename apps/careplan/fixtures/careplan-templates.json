@@ -1,5 +1,17 @@
 [
   {
+    "pk": "3eb96a6e0abc11dfa56d001641e25144", 
+    "model": "careplan.templatecareplan", 
+    "fields": {
+      "modified_date": "2010-01-26 20:48:58", 
+      "modified_by": 2, 
+      "title": "Breast Cancer", 
+      "created_by": 2, 
+      "version": 1, 
+      "created_date": "2010-01-26 20:48:58"
+    }
+  }, 
+  {
     "pk": 4, 
     "model": "careplan.plancategory", 
     "fields": {
@@ -80,97 +92,6 @@
     }
   }, 
   {
-    "pk": "f35632b6076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Dietary Goals", 
-      "parent": null, 
-      "description": "dietary goals"
-    }
-  }, 
-  {
-    "pk": "f35632b7076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Disease Management", 
-      "parent": null, 
-      "description": "Disease management care goal"
-    }
-  }, 
-  {
-    "pk": "be944876079c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Fitness", 
-      "parent": null, 
-      "description": "Fitness care goals"
-    }
-  }, 
-  {
-    "pk": "f35632bc076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Lifestyle Management", 
-      "parent": null, 
-      "description": "asfdsdf"
-    }
-  }, 
-  {
-    "pk": "f35632bf076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Home Care", 
-      "parent": null, 
-      "description": "Home based care plan"
-    }
-  }, 
-  {
-    "pk": "f35632ae076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Appointments", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Appointment care goals"
-    }
-  },   
-  {
-    "pk": "f35632c1076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        3
-      ], 
-      "tags": [], 
-      "name": "Medication Management", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Management of all aspects of medication"
-    }
-  },
-  {
     "pk": "f35632ac076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
@@ -185,16 +106,29 @@
     }
   }, 
   {
-    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "pk": "f35632ad076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
       "category": [
-        6
+        9
       ], 
       "tags": [], 
-      "name": "Symptoms", 
+      "name": "Anxiety", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Sources of Anxiety"
+    }
+  }, 
+  {
+    "pk": "f35632ae076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Appointments", 
       "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Common symptoms to watch out for with this patient disease/problem profile"
+      "description": "Appointment care goals"
     }
   }, 
   {
@@ -208,33 +142,6 @@
       "name": "Back Pain", 
       "parent": "f35632cb076c11dfa56d001641e25144", 
       "description": "Back pain"
-    }
-  },
-  {
-    "pk": "f35632ad076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        9
-      ], 
-      "tags": [], 
-      "name": "Anxiety", 
-      "parent": "f35632bc076c11dfa56d001641e25144", 
-      "description": "Sources of Anxiety"
-    }
-  }, 
-  
-  {
-    "pk": "f35632cb076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        6
-      ], 
-      "tags": [], 
-      "name": "Symptoms", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Common symptoms to watch out for with this patient disease/problem profile"
     }
   }, 
   {
@@ -275,19 +182,6 @@
     }
   }, 
   {
-    "pk": "f35632ca076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        2
-      ], 
-      "tags": [], 
-      "name": "Side effect prevention", 
-      "parent": "f35632bc076c11dfa56d001641e25144", 
-      "description": "Pre-emptive management of side effects by lifestyle changes."
-    }
-  },
-  {
     "pk": "f35632b3076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
@@ -297,7 +191,7 @@
       "tags": [], 
       "name": "Diarrhea Management", 
       "parent": "f35632ca076c11dfa56d001641e25144", 
-      "description": "asdfqwre"
+      "description": "<p>\r\nDiarrhea is frequent, loose, or watery bowel movements. It may be caused by chemotherapy, radiation therapy to the pelvis, or by the cancer itself. Diarrhea may also be caused by graft-versus-host-disease (GVHD) in people who have received a bone marrow transplantation. Diarrhea may be described according to the following stages, from mild to severe, established by the National Cancer Institute:\r\n</p>\r\n<ul>\r\n<li>Stage 0 is increased stool frequency, but no diarrhea.</li>\r\n<li>Stage 1 is an increase of less than four stools a day.</li>\r\n<li>Stage 2 is an increase of four to six stools a day or nocturnal (nighttime) stools.</li>\r\n<li>Stage 3 is an increase of more than seven stools a day, or incontinence, or a need for intravenous (IV) fluids to treat dehydration.</li>\r\n<li>Stage 4 is a severe condition that requires intensive care.</li>\r\n</ul>\r\n\r\n<h2>Treatment</h2>\r\n<p>\r\nPreventing diarrhea or treating it early can help a person avoid becoming dehydrated or developing other problems. The following suggestions can help manage mild (stage 1 or 2) diarrhea:\r\n</p>\r\n\r\n<ul>\r\n<li>Avoid caffeine, alcohol, dairy, fat, fiber, orange juice, prune juice, and spicy foods.</li>\r\n<li>Avoid laxatives, metoclopramide (Reglan, used to prevent vomiting and constipation), and stool softeners.</li>\r\n<li>\r\nEat small, frequent meals.</li>\r\n<li>\r\nDrink plenty of water and other liquids to prevent dehydration. People with severe dehydration may need to receive IV fluids.\r\n</li>\r\n</ul>\r\n\r\n<p>Ask your doctor about changing the schedule or dose of chemotherapy if the diarrhea is caused by chemotherapy and is severe.\r\n</p>\r\n<p>\r\nAsk your doctor about antidiarrheal medications. Octreotide (Sandostatin) can be used to treat diarrhea caused by chemotherapy. No drugs have been approved for preventing diarrhea caused by radiation treatments to the pelvic area, but some are being studied. If diarrhea continues after you have made changes to your diet, opioid medications may help to relieve diarrhea.</p>"
     }
   }, 
   {
@@ -324,10 +218,35 @@
       "tags": [], 
       "name": "Dietary Education", 
       "parent": "f35632b6076c11dfa56d001641e25144", 
-      "description": "education on food and diet"
+      "description": "<table width=\"771\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"> \r\n\t\t\t<tr>\t\t\r\n\t\t\t    <td valign=\"top\"><img src=\"/images/spacer.gif\" width=\"9\" height=\"1\" alt=\"\" border=\"0\"></td> \r\n\t\t\t\t\r\n\t\t\t    \r\n\t\t\t\t\r\n\t\t\t\t<!-- Left Nav Column --> \r\n\t\t\t\t<td id=\"leftzone\" valign=\"top\"></td> \r\n\t\t\t\t<!-----------------------> \r\n\t\t\t\t\r\n\t\t\t\t<!-- Red line --> \r\n\t\t\t\t\r\n\t\t\t\t\r\n\t\t\t\t<!-- Main Content Area --> \r\n\t\t\t\t<td id=\"contentzone\" valign=\"top\" width=\"100%\"><a name=\"skiptocontent\"></a><table width=\"650\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"> \r\n\t<tr> \r\n\t\t<td valign=\"top\"> \r\n<span class=\"page-title\">What You Should Know About Cancer Treatment, Eating Well, and Eating Problems</span><P> \r\n<style type=\"text/css\"> \r\n.callout-box {\r\nbackground-color:E5E5E5;border:1px solid #CCC;color:#333;margin:10px 0 10px 0;padding:10px;\r\n}\r\n</style> \r\n \r\n<p><strong>On this page:</strong></p> \r\n<ul> \r\n<li><a href=\"#1\">People with cancer have different diet needs</a></li> \r\n<li><a href=\"#2\">Cancer treatment can cause side effects that lead to eating problems</a></li> \r\n<li><a href=\"#3\">Things to do and think about before you start cancer treatment</a></li> \r\n<li><a href=\"#4\">Ways you can get ready to eat well</a></li> \r\n<li><a href=\"#5\">Not everyone has eating problems during cancer treatment</a></li> \r\n<li><a href=\"#6\">Talk with your doctor, nurse, or dietitian about foods to eat</a></li> \r\n<li><a href=\"#7\">Ways to get the most from foods and drinks</a></li> \r\n<li><a href=\"#8\">Taking special care with food to avoid infections</a></li> \r\n<li><a href=\"#9\">Using food, vitamins, and other supplements to fight cancer</a></li> \r\n<li><a href=\"#10\">A special note for caregivers</a></li> \r\n</ul> \r\n \r\n<hr> \r\n \r\n<p class=\"header-A\"><a name=\"1\"></a>People with cancer have different diet needs</p> \r\n \r\n<p><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_01.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\"> \r\nPeople with cancer often need to follow diets that are different from what they think of as healthy. For most people, a healthy diet includes:</p> \r\n \r\n \r\n<ul> \r\n<li>Lots of fruits and vegetables, and whole grain breads and cereals</li> \r\n<li>Modest amounts of meat and milk products</li> \r\n<li>Small amounts of fat, sugar, alcohol, and salt</li> \r\n</ul> \r\n \r\n<p>When you have cancer, though, you need to eat to keep up your strength to deal with the side effects of treatment. When you are healthy, eating enough food is often not a problem. But when you are dealing with cancer and treatment, this can be a real challenge.</p> \r\n \r\n<p>When you have cancer, you may need extra protein and calories. At times, your diet may need to include extra milk, cheese, and eggs. If you have trouble chewing and swallowing, you may need to add sauces and gravies. Sometimes, you may need to eat low-fiber foods instead of those with high fiber. Your dietitian can help you with any diet changes you may need to make.</p> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"2\"></a>Cancer treatment can cause side effects that lead to eating problems</p> \r\n \r\n<p>Cancer treatments are designed to kill cancer cells. But these treatments can also damage healthy cells. Damage to healthy cells can cause side effects. Some of these side effects can lead to eating problems.</p> \r\n \r\n<p>Common eating problems during cancer treatment include:</p> \r\n \r\n<ul> \r\n<li>Appetite loss</li> \r\n<li>Changes in sense of taste or smell</li> \r\n<li>Constipation</li> \r\n<li>Diarrhea</li> \r\n<li>Dry mouth</li> \r\n<li>Lactose intolerance</li> \r\n<li>Nausea</li> \r\n<li>Sore mouth</li> \r\n<li>Sore throat and trouble swallowing</li> \r\n<li>Vomiting</li> \r\n<li>Weight gain</li> \r\n<li>Weight loss</li> \r\n</ul> \r\n \r\n<p>Some people have appetite loss or nausea because they are stressed about cancer and treatment. People who react this way almost always feel better once treatment starts and they know what to expect.</p> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"3\"></a><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_02.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\"> \r\nThings to do and think about before you start cancer treatment</p> \r\n \r\n<ul> \r\n<li>Until treatment starts you will not know what, if any, side effects or eating problems you may have. If you do have problems, they may be mild. Many side effects can be controlled. Many problems go away when cancer treatment ends.</li> \r\n<li>Think of your cancer treatment as a time to get well and focus just on yourself.</li> \r\n<li>Eat a healthy diet before treatment starts. This helps you stay strong during treatment and lowers your risk of infection.</li> \r\n<li>Go to the dentist. It is important to have a healthy mouth before you start cancer treatment.</li> \r\n<li>Ask your doctor, nurse, or dietitian about medicine that can help with eating problems.</li> \r\n<li>Discuss your fears and worries with your doctor, nurse, or social worker. He or she can discuss ways to manage and cope with these feelings.</li> \r\n<li>Learn about your cancer and its treatment. Many people feel better when they know what to expect. See the list of helpful resources in &ldquo;<a href=\"/cancertopics/eatinghints/page8\">Ways to Learn More</a> <a href=\"#footnote1\"><span class=\"blacktext\"><sup>1</sup></span></a>&rdquo;.</li> \r\n</ul> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"4\"></a>Ways you can get ready to eat well</p> \r\n \r\n<ul> \r\n<li>Fill the refrigerator, cupboard, and freezer with healthy foods. Make sure to include items you can eat even when you feel sick.</li> \r\n<li><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_03.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\">Stock up on foods that need little or no cooking, such as frozen dinners and ready-to-eat cooked foods.</li> \r\n<li>Cook some foods ahead of time and freeze in meal-sized portions.</li> \r\n<li>Ask friends or family to help you shop and cook during treatment. Maybe a friend can set up a schedule of the tasks that need to be done and the people who will do them.</li> \r\n<li>Talk with your doctor, nurse, or dietitian about what to expect. See the lists of foods and drinks that can help with many types of eating problems.</li> \r\n</ul> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"5\"></a>Not everyone has eating problems during cancer treatment</p> \r\n<p>There is no way to know if you will have eating problems and, if so, how bad they will be. You may have just a few problems or none at all. In part, this depends on the type of cancer you have, where it is in your body, what kind of treatment you have, how long treatment lasts, and the doses of treatment you receive.</p> \r\n<p>During treatment, there are many helpful medicines and other ways to manage eating problems. Once treatment ends, many eating problems go away. Your doctor, nurse, or dietitian can tell you more about the types of eating problems you might expect and ways to manage them.  If you start to have eating problems, tell your doctor or nurse right away.</p> \r\n \r\n<div class=\"callout-box\">If you start to have eating problems, tell your doctor or nurse right away.</div> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"6\"></a>Talk with your doctor, nurse, or dietitian about foods to eat</p> \r\n<p>Talk with your doctor or nurse if you are not sure what to eat during cancer treatment. Ask him or her to refer you to a dietitian. A dietitian is the best person to talk with about your diet. He or she can help choose foods and drinks that are best for you during treatment and after.\r\n</p> \r\n<p><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_04.jpg\" class=\"left\" align=\"left\" border=\"0\" alt=\"\"> \r\nMake a list of questions for your meeting with the dietitian. Ask about your favorite foods and recipes and if you can eat them during cancer treatment. You might want to find out how other patients manage their eating problems. You can also bring this book and ask the dietitian to mark sections that are right for you.\r\n</p> \r\n<p> \r\nIf you are already on a special diet for diabetes, kidney or heart disease, or other health problem, it is even more important to speak with a doctor and dietitian. Your doctor and dietitian can advise you about how to follow your special diet while coping with eating problems caused by cancer treatment.\r\n</p> \r\n<p> \r\nFor more information on how to find a dietitian, contact the American Dietetic Association. See &ldquo;<a href=\"/cancertopics/eatinghints/page8\">Ways to Learn More</a> <a href=\"#footnote1\"><span class=\"blacktext\"><sup>1</sup></span></a>&rdquo;  for ways to reach them.\r\n</p> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"7\"></a>Ways to get the most from foods and drinks</p> \r\n \r\n<p>During treatment, you may have good days and bad days when it comes to food. Here are some ways to manage:</p> \r\n \r\n<ul> \r\n<li>Eat plenty of protein and calories when you can. This helps you keep up your strength and helps rebuild tissues harmed by cancer treatment.</li> \r\n<li><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_05.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\">Eat when you have the biggest appetite. For many people, this is in the morning. You might want to eat a bigger meal early in the day and drink liquid meal replacements later on.</li> \r\n<li>Eat those foods that you can, even if it is only one or two items. Stick with these foods until you are able to eat more. You might also drink liquid meal replacements for extra calories and protein.</li> \r\n<li>Do not worry if you cannot eat at all some days. Spend this time finding other ways to feel better, and start eating when you can. Tell your doctor if you cannot eat for more than 2 days.</li> \r\n<li>Drink plenty of liquids. It is even more important to get plenty to drink on days when you cannot eat. Drinking a lot helps your body get the liquid it needs. Most adults should drink 8 to 12 cups of liquid a day. You may find this easier to do if you keep a water bottle nearby. See the list of <a href=\"/cancertopics/eatinghints/page7#1\">clear liquids</a> <a href=\"#footnote2\"><span class=\"blacktext\"><sup>2</sup></span></a> for other ideas.</li> \r\n</ul> \r\n \r\n<p><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eating_hints_row_cups.jpg\" class=\"left\" align=\"left\" border=\"0\" alt=\"\"></p> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"8\"></a>Taking special care with food to avoid infections</p> \r\n<p><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_06.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\">Some cancer treatments can make you more likely to get infections. When this happens, you need to take special care in the way you handle and prepare food. Here are some ways:</p> \r\n \r\n<ul> \r\n<li>Keep hot foods hot and cold foods cold. Put leftovers in the refrigerator as soon as you are done eating.</li> \r\n<li>Scrub all raw fruits and vegetables before you eat them.\r\nDo not eat foods (like raspberries) that cannot be washed\r\nwell. You should scrub fruits and vegetables that have rough\r\nsurfaces, such as melons, before you cut them..</li> \r\n<li>Wash your hands, knives, and counter tops before and after you prepare food. This is most important when preparing raw meat, chicken, turkey, and fish.</li> \r\n<li>Use one cutting board for meat and one for fruits and vegetables.</li> \r\n<li>Thaw meat, chicken, turkey, and fish in the refrigerator or defrost them in the microwave. Do not leave them sitting out.</li> \r\n<li>Cook meat, chicken, turkey, and eggs thoroughly. Meats should not have any pink inside. Eggs should be hard, not runny.</li> \r\n<li>Do not eat raw fish or shellfish, such as sushi and uncooked oysters.</li> \r\n<li>Make sure that all of your juices, milk products, and honey are pasteurized.</li> \r\n<li>Do not use foods or drinks that are past their freshness date.</li> \r\n<li>Do not buy foods from bulk bins.</li> \r\n<li>Do not eat at buffets, salad bars, or self-service restaurants.</li> \r\n<li>Do not eat foods that show signs of mold. This includes moldy cheeses such as bleu cheese and Roquefort.</li> \r\n</ul> \r\n<p>For more information about infection and cancer treatment, see <em><a href=\"/cancertopics/chemotherapy-and-you\">Chemotherapy and You: Support for People With Cancer</a> <a href=\"#footnote3\"><span class=\"blacktext\"><sup>3</sup></span></a></em> a book from the National Cancer Institute. You can get it free by calling 1-800-4-CANCER (1-800-422-6237) or online at <a href=\"http://www.cancer.gov/publications\">http://www.cancer.gov/publications</a>.</p> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"9\"></a>Using food, vitamins, and other supplements to fight cancer</p> \r\n<p>Many people want to know how they can help their body fight cancer by eating certain foods or taking vitamins or supplements. But, there are no studies that prove that any special diet, food, vitamin, mineral, dietary supplement, herb, or combination of these can slow cancer, cure it, or keep it from coming back. In fact, some of these products can cause other problems by changing how your cancer treatment works.\r\n</p> \r\n<p><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_07.jpg\" class=\"left\" align=\"left\" border=\"0\" alt=\"\">Talk with your doctor, nurse, or dietitian before going on a special diet or taking any supplements. To avoid problems, be sure to follow their advice.</p> \r\n \r\n<p>For more information about complementary and alternative therapies, see <em><a href=\"/cancertopics/thinking-about-CAM\">Thinking About Complementary &amp; Alternative Medicine: A Guide for People With Cancer</a> <a href=\"#footnote4\"><span class=\"blacktext\"><sup>4</sup></span></a></em>. You can get this book free from the National Cancer Institute. Call 1-800-4-CANCER (1-800-422-6237) or order online at <a href=\"http://www.cancer.gov/publications\">http://www.cancer.gov/publications</a>.</p> \r\n \r\n<div class=\"callout-box\">Talk with your doctor before going on a special diet or taking any supplements. Some vitamins and supplements can change how your cancer treatment works.</div> \r\n \r\n<p><a href=\"#top\" class=\"backtotop-link\"><img src=\"/images/backtotop_red.gif\" alt=\"Back to Top\" border=\"0\">Back to Top</a></p> \r\n \r\n<p class=\"header-A\"><a name=\"10\"></a>A special note for caregivers</p> \r\n \r\n<ul> \r\n<li><strong>Do not be surprised or upset if your loved one&rsquo;s tastes change from day to day.</strong> \r\nThere may be days when he or she does not want a favorite food or says it tastes bad now.</li> \r\n<li><strong>Keep food within easy reach.</strong> This way, your loved one can have a snack when he or she is ready to eat. You might put a snack-pack of applesauce or pudding (along with a spoon) on the bedside table. Or try keeping a bag of cut-up carrots on the refrigerator shelf.</li> \r\n<li><img src=\"/images/documents/4ba0dc33-fb69-4977-b86f-f80e2960dbac/eatinghints_pg2_08.jpg\" class=\"right\" align=\"right\" border=\"0\" alt=\"\"><strong>Offer gentle support.</strong> This is much more helpful than pushing your loved one to eat. Suggest that he or she drinks plenty of clear and full liquids when he or she has no appetite. For ideas, see the lists of <a href=\"/cancertopics/eatinghints/page7#1\">clear liquids</a> <a href=\"#footnote2\"><span class=\"blacktext\"><sup>2</sup></span></a> and <a href=\"/cancertopics/eatinghints/page7#2\">full-liquid foods</a> <a href=\"#footnote5\"><span class=\"blacktext\"><sup>5</sup></span></a>.</li> \r\n<li><strong>Talk with your loved one about ways to manage eating problems.</strong> Doing this together can help you both feel more in control.</li> \r\n</ul> \r\n \r\n<p>For more information about being a caregiver, see <em><a href=\"/cancertopics/when-someone-you-love-is-treated\">When Someone You Love Is Being Treated for Cancer</a> <a href=\"#footnote6\"><span class=\"blacktext\"><sup>6</sup></span></a></em>. You can get this book free from the National Cancer Institute. Call 1-800-4-CANCER (1-800-422-6237) or order online at <a href=\"http://www.cancer.gov/publications\">http://www.cancer.gov/publications</a>.</p>\t\t</td> \r\n\t</tr> \r\n</table> \r\n<BR><BR><a name=\"Table of Links\"></a><h2>Table of Links</h2><P><table border=\"0\" cellspacing=\"2\" cellpadding=\"0\"> \r\n<tr><td valign=\"top\"><a name=\"footnote1\"></a><b><sup>1</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/eatinghints/page8</td></tr> \r\n<tr><td valign=\"top\"><a name=\"footnote2\"></a><b><sup>2</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/eatinghints/page7#1</td></tr> \r\n<tr><td valign=\"top\"><a name=\"footnote3\"></a><b><sup>3</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/chemotherapy-and-you</td></tr> \r\n<tr><td valign=\"top\"><a name=\"footnote4\"></a><b><sup>4</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/thinking-about-CAM</td></tr> \r\n<tr><td valign=\"top\"><a name=\"footnote5\"></a><b><sup>5</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/eatinghints/page7#2</td></tr> \r\n<tr><td valign=\"top\"><a name=\"footnote6\"></a><b><sup>6</sup></b></td><td valign=\"top\">http://www.cancer.gov/cancertopics/when-someone-you-love-is-treated</td></tr> \r\n</table> \r\n</td> \r\n\t\t\t\t<!-----------------------> \r\n\t\t\t\t\r\n\t\t\t\t<td valign=\"top\"><img src=\"/images/spacer.gif\" width=\"10\" height=\"1\" alt=\"\" border=\"0\"></td> \r\n\t\t\t</tr> \r\n\t\t</table> "
     }
   }, 
-  
+  {
+    "pk": "f35632b6076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Dietary Goals", 
+      "parent": null, 
+      "description": "dietary goals"
+    }
+  }, 
+  {
+    "pk": "f35632b7076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Disease Management", 
+      "parent": null, 
+      "description": "Disease management care goal"
+    }
+  }, 
   {
     "pk": "f35632b8076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -356,14 +275,29 @@
     }
   }, 
   {
-    "pk": "f35632ba076c11dfa56d001641e25144", 
+    "pk": "be944876079c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
-      "category": [], 
+      "category": [
+        1
+      ], 
       "tags": [], 
-      "name": "Investigations", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Investigations/observations on patient"
+      "name": "Fitness", 
+      "parent": null, 
+      "description": "Fitness care goals"
+    }
+  }, 
+  {
+    "pk": "f35632bf076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Home Care", 
+      "parent": null, 
+      "description": "Home based care plan"
     }
   }, 
   {
@@ -390,7 +324,17 @@
       "description": "Instructions from patient"
     }
   }, 
-  
+  {
+    "pk": "f35632ba076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [], 
+      "tags": [], 
+      "name": "Investigations", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Investigations/observations on patient"
+    }
+  }, 
   {
     "pk": "f35632bb076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -403,7 +347,20 @@
       "parent": "f35632ba076c11dfa56d001641e25144", 
       "description": "Laboraory visits\r\n(week after nadir visit)"
     }
-  },   
+  }, 
+  {
+    "pk": "f35632bc076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Lifestyle Management", 
+      "parent": null, 
+      "description": "asfdsdf"
+    }
+  }, 
   {
     "pk": "f35632bd076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -417,8 +374,6 @@
       "description": "logistics around appointments"
     }
   }, 
-   
-  
   {
     "pk": "f35632be076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -446,7 +401,32 @@
       "description": "Managing side effects"
     }
   }, 
-   
+  {
+    "pk": "f35632c1076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        3
+      ], 
+      "tags": [], 
+      "name": "Medication Management", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Management of all aspects of medication"
+    }
+  }, 
+  {
+    "pk": "4652298a118011dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        10
+      ], 
+      "tags": [], 
+      "name": "Pain Management", 
+      "parent": "f35632ca076c11dfa56d001641e25144", 
+      "description": "<h2> \r\n\t\t\t\t\tPain - ASCO curriculum\r\n\t\t\t\t</h2> \r\n    \r\n\t\t\t\t\t<br> \r\n\t\t\t\t\t<span class=\"body_text\">Last Updated: September 11, 2009</span><br/> \r\n\t\t\t\t\r\n \r\n \r\n\t\t\t\t<p> \r\n\t\t\t\t<strong> \r\n\t\t\t\t\tThis section has been reviewed and approved by the <a onclick=\"javascript:switchdiv(20464)\" \"vgn-ext-templating/v/index.jsp?vgnextoid/id=href20464 =\"\">Cancer.Net Editorial Board</a>,\r\n\t\t\t\t\r\n \r\n\t\r\n\t\t\t\t&nbsp;09/09\r\n \r\n\t</strong></p> \r\n \r\n \r\n\t\t\t<p> \r\n\t\t\t\t\r\n\t\t\t</p> \r\n \r\n \r\n\t\t\t\r\n\t\t\t\t\t\t<p> \r\n\t\t\t\t\t\t<p>Pain is a common symptom in people with cancer. At the time of diagnosis, 30% to 40% of people experience pain. If the cancer has spread, 65% to 85% of people experience pain, and up to 95% of cancer pain can be treated successfully. Pain can make other aspects of cancer seem worse, such as fatigue, weakness, shortness of breath, nausea, constipation, sleep disturbances, depression, anxiety, and mental confusion.</p> \r\n \r\n<p>However, not all people with cancer benefit from pain relief strategies because they don\u2019t share the symptoms with their health care team or have worries about the medications used to relieve pain. It is important to communicate with your doctor and nurses about your pain so they can develop a plan to relieve it.</p> \r\n \r\n<p><b>Causes</b></p> \r\n \r\n<p>Pain can come from the tumor itself or may be a result of cancer treatment.</p> \r\n \r\n<p><b>The tumor.</b> If a tumor grows and spreads to the bones or other organs, it can put pressure on nerves and damage them, causing pain. If cancer spreads or grows around the spinal cord, it can cause a compression of the spinal cord, which can lead to severe pain or paralysis if not treated.</p> \r\n \r\n<p><b>Surgery.</b> It is normal to experience pain from cancer surgery. Most pain goes away after a while, but some people may have persistent pain for months or years from permanent damage to the nerves.</p> \r\n \r\n<p><b>Radiation therapy.</b> Pain may develop after radiation therapy and go away on its own. It can also develop months or years after treatment, especially after radiation therapy to the chest, breast, or spinal cord.</p> \r\n \r\n<p><b>Chemotherapy.</b> Some chemotherapy can cause pain along with numbness in the fingers and toes. Usually this pain goes away when treatment is finished, but sometimes the damage is permanent. <a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=Peripheral neuropathy =\"\">Learn more about peripheral neuropathy</a>.</p> \r\n \r\n<p><b>Diagnosis</b></p> \r\n \r\n<p>You know your own pain best. The doctor's job in managing pain is to listen to you, believe you, offer a solution, and keep repeating this process as long as the pain lasts. Your doctor may ask the following questions about your pain:</p> \r\n \r\n<ul> \r\n<li>Where it hurts<br> \r\n<br> \r\n</li> \r\n \r\n<li>When the pain stops and starts<br> \r\n<br> \r\n</li> \r\n \r\n<li>How long it has been there<br> \r\n<br> \r\n</li> \r\n \r\n<li>How intense the pain is</li> \r\n</ul> \r\n \r\n<p>The doctor may also ask you to describe the pain using a scale from 1 to 10 or offer words that help describe the pain, such as burning, stabbing, or throbbing.</p> \r\n \r\n<p><b>Managing pain</b></p> \r\n \r\n<p>Doctors can treat pain in several ways:</p> \r\n \r\n<ul> \r\n<li>Fixing the source of pain, such as treating the tumor or reducing inflammation<br> \r\n<br> \r\n</li> \r\n \r\n<li>Changing the perception of pain, usually with pain-killing medications<br> \r\n<br> \r\n</li> \r\n \r\n<li>Interfering with pain signals sent to the brain, through spinal treatments or nerve blocks</li> \r\n</ul> \r\n \r\n<p>Depending on the source of the pain and the person's health, there are many different combinations of medications and ways to give them. Most doctors know how to manage most pain, most of the time. Sometimes, pain and palliative care specialists (specialists who care for the physical, spiritual, psychological, and social needs of a person with cancer) are available as a resource to help patients manage more intense pain.</p> \r\n \r\n<p><b>Pain medications</b></p> \r\n \r\n<p>ASCO recommends the use of the <a \"http://www.who.int/cancer/palliative/painladder/en/\" targer=\"_new\">pain treatment ladder</a> developed by the World Health Organization (WHO). Using this system, mild to moderate pain is treated with mild painkillers (analgesics), and if the pain increases to moderate or severe, it is treated with opioid drugs, such as morphine. Pain medicines can be given in different ways, depending on the drug and the patient's overall condition:</p> \r\n \r\n<ul> \r\n<li>By mouth (oral)<br> \r\n<br> \r\n</li> \r\n \r\n<li>Under the tongue or inside the cheek<br> \r\n<br> \r\n</li> \r\n \r\n<li>Under the skin<br> \r\n<br> \r\n</li> \r\n \r\n<li>Into the veins (intravenous or IV)<br> \r\n<br> \r\n</li> \r\n \r\n<li>Into the spine or area around the spine<br> \r\n<br> \r\n</li> \r\n \r\n<li>By rectum</li> \r\n</ul> \r\n \r\n<p>Often doctors will give patients a device where they can control the release of medicine into their own body, called patient-controlled analgesia (PCA). Pain medications are often given around the clock, with appropriate \"rescue\" doses for pain that surges suddenly through regular pain medications (called breakthrough pain).</p> \r\n \r\n<p><b>Side effects</b></p> \r\n \r\n<p>Pain medication, especially opioids, can cause <a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=constipation =\"\">constipation</a>, <a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=nausea =\"\">nausea</a>, <a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=sleepiness =\"\">sleepiness</a>, <a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=confusion =\"\">confusion</a>, or hallucinations. Many side effects can be prevented (such as constipation) or treated with other medications. In some situations, a doctor may switch to another drug to minimize these side effects.</p> \r\n \r\n<p><b>Managing pain without medication</b></p> \r\n \r\n<p>Many people have found that other methods besides medication help control pain. Your doctor may be able to help you manage pain using more than one method. Make sure you share with your doctor what methods have previously worked for you.</p> \r\n \r\n<ul> \r\n<li>Physical therapy or occupational therapy can help you use devices, such as prostheses, splints, or braces to help ease pain.<br> \r\n<br> \r\n</li> \r\n \r\n<li>Relaxation, distraction, hypnosis, or biofeedback (a method where people use their minds to control a response from their body, such as heart rate)<br> \r\n<br> \r\n</li> \r\n \r\n<li>Nutritional support<br> \r\n<br> \r\n</li> \r\n \r\n<li>Acupuncture</li> \r\n</ul> \r\n \r\n<p>Your doctor or a pain specialist can help you learn more about these methods for controlling pain.</p> \r\n \r\n<p><i><b>More Information</b></i></p> \r\n \r\n<p><a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=managing and treating cancer pain =\"\">Managing and Treating Cancer Pain</a></p> \r\n \r\n<p><a \"vgn-ext-templating/v/index.jsp?vgnextoid/alt=Managing Side Effects =\"\">Managing Side Effects</a></p> \r\n \r\n<p><b>Additional Resources</b></p> \r\n \r\n<p>Lance Armstrong Foundation: <a \"http://www.livestrong.org/site/c.khLXK1PxHmF/b.2660619/k.8284/Chronic_Pain.htm\" target=\"_new\">Chronic Pain</a></p> \r\n \r\n<a \"http://www.cancersymptoms.org/pain/key.shtml\" target=\"_NEW\">Cancersymptoms.org: Pain</a> \r\n\t\t\t\t\t\t</p> "
+    }
+  }, 
   {
     "pk": "f35632c3076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -460,7 +440,6 @@
       "description": "pe"
     }
   }, 
- 
   {
     "pk": "f35632c4076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -473,19 +452,6 @@
       "name": "Pharmacy Refills", 
       "parent": "f35632ac076c11dfa56d001641e25144", 
       "description": "Refilling medications at pharmacy"
-    }
-  }, 
-  {
-    "pk": "f35632c5076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        2
-      ], 
-      "tags": [], 
-      "name": "Rash", 
-      "parent": "f35632ca076c11dfa56d001641e25144", 
-      "description": "rash management"
     }
   }, 
   {
@@ -524,8 +490,46 @@
       "parent": "f35632cb076c11dfa56d001641e25144", 
       "description": "shortness of breath"
     }
-  },  
-  
+  }, 
+  {
+    "pk": "f35632ca076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Side effect prevention", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Pre-emptive management of side effects by lifestyle changes."
+    }
+  }, 
+  {
+    "pk": "f35632c5076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Skin Problems", 
+      "parent": "f35632ca076c11dfa56d001641e25144", 
+      "description": "<h2> \r\n            Skin Problems - ASCO curriculum\r\n            </h2> \r\n \r\n        \r\n                <p> \r\n\t\t\t\t<strong> \r\n                    This section has been reviewed and approved by the <a onclick=\"javascript:switchdiv(20464)\" href=\"/vgn-ext-templating/v/index.jsp?vgnextoid=befa03e8448d9010VgnVCM100000f2730ad1RCRD&sectionId=20464&vgnextrefresh=1\" id=\"href20464\">Cancer.Net Editorial Board</a>,\r\n \r\n    \r\n                <span class=\"body_text\"> \r\n                    <B>9/09</B><br/><br/> \r\n                </span> \r\n \r\n    </strong></p> \r\n<p>People with cancer can have sores, rash, and other skin problems caused by cancer, cancer treatments, or being hospitalized. Skin problems can be especially difficult for a person to cope with because they can cause such visible changes to his or her body.</p> \r\n \r\n<p>Skin problems can be acute (occurs briefly, then goes away) or chronic (remains over time). The best way to manage skin problems is by preventing them, if possible. For this reason, it is important to let your doctor and nurse know as soon as you have any sores, wounds, pain, rash, or other problems with your skin and nails so that treatment can begin right away.</p> \r\n \r\n<p>With most skin problems, the doctor must decide if healing the wound is a realistic goal. If it is not, then containing it and keeping the patient as comfortable and pain-free as possible becomes the goal.</p> \r\n \r\n<p>Some common skin problems experienced by people with cancer are listed here:</p> \r\n \r\n<p><b>Chemotherapy extravasation.</b> This is the term used to describe chemotherapy that has leaked out of a vein. The drugs can damage the skin where the intravenous (IV) tube was placed or the tissue around the area where it touches, causing pain or burning. Pain or burning during chemotherapy may not be normal, and you should tell the nurse or doctor right away. If an extravasation occurs during treatment, the infusion should be stopped and the wound cleaned. The nurses and doctors will care for the wound and instruct you on how to care for it at home.</p> \r\n \r\n<p><b>Radiation-induced treatment skin problems.</b> When radiation treatment kills cancer cells, it also kills some healthy cells. When it kills cells on the skin, it can cause the skin to peel. Damage to the skin from radiation treatment can start after one or two weeks of treatment and usually resolves a few weeks after treatment is finished. If skin damage from radiation treatment becomes a problem, the doctor may change the dose or schedule of treatments.</p> \r\n \r\n<p><b>Necrotic wound.</b> This is a wound with dead skin or tissue around it. A necrotic wound cannot heal if the dead tissue is still present. A process called debridement, which removes the dead tissue, is the first step in treating this type of wound. Debridement may involve surgery, enzymes or gel, or other methods recommended by your doctor.</p> \r\n \r\n<p><b>Pressure ulcers (bed sores).</b> Pressure ulcers are sores that form where there is constant pressure on one area of the body. They often form on the heels of the feet or the sacrum (tailbone). Ulcers are less likely to form on parts of the body where there is a thicker layer of fat.</p> \r\n \r\n<p>For patients who are confined to a bed, an air or water mattress overlay may help prevent ulcers. Low-air-loss beds or air-fluidized beds may also help. For pressure ulcers that are not expected to heal, the doctor or nurse can provide comfort and pain control and prevent the ulcers from getting worse.</p> \r\n \r\n<p><b>Malignant wounds.</b> These injuries form when cancer breaks the skin and causes a wound. A malignant wound can be caused by cancer from another part of the body or from skin cancer. These wounds may have a foul odor, bleed, and can be very painful.</p> \r\n \r\n<p>Malignant wounds carry a high risk of infection. They may also leak a large amount of fluid or blood. The odor from a malignant wound can be overpowering and can be managed by placing an odor absorber in the room, such as cat litter, charcoal, or by introducing another odor, such as a burning candle, vanilla, vinegar, or coffee. (Fragrances and perfumes can be irritating to the patients, and these methods should be avoided).</p> \r\n \r\n<p><b>Pruritus (itching).</b> Pruritus in people with cancer is most often caused by leukemia, lymphoma, myeloma, or other cancers. Kidney or liver failure, thyroid problems, a drug reaction or allergic reaction, dry skin, hives, and other skin infections can also cause itching.</p> \r\n \r\n<p>Pruritus that is caused by an irritant, such as a drug, can be treated by stopping the use of that drug. Moisturizers, antihistamines, steroid medications, and cooling or painkilling creams or gels may also help relieve itching.</p> \r\n \r\n<p><b>Cancer treatments.</b> Some types of cancer treatments called targeted therapies (treatments that target faulty genes or proteins that contribute to cancer growth and development), may cause an acne-like rash and other skin problems. Learn more about <a href=\"/vgn-ext-templating/v/index.jsp?vgnextoid=81dd2daf1034b010VgnVCM100000ed730ad1RCRD&vgnextchannel=5c47ea97a56d9010VgnVCM100000f2730ad1RCRD\" alt=\"skin reactions to targeted treatments\">skin reactions to targeted treatments</a>.</p> "
+    }
+  }, 
+  {
+    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Symptoms", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Common symptoms to watch out for with this patient disease/problem profile"
+    }
+  }, 
   {
     "pk": "f35632cc076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -552,63 +556,6 @@
       "name": "Weight Training", 
       "parent": "be944876079c11dfa56d001641e25144", 
       "description": "Weight training"
-    }
-  },
-    {
-    "pk": "3eb96a6e0abc11dfa56d001641e25144", 
-    "model": "careplan.templatecareplan", 
-    "fields": {
-      "modified_date": "2010-01-26 20:48:58", 
-      "modified_by": 2, 
-      "title": "Breast Cancer", 
-      "created_by": 2, 
-      "version": 1, 
-      "created_date": "2010-01-26 20:48:58"
-    }
-  },
-  {
-    "pk": 1, 
-    "model": "careplan.templatecareplanitemlink", 
-    "fields": {
-      "item": "f35632bf076c11dfa56d001641e25144", 
-      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
-      "order": 1
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "careplan.templatecareplanitemlink", 
-    "fields": {
-      "item": "f35632b7076c11dfa56d001641e25144", 
-      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
-      "order": 2
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "careplan.templatecareplanitemlink", 
-    "fields": {
-      "item": "f35632b6076c11dfa56d001641e25144", 
-      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
-      "order": 3
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "careplan.templatecareplanitemlink", 
-    "fields": {
-      "item": "be944876079c11dfa56d001641e25144", 
-      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
-      "order": 4
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "careplan.templatecareplanitemlink", 
-    "fields": {
-      "item": "f35632bc076c11dfa56d001641e25144", 
-      "plan": "3eb96a6e0abc11dfa56d001641e25144", 
-      "order": 5
     }
   }
 ]

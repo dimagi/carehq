@@ -18,6 +18,8 @@ from django.core.management import call_command
 from demopatients import patient_arr
 from demoproviders import provider_arr
 
+from bootstrap import load_fixtures
+
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
 CAREGIVERS_PER_PATIENT = 3
@@ -193,76 +195,13 @@ def modify_case(case, user, rev_no):
 
 def run():
     
-    #Demo loading script!
     
     #reset the database
     call_command('reset_db', interactive=False)    
     call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
-    call_command('loaddata', '0-caseaction.json')
-    call_command('loaddata', '1-category.json')
-    call_command('loaddata', '2-eventactivity.json')
-    call_command('loaddata', '3-priority.json')
-    call_command('loaddata', '4-status.json')
-    call_command('loaddata', '5-gridcolumns.json')
-    call_command('loaddata', 'build-example_filters.json')
-        
-    call_command('loaddata', 'demo-identifiers.json')    
-    call_command('loaddata', 'careplan-templates.json')
-    
-    
-    #create patients    
-    for ptarr in patient_arr:
-        create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
-    print "Created test patients.  Total %d" % Patient.objects.all().count()
-        
-    for provarr in provider_arr:
-        #firstname, lastname, job_title, affiliation        
-        create_provider(provarr[0], provarr[1],provarr[2],provarr[3])
-    print "created all providers"
-    
-    
-        
-    print "Creating care teams..."
-    #create careteam around all patients and link providers to them
-    for patient in Patient.objects.all():
-        create_careteam(patient)
-    
-    
-    #before making the case, we need to get all the user objects of the people in the careteam.
-    #first the providers:
-    
-    revision_no = 0
-    for team in CareTeam.objects.all():        
-        provs = team.providers.all()
-        caregivers = team.caregivers.all()
-        users = [team.patient.user]
-        #get the user objects from the providers on this careteam
-        for prov in provs:
-            #when you do an all on the providers, provider objects, so we need to flip over to the User instead.
-            users.append(prov.user)
-        for cg in caregivers:
-            users.append(cg)
-        
-        #create fictitious cases and case activity by patients and providers.
-        for num in range(0,MAX_INITIAL_CASES):            
-            case = create_case(users[random.randint(0,len(users)-1)], users, num)
-            
-            team.add_case(case)
-            num_revisions = random.randint(0,MAX_REVISIONS)
-            print "New case created for patient %s, case %d" % (team.patient, num)
-            for rev in range(0,num_revisions):
-                print "\tApplying revision %d - %d" % (rev, revision_no)
-                modding_user = users[random.randint(0,len(users)-1)]
-                if random.random() > .1:
-                    #let's bias towards doing work on a case
-                    work_case(case,modding_user)
-                else:
-                    modify_case(case, modding_user, revision_no)
-                    
-                revision_no += 1
-   
+    load_fixtures()    
     
     
         
