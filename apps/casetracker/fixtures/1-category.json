@@ -57,13 +57,15 @@
       "default_status": null
     }
   }, 
-  {
+   {
     "pk": 7, 
     "model": "casetracker.category", 
     "fields": {
-      "category": "Measurement", 
-      "plural": "measurements", 
+      "category": "HomeMonitoring", 
+      "handler_class": "HomeMonitoringHandler", 
+      "plural": "Home Measurement", 
+      "handler_module": "ashandapp.CategoryHandler", 
       "default_status": null
-    }
+   }
   }
 ]

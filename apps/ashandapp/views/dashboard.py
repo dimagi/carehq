@@ -224,7 +224,7 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
         careteam_links = ProviderLink.objects.filter(provider=request.provider)    
         if careteam_links.count() > 0:
             
-            context['user_grids'].append(('patient_cases', 'My Patient Cases',['patient','description','assigned_to','last_event_by', 'last_event_date', 'next_action_date'],reverse('view-cases-for-provider-json')))
+            context['user_grids'].append(('patient_cases', 'My Patients', ['patient','description','assigned_to','last_event_by', 'last_event_date', 'next_action_date'],reverse('view-cases-for-provider-json')))
 #            
 #            triage_cases = careteam_links.filter(role__role='nurse-triage')
 #                        

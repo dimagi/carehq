@@ -9,6 +9,7 @@
 $(document).ready(function() {
 	$('.example{{display_filter.id}}').dataTable( {
 		"bJQueryUI": true,
+		"iDisplayLength": 25,
 		"bProcessing": "<img src = '/Users/james/Desktop/load.gif'>",
 		"sAjaxSource": "{% url json_string %}",
 		"sPaginationType": "two_button",

@@ -1,0 +1,20 @@
+{% load case_tags %}
+{% block extrahead %}
+{{block.super}}
+<script type="text/javascript"> 
+            $(function(){                
+                // Tabs
+                $('#newsfeed-tabs').tabs();                
+                });
+</script>
+{%endblock %} 
+<div id="newsfeed-tabs">
+	<ul>
+		<li><a>Case History</a></li>
+		<li><a href="{%url case-newsfeed case.id %}?sort=person">By Person</a></li> 
+        <li><a href="{%url case-newsfeed case.id %}?sort=activity">By Action</a></li> 
+        <li><a href="{%url case-newsfeed case.id %}">By Date</a></li>		
+	</ul>
+	
+	<div id="newsfeed-tabs1">&nbsp;</div>
+</div>

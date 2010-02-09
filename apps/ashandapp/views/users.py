@@ -17,7 +17,7 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-from casetracker.views import get_sorted_dictionary 
+from casetracker.views import get_sorted_caseevent_dictionary 
  
 
 @cache_page(60 * 5)
@@ -87,7 +87,7 @@ def single(request, user_id=None):
             context['formatting'] = False     
         
             sorted_dic = {}
-            sorted_dic = get_sorted_dictionary(sort, context['events'])
+            sorted_dic = get_sorted_caseevent_dictionary(sort, context['events'])
                         
             if (len(sorted_dic) > 0):
                 context['events'] = sorted_dic

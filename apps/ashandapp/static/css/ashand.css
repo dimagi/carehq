@@ -187,8 +187,3 @@ button.fg-button { width:auto; overflow:visible; }
 .fg-toolbar .fg-buttonset { margin-right:1.5em; padding-left: 1px; }
 .fg-toolbar .fg-button { font-size: 1em;  }
 
-/*demo page css*/
-h2 { clear: both; padding-top:1.5em; margin-top:0; } 
-.strike { text-decoration: line-through; }
-
-

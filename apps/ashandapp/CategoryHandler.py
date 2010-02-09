@@ -1,6 +1,8 @@
-from casetracker.CategoryHandler import CategoryHandlerBase
+from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
+from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
+
 
 from django.contrib.auth.models import User
 
@@ -38,7 +40,7 @@ def do_get_user_list_choices(case):
     
     
     
-    #make the tuples
+    #make the optgroup tuples
     #source: http://dealingit.wordpress.com/2009/10/26/django-tip-showing-optgroup-in-a-modelform/
     prov_tuple = [[usr.id, usr.get_full_name()] for usr in providers_users.order_by('last_name')]
     cg_tuple = [[usr.id, usr.get_full_name()] for usr in caregivers_users.order_by('last_name')]
@@ -68,6 +70,16 @@ class IssueHandler(CategoryHandlerBase):
     
     def get_view_template(self):
         return "ashandapp/cases/view_issue.html"
+
+    def get_user_list_choices(self, case):
+        return do_get_user_list_choices(case)
+
+    def process_context(self, case, request, context, *args, **kwargs):
+        return process_ashand_case(case, request, context)
+    
+class HomeMonitoringHandler(DefaultCategoryHandler):
+    def get_view_template(self):
+        return "ashandapp/cases/view_home_monitoring.html"
 
     def get_user_list_choices(self, case):
         return do_get_user_list_choices(case)

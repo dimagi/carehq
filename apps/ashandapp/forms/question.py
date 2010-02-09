@@ -15,7 +15,10 @@ from casetracker import constants
 class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""
     
-    description = forms.CharField(label="Question", widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    description = forms.CharField(label="Question", 
+                                  help_text="For best tracking of questions, make sure that your question has \
+                                  one focused subject matter.  (required)",
+                                  widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     
    
     

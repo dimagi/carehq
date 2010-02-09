@@ -1,5 +1,4 @@
-<a href="javascript:toggle_comment_form('{{ case.id }}')">Add Comment</a>
-<form class="hidden" method="POST" action="{% url case-comment case.id %}" id="comment_form_{{ case.id }}">
+<form method="POST" action="{% url case-comment case.id %}" id="comment_form_{{ case.id }}">
 <table>
 <tr>
     <td><textarea id="id_comment" rows="4" cols="50" name="comment"></textarea></td></tr>

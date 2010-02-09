@@ -1,36 +1,29 @@
-{% extends "base.html" %}
+{% extends "casetracker/view_case.html" %}
 {% load i18n %}
-{% load patient_tags %}
-
-{% block title %}{% trans "View Case" %}{% endblock %}
+{% block title %}{% trans "View Question" %}{% endblock %}
 {% block extrahead %}
-<script type="text/javascript" src="{{MEDIA_URL}}casetracker/casemanagement.js"></script>
-{% endblock %}
- 
-{% block content %}
-<div class="span-24"> <!-- top container -->	
-	<div class="span-18">	
-	{% include "casetracker/partials/case/basic_case_info.html" %}	
-	<hr>
-	<div class="span-6 prepend-12">
-			{% if case.is_active or case.is_new %}
-			
+{{block.super}}
+{% endblock extrahead %} 
+
+	{% block case_actions %}
+			<a href="{% url view-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
+			{% if case.is_active or case.is_new %}			
 			{% if can_assign %}				
-	        <a href="{% url edit-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
+	        <a href="{% url view-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
 	        {% endif%}
 	        
 	        {% if can_edit %}
-	        <a href="{% url edit-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
+	        <a href="{% url view-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
 	        {%endif%}
 	        
-	        <a href="{% url resolve-case case.id %}" class="fg-button ui-state-default ui-corner-all">Answer</a>
+	        <a href="{% url view-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Answer</a>
 	        
 	        
 	        {% endif %}
 	        
 	        {% if case.is_resolved %}        
 	        {% if can_close and not case.is_closed %}
-	        <a href="{% url close-case case.id %}" class="fg-button ui-state-default ui-corner-all">Close</a>
+	        <a href="{% url view-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
 	        {% endif %}
 	        {% endif %}
 	        
@@ -38,19 +31,13 @@
 	        {% if can_close %}
 	        <a href="#" class="fg-button ui-state-default ui-corner-all">Reopen</a>
 	        {%endif%}
-	        {% endif %}
-	</div>
-	<div class="span-18">	
-	{% include "casetracker/partials/newsfeed.html" %}
-	</div>
-	</div>	
+	        {% endif %} 
+	{% endblock case_actions %}
+
+	{% block caselink_area %}
+		<h3>This Question</h3>
+		{% for careteam in case_careteams %}
+		{% include "ashandapp/partials/patient_careteam_info_6.html" %}
+		{% endfor %}
+	{% endblock %}
 	
-	
-	<div class="span-6 last"> <!-- specialized category block -->
-	<h3>This Question</h3>
-	{% for careteam in case_careteams %}
-	{% include "ashandapp/partials/patient_careteam_info_6.html" %}
-	{% endfor %}
-	</div> <!-- end specialized category block -->
-</div> <!-- end top container -->
-{% endblock %}

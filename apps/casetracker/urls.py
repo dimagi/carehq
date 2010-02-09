@@ -13,12 +13,17 @@ urlpatterns = patterns ('',
     url(r'^case/(?P<case_id>[0-9a-f]{32})/edit$', 'casetracker.views.edit_case', name="edit-case"),
     url(r'^case/(?P<case_id>[0-9a-f]{32})/comment$', 'casetracker.views.case_comment', name="case-comment"),
     
+    url(r'^case/(?P<case_id>[0-9a-f]{32})/feed$', 'casetracker.views.case_newsfeed', name='case-newsfeed'),
+    
+    
     #(r'^events/all/$', 'casetracker.views.all_case_events'),    
     #(r'^events/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case_events'),    
     #(r'^filters/all/$', 'casetracker.views.all_filters'), #these need to come back in a non djblet format
     #(r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter'), #need to refactor to test in a non djblet format
 
-    (r'^newsfeed/cases/$', 'casetracker.views.newsfeed_allcases'),
+    #(r'^newsfeed/cases/$', 'casetracker.views.newsfeed_allcases'),
+    
+    
     
 )    
     

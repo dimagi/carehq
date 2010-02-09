@@ -9,6 +9,7 @@ from patient.models import Patient, IdentifierType, PatientIdentifier
 from provider.models import Provider
 
 
+
 def create_user(username='mockuser', password='demouser', firstname=None, lastname=None):    
     user = User()    
     user.username = username

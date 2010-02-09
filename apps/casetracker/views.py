@@ -51,7 +51,7 @@ def _get_next(request):
         raise Http404 # No next url was supplied in GET or POST.
     return next
 
-def get_sorted_dictionary(sort, arr):
+def get_sorted_caseevent_dictionary(sort, arr):
     sorted_dic = {} #sorted dictionary of organized events for newsfeed
     obj = None 
         
@@ -157,6 +157,12 @@ def close_or_resolve_case(request, case_id, edit_mode=None, template_name = 'cas
         context['form'] = CaseResolveCloseForm(case=case, mode=edit_mode)
         return render_to_response(template_name, context,context_instance=RequestContext(request))
 
+
+
+def get_case_form(case, edit_mode):
+    pass
+         
+
 def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html'):
     context = {}    
     edit_mode = None
@@ -209,8 +215,6 @@ def all_cases(request, template_name="casetracker/case_datagrid.html"):
     #paginate_by
         
 #@cache_page(60 * 1)
-
-
 def case_comment(request, case_id, template_name='casetracker/view_case.html'):
     context = {}
     case = Case.objects.get(id=case_id)
@@ -223,62 +227,172 @@ def case_comment(request, case_id, template_name='casetracker/view_case.html'):
             evt = CaseEvent()
             evt.case = case
             evt.notes = comment
-            evt.activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_COMMENT)[0]
+            evt.activity = EventActivity.objects.filter(category=case.category)\
+                .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
             evt.created_by = request.user            
             evt.save()
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
     
     return HttpResponseRedirect(_get_next(request))
 
+
+@login_required
 def view_case(request, case_id): #template_name='casetracker/view_case.html'
     context = {}
     
-    sorting = None
-    try:
-        for key, value in request.GET.items():
-            if key == "sort":
-                sorting = value
-    except:
-        sorting = None
+    thecase = Case.objects.select_related('opened_by','last_edit_by',\
+                                          'resolved_by','closed_by','assigned_to',
+                                          'priority','category','status').get(id=case_id)
     
-    #the case_id lookups probably should NOT be used as a long term solution, use the uuid field.  keeping the ID field there
-    #as per the django autoincrement for the time being, but long term for synchronization purposes, all events must be uuid'ed and 
-    #queries must be guids.
-    thecase = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to','priority','category','status').get(id=case_id)
-    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
-    context['case'] = thecase
-    context['formatting'] = False    
-    
+#    sorting = None
+    do_edit=False    
+    edit_mode = None
+    for key, value in request.GET.items():            
+#        if key == "sort":
+#            sorting = value
+        if key == 'action':            
+            edit_mode = value
+
+    #context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
+    context['case'] = thecase        
     context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
     
     template_name = thecase.category.handler.get_view_template()    
     context = thecase.category.handler.process_context(thecase,request,context)
-    ret = context['events'] 
-    
-#    if sorting == "person":
-#        ret.sort(sort_by_person)
-#    elif sorting == "activity":
-#        ret.sort(sort_by_activity)
-##    elif sorting == "category":
-#        ret.sort(sort_by_category)
-#    elif sorting == "case":
-#        ret.sort(sort_by_case)
-    
-#    sorted_dic = {}
-    sorted_dic = get_sorted_dictionary(sorting, ret)
-    
-    if len(sorted_dic) > 0:
-        context['events'] = sorted_dic
-        context['formatting'] = True
         
-    return render_to_response(template_name, context,context_instance=RequestContext(request))
+#    context['formatting'] = False
+#    ret = context['events']
+#    event_dic = get_sorted_caseevent_dictionary(sorting, ret)
+#    if len(event_dic) > 0:
+#        context['events'] = event_dic
+#        context['formatting'] = True
+
+
+    #ok, because we're doing inline forms now, we need to be a little fancier about how we represent all this.
+
+    if edit_mode:
+        if edit_mode =='edit':
+            context['form_headline'] = "Edit " + thecase.category.category
+        elif edit_mode == constants.CASE_STATE_CLOSED:
+            context['form_headline'] = "Close " + thecase.category.category            
+        elif edit_mode == constants.CASE_STATE_RESOLVED:
+            context['form_headline'] = "Resolve " + thecase.category.category            
+        elif edit_mode == 'assign':            
+            context['form_headline'] = "Assign " + thecase.category.category
+        elif edit_mode == 'comment':            
+            #context['form_headline'] = "Assign " + thecase.category.category
+            pass            
+            
+            
+        if edit_mode == 'edit' or edit_mode== 'assign':
+            context['form'] = CaseModelForm(instance=thecase, editor_user = request.user, mode=edit_mode)
+            context['submit_url'] = ''
+            context['show_form'] = True
+        elif edit_mode == constants.CASE_STATE_RESOLVED or edit_mode == constants.CASE_STATE_CLOSED:
+            context['form'] = CaseResolveCloseForm(case=thecase, mode=edit_mode)
+            context['submit_url'] = ''
+            context['show_form'] = True
+        elif edit_mode == 'comment':
+            context['show_form'] = False
+            context['show_comment'] = True
+            
+        if request.method == 'POST': 
+            if edit_mode == 'edit' or edit_mode== 'assign':
+                form = CaseModelForm(data=request.POST, instance=context['case'], editor_user=request.user, mode=edit_mode)
+                context['form'] = form
+                if form.is_valid():    
+                    case = form.save(commit=False)
+                    case.edit_comment = '' #set the property to modify
+                                
+                    if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
+                        case.edit_comment = form.cleaned_data["comment"]
+                    case.last_edit_by = request.user
+                    
+                    #next, we need to see the mode and flip the fields depending on who does what.
+                    if edit_mode == CaseModelForm.EDIT_ASSIGN:
+                        case.assigned_date = datetime.utcnow()
+                        case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
+                    
+                    elif edit_mode == CaseModelForm.EDIT_RESOLVE:
+                        case.resolved_date = datetime.utcnow()
+                        case.resolved_by = request.user            
+                    
+                    case.save()
+                    return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))                    
+            elif edit_mode == constants.CASE_STATE_RESOLVED or edit_mode == constants.CASE_STATE_CLOSED:
+                form = CaseResolveCloseForm(data=request.POST, case=case, mode=edit_mode)
+                context['form'] = form
+                if form.is_valid():
+                     
+                    status = form.cleaned_data['state']
+                    #activity = form.cleaned_data['event_activity']
+                    comment = form.cleaned_data['comment']
+                    
+                    #just grab the first close/resolve event class
+                    activity = EventActivity.objects.filter(category=case.category).filter(event_class=event_class)[0]
+                    case.status = status 
+                    case.last_edit_by = request.user
+                    case.edit_comment = comment
+                    case.event_activity = activity
+                    
+                    if edit_mode == constants.CASE_STATE_CLOSED:
+                        case.closed_by=request.user
+                    elif edit_mode == constants.CASE_STATE_RESOLVED:
+                        case.resolved_by=request.user
+        
+                    case.save()
+                    
+                    return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))                    
+            elif edit_mode == 'comment':
+                form = CaseCommentForm(data=request.POST)
+                context['form'] = form
+                if form.is_valid():    
+                    if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
+                        comment = form.cleaned_data["comment"]
+                    evt = CaseEvent()
+                    evt.case = thecase
+                    evt.notes = comment
+                    evt.activity = EventActivity.objects.filter(category=thecase.category)\
+                        .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
+                    evt.created_by = request.user            
+                    evt.save()
+                    return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
+        
+         
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
 def newsfeed_allcases(request, template_name="casetracker/newsfeed_allcases.html"):
     context = {}
     context['cases'] = Case.objects.all()[0:10]
-    return render_to_response(template_name, context,context_instance=RequestContext(request))
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+@login_required
+@cache_page(60 * 1)
+def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed_inline.html'):
+    context = {}
+    thecase = Case.objects.select_related('opened_by','last_edit_by',\
+                                          'resolved_by','closed_by','assigned_to',
+                                          'priority','category','status').get(id=case_id)
+    
+    sorting = None
+    do_edit=False    
+    edit_mode = None
+    for key, value in request.GET.items():            
+        if key == "sort":
+            sorting = value
+    
+    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
+    context['case'] = thecase        
+    context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
+    
+    context['formatting'] = False
+    event_arr = context['events']
+    event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)
+    if len(event_dic) > 0:
+        context['events'] = event_dic
+        context['formatting'] = True
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def view_filter(request, filter_id):
     context = {}

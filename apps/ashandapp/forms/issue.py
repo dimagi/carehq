@@ -21,7 +21,9 @@ class NewIssueForm(CareTeamCaseFormBase):
                          )
     
     description = forms.CharField(label="Issue", 
-                                  help_text="What's the problem? (required)",
+                                  help_text="Provide a short description of the problem.\
+                                  For best tracking of issues, make sure that your issue has only\
+                                  one focused subject matter.  (required)",
                                   widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     
     body = forms.CharField(label="Description", required=True,

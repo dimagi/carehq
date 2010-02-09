@@ -2,27 +2,61 @@
 {% load i18n %}
 {% block title %}{% trans "View Case" %}{% endblock %}
 {% block extrahead %}
-<script type="text/javascript" src="{{MEDIA_URL}}casetracker/casemanagement.js"></script>
-{% endblock %}
- 
-{% block content %}
-<div class="span-24">
-	{% include "casetracker/partials/case/default_actions_toolbar.html" %}
-</div>
 
-<div class="span-24"> <!-- top container -->
+	<script type="text/javascript" src="/my_admin/jsi18n"></script>
+	<script type="text/javascript" src="/media/admin/js/core.js"></script>	
+	<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
+	<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand-forms.css" type="text/css">                  
+{{form.media}}
 	
-	{% include "casetracker/partials/case/basic_case_info.html" %}
+
+{% endblock extrahead %} 
+{% block content %}
+
+<div class="span-24">
+	<div class="span-18"> {# the basic case info block is span 18 #}
+		{% block case_info %}			
+		{% include "casetracker/partials/case/basic_case_info.html" %}
+		{% endblock %}		
+	<hr>
+		<div class="span-18">
+			{% block case_actions %}
+			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
+			{% endblock case_actions %}			 
+		</div>
+		
+		{% if show_form %}
+		
+		<div class="span-18">	
+						
+			{% include "casetracker/manage/inline_case_edit.html" %}
+		</div>
+		{% endif %}
+		
+		{% if show_comment %}
+			
+			<div class="span-18">				
+			{% include "casetracker/manage/comment.html" %}
+			
+			</div>
+		{% endif %}
 	
-	<div class="prepend-1 span-5 last"> <!-- case link block -->
-	<h3>Case Linked to</h3>
-	{% for item in case.related_objects %}
-	   {{item}}<br>	
-	{% endfor %}
+		<div class="span-18">	
+		<hr>		
+		{% block newsfeed-area %}
+		{% include "casetracker/partials/tabbed_newsfeed.html" %}
+		{% endblock newsfeed-area %}		
+		</div>		
+	</div>	<!-- end case body and info container -->
+	
+		
+	<div class="span-6 last"> <!-- specialized category block -->
+		{% block caselink_area %}
+		<h3>This Case</h3>
+		{% for careteam in case_careteams %}
+		{% include "ashandapp/partials/patient_careteam_info_6.html" %}
+		{% endfor %}
+		{% endblock caselink_area %}
 	</div> <!-- end case link block -->
-</div> <!-- end top container -->
-<br>
-<br>
-<hr>
-{% include "casetracker/partials/newsfeed.html" %}
-{% endblock %}
+</div>	
+{% endblock content %}

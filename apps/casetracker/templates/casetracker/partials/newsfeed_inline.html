@@ -1,19 +1,13 @@
 {% load case_tags %}
 
-<h3>History</h3> 
-Sort by: <a href="{{request.path}}?sort=person">Person</a> | 
-        <a href="{{request.path}}?sort=activity">Action</a> | 
-        {% if not case %}
-        <a href="{{request.path}}?sort=category">Category</a> |
-        <a href="{{request.path}}?sort=case">Cases</a> |
-        {% endif %} 
-        <a href="{{request.path}}">Date</a><br>
-<br>																												    
+<div class="span-18">
 {% if not formatting %}
 	{% for event in events %}
-		<div class = "span-18">
-			<div class = "message">{{event.notes}}</i></div>
-			<div class = "info">
+		<div class = "span-18 prepend-top">
+			<hr>		
+			<div>{{event.notes}}</div>
+			<div class="prepend-1">
+				<small>
 				{% if case %}
 				{{event.activity.phrasing|capfirst}} by
 				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a>
@@ -23,17 +17,21 @@ Sort by: <a href="{{request.path}}?sort=person">Person</a> |
 				{{event.activity.phrasing}} this {{event.activity.category|lower}}: 
 					<a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> 
 						on {{event.created_date|date}} {{event.created_date|time}}
-				{% endif %} 
-			</div>		
-		</div>
+				{% endif %}
+				</small> 
+			</div>
+			
+		</div>		
 	{% endfor %}
 {% else %}
 	{% for key, value in events.items %}
 	<div class="span-18">
-		<h3><b>{{key|safe}}</b></h3>
+		<h4><b>{{key|safe}}</b></h4>
 		{% for event in value%}
-		<div class = "span-17 prepend-1">
-				<div class = "message">{{event.notes}}</i></div>
+		<div>
+				<div>{{event.notes}}</div>
+				<div class="prepend-1">
+				<small>
 				{% if case %}
 				{{event.activity.phrasing|capfirst}} by
 				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a>
@@ -43,9 +41,14 @@ Sort by: <a href="{{request.path}}?sort=person">Person</a> |
 				{{event.activity.phrasing}} this {{event.activity.category|lower}}: 
 					<a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> 
 						on {{event.created_date|date}} {{event.created_date|time}}
-				{% endif %} 		
+				{% endif %}
+				</small>
+				</div> 		
 		</div>
 		{% endfor %}
-	</div>
+		<hr>
+	</div>	
 	{% endfor %}
 {% endif %}
+
+</div>

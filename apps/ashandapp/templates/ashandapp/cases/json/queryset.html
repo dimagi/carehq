@@ -10,6 +10,7 @@ $(document).ready(function() {
 	$('.example{{obj.id}}').dataTable( {
 		"bJQueryUI": true,
 		"bProcessing": true,
+		"iDisplayLength": 25,
 		
 		{% if json_qset_url %}
 		  "sAjaxSource": "{{json_qset_url}}",

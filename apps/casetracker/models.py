@@ -142,7 +142,7 @@ class CaseAction(CachedModel):
     description = models.CharField(max_length=64)
     objects = CachingManager()
     def __unicode__(self):
-        return "%d - %s" % (self.id, self.description)
+        return "%s" % (self.description)
     
     class Meta:
         verbose_name = "Case Action Type"
@@ -188,7 +188,7 @@ class Status (CachedModel):
     #in other words they should still fall within the 4 main  classifiers of status:
     #resolved, duplicate, deleted, done?
     def __unicode__(self):
-        return "[%s - Status] %s" % (self.category, self.description)
+        return "%s" % (self.description)
 
     class Meta:
         verbose_name = "Case Status Type"
