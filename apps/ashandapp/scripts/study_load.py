@@ -242,6 +242,7 @@ def run():
     
     #load all the demo categories for cases
     load_fixtures()
+    call_command('loaddata','study-config-0')
     
     
 #    for ptarr in study_patient_arr:
