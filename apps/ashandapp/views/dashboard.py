@@ -73,12 +73,14 @@ def get_json_for_paging(request):
     
     
     #build json_string with information from data    
+     
     json_string = "{ \"aaData\": ["
    
     #adding user
     for case in display_filter:
+        careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
         json_string += "["
-        json_string += "\"<a href = 'users/%s'>%s %s</a>\"," % (case.careteam_set.get().patient.user.id, case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
+        json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
         for col in filter.gridpreference.get_display_columns:
             table_entry = case_column(case, col.name)
             if len(table_entry) > 45:

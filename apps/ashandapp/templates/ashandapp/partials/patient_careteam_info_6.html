@@ -4,7 +4,7 @@
 $(function() {
 		$("#careplan-dialog").dialog({
 			bgiframe: true,
-			modal: true,
+			modal: false,
 			height: 600,
 			width:800,
 			autoOpen: false,
@@ -28,6 +28,13 @@ $(function() {
 </div>
 
 <div id="careplan-dialog" title="Patient Care Plan"> 
-	<p id="validateTips">All form fields are required.</p> 
+	<h3>Care Plan: {{careplan.title}}</h3>
+	<ul>
+    {% for itemlink in plan_items %}
+        {% with itemlink.item  as plan_item %}    
+            {% include "careplan/partials/compact_careplan_item_li.html" %}    
+        {%endwith%}
+    {%endfor%}
+    </ul> 
  
 </div> 

@@ -44,8 +44,9 @@
 <a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a><br><br>
 <a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
 <br>
-<a href="" class="fg-button ui-state-default ui-corner-all">Invite provider</a><br>
+<a href="" class="fg-button ui-state-default ui-corner-all">Invite provider</a><br><br>
 <a href="" class="fg-button ui-state-default ui-corner-all">Invite caregiver</a><br>
+<br><br>
 </div>
 
 </div>
@@ -103,7 +104,7 @@
          
          <h2>{{careplan.title}}</h2>
             <dl>
-                <dt>Created by:</dt> <dd>{{careplan.created_by}}</dd>
+                <dt>Created by:</dt> <dd>{{careplan.created_by.get_full_name}}</dd>
                 <dt>Created date:</dt> <dd>{{careplan.created_date|date}}</dd>    
             </dl>
             <ul>

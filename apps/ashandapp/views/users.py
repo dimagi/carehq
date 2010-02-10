@@ -20,11 +20,6 @@ from ashandapp.forms.issue import NewIssueForm
 from casetracker.views import get_sorted_caseevent_dictionary 
  
 
-@cache_page(60 * 5)
-def all(request, template_name='ashandapp/user_datagrid.html'):    
-    pass
-
-
 def my_profile(request, template_name = 'ashandapp/my_profile.html'):
     user = request.user
     context = {}        

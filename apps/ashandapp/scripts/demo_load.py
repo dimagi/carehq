@@ -85,32 +85,6 @@ def create_careteam(patient):
         cglink.save()
         
         
-def create_homemonitoring_alert(num_alerts, careteam):
-    alerts = [
-"Patient weight has dropped over 10 lbs",
-"Patient has been vomiting more than 48 hours after treatment",
-"Patient has shortness of breath/chest pain",
-"Patient has pain in a new place",
-"Patient has severe nausea",
-"Patient is experiencing hearing loss",
-"Patient has not submitted daily measurements",
-"Patient daily measurements incomplete"              
-              ]
-    newcase = Case()
-    random.shuffle(alerts)
-    
-    for n in range(0, num_alerts): 
-        newcase.body = alerts[n]
-        newcase.opened_by = User.objects.get(id=2) # the hard coded ashand system messages
-        newcase.last_edit_by = User.objects.get(id=2) # the hard coded ashand system messages
-        newcase.assigned_to = careteam.primary_provider.user
-        newcase.next_action = CaseAction.objects.get(id=3) #follow up
-
-        td = timedelta(days=1)
-        newcase.next_action_date = datetime.utcnow() + td
-        newcase.priority= Priority.objects.all()[0]
-        newcase.save()
-        careteam.add_case(newcase)
     
     
 

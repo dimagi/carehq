@@ -209,10 +209,6 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 
-@cache_page(60 * 5)
-def all_cases(request, template_name="casetracker/case_datagrid.html"):
-    context = {}
-    #paginate_by
         
 #@cache_page(60 * 1)
 def case_comment(request, case_id, template_name='casetracker/view_case.html'):
@@ -298,7 +294,7 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
             
         if request.method == 'POST': 
             if edit_mode == 'edit' or edit_mode== 'assign':
-                form = CaseModelForm(data=request.POST, instance=context['case'], editor_user=request.user, mode=edit_mode)
+                form = CaseModelForm(data=request.POST, instance=thecase, editor_user=request.user, mode=edit_mode)
                 context['form'] = form
                 if form.is_valid():    
                     case = form.save(commit=False)
@@ -313,14 +309,17 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
                         case.assigned_date = datetime.utcnow()
                         case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
                     
-                    elif edit_mode == CaseModelForm.EDIT_RESOLVE:
-                        case.resolved_date = datetime.utcnow()
-                        case.resolved_by = request.user            
-                    
                     case.save()
                     return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))                    
             elif edit_mode == constants.CASE_STATE_RESOLVED or edit_mode == constants.CASE_STATE_CLOSED:
-                form = CaseResolveCloseForm(data=request.POST, case=case, mode=edit_mode)
+                form = CaseResolveCloseForm(data=request.POST, case=thecase, mode=edit_mode)
+                
+                if edit_mode == constants.CASE_STATE_CLOSED:
+                    event_class = constants.CASE_EVENT_CLOSE
+        
+                elif edit_mode == constants.CASE_STATE_RESOLVED:
+                    event_class = constants.CASE_EVENT_RESOLVE
+
                 context['form'] = form
                 if form.is_valid():
                      
@@ -329,18 +328,18 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
                     comment = form.cleaned_data['comment']
                     
                     #just grab the first close/resolve event class
-                    activity = EventActivity.objects.filter(category=case.category).filter(event_class=event_class)[0]
-                    case.status = status 
-                    case.last_edit_by = request.user
-                    case.edit_comment = comment
-                    case.event_activity = activity
+                    activity = EventActivity.objects.filter(category=thecase.category).filter(event_class=event_class)[0]
+                    thecase.status = status 
+                    thecase.last_edit_by = request.user
+                    thecase.edit_comment = comment
+                    thecase.event_activity = activity
                     
                     if edit_mode == constants.CASE_STATE_CLOSED:
-                        case.closed_by=request.user
+                        thecase.closed_by=request.user
                     elif edit_mode == constants.CASE_STATE_RESOLVED:
-                        case.resolved_by=request.user
+                        thecase.resolved_by=request.user
         
-                    case.save()
+                    thecase.save()
                     
                     return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))                    
             elif edit_mode == 'comment':
@@ -362,13 +361,8 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
-def newsfeed_allcases(request, template_name="casetracker/newsfeed_allcases.html"):
-    context = {}
-    context['cases'] = Case.objects.all()[0:10]
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
-
 @login_required
-@cache_page(60 * 1)
+#@cache_page(60 * 1)
 def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed_inline.html'):
     context = {}
     thecase = Case.objects.select_related('opened_by','last_edit_by',\

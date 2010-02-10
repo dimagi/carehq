@@ -96,9 +96,7 @@ class CaseModelForm(forms.ModelForm):
                      'assigned_to',
                      'assigned_date',
                      'parent_case',
-                     'object_type',
-                     'object_uuid',
-                     'content_object',]
+                     ]
         
         if mode == self.EDIT_MODIFY_ALL:
             fields_to_exclude = ['id',
@@ -118,9 +116,7 @@ class CaseModelForm(forms.ModelForm):
                      'assigned_to',
                      'assigned_date',
                      'parent_case',
-                     'object_type',
-                     'object_uuid',
-                     'content_object',]
+                     ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'           
         
         elif mode == self.EDIT_ASSIGN:

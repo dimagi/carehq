@@ -265,6 +265,13 @@ class CaseEvent(models.Model):
         verbose_name_plural = "Case Events"
         ordering = ['-created_date']
 
+class CaseTag(models.Model):
+    case = models.ForeignKey("Case", related_name="tagged_case_objects")
+    
+    #generic linkage to arbitrary objects
+    object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
+    object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
+    content_object = generic.GenericForeignKey('object_type', 'object_uuid')
    
 
 #class Case(models.Model):
@@ -317,11 +324,6 @@ class Case(CachedModel):
     assigned_date = models.DateTimeField(null=True, blank=True)
     
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
-
-    #generic linkage to arbitrary objects
-    object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
-    object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
-    content_object = generic.GenericForeignKey('object_type', 'object_uuid')
     
     @property
     def is_new(self):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
 
+from datetime import datetime, timedelta
 from django import forms
 from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category
 from ashandapp.models import CareTeam
@@ -14,11 +15,11 @@ from ashandapp.forms import CareTeamCaseFormBase
 
 class NewIssueForm(CareTeamCaseFormBase):
     """Initial creation of an issue case will be governed by this form"""
-    ISSUE_CHOICES = (('caregiver', "Caregiver Concern" ),
-                         ('careplan', "Care Plan Issue" ),
-                         ('healthmonitor', "Health Monitor" ),
-                         ('other', "Other" ),
-                         )
+#    ISSUE_CHOICES = (('caregiver', "Caregiver Concern" ),
+#                         ('careplan', "Care Plan Issue" ),
+#                         ('healthmonitor', "Health Monitor" ),
+#                         ('other', "Other" ),
+#                         )
     
     description = forms.CharField(label="Issue", 
                                   help_text="Provide a short description of the problem.\
@@ -32,7 +33,7 @@ class NewIssueForm(CareTeamCaseFormBase):
                            widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
     
 
-    source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
+#    source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
     def __init__(self, careteam=None, *args, **kwargs):
         super(NewIssueForm, self).__init__(careteam=careteam, *args, **kwargs)
@@ -51,6 +52,11 @@ class NewIssueForm(CareTeamCaseFormBase):
         newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
+        
+        newcase.next_action = CaseAction.objects.get(id=3) #follow up                
+        td = timedelta(hours=newcase.priority.id)
+        newcase.next_action_date = datetime.utcnow() + td
+        
         
         if self._careteam.primary_provider:
             newcase.assigned_to = self._careteam.primary_provider.user

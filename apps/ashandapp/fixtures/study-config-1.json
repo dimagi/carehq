@@ -2653,7 +2653,7 @@
     "fields": {
       "category": 2, 
       "status": 6, 
-      "object_uuid": null, 
+       
       "next_action": 3, 
       "description": "Rashes are getting out of control", 
       "parent_case": null, 
@@ -2666,7 +2666,7 @@
       "next_action_date": "2010-02-05 12:57:18", 
       "orig_description": "Rashes are getting out of control", 
       "resolved_by": 155, 
-      "object_type": null, 
+       
       "opened_by": 153, 
       "last_edit_date": "2010-02-04 17:58:52", 
       "closed_by": null, 
@@ -2680,7 +2680,7 @@
     "fields": {
       "category": 1, 
       "status": 22, 
-      "object_uuid": null, 
+       
       "next_action": null, 
       "description": "Can I be present at the next visit?", 
       "parent_case": null, 
@@ -2693,7 +2693,7 @@
       "next_action_date": null, 
       "orig_description": "Can I be present at the next visit?", 
       "resolved_by": 160, 
-      "object_type": null, 
+       
       "opened_by": 153, 
       "last_edit_date": "2010-02-04 17:48:25", 
       "closed_by": null, 
@@ -4183,3 +4183,4 @@
     }
   }
 ]
+

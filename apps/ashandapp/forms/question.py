@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
-
+from datetime import datetime, timedelta
 from django import forms
 from django.forms import widgets
 from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category
@@ -52,6 +52,9 @@ class NewQuestionForm(CareTeamCaseFormBase):
 
         newcase.assigned_date = datetime.utcnow()
         
+        newcase.next_action = CaseAction.objects.get(id=3) #follow up                
+        td = timedelta(hours=newcase.priority.id)
+        newcase.next_action_date = datetime.utcnow() + td
         
         return newcase
     

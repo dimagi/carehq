@@ -2,7 +2,7 @@ from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseFo
 from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-
+from careplan.models import TemplateCarePlan
 
 from django.contrib.auth.models import User
 
@@ -21,6 +21,9 @@ def process_ashand_case(case, request, context):
         context['can_close'] = True
     
     context['case_careteams'] = case.careteam_set.all()
+    context['careplan'] = TemplateCarePlan.objects.all()[0]
+    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()
+    context['show_children'] = True
      
     
     return context
@@ -80,6 +83,17 @@ class IssueHandler(CategoryHandlerBase):
 class HomeMonitoringHandler(DefaultCategoryHandler):
     def get_view_template(self):
         return "ashandapp/cases/view_home_monitoring.html"
+
+    def get_user_list_choices(self, case):
+        return do_get_user_list_choices(case)
+
+    def process_context(self, case, request, context, *args, **kwargs):
+        return process_ashand_case(case, request, context)
+
+
+class SystemCaseHandler(DefaultCategoryHandler):
+    def get_view_template(self):
+        return "ashandapp/cases/view_system_case.html"
 
     def get_user_list_choices(self, case):
         return do_get_user_list_choices(case)

@@ -3,8 +3,7 @@ from casetracker import constants
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('',    
-    (r'^case/all/$', 'casetracker.views.all_cases'),
-    
+   
     url(r'^case/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case', name="view-case"),
     
     url(r'^case/(?P<case_id>[0-9a-f]{32})/close$', 'casetracker.views.close_or_resolve_case', {'edit_mode': constants.CASE_STATE_CLOSED}, name="close-case"),        
@@ -14,16 +13,6 @@ urlpatterns = patterns ('',
     url(r'^case/(?P<case_id>[0-9a-f]{32})/comment$', 'casetracker.views.case_comment', name="case-comment"),
     
     url(r'^case/(?P<case_id>[0-9a-f]{32})/feed$', 'casetracker.views.case_newsfeed', name='case-newsfeed'),
-    
-    
-    #(r'^events/all/$', 'casetracker.views.all_case_events'),    
-    #(r'^events/(?P<case_id>[0-9a-f]{32})$', 'casetracker.views.view_case_events'),    
-    #(r'^filters/all/$', 'casetracker.views.all_filters'), #these need to come back in a non djblet format
-    #(r'^filters/(?P<filter_id>\d+)$', 'casetracker.views.view_filter'), #need to refactor to test in a non djblet format
-
-    #(r'^newsfeed/cases/$', 'casetracker.views.newsfeed_allcases'),
-    
-    
-    
+   
 )    
     

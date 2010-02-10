@@ -207,5 +207,170 @@
       "event_class": "event-comment", 
       "summary": "comment"
     }
+  }, 
+  {
+    "pk": 20, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 8, 
+      "phrasing": "[system event]", 
+      "name": "Active System Event", 
+      "event_class": "event-open", 
+      "summary": "Default active/open system event"
+    }
+  }, 
+  {
+    "pk": 21, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 8, 
+      "phrasing": "edited", 
+      "name": "Edit Event Information", 
+      "event_class": "event-view", 
+      "summary": "(reserved, a system event should never be modified outright)"
+    }
+  }, 
+  {
+    "pk": 22, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 8, 
+      "phrasing": "resolved", 
+      "name": "Resolve System Event", 
+      "event_class": "event-resolve", 
+      "summary": "Default system case resolution (acknowledgement)"
+    }
+  }, 
+  {
+    "pk": 23, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 8, 
+      "phrasing": "closed", 
+      "name": "Close System Event", 
+      "event_class": "event-close", 
+      "summary": "Default close for system event"
+    }
+  }, 
+  {
+    "pk": 24, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 4, 
+      "phrasing": "appointment", 
+      "name": "Upcoming Appointment", 
+      "event_class": "event-open", 
+      "summary": "An active case that signifies an appointment that is scheduled in th efuture"
+    }
+  }, 
+  {
+    "pk": 25, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 4, 
+      "phrasing": "", 
+      "name": "Reschedule", 
+      "event_class": "event-edit", 
+      "summary": "Reschedule an appointment"
+    }
+  }, 
+  {
+    "pk": 26, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 4, 
+      "phrasing": "completed", 
+      "name": "Completed", 
+      "event_class": "event-resolve", 
+      "summary": "A completed appointment"
+    }
+  }, 
+  {
+    "pk": 27, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 4, 
+      "phrasing": "closed", 
+      "name": "Completed/Closed", 
+      "event_class": "event-close", 
+      "summary": "Close a completed appointment"
+    }
+  }, 
+  {
+    "pk": 28, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 4, 
+      "phrasing": "commented", 
+      "name": "Comment", 
+      "event_class": "event-comment", 
+      "summary": "comment on an appointment case"
+    }
+  }, 
+  {
+    "pk": 29, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 8, 
+      "phrasing": "commented", 
+      "name": "System Comment", 
+      "event_class": "event-comment", 
+      "summary": "Comment/update on a system case"
+    }
+  }, 
+  {
+    "pk": 30, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 7, 
+      "phrasing": "home monitor", 
+      "name": "Home Monitoring Event", 
+      "event_class": "event-open", 
+      "summary": "A case requiring follow up generated from the home monitoring device based upon some rule"
+    }
+  }, 
+  {
+    "pk": 31, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 7, 
+      "phrasing": "edited", 
+      "name": "Home Monitor Modify", 
+      "event_class": "event-edit", 
+      "summary": "Modify the case for a home monitoring event"
+    }
+  }, 
+  {
+    "pk": 32, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 7, 
+      "phrasing": "commented", 
+      "name": "Home Monitor Comment", 
+      "event_class": "event-comment", 
+      "summary": "comment on a home monitoring event"
+    }
+  }, 
+  {
+    "pk": 33, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 7, 
+      "phrasing": "resolved", 
+      "name": "Home Monitoring Resolve", 
+      "event_class": "event-resolve", 
+      "summary": "Resolve a Home Monitoring Event"
+    }
+  }, 
+  {
+    "pk": 34, 
+    "model": "casetracker.eventactivity", 
+    "fields": {
+      "category": 7, 
+      "phrasing": "closed", 
+      "name": "Home Monitor Close", 
+      "event_class": "event-close", 
+      "summary": "Close a home monitoirng event"
+    }
   }
 ]

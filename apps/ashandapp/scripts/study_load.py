@@ -237,25 +237,25 @@ def run():
     
     
     #reset the database
-    #call_command('reset_db', interactive=False)    
-    #call_command('syncdb', interactive=False)
+    call_command('reset_db', interactive=False)    
+    call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
-    #load_fixtures()
+    load_fixtures()
     
     
-    for ptarr in study_patient_arr:
-        create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
-    print "Created test patients.  Total %d" % Patient.objects.all().count()
+#    for ptarr in study_patient_arr:
+#        create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
+#    print "Created test patients.  Total %d" % Patient.objects.all().count()
             
-    for ptarr in study_caregiver_arr:
-        create_caregiver_user(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
-    print "Created test caregivers.  Total %d" % Patient.objects.all().count()
+#    for ptarr in study_caregiver_arr:
+#        create_caregiver_user(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
+#    print "Created test caregivers.  Total %d" % Patient.objects.all().count()
         
-    for provarr in study_provider_arr:
+#    for provarr in study_provider_arr:
         #firstname, lastname, job_title, affiliation        
-        create_provider(provarr[0], provarr[1],provarr[2],provarr[3])
-    print "created all providers"    
+#        create_provider(provarr[0], provarr[1],provarr[2],provarr[3])
+#    print "created all providers"    
     
     
         

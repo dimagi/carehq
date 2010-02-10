@@ -257,3 +257,7 @@ class CareTeam(CachedModel):
             self._stringname = "Careteam for %s" % self.patient.user.username
         return self._stringname
     
+    
+#We recognize this is a nasty practice to do an import, but we hate putting signal code
+#at the bottom of models.py even more.
+import signals
