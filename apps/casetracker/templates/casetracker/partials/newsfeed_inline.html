@@ -1,10 +1,8 @@
 {% load case_tags %}
-
 <div class="span-18">
 {% if not formatting %}
-	{% for event in events %}
-		<div class = "span-18 prepend-top">
-			<hr>		
+	{% for event in events %}				
+		<div class = "span-17">	
 			<div>{{event.notes}}</div>
 			<div class="prepend-1">
 				<small>
@@ -20,15 +18,16 @@
 				{% endif %}
 				</small> 
 			</div>
-			
+			<hr>						
 		</div>		
+		
 	{% endfor %}
 {% else %}
 	{% for key, value in events.items %}
 	<div class="span-18">
 		<h4><b>{{key|safe}}</b></h4>
 		{% for event in value%}
-		<div>
+		<div class="span-17">
 				<div>{{event.notes}}</div>
 				<div class="prepend-1">
 				<small>
@@ -43,10 +42,10 @@
 						on {{event.created_date|date}} {{event.created_date|time}}
 				{% endif %}
 				</small>
-				</div> 		
+				</div>
+			<hr> 		
 		</div>
-		{% endfor %}
-		<hr>
+		{% endfor %}		
 	</div>	
 	{% endfor %}
 {% endif %}

@@ -5,7 +5,7 @@
 <script type="text/javascript"> 
             $(function(){                
                 // Tabs
-                $('#tabs').tabs();                
+                $('#tabs').tabs({ cookie: { expires: 30,name: "tabs_coo" } });                
                 });
 </script>
 {% endblock %}

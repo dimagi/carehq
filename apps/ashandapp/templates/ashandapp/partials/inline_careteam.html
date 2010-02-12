@@ -3,7 +3,11 @@
 
 <div class="span-22"> <!-- careteam header -->	
 	<div class="span-10">
-		<h3>{{careteam.patient.user.last_name}}, {{careteam.patient.user.first_name}}</h3>
+		<h3>
+			<a href="{% url view-careteam careteam.id %}">
+			{{careteam.patient.user.last_name}}, {{careteam.patient.user.first_name}}
+			</a>
+		</h3>
 	</div>
 	<div class="span-4">
 	   <a href="{% url view-careteam careteam.id %}">Care Team Home</a>
@@ -12,7 +16,7 @@
 		<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">{%trans "Profile"%}</a>
 	</div>
 	<div class="span-4 last">
-		<a id="careteam_flipper_{{careteam.id}}" href="javascript:toggle_careteam_block('{{ careteam.id }}')">Show details</a>			
+		<a id="careteam_flipper_{{careteam.id}}" href="javascript:toggle_careteam_block('{{ careteam.id }}')" class="fg-button ui-state-default ui-corner-all">Show details</a>			
 	</div>
 </div> <!-- end careteam header -->
 	
