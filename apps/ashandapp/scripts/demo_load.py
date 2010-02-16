@@ -16,6 +16,9 @@ from demo_questions import question_arr
 from demo_working import working_arr
 from demo_resolve_close import resolve_arr
 
+
+from example_interactions import interactions_arr
+
 from django.core.management import call_command
 from demopatients import patient_arr
 from demoproviders import provider_arr
@@ -65,8 +68,13 @@ def create_careteam(patient):
     #let's make caregivers now
     total_caregivers = random.randint(1, CAREGIVERS_PER_PATIENT)    
     print "\tCreated Providers, assigning %d caregivers" % (total_caregivers)
-    careteam_providers = team.providers.all().values_list('user__id', flat=True)        
-    possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
+    careteam_providers = team.providers.all().values_list('user__id', flat=True)
+    #possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
+    
+    
+    all_providers_list = Provider.objects.all().values_list('user__id', flat=True)    
+    possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=all_providers_list).values_list('id',flat=True)
+    
     possible_caregivers_arr = [x for x in possible_caregivers_qset]    
     random.shuffle(possible_caregivers_arr)
     for num in range(0, total_caregivers):
@@ -118,6 +126,99 @@ def create_case(user, all_users, case_no):
     
     newcase.save()
     return newcase
+
+
+def generate_interactions(careteam, num_encounters):
+    """
+    For a given careteam, generate an arbitrary number of interactions from the interactions_arr
+    """
+    random.shuffle(interactions_arr)
+    encounters = interactions_arr[0:num_encounters]
+    
+    #let's clean them up
+        
+    
+    startdelta = timedelta(days=random.randint(1,7)) #sometime in the past week
+    
+    for encounter in encounters:        
+        main_info = encounter[0:3]
+        category_txt = main_info[0].strip()
+        title = main_info[1].strip()
+        source = main_info[2].strip()
+        
+        if title.count("%s") == 1:
+            title = title % careteam.patient.user.first_name
+        
+        newcase = Case()
+        newcase.description = title
+        newcase.body = ""
+        newcase.category = Category.objects.get(category=category_txt)
+        
+        creator=None
+        if source.lower() == 'provider':
+            creator = careteam.primary_provider.user            
+        elif source.lower() == 'caregiver':
+            creator = careteam.caregivers.all()[0]
+        elif source.lower() == 'patient':
+            creator = careteam.patient.user
+        elif source.lower() == 'home monitor':
+            creator = User.objects.get(username ='ashand-system')
+        
+        if creator == None:
+            print "no creator, wtf: " + str(encounter)
+        newcase.opened_by = creator    
+        newcase.opened_date = datetime.utcnow() - startdelta
+        newcase.last_edit_by = creator
+        newcase.last_edit_date = newcase.opened_date
+        newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+    
+        newcase.assigned_to = careteam.primary_provider.user
+        newcase.assigned_date = newcase.opened_date 
+    
+        newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
+        newcase.next_action = CaseAction.objects.all()[2]
+        newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
+        newcase.save(unsafe=True)
+        careteam.add_case(newcase)
+        
+        
+        
+        subarr = encounter[3:]
+        while len(subarr) >= 3:
+            resp = subarr[0].strip()
+            src = subarr[1].lower().strip()
+            evt = subarr[2].lower().strip()
+            
+            if resp == '' and src == '' and evt == '':
+                break
+            responder=None
+            if src.lower() == 'provider':
+                responder = careteam.primary_provider.user            
+            elif src.lower() == 'caregiver':
+                responder = careteam.caregivers.all()[0]
+            elif src.lower() == 'patient':
+                responder = careteam.patient.user
+            if responder == None:
+                print "wtf: " + str(subarr)
+            
+            evt = CaseEvent()
+            evt.case = newcase
+            evt.notes = resp
+            evt.activity = EventActivity.objects.filter(category=newcase.category)\
+                .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
+            evt.created_by = responder
+            startdelta = startdelta - timedelta(minutes=random.randint(4,480))
+            evt.created_date = datetime.utcnow() - startdelta
+            evt.save(unsafe=True)
+                
+            
+            if len(subarr[3:]) >= 3:
+                subarr = subarr[3:]
+            else:
+                break
+                
+    
+
 
 def work_case(case, user):
     all_descriptions = resolve_arr + working_arr    
@@ -197,23 +298,26 @@ def run():
         for cg in caregivers:
             users.append(cg)
         
+        num_cases= random.randint(0,10)
+        generate_interactions(team, num_cases)
+        
         #create fictitious cases and case activity by patients and providers.
-        for num in range(0,MAX_INITIAL_CASES):            
-            case = create_case(users[random.randint(0,len(users)-1)], users, num)
+        #for num in range(0,MAX_INITIAL_CASES):            
+            #case = create_case(users[random.randint(0,len(users)-1)], users, num)
             
-            team.add_case(case)
-            num_revisions = random.randint(0,MAX_REVISIONS)
-            print "New case created for patient %s, case %d" % (team.patient, num)
-            for rev in range(0,num_revisions):
-                print "\tApplying revision %d - %d" % (rev, revision_no)
-                modding_user = users[random.randint(0,len(users)-1)]
-                if random.random() >= .25:
-                    #let's bias towards doing work on a case
-                    work_case(case,modding_user)
-                else:
-                    resolve_or_close_case(case, modding_user, revision_no)
-                    
-                revision_no += 1
+            #team.add_case(case)
+            #num_revisions = random.randint(0,MAX_REVISIONS)
+            #print "New case created for patient %s, case %d" % (team.patient, num)
+            #for rev in range(0,num_revisions):
+            #    print "\tApplying revision %d - %d" % (rev, revision_no)
+            #    modding_user = users[random.randint(0,len(users)-1)]
+            #    if random.random() >= .25:
+            #        #let's bias towards doing work on a case
+            #        work_case(case,modding_user)
+            #    else:
+            #        resolve_or_close_case(case, modding_user, revision_no)
+            #        
+            #    revision_no += 1
    
     
     

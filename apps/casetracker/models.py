@@ -249,7 +249,12 @@ class CaseEvent(models.Model):
     created_date  = models.DateTimeField()
     created_by = models.ForeignKey(User)        
     
-    def save(self):   
+    def save(self, unsafe=False):
+        if unsafe:
+            self.id = uuid.uuid1().hex
+            super(CaseEvent, self).save()
+            return
+            
         if self.created_date == None:     
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
@@ -416,11 +421,42 @@ class Case(CachedModel):
         return self._related_objects
         
         
+    def unsafe_save(self):
+        """
+        This is a really dangerous way to save the cases.  This should only be called from unit tests.
+        Calling this with no regard to edit dates and edit by and such WILL break views.
+        """
+        
+        if self.opened_date == None:
+            logging.warning("Case save unsafe: no opened date set")            
+        if self.opened_by == None:
+            logging.warning("Case save unsafe: no opened by set")
+        if self.last_edit_date == None:
+            logging.warning("Case save unsafe: no last edit date set")
+        if self.last_edit_by == None:
+            logging.warning("Case save unsafe: no last edit by set")
+
+        super(Case, self).save()
     
-    def save(self):
+    def save(self, unsafe=False):
         """
         Save a case
-        """        
+        """
+        if unsafe:
+            if self.opened_date == None:
+                logging.warning("Case save unsafe: no opened date set")            
+            if self.opened_by == None:
+                logging.warning("Case save unsafe: no opened by set")
+            if self.last_edit_date == None:
+                logging.warning("Case save unsafe: no last edit date set")
+            if self.last_edit_by == None:
+                logging.warning("Case save unsafe: no last edit by set")
+    
+            super(Case, self).save()
+            return
+            
+        
+                
         if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
             if self.opened_by == None or self.description == None:
                 raise Exception("Missing fields in Case creation - opened by and description")            
