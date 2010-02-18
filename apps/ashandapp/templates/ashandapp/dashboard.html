@@ -18,7 +18,7 @@
 <div id="tabs" class="ui-tabs span-24"> 
 	<ul>	   
 		
-	   {% for tabid, tab_title, columns, json_qset_url in user_grids %}	       	
+	   {% for tabid, tab_title, json_qset_url in user_grids %}	       	
 	       <li>
 	           <a href="{{json_qset_url}}" title="{{tab_title}}" rel="address:{{json_qset_url}}">{{tab_title}}</a>        
 	       </li>	       
@@ -27,6 +27,12 @@
 		<li>
 			<a href="{% url my_dashboard_tab %}?filter={{filter.id}}" title="{{filter.description}}" rel="address:{% url my_dashboard_tab %}?filter={{filter.id}}">{{filter.description}}</a>
 		</li>
+	{% endfor %}	
+	
+	{% for tabid, tab_title, json_qset_url in recent_activity_grid %}				       	
+	       <li style="float:right;">
+	           <a href="{{json_qset_url}}" title="{{tab_title}}" rel="address:{{json_qset_url}}">{{tab_title}}</a>        
+	       </li>	       
 	{% endfor %}	
 	</ul>
 </div>

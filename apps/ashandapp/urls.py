@@ -13,22 +13,14 @@ urlpatterns = patterns('',
     url(r'^tabbed/json/$', 'ashandapp.views.dashboard.get_json_for_paging', name='json_string'),
     
     #generic json case queryset
-    url(r'^cases/(?P<content_type_name>.*)/(?P<content_uuid>[0-9a-f]{32})$', 'ashandapp.views.cases.queries.view_cases_for_object', name='cases-for-obj-view'),
-    url(r'^json/cases/(?P<content_type_name>.*)/(?P<content_uuid>[0-9a-f]{32})$', 'ashandapp.views.cases.queries.get_cases_for_obj_json', name='cases-for-obj-json'),
+    url(r'^grid/cases/(?P<content_type_name>.*)/(?P<content_uuid>[0-9a-f]{32})$', 'ashandapp.views.cases.queries.grid_cases_for_object', name='cases-for-obj-view'),
+            
+    #specific grid views by user login
+    url(r'^grid/cases/provider$', 'ashandapp.views.cases.queries.grid_provider_patient_cases', name='grid_provider_patient_cases'),
+    url(r'^grid/cases/triage$', 'ashandapp.views.cases.queries.grid_triage_cases', name='grid_triage_cases'),
+    url(r'^grid/cases/caregiver$', 'ashandapp.views.cases.queries.grid_caregiver_cases', name='grid_caregiver_cases'),
 
-    
-    #specific json for users
-    url(r'^json/view/cases/provider$', 'ashandapp.views.cases.queries.view_json_provider_patient_cases', name='view-cases-for-provider-json'),
-    url(r'^json/view/cases/triage$', 'ashandapp.views.cases.queries.view_json_triage_cases', name='view-cases-for-triage-json'),
-    url(r'^json/view/cases/caregiver$', 'ashandapp.views.cases.queries.view_json_caregiver_cases', name='view-cases-for-caregiver-json'),
-
-    
-    #specific json for users
-    url(r'^json/cases/provider$', 'ashandapp.views.cases.queries.json_provider_patient_cases', name='cases-for-provider-json'),
-    url(r'^json/cases/triage$', 'ashandapp.views.cases.queries.json_triage_cases', name='cases-for-triage-json'),
-    url(r'^json/cases/caregiver$', 'ashandapp.views.cases.queries.json_caregiver_cases', name='cases-for-caregiver-json'),
-
-    
+    url(r'^grid/cases/recent$', 'ashandapp.views.cases.queries.grid_recent_activity', name='grid_recent_activity'),
 
     
     url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),

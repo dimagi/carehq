@@ -141,17 +141,20 @@ def generate_interactions(careteam, num_encounters):
     startdelta = timedelta(days=random.randint(1,7)) #sometime in the past week
     
     for encounter in encounters:        
-        main_info = encounter[0:3]
+        main_info = encounter[0:4]
         category_txt = main_info[0].strip()
         title = main_info[1].strip()
-        source = main_info[2].strip()
+        body = main_info[2].strip()
+        source = main_info[3].strip()
         
         if title.count("%s") == 1:
             title = title % careteam.patient.user.first_name
+        if body.count("%s") == 1:
+            body = body % careteam.patient.user.first_name
         
         newcase = Case()
         newcase.description = title
-        newcase.body = ""
+        newcase.body = body
         newcase.category = Category.objects.get(category=category_txt)
         
         creator=None
@@ -183,7 +186,7 @@ def generate_interactions(careteam, num_encounters):
         
         
         
-        subarr = encounter[3:]
+        subarr = encounter[4:]
         while len(subarr) >= 3:
             resp = subarr[0].strip()
             src = subarr[1].lower().strip()
@@ -203,6 +206,8 @@ def generate_interactions(careteam, num_encounters):
             
             evt = CaseEvent()
             evt.case = newcase
+            if resp.count("%s") == 1:
+                resp = resp % careteam.patient.user.first_name
             evt.notes = resp
             evt.activity = EventActivity.objects.filter(category=newcase.category)\
                 .filter(event_class=constants.CASE_EVENT_COMMENT)[0]

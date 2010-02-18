@@ -8,62 +8,63 @@
                 $('#tabs').tabs({ cookie: { expires: 30,name: "tabs_coo" } });                
                 });
 </script>
-{% endblock %}
+{% endblock extrahead %}
 
 {% block content %}
 
-{%with current_careteam as careteam %}
-{# pulling from the inline_careteam but we want to custom display it here #}
-<div class="span-24">
-<div class="span-18"> <!-- careteam header -->    
- <h3>{{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s Care Team</h3>
- <table>
-     <tr>
-        <th>Profile</th>
-        <th>DOB</th>
-        <th>Sex</th>
-        <th>Primary Provider</th> 
-     </tr>
-     <tr>     
-        <td><a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">{%trans "View Profile"%}</a>
-        <td>{{careteam.patient.dob|date}}</td> 
-        <td>{{careteam.patient.get_sex_display}}</td>
-        <td>
-            {% if careteam.primary_provider %}
-                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
-            {% else %}
-                Not Set
-            {% endif %}
-        </td>
-    </tr> 
-</table>
-</div> <!-- end careteam header -->
-{%endwith %}
-<div class="span-6 last">
-<h4>Actions</h4>
-<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a><br><br>
-<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
-<br>
-<a href="" class="fg-button ui-state-default ui-corner-all">Invite provider</a><br><br>
-<a href="" class="fg-button ui-state-default ui-corner-all">Invite caregiver</a><br>
-<br><br>
-</div>
-
-</div>
-
-
 <div id="tabs" class="span-24"> 
     <ul> 
-        <li><a href="#tabs-1">Care Team</a></li>         
+        <li><a href="#tabs-info">Info</a></li>
+		<li><a href="#tabs-actions">Actions</a></li>
         <li><a href="#tabs-2">Care Plan</a></li>
         <li><a href="{% url ashandapp.views.careteam.ajax.view_careteam_cases current_careteam.id %}">Cases</a></li>
     </ul> 
-    <div id="tabs-1">
-        {% with current_careteam as careteam %}
-        <div class="span-24"><!-- careteam tab block -->
-            <div class="span-9"><!--provider block -->
-                <h3>{%trans "Providers" %}</h3>                
-                <ul class="span-12">
+    <div id="tabs-info">
+    	{%with current_careteam as careteam %}				
+		<div class="span-7 box">
+			<div class="span-2 border">
+				<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+			</div>
+			<div class="span-4 last border">
+				<h3>
+					<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+					{{careteam.patient.user.get_full_name}}
+					</a>
+				</h3>
+			</div>			
+				<table>				    
+					 <tr>
+				        <td><strong>Age</strong></td>
+						<td>{{careteam.patient.age}}</td>
+					</tr>
+					<tr>
+				        <td><strong>Sex</strong></td>
+						<td>{{careteam.patient.get_sex_display}}</td>
+					</tr>
+					<tr>
+				        <td><strong>Primary Provider</strong></td>
+						<td>
+				            {% if careteam.primary_provider %}
+				                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+				            {% else %}
+				                Not Set
+				            {% endif %}
+				        </td> 
+					<tr>      
+				</table>
+			
+		</div>
+        <div class="span-7 prepend-1 prepend-top"><!--provider block -->				
+                <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Providers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite provider</a>
+					</div>
+				</div>
+                <div class="span-7">
+				<ul>
                 {% for prov in careteam.providers.all %}
                     <li>            
                         <a href="{%url ashandapp.views.users.single prov.user.id %}">
@@ -72,10 +73,19 @@
                     </li>
                 {% endfor %}
                 </ul>
-            </div> <!-- end provider block -->
+				</div>
+        </div> <!-- end provider block -->
         
-            <div class="span-9"> <!-- caregiver block -->
-            <h3>{%trans "Caregivers"%}</h3>         
+        <div class="span-7 prepend-top last"> <!-- caregiver block -->
+            <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Caregivers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite caregiver</a>
+					</div>
+				</div>
+			<div class="span-7">
             {% if careteam.caregiver_data %}
                 <ul>
                 {% for cglink in careteam.caregiver_data %}
@@ -88,17 +98,17 @@
                 </ul>
             {%else %}
                 <em>{%trans "No Caregivers"%}</em>
-            {%endif %}    
-            </div> <!-- end caregiver block -->
-            
-            <div class="span-6 last">            
-            
-            </div>
-            
-        </div> <!-- end careteam tab block -->
-        {%endwith %}
-        
-    </div> <!-- end tabs-1 -->    
+            {%endif %}
+			</div>    
+        </div> <!-- end caregiver block -->
+        {%endwith %}        
+    </div> <!-- end tabs-info -->    
+	<div id="tabs-actions">
+		<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a>
+		&nbsp;
+		<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
+		
+	</div>
     <div id="tabs-2">
         {# {{careplan}}#} 
          

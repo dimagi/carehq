@@ -15,10 +15,14 @@ from casetracker import constants
 class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""
     
-    description = forms.CharField(label="Question", 
+    description = forms.CharField(label="Subject", 
                                   help_text="For best tracking of questions, make sure that your question has \
-                                  one focused subject matter.  (required)",
+                                  one focused subject matter. (required)",
                                   widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    body = forms.CharField(label="Message", required=True,
+                           help_text="Full message body (required)",
+                           error_messages = {'required': 'You must enter a description'},
+                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))    
     
    
     
@@ -35,7 +39,8 @@ class NewQuestionForm(CareTeamCaseFormBase):
             raise Exception("Error, trying to generate case from question form when form is not valid!")
         newcase = Case()
         newcase.category = Category.objects.get(category='question')
-        newcase.priority = self.cleaned_data['priority']
+        #newcase.priority = self.cleaned_data['priority']
+        newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
         newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
@@ -52,9 +57,9 @@ class NewQuestionForm(CareTeamCaseFormBase):
 
         newcase.assigned_date = datetime.utcnow()
         
-        newcase.next_action = CaseAction.objects.get(id=3) #follow up                
-        td = timedelta(hours=newcase.priority.id)
-        newcase.next_action_date = datetime.utcnow() + td
+        #newcase.next_action = CaseAction.objects.get(id=3) #follow up                
+        #td = timedelta(hours=newcase.priority.id)
+        #newcase.next_action_date = datetime.utcnow() + td
         
         return newcase
     

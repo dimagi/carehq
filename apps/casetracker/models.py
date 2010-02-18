@@ -803,6 +803,23 @@ class GridPreference(models.Model):
         col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
         return GridColumn.objects.all().filter(id__in=col_sort_orders)    
     
+    @property
+    def get_colsort_jsonarray(self):
+        #"aaSorting": [ [0,'asc'], [1,'asc'] ],
+        if not hasattr(self, '_sort_json'):                
+            cols = list(self.get_display_columns)
+            sorts = self.gridpreference_sort.all()
+            ret = []
+            for s in sorts:
+                idx = cols.index(s.column)
+                if s.ascending == 1:
+                    ret.append([idx+1,'asc'])
+                else:
+                    ret.append([idx+1,'desc'])
+            
+            self._sort_json = ret        
+        return self._sort_json
+    
 
 class Message(models.Model):    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)

@@ -53,7 +53,7 @@
       	
       		<div class="span-24"> <!-- header class -->
                  {% block branding %}
-                 <div class="span-4" id="branding">                    
+                 <div class="span-2" id="branding">                    
                         <a title="Return to the Dashboard" href="/">
                             <img src="{{MEDIA_URL}}ashandapp/img/dimagilogo.png">
                         </a>                    
@@ -62,7 +62,7 @@
               
               	{% block page_tabs %}					
               	{% if user.is_authenticated %}			
-				<div class="span-20 last">				
+				<div class="span-22 last">				
 					<div id ="modernbricksmenu2" class="span-20 last">					
 						<ul>
 						<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        

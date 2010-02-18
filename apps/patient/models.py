@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from djcaching.models import CachedModel
 from djcaching.managers import CachingManager
 
+from datetime import datetime, timedelta
 
 def make_uuid():
     return uuid.uuid1().hex
@@ -63,6 +64,15 @@ class Patient(CachedModel):
     root_patient = models.ForeignKey("self", null=True, blank=True)
     
     objects = CachingManager()
+    
+    @property
+    def age(self):
+        if not hasattr(self, '_age'):
+            td = datetime.utcnow().date() - self.dob
+            self._age = int(td.days/365.25)
+        return self._age
+        
+        
     
     def __unicode__(self):
         return "%s %s" % (self.user.first_name, self.user.last_name)

@@ -21,13 +21,11 @@ class NewIssueForm(CareTeamCaseFormBase):
 #                         ('other', "Other" ),
 #                         )
     
-    description = forms.CharField(label="Issue", 
-                                  help_text="Provide a short description of the problem.\
-                                  For best tracking of issues, make sure that your issue has only\
-                                  one focused subject matter.  (required)",
+    description = forms.CharField(label="Subject", 
+                                  help_text="(required)",
                                   widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     
-    body = forms.CharField(label="Description", required=True,
+    body = forms.CharField(label="Message", required=True,
                            help_text="Please provide some more details on this issue (required)",
                            error_messages = {'required': 'You must enter a description'},
                            widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
@@ -47,15 +45,16 @@ class NewIssueForm(CareTeamCaseFormBase):
             raise Exception("Error, trying to generate case from issue form when form is not valid!")
         newcase = Case()
         newcase.category = Category.objects.get(category='issue')
-        newcase.priority = self.cleaned_data['priority']
+        #newcase.priority = self.cleaned_data['priority']
+        newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
         newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        newcase.next_action = CaseAction.objects.get(id=3) #follow up                
-        td = timedelta(hours=newcase.priority.id)
-        newcase.next_action_date = datetime.utcnow() + td
+        #newcase.next_action = CaseAction.objects.get(id=3) #follow up                
+        #td = timedelta(hours=newcase.priority.id)
+        #newcase.next_action_date = datetime.utcnow() + td
         
         
         if self._careteam.primary_provider:

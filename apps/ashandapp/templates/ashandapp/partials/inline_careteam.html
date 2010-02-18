@@ -1,46 +1,47 @@
 {% load filter_tags %}
 {% load i18n %}
 
-<div class="span-22"> <!-- careteam header -->	
-	<div class="span-10">
-		<h3>
-			<a href="{% url view-careteam careteam.id %}">
-			{{careteam.patient.user.last_name}}, {{careteam.patient.user.first_name}}
-			</a>
-		</h3>
-	</div>
-	<div class="span-4">
+<div class="span-24"> <!-- careteam header -->	
+	<hr>
+	<div class="span-6">
+		<h3>{{careteam.patient.user.get_full_name}}</h3>
+	</div>	
+	<div class="span-12">
+		{% now "m/d/Y" %}
+	</div>	
+	<div class="span-3">
 	   <a href="{% url view-careteam careteam.id %}">Care Team Home</a>
 	</div>
-	<div class="span-4">
-		<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">{%trans "Profile"%}</a>
-	</div>
-	<div class="span-4 last">
+	<div class="span-3 last">
 		<a id="careteam_flipper_{{careteam.id}}" href="javascript:toggle_careteam_block('{{ careteam.id }}')" class="fg-button ui-state-default ui-corner-all">Show details</a>			
 	</div>
 </div> <!-- end careteam header -->
 	
-<div class="span-22 hidden" id="careteam_block_{{careteam.id}}">		
-	<div class="span-22">
-		<dl>			
-		    
-			<dt>{%trans "Primary Provider Contact:"%}</dt>
-			    {% if careteam.primary_provider %}
-				<dd>
-				<a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">
-				{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</dd>
-				</a>
-				{% else %}
-				<dd>Not Set</dd>
-				{% endif %}
-			<dt>{%trans "DOB:"%}</dt>
-				<dd>{{careteam.patient.dob|date}}</dd>
-			<dt>{%trans "Sex:"%}</dt>
-				<dd>{{careteam.patient.get_sex_display}}</dd>
-		</dl>	
+<div class="span-24 box hidden" id="careteam_block_{{careteam.id}}">	
+	<div class="span-6">
+		<table>				    
+			<tr>
+		        <td><strong>Age</strong></td>
+				<td>{{careteam.patient.age}}</td>
+			</tr>
+			<tr>
+		        <td><strong>Sex</strong></td>
+				<td>{{careteam.patient.get_sex_display}}</td>
+			</tr>
+			<tr>
+		        <td><strong>Primary Provider</strong></td>
+				<td>
+		            {% if careteam.primary_provider %}
+		                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+		            {% else %}
+		                Not Set
+		            {% endif %}
+		        </td> 
+			<tr>      
+		</table>
 	</div>
 	
-	<div class="span-10 prepend-2"> <!-- provider block -->
+	<div class="span-7 prepend-1"> <!-- provider block -->
 		<h3>{%trans "Providers" %}</h3>
 		<ul>
 		{% for prov in careteam.providers.all %}
@@ -53,7 +54,7 @@
 		</ul>
 	</div> <!-- end provider block -->
 	
-	<div class="span-10 last"> <!-- caregiver block -->
+	<div class="span-7 last"> <!-- caregiver block -->
 		<h3>{%trans "Caregivers"%}</h3> 		
 		{% if careteam.caregiver_data %}
 			<ul>
@@ -68,6 +69,5 @@
 		{%else %}
 			<em>{%trans "No Caregivers"%}</em>
 		{%endif %}	
-	</div> <!-- end caregiver block -->
-	
+	</div> <!-- end caregiver block -->	
 </div> <!-- end careteam_block_{{careteam.id}} -->

@@ -8,17 +8,21 @@
 {%endblock %}
 
 {% block content %}
+<div class="span-18 prepend-top">
 <h1>Raise an issue</h1>
-<div class="error">
-<strong>Note</strong>:  If this issue is an emergency or life threatening 
-condition that needs immediate response, immediately seek medical attention by calling 911 
-or going to the Emergency Room.  This system is meant for long term communication and care management, 
-not real-time critical alerts.	
-</div>
 <form action="" method="POST">
 {% include "ashandapp/partials/inline_form.html" %}
+<div class="error">
+<strong>Note</strong>:  If this issue is an emergency or life threatening 
+condition that needs immediate response, call 911 or visit to Emergency Room.  
+This system is meant for long term communication and care management, not real-time critical alerts.	
+</div>
 <input type="submit" value="Submit" />
 </form>
+</div>
+<div class="span-6 last">		
+	{% include "ashandapp/partials/patient_careteam_info_6.html" %}				
+</div>
 {% endblock %}
 
 

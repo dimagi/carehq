@@ -44,8 +44,8 @@ class EventActivityAdmin(admin.ModelAdmin):
 
 class CaseEventInline(admin.StackedInline):
     model = CaseEvent    
-
 class CaseEventAdmin(admin.ModelAdmin):
+
     list_display=('id','notes','case','activity')
     list_filter = ['activity',]
 
@@ -60,6 +60,7 @@ class CaseReversion(VersionAdmin):
     fieldsets = (
                  ('Basic Information', { 'fields': ('description',
                                                     ('category','status','priority'),
+                                                    'body',
                                                     'assigned_to',
                                                     'next_action',
                                                     'parent_case')

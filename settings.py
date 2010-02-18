@@ -94,7 +94,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'reversion',    
     
     
     #section ashand apps
@@ -105,9 +104,15 @@ INSTALLED_APPS = (
     'careplan',
     #end ashand apps
     
+    #third party paps
+    'reversion',    
+    'tinymce',
     'debug_toolbar',
     'django_extensions',
-    'djcaching', # removing due to the fact that local dev enivornments without memecached puke        
+    'djcaching', 
+    #end third party apps
+    
+            
     'django.contrib.admin',
 )
 
