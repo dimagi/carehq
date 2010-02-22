@@ -125,10 +125,10 @@ class CaseModelForm(forms.ModelForm):
             fields_to_exclude.remove('next_action')
                
             
-            self.fields['assigned_to'].label = 'Assign to' 
+            self.fields['assigned_to'].label = 'Assign to'             
+            #self.fields['next_action'].label = 'Action Requested'
+            #self.fields['next_action'].help_text = 'What is the action you ask of this assignment (required)'
             
-            self.fields['next_action'].label = 'Action Requested'
-            self.fields['next_action'].help_text = 'What is the action you ask of this assignment (required)'
             self.fields['next_action_date'].label = 'Action Due Date'
             self.fields['next_action_date'].widget = admwidgets.AdminSplitDateTime()
             self.fields['next_action_date'].help_text = 'Set a due date for this requested action (required)'

@@ -75,7 +75,8 @@ def case_column(case, column):
             return data.activity.get_event_class_display()
         elif isinstance(data, Status):
             return data.get_state_class_display()
-
+#        elif data == None and column == 'next_action_date':
+#            return unicode(datetime.utcnow())
         else:
             datastring = unicode(data)
         return datastring

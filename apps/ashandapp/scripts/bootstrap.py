@@ -16,7 +16,7 @@ def load_fixtures():
     
     
     
-    states = {"Active/Open (default)": constants.CASE_STATE_OPEN, "Resolved (default)": constants.CASE_STATE_RESOLVED, "Closed (default)": constants.CASE_STATE_CLOSED}
+    states = {"New":constants.CASE_STATE_NEW, "Active/Open (default)": constants.CASE_STATE_OPEN, "Resolved (default)": constants.CASE_STATE_RESOLVED, "Closed (default)": constants.CASE_STATE_CLOSED}
     for cat in Category.objects.all():
         for desc, cls in states.items():
             status = Status()

@@ -3,7 +3,10 @@
 <tr>
     <td><textarea id="id_comment" rows="4" cols="50" name="comment"></textarea></td></tr>
 <tr>
-    <td><input type="submit" value="Add Comment" class="fg-button ui-state-default ui-corner-all"/></td></tr>
+    <td><input type="submit" value="Add Comment" class="fg-button ui-state-default ui-corner-all"/>&nbsp;
+	<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/></td>
+</tr>
+	
 </table>
 <input type="hidden" name="next" value="{{ request.path }}" />
 </form>

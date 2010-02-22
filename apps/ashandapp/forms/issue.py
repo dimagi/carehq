@@ -48,14 +48,13 @@ class NewIssueForm(CareTeamCaseFormBase):
         #newcase.priority = self.cleaned_data['priority']
         newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
+        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        #newcase.next_action = CaseAction.objects.get(id=3) #follow up                
-        #td = timedelta(hours=newcase.priority.id)
-        #newcase.next_action_date = datetime.utcnow() + td
-        
+        newcase.next_action = CaseAction.objects.get(id=7) #triage                
+        td = timedelta(hours=1)
+        newcase.next_action_date = datetime.utcnow() + td        
         
         if self._careteam.primary_provider:
             newcase.assigned_to = self._careteam.primary_provider.user

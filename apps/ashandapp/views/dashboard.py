@@ -225,8 +225,7 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
         #if a doctor, just get all cases for all their patients            
         if request.is_primary:            
             context['user_grids'].append(('triage_cases', 'Inbound Triage',reverse('grid_triage_cases')))
-        else:
-            context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
+        context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
                     
     context['recent_activity_grid'] = [('recent_cases', 'Recent Activity', reverse('grid_recent_activity'))]
             

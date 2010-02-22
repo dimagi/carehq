@@ -40,5 +40,12 @@
     "fields": {
       "description": "Query"
     }
+  },
+  {
+    "pk": 7, 
+    "model": "casetracker.caseaction", 
+    "fields": {
+      "description": "Triage"
+    }
   }
 ]

@@ -19,25 +19,23 @@
 		{% include "casetracker/partials/case/basic_case_info.html" %}
 		{% endblock %}		
 	<hr>
+		{% if not show_form and not show_comment %}
 		<div class="span-18">
 			{% block case_actions %}
 			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
 			{% endblock case_actions %}			 
 		</div>
+		{% endif %}
 		
-		{% if show_form %}
-		
-		<div class="span-18">	
-						
+		{% if show_form %}		
+		<div class="span-18">						
 			{% include "casetracker/manage/inline_case_edit.html" %}
 		</div>
 		{% endif %}
 		
-		{% if show_comment %}
-			
+		{% if show_comment %}			
 			<div class="span-18">				
-			{% include "casetracker/manage/comment.html" %}
-			
+			{% include "casetracker/manage/comment.html" %}			
 			</div>
 		{% endif %}
 	

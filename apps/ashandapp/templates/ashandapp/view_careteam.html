@@ -14,46 +14,52 @@
 
 <div id="tabs" class="span-24"> 
     <ul> 
-        <li><a href="#tabs-info">Info</a></li>
-		<li><a href="#tabs-actions">Actions</a></li>
+        <li><a href="#tabs-info">CareTeam Info</a></li>		
         <li><a href="#tabs-2">Care Plan</a></li>
         <li><a href="{% url careteam-cases-tabpage careteam_id=current_careteam.id %}">Cases</a></li>
     </ul> 
     <div id="tabs-info">
-    	{%with current_careteam as careteam %}				
-		<div class="span-7 box">
-			<div class="span-2 border">
-				<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+    	{%with current_careteam as careteam %}			
+		<div class="span-8">				
+			<div class="span-7 box last">
+				<div class="span-2 border">
+					<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+				</div>
+				<div class="span-4 last border">
+					<h3>
+						<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+						{{careteam.patient.user.get_full_name}}
+						</a>
+					</h3>
+				</div>			
+					<table>				    
+						 <tr>
+					        <td><strong>Age</strong></td>
+							<td>{{careteam.patient.age}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Sex</strong></td>
+							<td>{{careteam.patient.get_sex_display}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Primary Provider</strong></td>
+							<td>
+					            {% if careteam.primary_provider %}
+					                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+					            {% else %}
+					                Not Set
+					            {% endif %}
+					        </td> 
+						<tr>      
+					</table>			
 			</div>
-			<div class="span-4 last border">
-				<h3>
-					<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
-					{{careteam.patient.user.get_full_name}}
-					</a>
-				</h3>
-			</div>			
-				<table>				    
-					 <tr>
-				        <td><strong>Age</strong></td>
-						<td>{{careteam.patient.age}}</td>
-					</tr>
-					<tr>
-				        <td><strong>Sex</strong></td>
-						<td>{{careteam.patient.get_sex_display}}</td>
-					</tr>
-					<tr>
-				        <td><strong>Primary Provider</strong></td>
-						<td>
-				            {% if careteam.primary_provider %}
-				                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
-				            {% else %}
-				                Not Set
-				            {% endif %}
-				        </td> 
-					<tr>      
-				</table>
-			
+			<div class="span-7 prepend-1">
+			<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a>
+			&nbsp;
+			<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
+			</div>
 		</div>
+		
         <div class="span-7 prepend-1 prepend-top"><!--provider block -->				
                 <div class="span-7">
 					<div class="span-4">
@@ -69,7 +75,7 @@
                     <li>            
                         <a href="{%url ashandapp.views.users.single prov.user.id %}">
                         {{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
-                        <em>{{prov.job_title }} with {{prov.affiliation }}</em> <br>
+                        <em>{{prov.job_title }} - {{prov.affiliation }}</em> <br>
                     </li>
                 {% endfor %}
                 </ul>
@@ -103,12 +109,6 @@
         </div> <!-- end caregiver block -->
         {%endwith %}        
     </div> <!-- end tabs-info -->    
-	<div id="tabs-actions">
-		<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a>
-		&nbsp;
-		<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
-		
-	</div>
     <div id="tabs-2">
         {# {{careplan}}#} 
          

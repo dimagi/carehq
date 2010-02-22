@@ -54,3 +54,21 @@ interactions_arr = [
 ["HomeMonitoring","Patient daily measurements incomplete","Missing data alert","Home Monitor","Call made to patient, contact made","provider","Resolve","","","","","",""],
 
 ]
+
+
+triage_arr = [
+["issue","hi","%s is reporting that they have not had a BM in over 2 days now.","Caregiver"],
+["HomeMonitoring","Patient has vomited 2 times in the past 24 hours","Daily reading alert","Home Monitor"],
+["issue","urgent","What order should I instruct the patient to take their anti nausea meds?","Caregiver"],
+["HomeMOnitoring","Patient has not submitted daily measurements","Missing data alert","Home Monitor"],
+["issue","help","Do I need to fast before my next visit?","patient"],
+["issue","not feeling well","%s has been reporting severe nausea the past few days","Caregiver"],
+["issue","more skin problems for %s","Thanks for the tip on the last skin issue!","caregiver"],
+["issue","%s has a runny nose","is it bad?","Caregiver"],
+["issue","fever","at what temperature should I know to call for help?","Caregiver"],
+["issue","diarrhea?","%s said it feels like it's happening but it is a normal movement - anything to help avoid?","Caregiver"],
+["issue","severe diarrhea","%s was up most of the night, was able to stay hydrated, but am worried.","Caregiver"],
+['HomeMonitoring',"Patient daily measurements incomplete","Missing data alert","Home Monitor"],
+["issue","hives","not sure if this is hives or a rash","Caregiver"],
+["issue","%s told me yesterday that it's really difficult to climb the stairs as she is completely winded after a few steps","is this normal?","Caregiver"],
+]

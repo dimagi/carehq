@@ -47,7 +47,7 @@ def do_get_json(cases_qset, columns):
                 table_entry = table_entry[0:80] + "..."
             # terribly hardcoded...quick fix to add links
             if (col == "description"):
-                json_string +=  "\"<a href = 'case/%s'>%s</a>\"," % (case.id, table_entry)
+                json_string +=  "\"<a href = '%s'>%s</a>\"," % (reverse('view-case', kwargs={'case_id':case.id }), table_entry)
             else:
                 json_string += "\"%s\"," % table_entry
         json_string += "],"
@@ -158,7 +158,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
         qset= Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=careteam_cases)        
-        qset = qset.filter(next_action_date=None)
+        qset = qset.filter(status__state_class=constants.CASE_STATE_NEW)
         
         return do_get_json(qset, columns)    
     else:               
@@ -231,7 +231,7 @@ def grid_careteam_cases(request, careteam_id, template_name="ashandapp/cases/bar
     
     if viewmode == 'active':
         columns = ['category', 'description', 'assigned_to', 'next_action', 'next_action_date']
-        context['colsort_array'] = [[5,'desc']]
+        context['colsort_array'] = [[5,'asc']]
     elif viewmode == 'resolved':
         columns = ['category', 'description', 'resolved_by', 'resolved_date']
         context['colsort_array'] = [[4,'desc']]

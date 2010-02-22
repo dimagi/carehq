@@ -17,7 +17,8 @@ from demo_working import working_arr
 from demo_resolve_close import resolve_arr
 
 
-from example_interactions import interactions_arr
+from example_interactions import interactions_arr, triage_arr
+from inject_triage import generate_triage
 
 from django.core.management import call_command
 from demopatients import patient_arr
@@ -40,14 +41,27 @@ def create_careteam(patient):
     print "\tCreate care team for patient %s" % patient.user
     team = CareTeam()
     team.patient = patient   
-    team.save()
+    team.save()    
     total_providers = random.randint(1,PROVIDERS_PER_PATIENT)
-    all_providers = Provider.objects.all().values_list('id', flat=True)
+    
+    print "\tCreated Patient, assigning %d providers" % total_providers
+    
+    
+    #first get a primary provider
+    nurses = Provider.objects.filter(job_title="Nurse")
+    primary_nurse = nurses[random.randint(0,nurses.count()-1)]    
+    plink = ProviderLink()
+    plink.careteam=team
+    plink.provider = primary_nurse
+    plink.role = create_or_get_provider_role(is_primary=True)
+    plink.save()
+    
+    #next, add other providers
+    all_providers = Provider.objects.all().exclude(id=primary_nurse.id).values_list('id', flat=True)
     prov_arr = [x for x in all_providers]
     random.shuffle(prov_arr)
-    print "\tCreated Patient, assigning %d providers" % total_providers
-    first_provider = True
-    for num in range(0,total_providers):
+    
+    for num in range(0,total_providers - 1):
         rand_prov_id = prov_arr[num]
         rand_prov = Provider.objects.get(id=rand_prov_id)               
         
@@ -55,11 +69,7 @@ def create_careteam(patient):
         plink.careteam=team
         plink.provider = rand_prov
 
-        if first_provider:
-            provider_role = create_or_get_provider_role(is_primary=True)
-            first_provider=False
-        else:
-            provider_role = create_or_get_provider_role(is_primary=False)
+        provider_role = create_or_get_provider_role(is_primary=False)
                         
         plink.role = provider_role        
         plink.save()
@@ -127,6 +137,9 @@ def create_case(user, all_users, case_no):
     newcase.save()
     return newcase
 
+
+
+    
 
 def generate_interactions(careteam, num_encounters):
     """
@@ -304,6 +317,7 @@ def run():
             users.append(cg)
         
         num_cases= random.randint(0,10)
+        print "\tgenerating %d baseline interactions" % (num_cases)
         generate_interactions(team, num_cases)
         
         #create fictitious cases and case activity by patients and providers.
@@ -325,7 +339,7 @@ def run():
             #    revision_no += 1
    
     
-    
+    generate_triage()
         
         
         
