@@ -222,17 +222,12 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     
     if request.is_provider:
         #if a provider/nurse, get the inbound triage for all their patients
-        #if a doctor, just get all cases for all their patients
-        careteam_links = ProviderLink.objects.filter(provider=request.provider)    
-        if careteam_links.count() > 0:            
+        #if a doctor, just get all cases for all their patients            
+        if request.is_primary:            
+            context['user_grids'].append(('triage_cases', 'Inbound Triage',reverse('grid_triage_cases')))
+        else:
             context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
-#            
-#            triage_cases = careteam_links.filter(role__role='nurse-triage')
-#                        
-#            if triage_cases.count() > 0:
-#                context['user_grids'].append(('triage_cases', 'Inbound Triage',['patient','description','opened_date','priority'],reverse('view-cases-for-triage-json')))
-#        
-        
+                    
     context['recent_activity_grid'] = [('recent_cases', 'Recent Activity', reverse('grid_recent_activity'))]
             
     return render_to_response(template_name, context, context_instance=RequestContext(request))

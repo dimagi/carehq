@@ -19,8 +19,9 @@ urlpatterns = patterns('',
     url(r'^grid/cases/provider$', 'ashandapp.views.cases.queries.grid_provider_patient_cases', name='grid_provider_patient_cases'),
     url(r'^grid/cases/triage$', 'ashandapp.views.cases.queries.grid_triage_cases', name='grid_triage_cases'),
     url(r'^grid/cases/caregiver$', 'ashandapp.views.cases.queries.grid_caregiver_cases', name='grid_caregiver_cases'),
-
+    
     url(r'^grid/cases/recent$', 'ashandapp.views.cases.queries.grid_recent_activity', name='grid_recent_activity'),
+
 
     
     url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),
@@ -28,7 +29,9 @@ urlpatterns = patterns('',
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
     url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
     
-    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/ajax/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='show-cases-ajax'),
+    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='careteam-cases-tabpage'),
+    url(r'^grid/careteam/(?P<careteam_id>[0-9a-f]{32})/cases$', 'ashandapp.views.cases.queries.grid_careteam_cases', name='careteam-cases-grid'),
+    
     
     #careteam specific links
     url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})$', 'ashandapp.views.careteam.single', name='view-careteam'),

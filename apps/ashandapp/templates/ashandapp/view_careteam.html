@@ -17,7 +17,7 @@
         <li><a href="#tabs-info">Info</a></li>
 		<li><a href="#tabs-actions">Actions</a></li>
         <li><a href="#tabs-2">Care Plan</a></li>
-        <li><a href="{% url ashandapp.views.careteam.ajax.view_careteam_cases current_careteam.id %}">Cases</a></li>
+        <li><a href="{% url careteam-cases-tabpage careteam_id=current_careteam.id %}">Cases</a></li>
     </ul> 
     <div id="tabs-info">
     	{%with current_careteam as careteam %}				

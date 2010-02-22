@@ -63,7 +63,8 @@ class AshandIdentityMiddleware(object):
         #Check to see this person is a patient.
         is_patient = False
         is_provider = False
-        is_caregiver = False        
+        is_caregiver = False    
+        is_primary = False
          
         #unless there's a better explanation why the __class__ method should work...        
         #request.__class__.patient = LazyPatient()
@@ -84,6 +85,10 @@ class AshandIdentityMiddleware(object):
         try:
             request.provider = Provider.objects.get(user=request.user)
             is_provider=True
+            careteam_links = ProviderLink.objects.filter(provider=request.provider)    
+            as_primary = careteam_links.filter(role__role='nurse-triage')
+            if as_primary.count() > 0:
+                is_primary = True
         except ObjectDoesNotExist:
             pass
         
@@ -93,9 +98,14 @@ class AshandIdentityMiddleware(object):
             is_caregiver = True
         
         
+        
+        
+        
+        
         request.is_provider = is_provider
         request.is_patient = is_patient
         request.is_caregiver = is_caregiver        
+        request.is_primary = is_primary
               
         return None
             

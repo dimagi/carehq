@@ -5,45 +5,18 @@
                 });
 </script>
 <div id="subtabs" class="span-23"> 
-    <ul> 
-        <li><a href="#subtabs-1">Active Cases</a></li>
-        {% if request.is_provider %}        
-        <li><a href="#subtabs-2">Resolved Cases</a></li> 
-        <li><a href="#subtabs-3">Closed Cases</a></li>
-        {% endif %}        
-        <li><a href="#subtabs-4">All Cases</a></li>
-        
-    </ul>
-    
-    <div id="subtabs-1">        
-		{% with active_columns as columns %}
-        {% with careteam.active_cases as cases %}
-        {% include "ashandapp/partials/patient_cases_qset.html" %}
-        {% endwith %}                    
-		{% endwith %}
-    </div> 
-    
-    {% if request.is_provider %}
-    <div id="subtabs-2">
-    	{% with resolved_columns as columns %}        
-        {% with careteam.resolved_cases as cases %}
-        {% include "ashandapp/partials/patient_cases_qset.html" %}
-        {% endwith %}   
-		{% endwith %}                 
-    </div> 
-    <div id="subtabs-3">
-    	{% with closed_columns as columns %}                
-        {% with careteam.closed_cases as cases %}
-        {% include "ashandapp/partials/patient_cases_qset.html" %}
-        {% endwith %}                    
-		{% endwith %}
-    </div> 
-    {% endif %}
-    <div id="subtabs-4">
-    	{% with all_columns as columns %}                
-        {% with careteam.all_cases as cases %}
-        {% include "ashandapp/partials/patient_cases_qset.html" %}
-        {% endwith %}                    
-		{% endwith %}
-    </div> 
+    <ul>			       	
+	    <li>
+	    	<a href="{{active_qset_url}}" title="{{active_title}}" rel="address:{{active_qset_url}}">{{active_title}}</a>        
+	    </li>	       
+		<li>
+	    	<a href="{{resolved_qset_url}}" title="{{resolved_title}}" rel="address:{{resolved_qset_url}}">{{resolved_title}}</a>        
+	    </li>
+		<li>
+	    	<a href="{{closed_qset_url}}" title="{{closed_title}}" rel="address:{{closed_qset_url}}">{{closed_title}}</a>        
+	    </li>
+		<li>
+	    	<a href="{{all_qset_url}}" title="{{all_title}}" rel="address:{{all_qset_url}}">{{all_title}}</a>        
+	    </li>        
+    </ul>    
 </div>
