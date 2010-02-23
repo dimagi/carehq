@@ -45,7 +45,7 @@ class NewIssueForm(CareTeamCaseFormBase):
             raise Exception("Error, trying to generate case from issue form when form is not valid!")
         newcase = Case()
         newcase.category = Category.objects.get(category='issue')
-        #newcase.priority = self.cleaned_data['priority']
+        newcase.priority = self.cleaned_data['priority']
         newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
         newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0] #get the default opener - this is a bit sketchy

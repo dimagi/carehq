@@ -39,6 +39,6 @@ def provider_added(sender, instance, created, **kwargs):
         case = make_system_case(instance.provider.user, instance.careteam.patient, "provider", instance)
         instance.careteam.add_case(case)
 
-#post_save.connect(caregiver_added, sender=CaregiverLink)
-#post_save.connect(provider_added, sender=ProviderLink)
+post_save.connect(caregiver_added, sender=CaregiverLink)
+post_save.connect(provider_added, sender=ProviderLink)
 

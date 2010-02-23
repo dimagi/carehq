@@ -36,10 +36,10 @@ class CareTeamCaseFormBase(forms.Form):
                                   required=True)
  
     
-#    priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
-#                                      initial=Priority.objects.get(id=4), #this is dangerous since priorities are not necessarily linked to IDs
-#                                      help_text="How important is this? 1-High priority to 7-Low priority (required)",
-#                                      error_messages = {'required': 'Please select a priority for this issue'})
+    priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,
+                                      initial=Priority.objects.get(id=4), #this is dangerous since priorities are not necessarily linked to IDs
+                                      help_text="How important is this? 1-High priority to 7-Low priority (required)",
+                                      error_messages = {'required': 'Please select a priority for this issue'})
     
     
     def __init__(self, careteam=None, *args, **kwargs):

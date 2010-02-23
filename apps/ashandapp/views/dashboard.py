@@ -223,7 +223,7 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     if request.is_provider:
         #if a provider/nurse, get the inbound triage for all their patients
         #if a doctor, just get all cases for all their patients            
-        if request.is_primary:            
+        if request.provider.job_title == 'Nurse':            
             context['user_grids'].append(('triage_cases', 'Inbound Triage',reverse('grid_triage_cases')))
         context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
                     

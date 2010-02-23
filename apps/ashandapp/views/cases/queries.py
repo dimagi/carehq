@@ -105,7 +105,7 @@ def grid_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html
     if do_json:        
         careteams = CaregiverLink.objects.all().filter(user = request.user).values_list('careteam__id', flat=True)
         careteam_cases = CareTeamCaseLink.objects.all().filter(careteam__in=careteams).values_list('case__id', flat=True)
-        qset= Case.objects.all().Case.objects.select_related('opened_by','last_edit_by',\
+        qset= Case.objects.all().select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=careteam_cases)         
         return  do_get_json(qset, columns)

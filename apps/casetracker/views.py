@@ -23,7 +23,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
-from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity
+from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status
 from casetracker import constants
 
 #use in sorting
@@ -186,16 +186,13 @@ def edit_case(request, case_id, template_name='casetracker/manage/edit_case.html
                         
             if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
                 case.edit_comment = form.cleaned_data["comment"]
-            case.last_edit_by = request.user
-            
+            case.last_edit_by = request.user            
             #next, we need to see the mode and flip the fields depending on who does what.
             if edit_mode == CaseModelForm.EDIT_ASSIGN:
-                case.assigned_date = datetime.utcnow()
-                case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
-            
-            elif edit_mode == CaseModelForm.EDIT_RESOLVE:
-                case.resolved_date = datetime.utcnow()
-                case.resolved_by = request.user            
+                
+                
+                case.assigned_date = datetime.utcnow()                
+                case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)           
             
             case.save()
             return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))
@@ -308,7 +305,9 @@ def view_case(request, case_id): #template_name='casetracker/view_case.html'
                     if edit_mode == CaseModelForm.EDIT_ASSIGN:
                         case.assigned_date = datetime.utcnow()
                         case.edit_comment += " (Assigned to %s by %s)" % (case.assigned_to.first_name + " " + case.assigned_to.last_name, request.user.first_name + " " + request.user.last_name)
-                    
+                        #now that we've assigned it, we can flip the state
+                        if case.status.state_class == constants.CASE_STATE_NEW:                
+                            case.status = Status.objects.filter(category=case.category).filter(state_class=constants.CASE_STATE_OPEN)[0]                    
                     case.save()
                     return HttpResponseRedirect(reverse('view-case', kwargs= {'case_id': case_id}))                    
             elif edit_mode == constants.CASE_STATE_RESOLVED or edit_mode == constants.CASE_STATE_CLOSED:

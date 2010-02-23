@@ -16,6 +16,8 @@ from demo_questions import question_arr
 from demo_working import working_arr
 from demo_resolve_close import resolve_arr
 
+from patient_caregiver_pairs import care_pair_arr
+
 
 from example_interactions import interactions_arr, triage_arr
 from inject_triage import generate_triage
@@ -28,7 +30,7 @@ from bootstrap import load_fixtures
 
 from casetracker import constants
 
-from factory import create_user, create_provider, create_or_get_provider_role, create_patient, set_random_identifiers
+from factory import create_user, create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
 
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
@@ -37,15 +39,13 @@ MAX_REVISIONS=7
 MAX_INITIAL_CASES = 7
 
 
-def create_careteam(patient):
+def create_careteam(patient, caregiver_user=None):
     print "\tCreate care team for patient %s" % patient.user
     team = CareTeam()
     team.patient = patient   
     team.save()    
-    total_providers = random.randint(1,PROVIDERS_PER_PATIENT)
-    
-    print "\tCreated Patient, assigning %d providers" % total_providers
-    
+    total_providers = random.randint(1,PROVIDERS_PER_PATIENT)    
+    print "\tCreated Patient, assigning %d providers" % total_providers    
     
     #first get a primary provider
     nurses = Provider.objects.filter(job_title="Nurse")
@@ -74,26 +74,12 @@ def create_careteam(patient):
         plink.role = provider_role        
         plink.save()
         
-        
-    #let's make caregivers now
-    total_caregivers = random.randint(1, CAREGIVERS_PER_PATIENT)    
-    print "\tCreated Providers, assigning %d caregivers" % (total_caregivers)
-    careteam_providers = team.providers.all().values_list('user__id', flat=True)
-    #possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
     
     
-    all_providers_list = Provider.objects.all().values_list('user__id', flat=True)    
-    possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=all_providers_list).values_list('id',flat=True)
-    
-    possible_caregivers_arr = [x for x in possible_caregivers_qset]    
-    random.shuffle(possible_caregivers_arr)
-    for num in range(0, total_caregivers):
-        caregiver_user = User.objects.get(id=possible_caregivers_arr[num])
+    if caregiver_user != None:
         cglink = CaregiverLink()
         cglink.careteam = team
-        #cglink.caregiver = caregiver_user
         cglink.user = caregiver_user
-        
         relationship = CareRelationship()
         relationship.relationship_type = CareRelationship.RELATIONSHIP_CHOICES[random.randint(0, len(CareRelationship.RELATIONSHIP_CHOICES)-1)][0]
         relationship.notes = ''
@@ -101,6 +87,32 @@ def create_careteam(patient):
         
         cglink.relationship = relationship
         cglink.save()
+    else:        
+        total_caregivers = random.randint(1, CAREGIVERS_PER_PATIENT)    
+        print "\tCreated Providers, assigning %d caregivers" % (total_caregivers)
+        careteam_providers = team.providers.all().values_list('user__id', flat=True)
+        #possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=careteam_providers).values_list('id',flat=True)
+        
+        
+        all_providers_list = Provider.objects.all().values_list('user__id', flat=True)    
+        possible_caregivers_qset = User.objects.exclude(id=1).exclude(id=patient.user.id).exclude(id__in=all_providers_list).values_list('id',flat=True)
+        
+        possible_caregivers_arr = [x for x in possible_caregivers_qset]    
+        random.shuffle(possible_caregivers_arr)
+        for num in range(0, total_caregivers):
+            caregiver_user = User.objects.get(id=possible_caregivers_arr[num])
+            cglink = CaregiverLink()
+            cglink.careteam = team
+            #cglink.caregiver = caregiver_user
+            cglink.user = caregiver_user
+            
+            relationship = CareRelationship()
+            relationship.relationship_type = CareRelationship.RELATIONSHIP_CHOICES[random.randint(0, len(CareRelationship.RELATIONSHIP_CHOICES)-1)][0]
+            relationship.notes = ''
+            relationship.save()
+            
+            cglink.relationship = relationship
+            cglink.save()
         
         
     
@@ -188,7 +200,7 @@ def generate_interactions(careteam, num_encounters):
         newcase.last_edit_date = newcase.opened_date
         newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
     
-        newcase.assigned_to = careteam.primary_provider.user
+        newcase.assigned_to = careteam.providers.all()[random.randint(0,careteam.providers.all().count()-1)].user
         newcase.assigned_date = newcase.opened_date 
     
         newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
@@ -282,23 +294,33 @@ def run():
     
     #load all the demo categories for cases
     load_fixtures()    
-    
-    #create patients    
-    for ptarr in patient_arr:
-        create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
-    print "Created test patients.  Total %d" % Patient.objects.all().count()
-        
+
     for provarr in provider_arr:
         #firstname, lastname, job_title, affiliation        
         create_provider(provarr[0], provarr[1],provarr[2],provarr[3])
     print "created all providers"
-    
-    
+
+    for pt_cg_list in care_pair_arr:
+        ptarr = pt_cg_list[0]        
+        cgarr = pt_cg_list[1]
         
-    print "Creating care teams..."
-    #create careteam around all patients and link providers to them
-    for patient in Patient.objects.all():
-        create_careteam(patient)
+        pt = create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
+        cg = create_caregiver(cgarr[0],cgarr[1],cgarr[2],cgarr[3])
+        
+        create_careteam(pt, caregiver_user=cg)
+    
+#    #create patients    
+#    for ptarr in patient_arr:
+#        create_patient(ptarr[0],ptarr[1],ptarr[2],ptarr[3])
+#    print "Created test patients.  Total %d" % Patient.objects.all().count()
+#        
+#    
+#    
+#        
+#    print "Creating care teams..."
+#    #create careteam around all patients and link providers to them
+#    for patient in Patient.objects.all():
+#        create_careteam(patient)
     
     
     #before making the case, we need to get all the user objects of the people in the careteam.

@@ -50,6 +50,18 @@ def create_or_get_provider_role(is_primary=False):
     provider_role.save()
     return provider_role
     
+def create_caregiver(firstname, middlename, lastname, sex):
+    """Just get or create a new user for a caregiver's given name"""    
+    firstclean = firstname.replace("'","")
+    lastclean = lastname.replace("'","")
+    dob = date(random.randint(1955,2008), random.randint(1,12), random.randint(1,28))
+        
+    if User.objects.filter(first_name=firstname).filter(last_name=lastname).count() > 0:
+        user = User.objects.filter(first_name=firstname).filter(last_name=lastname)[0]
+    else:
+        user = create_user(username=firstclean.lower() + "_" + lastclean.lower(), password='demo', firstname=firstname, lastname=lastname)        
+    return user
+
 
 def create_patient(firstname, middlename, lastname, sex):
     

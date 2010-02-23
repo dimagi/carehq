@@ -50,6 +50,20 @@
     }
   }, 
   {
+    "pk": 1, 
+    "model": "casetracker.gridpreference", 
+    "fields": {
+      "filter": 1
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.gridpreference", 
+    "fields": {
+      "filter": 2
+    }
+  }, 
+  {
     "pk": 4, 
     "model": "casetracker.gridsort", 
     "fields": {
@@ -140,20 +154,6 @@
       "column": 16, 
       "preference": 1, 
       "order": 5
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "casetracker.gridpreference", 
-    "fields": {
-      "filter": 1
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "casetracker.gridpreference", 
-    "fields": {
-      "filter": 2
     }
   }
 ]

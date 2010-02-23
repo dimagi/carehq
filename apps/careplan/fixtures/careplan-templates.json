@@ -100,6 +100,97 @@
     }
   }, 
   {
+    "pk": "be944876079c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Fitness", 
+      "parent": null, 
+      "description": "Fitness care goals"
+    }
+  }, 
+  {
+    "pk": "f35632bf076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Home Care", 
+      "parent": null, 
+      "description": "Home based care plan"
+    }
+  }, 
+  {
+    "pk": "f35632b6076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Dietary Goals", 
+      "parent": null, 
+      "description": "dietary goals"
+    }
+  }, 
+  {
+    "pk": "f35632b7076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Disease Management", 
+      "parent": null, 
+      "description": "Disease management care goal"
+    }
+  }, 
+  {
+    "pk": "f35632bc076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        1
+      ], 
+      "tags": [], 
+      "name": "Lifestyle Management", 
+      "parent": null, 
+      "description": "asfdsdf"
+    }
+  },  
+  {
+    "pk": "f35632ca076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        2
+      ], 
+      "tags": [], 
+      "name": "Side effect prevention", 
+      "parent": "f35632bc076c11dfa56d001641e25144", 
+      "description": "Pre-emptive management of side effects by lifestyle changes."
+    }
+  }, 
+  {
+    "pk": "f35632c1076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        3
+      ], 
+      "tags": [], 
+      "name": "Medication Management", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Management of all aspects of medication"
+    }
+  }, 
+  {
     "pk": "f35632ac076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
@@ -111,6 +202,19 @@
       "name": "Adherence", 
       "parent": "f35632c1076c11dfa56d001641e25144", 
       "description": "Adherence goals"
+    }
+  },
+  {
+    "pk": "f35632cb076c11dfa56d001641e25144", 
+    "model": "careplan.templatecareplanitem", 
+    "fields": {
+      "category": [
+        6
+      ], 
+      "tags": [], 
+      "name": "Symptoms", 
+      "parent": "f35632b7076c11dfa56d001641e25144", 
+      "description": "Common symptoms to watch out for with this patient disease/problem profile"
     }
   }, 
   {
@@ -230,32 +334,6 @@
     }
   }, 
   {
-    "pk": "f35632b6076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Dietary Goals", 
-      "parent": null, 
-      "description": "dietary goals"
-    }
-  }, 
-  {
-    "pk": "f35632b7076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Disease Management", 
-      "parent": null, 
-      "description": "Disease management care goal"
-    }
-  }, 
-  {
     "pk": "f35632b8076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
     "fields": {
@@ -280,32 +358,6 @@
       "name": "Fear of recurrence", 
       "parent": "f35632ad076c11dfa56d001641e25144", 
       "description": "Social work"
-    }
-  }, 
-  {
-    "pk": "be944876079c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Fitness", 
-      "parent": null, 
-      "description": "Fitness care goals"
-    }
-  }, 
-  {
-    "pk": "f35632bf076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Home Care", 
-      "parent": null, 
-      "description": "Home based care plan"
     }
   }, 
   {
@@ -358,19 +410,8 @@
       "description": "<h2>Laboraory Diagnostics</h2>\r\n<h3>General Workup</h3>\r\n<ul>\r\n<li>CBC</li>\r\n<li>Platelets</li>\r\n<li>Liver function tests</li>\r\n<li>alkaline phosphatase</li>\r\n<li>Pathology review</li>\r\n<li>Determination of tumor estrogen/progesterone receptor (ER/PR) status and HER2 status</li>\r\n</ul>"
     }
   }, 
-  {
-    "pk": "f35632bc076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        1
-      ], 
-      "tags": [], 
-      "name": "Lifestyle Management", 
-      "parent": null, 
-      "description": "asfdsdf"
-    }
-  }, 
+  
+  
   {
     "pk": "f35632bd076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -411,19 +452,7 @@
       "description": "Managing side effects"
     }
   }, 
-  {
-    "pk": "f35632c1076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        3
-      ], 
-      "tags": [], 
-      "name": "Medication Management", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Management of all aspects of medication"
-    }
-  }, 
+  
   {
     "pk": "4652298a118011dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -501,19 +530,7 @@
       "description": "shortness of breath"
     }
   }, 
-  {
-    "pk": "f35632ca076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        2
-      ], 
-      "tags": [], 
-      "name": "Side effect prevention", 
-      "parent": "f35632bc076c11dfa56d001641e25144", 
-      "description": "Pre-emptive management of side effects by lifestyle changes."
-    }
-  }, 
+  
   {
     "pk": "f35632c5076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 
@@ -527,19 +544,7 @@
       "description": "<h2> \r\n            Skin Problems - ASCO curriculum\r\n            </h2> \r\n \r\n        \r\n                <p> \r\n\t\t\t\t<strong> \r\n                    This section has been reviewed and approved by the <a onclick=\"javascript:switchdiv(20464)\" href=\"/vgn-ext-templating/v/index.jsp?vgnextoid=befa03e8448d9010VgnVCM100000f2730ad1RCRD&sectionId=20464&vgnextrefresh=1\" id=\"href20464\">Cancer.Net Editorial Board</a>,\r\n \r\n    \r\n                <span class=\"body_text\"> \r\n                    <B>9/09</B><br/><br/> \r\n                </span> \r\n \r\n    </strong></p> \r\n<p>People with cancer can have sores, rash, and other skin problems caused by cancer, cancer treatments, or being hospitalized. Skin problems can be especially difficult for a person to cope with because they can cause such visible changes to his or her body.</p> \r\n \r\n<p>Skin problems can be acute (occurs briefly, then goes away) or chronic (remains over time). The best way to manage skin problems is by preventing them, if possible. For this reason, it is important to let your doctor and nurse know as soon as you have any sores, wounds, pain, rash, or other problems with your skin and nails so that treatment can begin right away.</p> \r\n \r\n<p>With most skin problems, the doctor must decide if healing the wound is a realistic goal. If it is not, then containing it and keeping the patient as comfortable and pain-free as possible becomes the goal.</p> \r\n \r\n<p>Some common skin problems experienced by people with cancer are listed here:</p> \r\n \r\n<p><b>Chemotherapy extravasation.</b> This is the term used to describe chemotherapy that has leaked out of a vein. The drugs can damage the skin where the intravenous (IV) tube was placed or the tissue around the area where it touches, causing pain or burning. Pain or burning during chemotherapy may not be normal, and you should tell the nurse or doctor right away. If an extravasation occurs during treatment, the infusion should be stopped and the wound cleaned. The nurses and doctors will care for the wound and instruct you on how to care for it at home.</p> \r\n \r\n<p><b>Radiation-induced treatment skin problems.</b> When radiation treatment kills cancer cells, it also kills some healthy cells. When it kills cells on the skin, it can cause the skin to peel. Damage to the skin from radiation treatment can start after one or two weeks of treatment and usually resolves a few weeks after treatment is finished. If skin damage from radiation treatment becomes a problem, the doctor may change the dose or schedule of treatments.</p> \r\n \r\n<p><b>Necrotic wound.</b> This is a wound with dead skin or tissue around it. A necrotic wound cannot heal if the dead tissue is still present. A process called debridement, which removes the dead tissue, is the first step in treating this type of wound. Debridement may involve surgery, enzymes or gel, or other methods recommended by your doctor.</p> \r\n \r\n<p><b>Pressure ulcers (bed sores).</b> Pressure ulcers are sores that form where there is constant pressure on one area of the body. They often form on the heels of the feet or the sacrum (tailbone). Ulcers are less likely to form on parts of the body where there is a thicker layer of fat.</p> \r\n \r\n<p>For patients who are confined to a bed, an air or water mattress overlay may help prevent ulcers. Low-air-loss beds or air-fluidized beds may also help. For pressure ulcers that are not expected to heal, the doctor or nurse can provide comfort and pain control and prevent the ulcers from getting worse.</p> \r\n \r\n<p><b>Malignant wounds.</b> These injuries form when cancer breaks the skin and causes a wound. A malignant wound can be caused by cancer from another part of the body or from skin cancer. These wounds may have a foul odor, bleed, and can be very painful.</p> \r\n \r\n<p>Malignant wounds carry a high risk of infection. They may also leak a large amount of fluid or blood. The odor from a malignant wound can be overpowering and can be managed by placing an odor absorber in the room, such as cat litter, charcoal, or by introducing another odor, such as a burning candle, vanilla, vinegar, or coffee. (Fragrances and perfumes can be irritating to the patients, and these methods should be avoided).</p> \r\n \r\n<p><b>Pruritus (itching).</b> Pruritus in people with cancer is most often caused by leukemia, lymphoma, myeloma, or other cancers. Kidney or liver failure, thyroid problems, a drug reaction or allergic reaction, dry skin, hives, and other skin infections can also cause itching.</p> \r\n \r\n<p>Pruritus that is caused by an irritant, such as a drug, can be treated by stopping the use of that drug. Moisturizers, antihistamines, steroid medications, and cooling or painkilling creams or gels may also help relieve itching.</p> \r\n \r\n<p><b>Cancer treatments.</b> Some types of cancer treatments called targeted therapies (treatments that target faulty genes or proteins that contribute to cancer growth and development), may cause an acne-like rash and other skin problems. Learn more about <a href=\"/vgn-ext-templating/v/index.jsp?vgnextoid=81dd2daf1034b010VgnVCM100000ed730ad1RCRD&vgnextchannel=5c47ea97a56d9010VgnVCM100000f2730ad1RCRD\" alt=\"skin reactions to targeted treatments\">skin reactions to targeted treatments</a>.</p> "
     }
   }, 
-  {
-    "pk": "f35632cb076c11dfa56d001641e25144", 
-    "model": "careplan.templatecareplanitem", 
-    "fields": {
-      "category": [
-        6
-      ], 
-      "tags": [], 
-      "name": "Symptoms", 
-      "parent": "f35632b7076c11dfa56d001641e25144", 
-      "description": "Common symptoms to watch out for with this patient disease/problem profile"
-    }
-  }, 
+  
   {
     "pk": "f35632cc076c11dfa56d001641e25144", 
     "model": "careplan.templatecareplanitem", 

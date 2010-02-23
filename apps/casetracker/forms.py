@@ -122,7 +122,7 @@ class CaseModelForm(forms.ModelForm):
         elif mode == self.EDIT_ASSIGN:
             fields_to_exclude.remove('assigned_to')
             fields_to_exclude.remove('next_action_date')
-            fields_to_exclude.remove('next_action')
+            #fields_to_exclude.remove('next_action')
                
             
             self.fields['assigned_to'].label = 'Assign to'             
