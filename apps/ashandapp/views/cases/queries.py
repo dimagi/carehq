@@ -79,8 +79,9 @@ def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html
         cases = Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=last_activity_list).distinct()
+        assigned_cases = Case.objects.all().filter(assigned_to=request.user).distinct()
         
-        return  do_get_json(cases, columns)
+        return  do_get_json((cases | assigned_cases), columns)
     else:
         context['grid_name'] = 'grid_recents'
         context['json_qset_url'] = request.path + "?json"

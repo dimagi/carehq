@@ -198,9 +198,11 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     profile.save()        
     
     shared_filters = Filter.objects.select_related('gridpreference').filter(shared=True)
+    if request.is_caregiver:
+        shared_filters = [shared_filters[1]] #totally nasty hack, we don't want the "due today"
+        
     context['shared_filters'] = shared_filters    
-    context['display_filter'] = display_filter
-    
+    context['display_filter'] = display_filter    
     
     context['profile'] = profile    
     context['filter'] = profile.last_filter
