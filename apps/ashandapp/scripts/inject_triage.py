@@ -32,10 +32,11 @@ from factory import create_user, create_provider, create_or_get_provider_role, c
 
 
 def generate_triage():
+    """
+    Pull data from the triage_arr and randomly assign them to patients as if they were new inbound triage cases
+    """    
     
-    #loop through all patients
-    careteams = CareTeam.objects.all()
-    
+    careteams = CareTeam.objects.all()    
     
     for careteam in careteams:
         max_encounters = random.randint(1,3)    
