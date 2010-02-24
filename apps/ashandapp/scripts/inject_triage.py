@@ -30,6 +30,56 @@ from casetracker import constants
 from factory import create_user, create_provider, create_or_get_provider_role, create_patient, set_random_identifiers
 
 
+def inject_casemonitor(careteam, event_arr):
+    """
+    Pull data from the triage_arr and randomly assign them to patients as if they were new inbound triage cases
+    """    
+    print "Adding monitoring event to patient %s" % (careteam.patient.user.get_full_name()) 
+    startdelta = timedelta(hours=random.randint(1,12)) #sometime in the past 3
+    main_info = event_arr[0:4]            
+    category_txt = main_info[0].strip()            
+    title = main_info[1].strip()
+    body = main_info[2].strip()
+    source = main_info[3].strip()
+
+    if title.count("%s") == 1:
+        title = title % careteam.patient.user.first_name
+    if body.count("%s") == 1:
+        body = body % careteam.patient.user.first_name
+    
+    newcase = Case()
+    newcase.description = title
+    newcase.body = body
+    newcase.category = Category.objects.get(category=category_txt)
+    
+    creator=None
+    if source.lower() == 'provider':
+        creator = careteam.primary_provider.user            
+    elif source.lower() == 'caregiver':
+        creator = careteam.caregivers.all()[0]
+    elif source.lower() == 'patient':
+        creator = careteam.patient.user
+    elif source.lower() == 'home monitor':
+        creator = User.objects.get(username ='ashand-system')
+    
+    if creator == None:
+        print "no creator, wtf"
+    newcase.opened_by = creator    
+    newcase.opened_date = datetime.utcnow() - startdelta
+    newcase.last_edit_by = creator
+    newcase.last_edit_date = newcase.opened_date
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0]
+
+    newcase.assigned_to = careteam.primary_provider.user
+    newcase.assigned_date = newcase.opened_date 
+
+    newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
+    newcase.next_action = CaseAction.objects.all()[2]
+    newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
+    newcase.save(unsafe=True)
+    careteam.add_case(newcase)
+
+
 
 def generate_triage():
     """
@@ -43,50 +93,20 @@ def generate_triage():
         random.shuffle(triage_arr)
         print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.get_full_name()) 
         for enc in range(0,max_encounters):    
-            startdelta = timedelta(hours=random.randint(1,12)) #sometime in the past 12 hours
-            main_info = triage_arr[enc][0:4]            
-            category_txt = main_info[0].strip()            
-            title = main_info[1].strip()
-            body = main_info[2].strip()
-            source = main_info[3].strip()
+            inject_casemonitor(careteam, triage_arr[enc])
+            
+            
         
-            if title.count("%s") == 1:
-                title = title % careteam.patient.user.first_name
-            if body.count("%s") == 1:
-                body = body % careteam.patient.user.first_name
+
             
-            newcase = Case()
-            newcase.description = title
-            newcase.body = body
-            newcase.category = Category.objects.get(category=category_txt)
-            
-            creator=None
-            if source.lower() == 'provider':
-                creator = careteam.primary_provider.user            
-            elif source.lower() == 'caregiver':
-                creator = careteam.caregivers.all()[0]
-            elif source.lower() == 'patient':
-                creator = careteam.patient.user
-            elif source.lower() == 'home monitor':
-                creator = User.objects.get(username ='ashand-system')
-            
-            if creator == None:
-                print "no creator, wtf"
-            newcase.opened_by = creator    
-            newcase.opened_date = datetime.utcnow() - startdelta
-            newcase.last_edit_by = creator
-            newcase.last_edit_date = newcase.opened_date
-            newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0]
-        
-            newcase.assigned_to = careteam.primary_provider.user
-            newcase.assigned_date = newcase.opened_date 
-        
-            newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-            newcase.next_action = CaseAction.objects.all()[2]
-            newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
-            newcase.save(unsafe=True)
-            careteam.add_case(newcase)
-            
-            
+import sys
 def run():
-    generate_triage()
+    inject_mode = sys.argv[-1]
+    
+    if inject_mode == 'triage':
+        generate_triage()
+    elif inject_mode == 'monitoring':
+        inject_casemonitor(CareTeam.objects.filter(patient__user__username='kassidy_yates')[0],\
+                            ["HomeMonitoring","Patient has not submitted daily measurements","Missing data alert","Home Monitor"])
+        
+        

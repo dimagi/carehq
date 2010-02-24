@@ -226,7 +226,7 @@
       "category": 8, 
       "phrasing": "edited", 
       "name": "Edit Event Information", 
-      "event_class": "event-view", 
+      "event_class": "event-edit", 
       "summary": "(reserved, a system event should never be modified outright)"
     }
   }, 

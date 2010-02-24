@@ -117,6 +117,8 @@ def single(request, user_id=None):
             careteams_me = ProviderLink.objects.all().filter(provider=request.provider).values_list('careteam', flat=True)                 
         elif request.is_caregiver:
             careteams_me = CaregiverLink.objects.all().filter(user=request.user).values_list('careteam', flat=True)
+        else:
+            careteams_me = []
         
         common_careteam_ids = plink_selected.filter(careteam__in=careteams_me).values_list('careteam',flat=True)
         context['common_careteams'] = CareTeam.objects.filter(id__in=common_careteam_ids)

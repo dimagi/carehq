@@ -21,11 +21,12 @@ def case_saved(sender, instance, created, **kwargs):
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
         notes = "New case created by " + event_creator.get_full_name()
-        qname = Q(event_class=constants.CASE_EVENT_OPEN)
+        
         try:
-            event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
-        except:
-            logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded ")
+            event_new.activity = EventActivity.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_OPEN)
+        except Exception, ex:
+            logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
+            
 
     else:
         event_create_date = instance.last_edit_date
@@ -39,11 +40,10 @@ def case_saved(sender, instance, created, **kwargs):
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity
         else:    
-            qname = Q(event_class=constants.CASE_EVENT_EDIT)    
             try:
-                event_new.activity = EventActivity.objects.filter(category=instance.category).get(qname)
-            except:
-                logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded ")
+                event_new.activity = EventActivity.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_EDIT)
+            except Exception, ex:
+                logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
     
     event_new.created_by = event_creator
     event_new.created_date = event_create_date

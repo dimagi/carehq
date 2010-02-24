@@ -35,14 +35,11 @@ def run():
     filename = sys.argv[-1]
     
     fin = open(filename, 'r')
-    strfile = fin.read()
-    print len(strfile)    
+    strfile = fin.read()    
     fin.close()
-    for obj in serializers.deserialize('json', strfile):
-        print obj               
+    for obj in serializers.deserialize('json', strfile):               
         try:
             pass
             obj.save()
-        except Exception, e:
-            
-            print "Exception: %s" % e
+        except Exception, e:            
+            print "%s Exception: %s" % (obj, e)

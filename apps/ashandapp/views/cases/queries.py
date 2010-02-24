@@ -145,7 +145,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
     For a given provider, return all the cases merged for whom they triage
     """
     context = {}
-    columns = ['description','opened_date',]
+    columns = ['opened_by', 'description','opened_date',]
     context['colsort_array'] = [[2,'desc']]
     do_json=False
     if len(request.GET.items()) > 0:

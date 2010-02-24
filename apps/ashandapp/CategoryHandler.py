@@ -1,7 +1,10 @@
 from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
 from ashandapp.forms.question import NewQuestionForm
+
+from ashandapp.models import CaregiverLink
 from ashandapp.forms.issue import NewIssueForm
+from provider.models import Provider
 from careplan.models import TemplateCarePlan
 
 from django.contrib.auth.models import User
@@ -30,23 +33,23 @@ def process_ashand_case(case, request, context):
 
 def do_get_user_list_choices(case):
     careteams = case.careteam_set.all()
-    providers_users = User.objects.none()
-    caregivers_users = User.objects.none()
+    providers_set = Provider.objects.none()
+    caregivers_set = CaregiverLink.objects.none()
 
     #get the split ids of users for caregivers and providers
     for ct in careteams:
-        providers_qset = ct.providers.all().values_list('user__id', flat=True)
-        providers_users = providers_users | User.objects.filter(id__in=providers_qset)
+        providers_qset = ct.providers.all()
+        providers_set = providers_set | providers_qset
         
-        caregivers_qset = ct.caregivers.all().values_list('id', flat=True)
-        caregivers_users = caregivers_users | User.objects.filter(id__in=caregivers_qset)
+        caregivers_qset = CaregiverLink.objects.filter(careteam=ct)
+        caregivers_set = caregivers_set | caregivers_qset
     
     
     
     #make the optgroup tuples
     #source: http://dealingit.wordpress.com/2009/10/26/django-tip-showing-optgroup-in-a-modelform/
-    prov_tuple = [[usr.id, usr.get_full_name()] for usr in providers_users.order_by('last_name')]
-    cg_tuple = [[usr.id, usr.get_full_name()] for usr in caregivers_users.order_by('last_name')]
+    prov_tuple = [[prov.user.id, "%s - %s" % (prov.user.get_full_name(), prov.job_title)] for prov in providers_set.order_by('user__last_name')]
+    cg_tuple = [[cglink.user.id, "%s - %s" % (cglink.user.get_full_name(), cglink.relationship)] for cglink in caregivers_set.order_by('user__last_name')]
 
     list_choices = [['Providers', prov_tuple],
                     ['Caregivers',cg_tuple]]

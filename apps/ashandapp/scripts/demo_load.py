@@ -352,9 +352,9 @@ def run():
         for cg in caregivers:
             users.append(cg)
         
-        num_cases= random.randint(0,10)
-        print "\tgenerating %d baseline interactions" % (num_cases)
-        assign_interactions(team, num_cases)
+        #num_cases= random.randint(0,10)
+        #print "\tgenerating %d baseline interactions" % (num_cases)
+        #assign_interactions(team, num_cases)
         
         #create fictitious cases and case activity by patients and providers.
         #for num in range(0,MAX_INITIAL_CASES):            
@@ -375,10 +375,10 @@ def run():
             #    revision_no += 1
    
     
-    print "Generating triage patients"
-    generate_triage()
-    print "adding long cases to dorothy day"
-    add_long_cases()
+    #print "Generating triage patients"
+    #generate_triage()
+    #print "adding long cases to dorothy day"
+    #add_long_cases()
         
         
 
