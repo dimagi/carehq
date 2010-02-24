@@ -22,7 +22,7 @@ from demoproviders import provider_arr
 from bootstrap import load_fixtures
 
 from casetracker import constants
-from loader import assign_interactions, load_interaction
+from loader import assign_interactions, load_interaction, add_long_cases
 
 from factory import create_user, create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
 
