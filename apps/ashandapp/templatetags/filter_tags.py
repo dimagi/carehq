@@ -53,6 +53,14 @@ def case_column(case, column):
         #return getattr(case,column)        
         data = getattr(case, column)
         
+        if column == 'description':
+            if case.category.category == 'HomeMonitoring':
+                return "[Home Monitor] %s" % (data)
+            elif case.category.category == 'System':
+                return "[ASHand System] %s" % (data)
+
+        
+        
         datatype = data.__class__
         if datatype == datetime:
             if data > datetime.utcnow():
@@ -76,7 +84,7 @@ def case_column(case, column):
         elif isinstance(data, Status):
             return data.get_state_class_display()
 #        elif data == None and column == 'next_action_date':
-#            return unicode(datetime.utcnow())
+#            return unicode(datetime.utcnow())             
         else:
             datastring = unicode(data)
         return datastring

@@ -146,7 +146,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
     """
     context = {}
     columns = ['opened_by', 'description','opened_date',]
-    context['colsort_array'] = [[2,'desc']]
+    context['colsort_array'] = [[3,'desc']]
     do_json=False
     if len(request.GET.items()) > 0:
         for item in request.GET.items():

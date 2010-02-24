@@ -11,24 +11,18 @@ from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
 from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
 
-from demo_issues import issues_arr
-from demo_questions import question_arr
-from demo_working import working_arr
-from demo_resolve_close import resolve_arr
-
 from patient_caregiver_pairs import care_pair_arr
-
 
 from example_interactions import interactions_arr, triage_arr, long_cases
 from inject_triage import generate_triage
 
 from django.core.management import call_command
-from demopatients import patient_arr
 from demoproviders import provider_arr
 
 from bootstrap import load_fixtures
 
 from casetracker import constants
+from loader import assign_interactions, load_interaction
 
 from factory import create_user, create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
 
@@ -149,159 +143,46 @@ def create_case(user, all_users, case_no):
     newcase.save()
     return newcase
 
+#
+#
+#
+#def work_case(case, user):
+#    all_descriptions = resolve_arr + working_arr    
+#    evt = CaseEvent()
+#    evt.activity = EventActivity.objects.all()[random.randint(0,EventActivity.objects.all().count()-1)]
+#    evt.case = case
+#    evt.notes = all_descriptions[random.randint(0, len(all_descriptions) -1 )]
+#    evt.created_by = user 
+#    evt.created_date = datetime.utcnow()
+#    evt.save()
+#
+#def resolve_or_close_case(case, user, rev_no):        
+#    case.last_edit_by = user    
+#    #this tests to see if the signal picks up custom attrs added to a model instance.  it does.  not sure how thread safe this will be though.        
+#    action = ""
+#    close = False
+#    if random.random() >= .33:
+#        action = "resolving case"
+#        close = False
+#    else:
+#        action = "closing case"
+#        close = True
+#        
+#    case.edit_comment = action
+#    case.resolved_by = user
+#    if close:
+#        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_CLOSED)[0]
+#        case.closed_by = user
+#    else:
+#        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_RESOLVED)[0]
+#    #case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
+#    #td = timedelta(days=random.randint(0,MAX_DELTA))    
+#    #case.next_action_date = case.next_action_date + td    
+#    case.save()        
 
 
-    
-def load_interaction(careteam, interaction_arr):
-    """
-    works through the entire array to simulate the case lifecycle
-    """
-    startdelta = timedelta(days=random.randint(1,7)) #sometime in the past week
-    
-    
-    main_info = interaction_arr[0:4]
-    category_txt = main_info[0].strip()
-    title = main_info[1].strip()
-    body = main_info[2].strip()
-    source = main_info[3].strip()
-    
-    if title.count("%s") == 1:
-        title = title % careteam.patient.user.first_name
-    if body.count("%s") == 1:
-        body = body % careteam.patient.user.first_name
-    
-    newcase = Case()
-    newcase.description = title
-    newcase.body = body
-    newcase.category = Category.objects.get(category=category_txt)
-    
-    creator=None
-    if source.lower() == 'provider':
-        creator = careteam.primary_provider.user            
-    elif source.lower() == 'caregiver':
-        creator = careteam.caregivers.all()[0]
-    elif source.lower() == 'patient':
-        creator = careteam.patient.user
-    elif source.lower() == 'home monitor':
-        creator = User.objects.get(username ='ashand-system')
-    
-    if creator == None:
-        print "no creator, wtf: " + str(interaction_arr)
-    newcase.opened_by = creator    
-    newcase.opened_date = datetime.utcnow() - startdelta
-    newcase.last_edit_by = creator
-    newcase.last_edit_date = newcase.opened_date
-    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
 
-    newcase.assigned_to = careteam.providers.all()[random.randint(0,careteam.providers.all().count()-1)].user
-    newcase.assigned_date = newcase.opened_date 
-
-    newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-    newcase.next_action = CaseAction.objects.all()[2]
-    newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
-    newcase.save(unsafe=True)
-    careteam.add_case(newcase)
-    
-    
-    
-    subarr = interaction_arr[4:]
-    while len(subarr) >= 3:
-        resp = subarr[0].strip()
-        src = subarr[1].lower().strip()
-        evt = subarr[2].lower().strip()
-        
-        if resp == '' and src == '' and evt == '':
-            break
-        responder=None
-        if src.lower() == 'provider':
-            responder = careteam.primary_provider.user            
-        elif src.lower() == 'caregiver':
-            responder = careteam.caregivers.all()[0]
-        elif src.lower() == 'patient':
-            responder = careteam.patient.user
-        if responder == None:
-            print "wtf: " + str(subarr)
-        
-        evt = CaseEvent()
-        evt.case = newcase
-        if resp.count("%s") == 1:
-            resp = resp % careteam.patient.user.first_name
-        evt.notes = resp
-        evt.activity = EventActivity.objects.filter(category=newcase.category)\
-            .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
-        evt.created_by = responder
-        startdelta = startdelta - timedelta(minutes=random.randint(4,480))
-        evt.created_date = datetime.utcnow() - startdelta
-        evt.save(unsafe=True)
-            
-        
-        if len(subarr[3:]) >= 3:
-            subarr = subarr[3:]
-        else:
-            break
-
-def assign_interactions(careteam, num_encounters):
-    """
-    For a given careteam, generate an arbitrary number of interactions from the interactions_arr
-    """
-    random.shuffle(interactions_arr)
-    interactions = interactions_arr[0:num_encounters]
-        
-    for interaction in interactions:  
-        load_interaction(careteam, interaction)
-        
-                
-    
-
-
-def work_case(case, user):
-    all_descriptions = resolve_arr + working_arr    
-    evt = CaseEvent()
-    evt.activity = EventActivity.objects.all()[random.randint(0,EventActivity.objects.all().count()-1)]
-    evt.case = case
-    evt.notes = all_descriptions[random.randint(0, len(all_descriptions) -1 )]
-    evt.created_by = user 
-    evt.created_date = datetime.utcnow()
-    evt.save()
-
-def resolve_or_close_case(case, user, rev_no):        
-    case.last_edit_by = user    
-    #this tests to see if the signal picks up custom attrs added to a model instance.  it does.  not sure how thread safe this will be though.        
-    action = ""
-    close = False
-    if random.random() >= .33:
-        action = "resolving case"
-        close = False
-    else:
-        action = "closing case"
-        close = True
-        
-    case.edit_comment = action
-    case.resolved_by = user
-    if close:
-        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_CLOSED)[0]
-        case.closed_by = user
-    else:
-        case.status = Status.objects.all().filter(category=case.category).filter(state_class=constants.CASE_STATE_RESOLVED)[0]
-    #case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
-    #td = timedelta(days=random.randint(0,MAX_DELTA))    
-    #case.next_action_date = case.next_action_date + td    
-    case.save()        
-
-def add_long_cases():
-    """
-    Specific hack to add a long case to Pat Patient's caseload
-    """
-    pt = Patient.objects.get(user__first_name='pat', user__last_name='patient')
-    ct = CareTeam.objects.get(patient=pt)
-    for c in long_cases:
-        load_interaction(ct, c)
-
-
-def run():
-    
-    #Demo loading script!
-    
+def run():    
     #reset the database
     call_command('reset_db', interactive=False)    
     call_command('syncdb', interactive=False)

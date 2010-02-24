@@ -11,12 +11,6 @@ from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
 from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
 
-from demo_issues import issues_arr
-from demo_questions import question_arr
-from demo_working import working_arr
-from demo_resolve_close import resolve_arr
-
-
 from example_interactions import interactions_arr, triage_arr
 
 from django.core.management import call_command
@@ -28,7 +22,7 @@ from bootstrap import load_fixtures
 from casetracker import constants
 
 from factory import create_user, create_provider, create_or_get_provider_role, create_patient, set_random_identifiers
-
+from loader import load_interaction, assign_interactions, add_long_cases
 
 def inject_casemonitor(careteam, event_arr):
     """
@@ -89,14 +83,12 @@ def generate_triage():
     careteams = CareTeam.objects.all()    
     
     for careteam in careteams:
-        max_encounters = random.randint(1,3)    
+        max_encounters = random.randint(1,2)    
         random.shuffle(triage_arr)
         print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.get_full_name()) 
         for enc in range(0,max_encounters):    
             inject_casemonitor(careteam, triage_arr[enc])
-            
-            
-        
+
 
             
 import sys
@@ -105,6 +97,18 @@ def run():
     
     if inject_mode == 'triage':
         generate_triage()
+    elif inject_mode == 'pat':
+        print "Loading some case data for pat patient"
+        careteam = CareTeam.objects.filter(patient__user__username='pat_patient')[0]
+        num = 10
+        assign_interactions(careteam, num)
+    elif inject_mode == 'historical':
+        for careteam in CareTeam.objects.all().exclude(patient__user__username='pat_patient'):
+            num_cases= random.randint(0,5)
+            print "\tgenerating %d baseline interactions" % (num_cases)
+            assign_interactions(careteam, num_cases)
+        
+            
     elif inject_mode == 'monitoring':
         inject_casemonitor(CareTeam.objects.filter(patient__user__username='kassidy_yates')[0],\
                             ["HomeMonitoring","Patient has not submitted daily measurements","Missing data alert","Home Monitor"])
