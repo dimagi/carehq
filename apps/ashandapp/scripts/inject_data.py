@@ -29,7 +29,7 @@ def inject_casemonitor(careteam, event_arr):
     Pull data from the triage_arr and randomly assign them to patients as if they were new inbound triage cases
     """    
     print "Adding monitoring event to patient %s" % (careteam.patient.user.get_full_name()) 
-    startdelta = timedelta(hours=random.randint(1,12)) #sometime in the past 3
+    startdelta = timedelta(minutes=random.randint(1,200)) #sometime in the past 3
     main_info = event_arr[0:4]            
     category_txt = main_info[0].strip()            
     title = main_info[1].strip()
