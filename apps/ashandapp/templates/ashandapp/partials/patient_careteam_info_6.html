@@ -22,9 +22,9 @@ $(function() {
 {%endblock extrahead %}
 <div class="span-5 box">
 <strong>For: {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}</strong><br>
-<a href="{% url view-careteam careteam.id %}">View Care Team</a><br>
-<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">View Profile</a><br>
-<a id="view-careplan-link">View Care Plan</a>
+<a href="{% url view-careteam careteam.id %}">Care History</a><br>
+{#<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">View Profile</a><br>#}
+<a id="view-careplan-link">Care Plan</a>
 </div>
 
 <div id="careplan-dialog" title="Patient Care Plan"> 
