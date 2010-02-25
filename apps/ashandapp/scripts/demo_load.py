@@ -257,7 +257,7 @@ def run():
    
     
     print "Generating triage patients"
-    generate_triage()
+    #generate_triage()
     print "adding long cases to dorothy day"
     add_long_cases()
         
