@@ -110,6 +110,7 @@ def run():
             num_cases= random.randint(0,5)
             print "\tgenerating %d baseline interactions" % (num_cases)
             assign_interactions(careteam, num_cases)
+            add_long_cases()
     
     elif inject_mode == 'initial':
         inject_casemonitor(CareTeam.objects.filter(patient__user__username='william_adama')[0],\
