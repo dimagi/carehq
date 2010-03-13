@@ -28,7 +28,7 @@ from django.db import connection
 from casetracker import constants
 
 #patient implicitly first
-DEFAULT_COLUMNS = ['category', 'description','priority','assigned_to', 'next_action', 'next_action_date']
+DEFAULT_COLUMNS = ['category', 'description','priority','assigned_to']
 
 
 def do_get_json(cases_qset, columns):
@@ -184,7 +184,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
             if item[0] == 'json':
                 do_json=True    
     context = {}        
-    columns = ['assigned_to','description','last_event_by', 'last_event_date', 'next_action_date']
+    columns = ['assigned_to','description','last_event_by', 'last_event_date']
     context['colsort_array'] = [[5,'desc']]
     if do_json:
         from django.db import connection
@@ -193,7 +193,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
         caselink_ids = CareTeamCaseLink.objects.select_related().filter(careteam__in=careteam_links).values_list('case__id',flat=True)
         qset = Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
-                                          'priority','category','status').filter(id__in=caselink_ids).exclude(next_action_date=None)                        
+                                          'priority','category','status').filter(id__in=caselink_ids)
         ret = do_get_json(qset, columns)
 #        sql = [x['sql'] for x in connection.queries]
 #        fout = open('/home/dmyung/provider-sql','w')
@@ -231,7 +231,7 @@ def grid_careteam_cases(request, careteam_id, template_name="ashandapp/cases/bar
     
     
     if viewmode == 'active':
-        columns = ['category', 'description', 'assigned_to', 'next_action', 'next_action_date']
+        columns = ['category', 'description', 'assigned_to','last_edit"date']
         context['colsort_array'] = [[5,'asc']]
     elif viewmode == 'resolved':
         columns = ['category', 'description', 'resolved_by', 'resolved_date']

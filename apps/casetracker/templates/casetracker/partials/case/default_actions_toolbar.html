@@ -2,8 +2,8 @@
 <div class="nav">
     <ul>
         {% if case.is_active or case.is_new %}
-        <li><a href="{% url edit-case case.id %}?action=assign">Assign</a></li>
-        <li><a href="{% url edit-case case.id %}?action=edit">Edit</a></li>        
+		<li><a href="{% url view-case case.id %}?action=assign">Assign</a></li>
+        <li><a href="{% url view-case case.id %}?action=edit">Edit</a></li>        
         <li><a href="{% url resolve-case case.id %}">Resolve</a></li>
         {% endif %}
         

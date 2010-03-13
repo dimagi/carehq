@@ -54,9 +54,9 @@ def case_column(case, column):
         data = getattr(case, column)
         
         if column == 'description':
-            if case.category.category == 'HomeMonitoring':
+            if case.category.slug == 'HomeMonitoring':
                 return "[Home Monitor] %s" % (data)
-            elif case.category.category == 'System':
+            elif case.category.slug == 'System':
                 return "[ASHand System] %s" % (data)
 
         

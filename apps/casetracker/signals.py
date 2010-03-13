@@ -25,7 +25,7 @@ def case_saved(sender, instance, created, **kwargs):
         try:
             event_new.activity = EventActivity.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_OPEN)
         except Exception, ex:
-            logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
+            logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, constants.CASE_EVENT_OPEN, ex))
             
 
     else:

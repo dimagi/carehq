@@ -14,7 +14,7 @@ from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, 
 from patient_caregiver_pairs import care_pair_arr
 
 from example_interactions import interactions_arr, triage_arr, long_cases
-from inject_triage import generate_triage
+from inject_data import generate_triage
 
 from django.core.management import call_command
 from demoproviders import provider_arr
@@ -131,9 +131,9 @@ def create_case(user, all_users, case_no):
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
     newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
     
-    if newcase.category.category == "Question":
+    if newcase.category.slug == "Question":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]
-    elif newcase.category.category == "Issue":
+    elif newcase.category.slug == "Issue":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]
     
     #newcase.description = "test case generated - %d" % case_no    

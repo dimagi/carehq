@@ -146,6 +146,11 @@ LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
+CASE_CATEGORIES = (
+                   'ashandapp.caseregistry.issue',
+                   'ashandapp.caseregistry.system',
+                   'ashandapp.caseregistry.question',
+                   )
 
 try:
     from settings_local import *

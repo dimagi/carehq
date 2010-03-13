@@ -9,10 +9,12 @@ from models import CareTeam, ProviderLink, CaregiverLink
 from casetracker.models import Case, Category, Priority, Status, CaseTag
 from casetracker import constants
 
+from ashandapp.caseregistry.system import SystemCategory, SystemEventOpen, SystemEventView, SystemEventClose, SystemStateOpen, SystemStateClosed
+
 
 def make_system_case(user, patient, role, link_object):
     case = Case()
-    case.category=Category.objects.get(category='System')
+    case.category=Category.objects.get(slug='System')
     case.description = "%s added as %s to %s's careteam" % (user.get_full_name(), role, patient.user.get_full_name())
     case.body = "You have accepted the invitation to join this care team."
     case.opened_by = User.objects.get(username='ashand-system')
@@ -20,7 +22,7 @@ def make_system_case(user, patient, role, link_object):
     
     case.last_edit_by = User.objects.get(username='ashand-system')
     case.priority= Priority.objects.get(id=6)
-    case.status = Status.objects.filter(category=case.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
+    case.status = Status.objects.filter(category=case.category).filter(state_class=SystemStateOpen.state_class)[0] #get the default opener - this is a bit sketchy
     case.assigned_to = user
     case.save()
     ctag = CaseTag(case=case, content_object=link_object)

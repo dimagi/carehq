@@ -32,7 +32,7 @@ def load_interaction(careteam, interaction_arr):
     newcase = Case()
     newcase.description = title
     newcase.body = body
-    newcase.category = Category.objects.get(category=category_txt)
+    newcase.category = Category.objects.get(slug=category_txt)
     
     creator=None
     if source.lower() == 'provider':
@@ -56,8 +56,8 @@ def load_interaction(careteam, interaction_arr):
     newcase.assigned_date = newcase.opened_date 
 
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-    newcase.next_action = CaseAction.objects.all()[2]
-    newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
+    #newcase.next_action = CaseAction.objects.all()[2]
+    #newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
     newcase.save(unsafe=True)
     careteam.add_case(newcase)
     

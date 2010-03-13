@@ -19,7 +19,8 @@ import uuid
 from django.utils.translation import ugettext_lazy as _
 
 import constants as constants
-from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
+#from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
+
 
 
 #from django.db.models.fields.related import RelatedManager, ManyRelatedManager
@@ -37,7 +38,7 @@ CASE_EVENT_CHOICES = (
         (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous                
         (constants.CASE_EVENT_REOPEN, 'Reopen'), #case state
         (constants.CASE_EVENT_COMMENT, 'Comment'),
-        (constants.CASE_EVENT_CUSTOM, 'Custom'),   #custom are activites that don't resolve around the basic open/edit/view/resolve/close
+        (constants.CASE_EVENT_CUSTOM, 'Custom'), #custom are activites that don't resolve around the basic open/edit/view/resolve/close
         
         (constants.CASE_EVENT_RESOLVE, 'Resolve'), #case status state
         (constants.CASE_EVENT_CLOSE, 'Close'), #case status state
@@ -48,9 +49,9 @@ CASE_EVENT_CHOICES = (
 
 
 CASE_STATES = (
-        (constants.CASE_STATE_OPEN, 'Open/Active'),                     
+        (constants.CASE_STATE_OPEN, 'Open/Active'),
         (constants.CASE_STATE_RESOLVED, 'Resolved'),
-        (constants.CASE_STATE_CLOSED, 'Closed'),        
+        (constants.CASE_STATE_CLOSED, 'Closed'),
 )
 
     
@@ -78,46 +79,54 @@ class Category(CachedModel):
         Order
         Prescription    
     """
-    category = models.SlugField()
+    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    slug = models.SlugField(unique=True) #from category
+    display = models.CharField(max_length=64)
     plural = models.CharField(max_length=32)    
+    #deprecated = models.BooleanField()
+    #version = models.PositiveIntegerField()
+    #parent_version = models.ForeignKey("self")
     default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
     
-    handler_module = models.CharField(max_length=128, blank=True, null=True, 
+    bridge_module = models.CharField(max_length=128, blank=True, null=True,
                                       help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
-    handler_class = models.CharField(max_length=64, blank=True, null=True,
+    bridge_class = models.CharField(max_length=64, blank=True, null=True,
                                      help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
     
+
     objects = CachingManager()
     
     @property
-    def handler(self):
+    def bridge(self): #from handler
         """
         Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
         """
+        #nasty hack here, but due to prevent circular refernces, we need to make sure it's not referenced until necessary
+        from casetracker.caseregistry import CategoryBridge, ActivityBridge
         handler = None
-        if not hasattr(self, '_handler'):
-            if self.handler_module == None or self.handler_class==None:
-                handler = DefaultCategoryHandler()
+        if not hasattr(self, '_bridge'):            
+            if self.bridge_module == None or self.bridge_class == None:
+                raise Exception("Error, invalid configuration, this category has no bridge class defined")
             else:                            
                 try:
-                    hmod = __import__(self.handler_module, {},{},[''])
-                    if hasattr(hmod, self.handler_class):
-                        hclass = getattr(hmod, self.handler_class)
-                        if issubclass(hclass, CategoryHandlerBase):
-                            handler=hclass()                                                                 
+                    hmod = __import__(self.bridge_module, {}, {}, [''])                    
+                    if hasattr(hmod, self.bridge_class):
+                        hclass = getattr(hmod, self.bridge_class)
+                        if issubclass(hclass, CategoryBridge):
+                            handler = hclass()                                                                 
                 except Exception, e:
                     logging.error("Unable to import the handler class for category %s: %s" % (self.category, e))
                 
                 if handler == None:
-                    handler = DefaultCategoryHandler()
-            self._handler = handler        
-        return self._handler
+                    raise Exception("Error, invalid configuration, this category has no bridge class defined")
+            self._bridge = handler        
+        return self._bridge
         
         
     
     def __unicode__(self):
-        return "%s" % (self.category)
+        return "%s" % (self.slug)
     class Meta:
         verbose_name = "Category Type"
         verbose_name_plural = "Category Types"
@@ -139,8 +148,8 @@ class CaseAction(CachedModel):
     
     These should be universal across all categories.
     """
-    description = models.CharField(max_length=64)
     objects = CachingManager()
+    description = models.CharField(max_length=64)
     def __unicode__(self):
         return "%s" % (self.description)
     
@@ -168,6 +177,21 @@ class Priority(CachedModel):
         verbose_name_plural = "Priority Types"
 
 
+class StatusActivityLink(CachedModel):
+    """
+    ManyToMany linkage of Status and the activities that are allowable from that case state.
+    
+    Hopefully with this through model being here, more enforcement and/model define-able state information
+    can be recorded and be database  
+    """
+    objects = CachingManager()
+    status = models.ForeignKey("Status")
+    activity = models.ForeignKey("EventActivity")
+    
+    class Meta:
+        unique_together=('status','activity')
+        
+
 #class Status (models.Model):
 class Status (CachedModel):
     """
@@ -175,25 +199,39 @@ class Status (CachedModel):
     In Fogbugz, these are also classified within the category of the original bug.
     ie, a bug's status states will be fundamentally different from a Feature or Question.
     """    
-    description = models.CharField(max_length=64)
-    category = models.ForeignKey(Category)
+    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    slug = models.SlugField(unique=True)
+    display = models.CharField(max_length=64) #from description
+    
+    category = models.ForeignKey(Category, related_name='category_states')
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
     
-    objects = CachingManager()
+    objects = CachingManager()    
+    
+    #this should have a limit choices to for self.category, but that's a nasty hack.
+    allowable_actions = models.ManyToManyField("EventActivity", through="StatusActivityLink", related_name='legal_action_for_states') 
+    
+    def set_activity(self, event_activity):
+        try:
+            slink = StatusActivityLink(status=self, activity=event_activity)
+            slink.save()
+        except Exception, e:
+            raise Exception("Error, an event activity can only be registered once to a given state" + str(e))
+    
+    
     #query filters can be implemented a la kwarg evaluation:
-    #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419
-        
+    #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419        
     #Note: 
     #fogbugz had a bunch of classifiers here that describe the nature of the status
     #in other words they should still fall within the 4 main  classifiers of status:
     #resolved, duplicate, deleted, done?
     def __unicode__(self):
-        return "%s" % (self.description)
+        return "%s: %s" % (self.category.slug, self.display)
 
     class Meta:
         verbose_name = "Case Status Type"
         verbose_name_plural = "Case Status Types"
-        ordering = ['category','id']
+        ordering = ['category', 'id']
     
 
 
@@ -213,21 +251,54 @@ class EventActivity(CachedModel):
     make a phone call
     sms         
     """    
-    name = models.TextField(max_length=64)
-    summary = models.TextField(max_length=512)
-    category = models.ForeignKey(Category) # different categories have different event types
-    phrasing = models.CharField(max_length=32, null=True, blank=True)
+    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    slug = models.SlugField(unique=True) #from name
+    past_tense = models.CharField(max_length=64) #from phrasing
+    active_tense = models.CharField(max_length=64) #present as button on case view    
+    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES) # what class of event is it?
     
-    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES)
+    category = models.ForeignKey(Category, related_name='category_activities') # different categories have different event types    
+    summary = models.CharField(max_length=255)    
+    
+    bridge_module = models.CharField(max_length=128, blank=True, null=True,
+                                      help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
+    
+    bridge_class = models.CharField(max_length=64, blank=True, null=True,
+                                     help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
+    
     
     objects = CachingManager()
     
     def __unicode__(self):
-        return "(%s) [%s] Activity" % (self.category, self.name)
+        return "(%s) [%s] Activity" % (self.category, self.slug)
 
     class Meta:
         verbose_name = "Case Event Activity Type"
         verbose_name_plural = "Case Event Activity Types"
+        
+    @property
+    def bridge(self): #from handler
+        """
+        Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
+        """
+        handler = None
+        if not hasattr(self, '_bridge'):
+            if self.bridge_module == None or self.bridge_class == None:
+                raise Exception("Error, invalid configuration, this category has no bridge class defined")
+            else:                            
+                try:
+                    hmod = __import__(self.bridge_module, {}, {}, [''])
+                    if hasattr(hmod, self.bridge_class):
+                        hclass = getattr(hmod, self.bridge_class)
+                        if issubclass(hclass, ActivityBridge):
+                            handler = hclass()                                                                 
+                except Exception, e:
+                    logging.error("Unable to import the handler class for category %s: %s" % (self.category, e))
+                
+                if handler == None:
+                    raise Exception("Error, invalid configuration, this category has no bridge class defined")
+            self._bridge = handler        
+        return self._bridge
 
 
 class CaseEvent(models.Model):
@@ -246,7 +317,7 @@ class CaseEvent(models.Model):
     
     activity = models.ForeignKey(EventActivity)
     
-    created_date  = models.DateTimeField()
+    created_date = models.DateTimeField()
     created_by = models.ForeignKey(User)        
     
     def save(self, unsafe=False):
@@ -304,25 +375,26 @@ class Case(CachedModel):
     category = models.ForeignKey(Category)
     status = models.ForeignKey(Status)    
     
-    body = models.TextField(blank=True,null=True)
+    body = models.TextField(blank=True, null=True)
         
     
     priority = models.ForeignKey(Priority)
     
-    next_action = models.ForeignKey(CaseAction, null=True)
     
-    opened_date  = models.DateTimeField()
+    
+    opened_date = models.DateTimeField()
     opened_by = models.ForeignKey(User, related_name="case_opened_by")
     
     last_edit_date = models.DateTimeField(null=True, blank=True)
     last_edit_by = models.ForeignKey(User, related_name="case_last_edit_by", null=True, blank=True) 
         
-    next_action_date = models.DateTimeField(null=True, blank=True)
+    #next_action_date = models.DateTimeField(null=True, blank=True)
+    #next_action = models.ForeignKey(CaseAction, null=True)
     
-    resolved_date  = models.DateTimeField(null=True, blank=True)
+    resolved_date = models.DateTimeField(null=True, blank=True)
     resolved_by = models.ForeignKey(User, related_name="case_resolved_by", null=True, blank=True)
         
-    closed_date  = models.DateTimeField(null=True, blank=True)
+    closed_date = models.DateTimeField(null=True, blank=True)
     closed_by = models.ForeignKey(User, related_name="case_closed_by", null=True, blank=True)    
     
     assigned_to = models.ForeignKey(User, related_name="case_assigned_to", null=True, blank=True)   
@@ -346,14 +418,14 @@ class Case(CachedModel):
     
     @property
     def is_resolved(self):
-        if self.status.state_class == constants.CASE_STATE_RESOLVED or self.status.state_class==constants.CASE_STATE_CLOSED:
+        if self.status.state_class == constants.CASE_STATE_RESOLVED or self.status.state_class == constants.CASE_STATE_CLOSED:
             return True
         else:
             return False
     
     @property
     def is_closed(self):
-        if self.status.state_class==constants.CASE_STATE_CLOSED:
+        if self.status.state_class == constants.CASE_STATE_CLOSED:
             return True
         else:
             return False    
@@ -361,7 +433,7 @@ class Case(CachedModel):
     @property
     def last_case_event(self):
         if not getattr(self, '_last_case_event', None):        
-            if CaseEvent.objects.select_related('case','activity').filter(case=self).order_by('-created_date').count() > 0:
+            if CaseEvent.objects.select_related('case', 'activity').filter(case=self).order_by('-created_date').count() > 0:
                 self._last_case_event = CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
                 return self._last_case_event
             else:
@@ -395,7 +467,7 @@ class Case(CachedModel):
                 continue
             elif prop == "objects":
                 continue           
-            elif prop == "last_event_date" or prop == "last_event_by" or prop=="last_case_event":
+            elif prop == "last_event_date" or prop == "last_event_by" or prop == "last_case_event":
                 continue
             elif prop == "related_objects":
                 continue
@@ -505,7 +577,7 @@ class Case(CachedModel):
     
     class Meta:
         verbose_name = "Case"
-        verbose_name_plural="Cases"
+        verbose_name_plural = "Cases"
         ordering = ['-opened_date']
 
 
@@ -517,23 +589,23 @@ class Filter(models.Model):
     #below are the enumerated integer choices because integer fields don't like choices that aren't ints.
     #for more information see here:
     #http://www.b-list.org/weblog/2007/nov/02/handle-choices-right-way/
-    TODAY=0
-    ONE_DAY=1
-    THREE_DAYS=3
-    ONE_WEEK=7
-    TWO_WEEKS=14
-    ONE_MONTH=30
-    TWO_MONTHS=60
-    THREE_MONTHS=90
-    SIX_MONTHS=180
-    ONE_YEAR=365
+    TODAY = 0
+    ONE_DAY = 1
+    THREE_DAYS = 3
+    ONE_WEEK = 7
+    TWO_WEEKS = 14
+    ONE_MONTH = 30
+    TWO_MONTHS = 60
+    THREE_MONTHS = 90
+    SIX_MONTHS = 180
+    ONE_YEAR = 365
     
     TIME_DURATION_FUTURE_CHOICES = (
         (-ONE_DAY, 'In the past'),
         (TODAY, 'Today'),
-        (ONE_DAY, 'Today or tomorrow'),        
+        (ONE_DAY, 'Today or tomorrow'),
         (THREE_DAYS, 'In the next three days'),
-        (ONE_WEEK, 'In the next week'),        
+        (ONE_WEEK, 'In the next week'),
         (TWO_WEEKS, 'In the next two weeks'),
         (ONE_MONTH, 'In the next month'),
         (TWO_MONTHS, 'In the next two months'),
@@ -542,10 +614,10 @@ class Filter(models.Model):
         (ONE_YEAR, 'In the next year'),
     )
     
-    TIME_DURATION_PAST_CHOICES = (        
+    TIME_DURATION_PAST_CHOICES = (
         (TODAY, 'Today'),
         (-ONE_DAY, 'Yesterday or today'),
-        (-ONE_WEEK, 'In the past week'),        
+        (-ONE_WEEK, 'In the past week'),
         (-ONE_MONTH, 'In the past month'),
         (-TWO_MONTHS, 'In the past two months'),
         (-THREE_MONTHS, 'In the past three months'),
@@ -555,7 +627,7 @@ class Filter(models.Model):
     #metadata about the query
     description = models.CharField(max_length=64)
     creator = models.ForeignKey(User, related_name="filter_creator")
-    shared = models.BooleanField(default = False)
+    shared = models.BooleanField(default=False)
     
     #case related properties
     category = models.ForeignKey(Category, null=True, blank=True)
@@ -568,16 +640,16 @@ class Filter(models.Model):
     resolved_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_resolved_by")
     closed_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_closed_by")
         
-    opened_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    last_edit_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    resolved_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    closed_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    opened_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    last_edit_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    resolved_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    closed_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     
-    next_action_date = models.IntegerField(choices = TIME_DURATION_FUTURE_CHOICES, null=True, blank=True)    
+    next_action_date = models.IntegerField(choices=TIME_DURATION_FUTURE_CHOICES, null=True, blank=True)    
     
     #case Event information
     last_event_type = models.ForeignKey(EventActivity, null=True, blank=True)
-    last_event_date = models.IntegerField(choices = TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(User, null=True, blank=True)
     
         
@@ -602,39 +674,39 @@ class Filter(models.Model):
         if self.category:
             case_query_arr.append(Q(category=self.category))        
         if self.status:
-            case_query_arr.append(Q(status = self.status))
+            case_query_arr.append(Q(status=self.status))
         if self.priority:
-            case_query_arr.append(Q(priority = self.priority))
+            case_query_arr.append(Q(priority=self.priority))
         if self.assigned_to:            
             if self.assigned_to.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user                
-                case_query_arr.append(Q(assigned_to = threadlocals.get_current_user()))
+                case_query_arr.append(Q(assigned_to=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(assigned_to = self.assigned_to))        
+                case_query_arr.append(Q(assigned_to=self.assigned_to))        
         if self.opened_by:
             if self.opened_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
-                case_query_arr.append(Q(opened_by = threadlocals.get_current_user()))
+                case_query_arr.append(Q(opened_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(opened_by = self.opened_by))            
+                case_query_arr.append(Q(opened_by=self.opened_by))            
         if self.last_edit_by:
             if self.last_edit_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
-                case_query_arr.append(Q(last_edit_by = threadlocals.get_current_user()))
+                case_query_arr.append(Q(last_edit_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(last_edit_by = self.last_edit_by))
+                case_query_arr.append(Q(last_edit_by=self.last_edit_by))
         if self.resolved_by:
             if self.resolved_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
-                case_query_arr.append(Q(resolved_by = threadlocals.get_current_user()))
+                case_query_arr.append(Q(resolved_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(resolved_by = self.resolved_by))            
+                case_query_arr.append(Q(resolved_by=self.resolved_by))            
         if self.closed_by:
             if self.closed_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
-                case_query_arr.append(Q(closed_by = threadlocals.get_current_user()))
+                case_query_arr.append(Q(closed_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(closed_by = self.closed_by))        
+                case_query_arr.append(Q(closed_by=self.closed_by))        
                 
                 
         if self.opened_date:
@@ -664,7 +736,7 @@ class Filter(models.Model):
         if self.last_event_by:
             if self.last_event_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
-                case_event_query_arr.append(Q(created_by = threadlocals.get_current_user()))
+                case_event_query_arr.append(Q(created_by=threadlocals.get_current_user()))
             else:
                 case_event_query_arr.append(Q(created_by=self.last_event_by))            
             
@@ -673,7 +745,7 @@ class Filter(models.Model):
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
 
         #now, we got the queries built up, let's run the queries                
-        cases = Case.objects.select_related('opened_by','last_edit_by','resolved_by','closed_by','assigned_to','status','category','priority','carteam_set').all()        
+        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'status', 'category', 'priority', 'carteam_set').all()        
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
@@ -688,7 +760,7 @@ class Filter(models.Model):
                 case_events = case_events.filter(qe)
             
             #get all the case ids from the case event filters
-            case_events_cases_ids = case_events.values_list('case',flat=True)        
+            case_events_cases_ids = case_events.values_list('case', flat=True)        
             
             if len(case_events_cases_ids) > 0:
                 cases = cases.filter(pk__in=case_events_cases_ids)
@@ -775,7 +847,7 @@ class GridPreference(models.Model):
     filter = models.OneToOneField(Filter, related_name='gridpreference') #this could be just a foreign key and have multiple preferences to a given filter.
     
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
-    sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name = "sort_columns")
+    sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name="sort_columns")
     
     
     
@@ -813,43 +885,59 @@ class GridPreference(models.Model):
             for s in sorts:
                 idx = cols.index(s.column)
                 if s.ascending == 1:
-                    ret.append([idx+1,'asc'])
+                    ret.append([idx + 1, 'asc'])
                 else:
-                    ret.append([idx+1,'desc'])
+                    ret.append([idx + 1, 'desc'])
             
             self._sort_json = ret        
         return self._sort_json
     
 
-class Message(models.Model):    
+#class Message(models.Model):    
+#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    subject = models.CharField(max_length=255)
+#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?    
+#    is_public = models.BooleanField(default=False)    
+#    body = models.TextField()
+#    
+#    author = models.ForeignKey(User, related_name='messages_authored')
+#    recipients = models.ManyToManyField(User, related_name='messages_received') #straight recipients, no bcc's here
+#    
+#    #cased = generic.GenericRelation(TaggedItem)
+#    parent_message = models.ForeignKey('self', related_name='replies')
+#    
+#    
+#    
+#    def can_read(self, user):
+#        """
+#        Can the given User object read this message? This depends on the public flag, and authorship
+#        """         
+#        if self.is_public:
+#            return True
+#        else:
+#            if self.author == user or self.recipients.all().filter(id=user.id):
+#                return True
+#            else:
+#                return False
+
+#
+#class Reminder(models.Model):
+#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
+#    creator = models.ForeignKey(User, related_name='reminder_creator')
+#    recipient = models.ForeignKey(User, related_name='reminder_recipient')
+#    fire_date = models.DateField()
+#    fire_time = models.TimeField(blank=True, null=True)
+
+class Follow(models.Model):
+    """
+    Simple model for a user to follow a particular case
+    """
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    subject = models.CharField(max_length=255)
-    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?    
+    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
     is_public = models.BooleanField(default=False)    
-    body = models.TextField()
+    author = models.ForeignKey(User, related_name='messages_authored')    
     
-    author = models.ForeignKey(User, related_name='messages_authored')
-    recipients = models.ManyToManyField(User, related_name='messages_received') #straight recipients, no bcc's here
-    
-    #cased = generic.GenericRelation(TaggedItem)
-    parent_message = models.ForeignKey('self', related_name='replies')
-    
-    
-    
-    def can_read(self, user):
-        """
-        Can the given User object read this message? This depends on the public flag, and authorship
-        """         
-        if self.is_public:
-            return True
-        else:
-            if self.author == user or self.recipients.all().filter(id=user.id):
-                return True
-            else:
-                return False
-
-
-
 #We recognize this is a nasty practice to do an import, but we hate putting signal code
 #at the bottom of models.py even more.
 import signals

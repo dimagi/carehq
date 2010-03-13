@@ -35,7 +35,7 @@ def sort_by_case (a, b):
     return cmp(a.id, b.id)
 
 def sort_by_activity (a, b):
-    return cmp(a.activity.phrasing, b.activity.phrasing)
+    return cmp(a.activity.past_tense, b.activity.past_tense)
 
 def sort_by_category (a, b):
-    return cmp(a.activity.category.category, b.activity.category.category)
+    return cmp(a.activity.category.slug, b.activity.category.slug)

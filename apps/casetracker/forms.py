@@ -24,30 +24,27 @@ class CaseCommentForm(forms.Form):
     
 
 class CaseResolveCloseForm(forms.Form):    
-    #event_activity = forms.ModelChoiceField(label='Reason', queryset=EventActivity.objects.all(), required=True)
     state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True)
     comment = forms.CharField(required=True,
                            error_messages = {'required': 'You must enter a comment'},
                            widget = widgets.Textarea(attrs={'cols':70,'rows':5}),                            
                           )
     
-    def __init__(self, case=None, mode=None, *args, **kwargs):
+    def __init__(self, case=None, activity=None, *args, **kwargs):
         super(CaseResolveCloseForm, self).__init__(*args, **kwargs)
+        event_class = activity.event_class
         
-        if mode != constants.CASE_STATE_RESOLVED and mode != constants.CASE_STATE_CLOSED:
-            raise Exception("Error, the mode %s being called is invalid!" % (mode))
-        
-        if mode == constants.CASE_STATE_RESOLVED:
+        if event_class != constants.CASE_STATE_RESOLVED and event_class != constants.CASE_STATE_CLOSED:
+            raise Exception("Error, the event_class %s being called is invalid!" % (event_class))        
+        if event_class == constants.CASE_STATE_RESOLVED:
             self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
-        if mode == constants.CASE_STATE_CLOSED:
+        if event_class == constants.CASE_STATE_CLOSED:
             self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
-
         
         if case is None:
             raise Exception("Error, you must pass in a valid case to process this form") 
         
-        self.fields['state'].queryset = Status.objects.filter(category=case.category).filter(state_class=mode)
-        #self.fields['event_activity'].queryset = EventActivity.objects.filter(category=case.category)
+        self.fields['state'].queryset = Status.objects.filter(category=case.category).filter(state_class=event_class)        
         
 
 class CaseModelForm(forms.ModelForm):
@@ -73,9 +70,12 @@ class CaseModelForm(forms.ModelForm):
         model = Case
         #default exclude for basic editing
         exclude = ()
-    def __init__(self, editor_user=None, mode=None, * args, **kwargs):      
+    def __init__(self, editor_user=None, activity=None, * args, **kwargs):      
         super(CaseModelForm, self).__init__(*args, **kwargs)
-        #print self.instance.category  
+        #print self.instance.category
+        event_activity = activity
+        event_class = activity.event_class
+          
         fields_to_exclude = ['id',
                      'description',
                      'orig_description',
@@ -83,12 +83,10 @@ class CaseModelForm(forms.ModelForm):
                      'status',
                      'body',
                      'priority',
-                     'next_action',
                      'opened_date',
                      'opened_by',
                      'last_edit_by',
                      'last_edit_date',
-                     'next_action_date',
                      'resolved_date',
                      'resolved_by',
                      'closed_date',
@@ -98,17 +96,15 @@ class CaseModelForm(forms.ModelForm):
                      'parent_case',
                      ]
         
-        if mode == self.EDIT_MODIFY_ALL:
+        if event_class == self.EDIT_MODIFY_ALL:
             fields_to_exclude = ['id',
                      'orig_description',
                      'category',
                      'status',
-                     'next_action',
                      'opened_date',
                      'opened_by',
                      'last_edit_by',
                      'last_edit_date',
-                     'next_action_date',
                      'resolved_date',
                      'resolved_by',
                      'closed_date',
@@ -119,26 +115,16 @@ class CaseModelForm(forms.ModelForm):
                      ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'           
         
-        elif mode == self.EDIT_ASSIGN:
-            fields_to_exclude.remove('assigned_to')
-            fields_to_exclude.remove('next_action_date')
-            #fields_to_exclude.remove('next_action')
-               
+        elif event_class == self.EDIT_ASSIGN:
+            fields_to_exclude.remove('assigned_to')   
             
             self.fields['assigned_to'].label = 'Assign to'             
-            #self.fields['next_action'].label = 'Action Requested'
-            #self.fields['next_action'].help_text = 'What is the action you ask of this assignment (required)'
-            
-            self.fields['next_action_date'].label = 'Action Due Date'
-            self.fields['next_action_date'].widget = admwidgets.AdminSplitDateTime()
-            self.fields['next_action_date'].help_text = 'Set a due date for this requested action (required)'
             
             self.fields['comment'].help_text = 'Please enter a short note'
             
                        
-        elif mode == self.EDIT_SET_ACTION:
-            fields_to_exclude.remove('next_action')
-            fields_to_exclude.remove('next_action_date')            
+        elif event_class == self.EDIT_SET_ACTION:
+            pass            
         
         for field in fields_to_exclude:
             try:
@@ -148,8 +134,8 @@ class CaseModelForm(forms.ModelForm):
             
         if self.instance:
             #set all the User FK's to use a different choice system as defined by the 
-            #categoryhandler
-            user_list_choices = self.instance.category.handler.get_user_list_choices(self.instance)
+    
+            user_list_choices = self.instance.category.bridge.get_user_list_choices(self.instance)
             if user_list_choices:
                 if self.fields.has_key('assigned_to'):                
                     self.fields['assigned_to'].choices = user_list_choices
@@ -161,3 +147,26 @@ class CaseModelForm(forms.ModelForm):
                     self.fields['opened_by'].choices = user_list_choices
                 if self.fields.has_key('last_edit_by'):
                     self.fields['last_edit_by'].choices = user_list_choices
+                    
+                    
+    def clean(self):
+        """
+        Do a default clean and validation, but then set other properties on the case instance before it's saved.
+        """
+        super(CaseModelForm, self).clean()
+        #self.instance.edit_comment = '' #set the property to modify                                        
+        if self.cleaned_data.has_key('comment') and self.cleaned_data['comment'] != '':
+            self.instance.edit_comment = self.cleaned_data["comment"]
+        self.instance.last_edit_by = self.editor_user
+                            
+        #next, we need to see the mode and flip the fields depending on who does what.
+        if self.activity.event_class == constants.CASE_EVENT_ASSIGN:
+            self.instance.assigned_date = datetime.utcnow()
+            self.instance.assigned_by = self.editor_user            
+            self.instance.edit_comment += " (Assigned to %s by %s)" % (self.instance.assigned_to.get_full_name(), self.editor_user.get_full_name())
+            
+            if self.instance.status.state_class == constants.CASE_STATE_NEW:
+                #This is admittedly nasty because there could be different ways of state openement                
+                self.instance.status = Status.objects.filter(category=self.instance.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+        self.instance.event_activity = self.activity
+        return self.cleaned_data
