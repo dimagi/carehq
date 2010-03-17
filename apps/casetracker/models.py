@@ -177,7 +177,7 @@ class Priority(CachedModel):
         verbose_name_plural = "Priority Types"
 
 
-class StatusActivityLink(CachedModel):
+class StatusActivities(CachedModel):
     """
     ManyToMany linkage of Status and the activities that are allowable from that case state.
     
@@ -185,12 +185,11 @@ class StatusActivityLink(CachedModel):
     can be recorded and be database  
     """
     objects = CachingManager()
-    status = models.ForeignKey("Status")
-    activity = models.ForeignKey("EventActivity")
+    status = models.ForeignKey("Status", related_name='legal_activities_list')
+    legal_activity = models.ForeignKey("EventActivity", related_name="legal_for_status")
     
     class Meta:
-        unique_together=('status','activity')
-        
+        unique_together=('status','legal_activity')
 
 #class Status (models.Model):
 class Status (CachedModel):
@@ -208,12 +207,18 @@ class Status (CachedModel):
     
     objects = CachingManager()    
     
-    #this should have a limit choices to for self.category, but that's a nasty hack.
-    allowable_actions = models.ManyToManyField("EventActivity", through="StatusActivityLink", related_name='legal_action_for_states') 
+    ##this should have a limit choices to for self.category, but that's a nasty hack.
+    #allowable_actions = models.ManyToManyField("EventActivity", through="StatusActivityLink", related_name='legal_action_for_states') 
+    @property
+    def allowable_actions(self):
+        if not hasattr(self, '_allowable_actions'):            
+            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity',flat=True)
+            self._allowable_actions = EventActivity.objects.select_related().filter(id__in=legal_activities)        
+        return self._allowable_actions
     
     def set_activity(self, event_activity):
         try:
-            slink = StatusActivityLink(status=self, activity=event_activity)
+            slink = StatusActivities(status=self, legal_activity=event_activity)
             slink.save()
         except Exception, e:
             raise Exception("Error, an event activity can only be registered once to a given state" + str(e))
@@ -250,38 +255,48 @@ class EventActivity(CachedModel):
     email
     make a phone call
     sms         
-    """    
+    """
+    objects = CachingManager()
+    
+        
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     slug = models.SlugField(unique=True) #from name
     past_tense = models.CharField(max_length=64) #from phrasing
     active_tense = models.CharField(max_length=64) #present as button on case view    
     event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES) # what class of event is it?
-    
     category = models.ForeignKey(Category, related_name='category_activities') # different categories have different event types    
     summary = models.CharField(max_length=255)    
+
+    ######################
+    #target_status is currently unused (3/17/2010), however there may come a time for events to be totally manage
+    #via the DB, so this field is being kept live in the model even though it has no use at the moment.
+    target_status = models.ForeignKey("Status", blank=True, null=True, 
+                                      help_text = _("This event activity may alter the case's status.  If it does, it must exist here.",
+                                    related_name="set_by_activities"))
+    
+
     
     bridge_module = models.CharField(max_length=128, blank=True, null=True,
                                       help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
     bridge_class = models.CharField(max_length=64, blank=True, null=True,
                                      help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
-    
-    
-    objects = CachingManager()
+  
     
     def __unicode__(self):
         return "(%s) [%s] Activity" % (self.category, self.slug)
 
     class Meta:
         verbose_name = "Case Event Activity Type"
-        verbose_name_plural = "Case Event Activity Types"
-        
+        verbose_name_plural = "Case Event Activity Types"        
+   
     @property
     def bridge(self): #from handler
         """
         Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
         """
         handler = None
+        from casetracker.caseregistry import ActivityBridge
         if not hasattr(self, '_bridge'):
             if self.bridge_module == None or self.bridge_class == None:
                 raise Exception("Error, invalid configuration, this category has no bridge class defined")
@@ -334,7 +349,7 @@ class CaseEvent(models.Model):
         super(CaseEvent, self).save()  
     
     def __unicode__(self):
-        return "Case Event: %s - %s" % (self.created_by.username, self.created_date)
+        return "Event (%s} by %s on %s" % (self.activity.slug, self.created_by.get_full_name(), self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
     
     class Meta:
         verbose_name = "Case Event"
@@ -403,13 +418,6 @@ class Case(CachedModel):
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
     @property
-    def is_new(self):
-        if self.assigned_to == None or self.status.state_class == constants.CASE_STATE_NEW:
-            return True
-        else:
-            return False
-    
-    @property
     def is_active(self):
         if self.status.state_class == constants.CASE_STATE_OPEN:
             return True
@@ -428,7 +436,7 @@ class Case(CachedModel):
         if self.status.state_class == constants.CASE_STATE_CLOSED:
             return True
         else:
-            return False    
+            return False
     
     @property
     def last_case_event(self):
@@ -491,28 +499,18 @@ class Case(CachedModel):
         if not hasattr(self, '_related_objects'):
             self._related_objects = self._get_related_objects()
         return self._related_objects
-        
-        
-    def unsafe_save(self):
+                
+    def save(self, activity=None, save_comment=None, unsafe=False):
         """
-        This is a really dangerous way to save the cases.  This should only be called from unit tests.
-        Calling this with no regard to edit dates and edit by and such WILL break views.
-        """
+        Save a case.
         
-        if self.opened_date == None:
-            logging.warning("Case save unsafe: no opened date set")            
-        if self.opened_by == None:
-            logging.warning("Case save unsafe: no opened by set")
-        if self.last_edit_date == None:
-            logging.warning("Case save unsafe: no last edit date set")
-        if self.last_edit_by == None:
-            logging.warning("Case save unsafe: no last edit by set")
-
-        super(Case, self).save()
-    
-    def save(self, unsafe=False):
-        """
-        Save a case
+        There are two ways to save a case.
+        If activity is None, then it implies that this is a NEW case.        
+        If that's saved, then an EventActivity that does a basic OPEN will be saved.
+        
+        If activity != None, then this implies that a structured activity did changes to the case.
+        
+        The unsafe flag is only for unit testing to alter properties of the datetimes and such.        
         """
         if unsafe:
             if self.opened_date == None:
@@ -526,9 +524,8 @@ class Case(CachedModel):
     
             super(Case, self).save()
             return
-            
-        
                 
+        #NEW CASE
         if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
             if self.opened_by == None or self.description == None:
                 raise Exception("Missing fields in Case creation - opened by and description")            
@@ -537,12 +534,21 @@ class Case(CachedModel):
             self.opened_date = datetime.utcnow()
             self.last_edit_date = self.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
             self.last_edit_by = self.opened_by
-            self.orig_description = self.description
+            self.orig_description = self.description            
         else:
+            #EXISTING CASE
+            if activity == None:
+                raise Exception("Error, you must set an EventActivity for this Case Save")
+            else:
+                self.event_activity = activity
+            if save_comment != None:
+                self.save_comment = save_comment
+            
+            
             if self.last_edit_by == None:
                 raise Exception("Missing fields in Case edit - last_edit_by")
-
-            #now, we need to check the status change being done to this.
+                        
+            #now, we need to check the status change being done to this.            
             state_class = self.status.state_class
             if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
                 if self.resolved_by == None:
@@ -556,7 +562,7 @@ class Case(CachedModel):
                     #ok, closed by is set, let's double check that it's been resolved
                     if self.resolved_by == None:
                         raise Exception("Error, this case must be resolved before it can be closed")
-                    self.closed_date = datetime.utcnow()            
+                    self.closed_date = datetime.utcnow()
 
             self.last_edit_date = datetime.utcnow()            
             
@@ -572,8 +578,8 @@ class Case(CachedModel):
     
     def case_name_url(self):
         #return "Case %s" % self.id
-        #reverse("casetracker.views.view_case", args=[obj.id])
-        return '<a href="%s">%s</a>' % (reverse('view-case', args=[self.id]), self.description)
+        #reverse("casetracker.views.manage_case", args=[obj.id])
+        return '<a href="%s">%s</a>' % (reverse('manage-case', args=[self.id]), self.description)
     
     class Meta:
         verbose_name = "Case"

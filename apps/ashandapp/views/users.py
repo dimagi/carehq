@@ -17,9 +17,10 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-from casetracker.views import get_sorted_caseevent_dictionary 
+from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary 
  
 
+@login_required
 def my_profile(request, template_name = 'ashandapp/my_profile.html'):
     user = request.user
     context = {}        

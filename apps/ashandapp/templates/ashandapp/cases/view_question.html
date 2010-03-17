@@ -1,29 +1,30 @@
-{% extends "casetracker/view_case.html" %}
+{% extends "casetracker/manage_case.html" %}
 {% load i18n %}
 {% block title %}{% trans "View Question" %}{% endblock %}
 {% block extrahead %}
 {{block.super}}
 {% endblock extrahead %} 
 
+	{% comment %}
 	{% block case_actions %}
-			<a href="{% url view-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
-			{% if case.is_active or case.is_new %}			
+			<a href="{% url manage-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
+			{% if case.is_active %}			
 			{% if can_assign %}				
-	        <a href="{% url view-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
+	        <a href="{% url manage-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
 	        {% endif%}
 	        
 	        {% if can_edit %}
-	        <a href="{% url view-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
+	        <a href="{% url manage-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
 	        {%endif%}
 	        
-	        <a href="{% url view-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Answer</a>
+	        <a href="{% url manage-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Answer</a>
 	        
 	        
 	        {% endif %}
 	        
 	        {% if case.is_resolved %}        
 	        {% if can_close and not case.is_closed %}
-	        <a href="{% url view-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
+	        <a href="{% url manage-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
 	        {% endif %}
 	        {% endif %}
 	        
@@ -33,6 +34,7 @@
 	        {%endif%}
 	        {% endif %} 
 	{% endblock case_actions %}
+	{% endcomment %}
 
 	{% block caselink_area %}
 		<h3>This Question</h3>

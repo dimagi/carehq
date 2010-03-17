@@ -15,7 +15,7 @@
 	<tr>
 	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.user.last_name}}, {{case.careteam_set.get.patient.user.first_name}}</a></td>
 	{% for col in gridpreference.display_columns.all %}
-		<td><a href="{% url view-case case.id %}">{% case_column case col.name %}</a></td>
+		<td><a href="{% url manage-case case.id %}">{% case_column case col.name %}</a></td>
 	{%endfor %}
 	</tr>
 {% endfor %}

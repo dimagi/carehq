@@ -43,7 +43,7 @@ class DefaultCategoryHandler(CategoryHandlerBase):
         return CaseModelForm
     
     def get_view_template(self):
-        return "casetracker/view_case.html"
+        return "casetracker/manage_case.html"
     
     def process_context(self, case, request, context, *args, **kwargs):
         return context

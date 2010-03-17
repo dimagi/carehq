@@ -8,7 +8,7 @@
         </div>
         
         <div class="span-18 prepend-2">
-        	{% if case.is_open %}
+        	
             <div class="span-4">
                 <strong>{% trans "Opened" %}</strong> {{case.opened_date|date}}<br>
                 <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.get_full_name}}</a>            
@@ -22,7 +22,7 @@
                 <strong>{% trans "Edited" %}</strong> {% time_interval case.last_edit_date %}<br>
                 by <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by.get_full_name}}</a>            
             </div>        
-			{% endif %}
+			
 			
 			{% if case.is_resolved and not case.is_closed%}
 			<div class="span-4 notice">
@@ -36,7 +36,6 @@
                 <strong>{% trans "Closed" %}</strong> {{case.closed_date|date}}<br>
                 by <a href="{% url ashandapp.views.users.single  case.closed_by.id %}">{{case.closed_by.get_full_name}}</a>            
             </div>
-			{% endif %}
-			
+			{% endif %}			
         </div>        
 </div> <!-- end case info block -->    

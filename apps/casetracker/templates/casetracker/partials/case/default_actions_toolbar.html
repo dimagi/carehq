@@ -1,10 +1,11 @@
 {% load i18n %}
 <div class="nav">
     <ul>
-        {% if case.is_active or case.is_new %}
-		<li><a href="{% url view-case case.id %}?action=assign">Assign</a></li>
-        <li><a href="{% url view-case case.id %}?action=edit">Edit</a></li>        
-        <li><a href="{% url resolve-case case.id %}">Resolve</a></li>
+    	{% comment %}
+        {% if case.is_active %}
+		<li><a href="{% url manage-case case.id %}?activity=assign">Assign</a></li>
+        <li><a href="{% url manage-case case.id %}?activity=edit">Edit</a></li>        
+        
         {% endif %}
         
         {% if case.is_resolved %}        
@@ -14,5 +15,12 @@
         {% if case.is_closed %}
         <li><a href="#">Reopen</a></li>
         {% endif %}
+		{%endcomment %}
+		
+		{% for activity in case.status.allowable_actions %}
+			<li>
+				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>
+			</li>			
+		{% endfor %}
     </ul>
 </div>

@@ -12,17 +12,19 @@ from datetime import datetime
 from ashandapp.forms import CareTeamCaseFormBase
 from casetracker import constants
 
+from ashandapp.caseregistry.question import CATEGORY_SLUG
+
 class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""
     
     description = forms.CharField(label="Subject", 
                                   help_text="For best tracking of questions, make sure that your question has \
                                   one focused subject matter. (required)",
-                                  widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+                                  widget = widgets.Textarea(attrs={'cols':100, 'rows':2, 'maxlength':160}))
     body = forms.CharField(label="Message", required=True,
                            help_text="Full message body (required)",
                            error_messages = {'required': 'You must enter a description'},
-                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))    
+                           widget = widgets.Textarea(attrs={'cols':100,'rows':10}))    
     
    
     
@@ -38,11 +40,11 @@ class NewQuestionForm(CareTeamCaseFormBase):
         if not self.is_valid():
             raise Exception("Error, trying to generate case from question form when form is not valid!")
         newcase = Case()
-        newcase.category = Category.objects.get(category='question')
+        newcase.category = Category.objects.get(slug=CATEGORY_SLUG)
         newcase.priority = self.cleaned_data['priority']
         newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0] #get the default opener - this is a bit sketchy
+        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         

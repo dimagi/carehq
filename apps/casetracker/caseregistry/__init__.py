@@ -55,7 +55,7 @@ class CategoryBridge(object):
         return None
     
     def read_template(self, request, context, *args, **kwargs):
-        return 'casetracker/view_case.html'    
+        return 'casetracker/manage_case.html'    
     def read_context(self, case, request, context, *args, **kwargs):
         context['case'] = case
         return context
@@ -66,8 +66,8 @@ class CategoryBridge(object):
         if not self.custom_read:
             raise Exception("Error, this category bridge class is not configured to use a custom view class")            
         return None
-    def get_user_list_choices(self, case):
-        return User.objects.all()
+    def get_user_list_choices(self, case):        
+        return None
 
 class StatusBridge(object):
     slug = None    
@@ -92,7 +92,10 @@ class ActivityBridge(object):
     ActivityBridge is a base class that allows a case of an arbitrary category
     to be dispatched to special view/template functions.
     
-    The Category Bridge basically allows for customization of view level CRUD functionlaity for a case
+    The ActivityBridge basically allows for customization of view level CRUD functionlaity for a case.
+    The activity bridge is used when an activity needs to be actuated upon in the UI.
+    
+    So this class provides view level override controls for a given activity     
     """    
     slug = None
     summary = None
@@ -101,7 +104,7 @@ class ActivityBridge(object):
     active_tense = None
     event_class = None
             
-    custom_view = False      
+    custom_view = False   
     
     category_bridge = None
     bridge_module = None
@@ -130,7 +133,11 @@ class ActivityBridge(object):
             raise Exception("Error, you must specify a bridge module namespace to match the entry to appear in the Activity model table")
 
     def template(self):
-        return 'casetracker/manage/view_case.html'
+        """
+        When viewing an activity, this provides the template override.
+        It's placed in code so that it's easier to customize on the fly vs. having to regenerate/version the DB
+        """
+        return 'casetracker/manage/manage_case.html'
     
     def form_class(self):
         if self.event_class == constants.CASE_EVENT_RESOLVE or self.event_class==constants.CASE_EVENT_CLOSE:

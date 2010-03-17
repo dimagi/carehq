@@ -6,7 +6,7 @@ from casetracker import constants
 
 def case_saved(sender, instance, created, **kwargs):
     """
-    When a case is saved due to creation and/or modification
+    When a case is saved due to creation
     reversion will automatically save the original information.
     
     However, we will be doing an additional operation to create a CaseEvent to record the actual happening.
@@ -32,13 +32,13 @@ def case_saved(sender, instance, created, **kwargs):
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
         
-        if hasattr(instance, 'edit_comment'):
-            notes = instance.edit_comment
+        if hasattr(instance, 'save_comment'):
+            notes = instance.save_comment
         else:
             notes = "Case edited by " + event_creator.get_full_name()
             
         if hasattr(instance, 'event_activity'):
-            event_new.activity = instance.event_activity
+            event_new.activity = instance.event_activity            
         else:    
             try:
                 event_new.activity = EventActivity.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_EDIT)

@@ -47,7 +47,7 @@ def do_get_json(cases_qset, columns):
                 table_entry = table_entry[0:80] + "..."
             # terribly hardcoded...quick fix to add links
             if (col == "description"):
-                json_string +=  "\"<a href = '%s'>%s</a>\"," % (reverse('view-case', kwargs={'case_id':case.id }), table_entry)
+                json_string +=  "\"<a href = '%s'>%s</a>\"," % (reverse('manage-case', kwargs={'case_id':case.id }), table_entry)
             else:
                 json_string += "\"%s\"," % table_entry
         json_string += "],"
@@ -131,7 +131,7 @@ def _get_careteam_triage_qset(careteam):
     but this is the low level query for a single careteam.
     """
 
-    newstate_q = Q(status__state_class=constants.CASE_STATE_NEW)
+    newstate_q = Q(status__state_class=constants.CASE_STATE_OPEN) #changed from CASE_STATE_NEW.  this should be a CASE_STATE_OPEN with a where on the "triage" status
     no_assignment_q = Q(assigned_to=None)
     
     qset= careteam.all_cases().filter(newstate_q | no_assignment_q)
@@ -159,7 +159,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
         qset= Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=careteam_cases)        
-        qset = qset.filter(status__state_class=constants.CASE_STATE_NEW)
+        qset = qset.filter(status__state_class=constants.CASE_STATE_OPEN) #changed from CASE_STATE_NEW.  this should be a CASE_STATE_OPEN with a where on the "triage" status
         
         return do_get_json(qset, columns)    
     else:               

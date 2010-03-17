@@ -1,6 +1,6 @@
 {% load case_tags %}
-<div class="span-18">
 {% if not formatting %}
+<div class="span-18">
 	{% for event in events %}				
 		<div class = "span-17">	
 			<div>{{event.notes}}</div>
@@ -19,13 +19,13 @@
 				</small> 
 			</div>
 			<hr>						
-		</div>		
-		
+		</div>	
 	{% endfor %}
+</div>
 {% else %}
-	{% for key, value in events.items %}
-	<div class="span-18">
-		<h4><b>{{key|safe}}</b></h4>
+<div class="span-18">
+	{% for key, value in events.items %}	
+		<div class="span-17"><strong>{{key|safe}}</strong></div>
 		{% for event in value%}
 		<div class="span-17">
 				<div>{{event.notes}}</div>
@@ -45,9 +45,7 @@
 				</div>
 			<hr> 		
 		</div>
-		{% endfor %}		
-	</div>	
+		{% endfor %}			
 	{% endfor %}
-{% endif %}
-
 </div>
+{% endif %}

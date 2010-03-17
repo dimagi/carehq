@@ -22,20 +22,19 @@ class NewIssueForm(CareTeamCaseFormBase):
 #                         )
     
     description = forms.CharField(label="Subject", 
-                                  help_text="(required)",
-                                  widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+                                  help_text="(required)",                                  
+                                  widget = widgets.Textarea(attrs={'maxlength':160, 'cols':100, 'rows':2}))
     
     body = forms.CharField(label="Message", required=True,
                            help_text="Please provide some more details on this issue (required)",
                            error_messages = {'required': 'You must enter a description'},
-                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
+                           widget = widgets.Textarea(attrs={'cols':100,'rows':10}))         
     
 
 #    source = forms.ChoiceField(choices=ISSUE_CHOICES, required=True)
     
     def __init__(self, careteam=None, *args, **kwargs):
-        super(NewIssueForm, self).__init__(careteam=careteam, *args, **kwargs)
-        
+        super(NewIssueForm, self).__init__(careteam=careteam, *args, **kwargs)        
     
     def clean(self):
         return self.cleaned_data
@@ -48,7 +47,7 @@ class NewIssueForm(CareTeamCaseFormBase):
         newcase.priority = self.cleaned_data['priority']
         newcase.priority = Priority.objects.get(id=4)
         newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0] #get the default opener - this is a bit sketchy
+        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         

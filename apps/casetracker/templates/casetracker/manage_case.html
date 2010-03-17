@@ -6,24 +6,21 @@
 	<script type="text/javascript" src="/media/admin/js/core.js"></script>	
 	<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
 	<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand-forms.css" type="text/css">                  
-{{form.media}}
-	
+{{form.media}}	
 
 {% endblock extrahead %} 
 {% block content %}
 
-<div class="span-24">
+<div class="span-24">	
 	<div class="span-18"> {# the basic case info block is span 18 #}
 		{% block case_info %}			
 		{% include "casetracker/partials/case/basic_case_info.html" %}
 		{% endblock %}		
-	<hr>
-		{% if not show_form and not show_comment %}
-		<div class="span-18">
+		<hr>
+		{% if not show_form and not show_comment %}		
 			{% block case_actions %}
 			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
-			{% endblock case_actions %}			 
-		</div>
+			{% endblock case_actions %}
 		{% endif %}
 		
 		{% if show_form %}		
@@ -41,19 +38,32 @@
 		<div class="span-18 prepend-top">	
 		<hr>		
 		{% block newsfeed-area %}
-		{% include "casetracker/partials/tabbed_newsfeed.html" %}
+		{% include "casetracker/partials/case/tabbed_newsfeed.html" %}
 		{% endblock newsfeed-area %}		
 		</div>		
-	</div>	<!-- end case body and info container -->
-	
-		
+	</div>	<!-- end case body and info container -->	
 	<div class="span-6 last"> <!-- specialized category block -->
+		<div class="span-6">
 		{% block caselink_area %}
 		<h3>This Case</h3>
 		{% for careteam in case_careteams %}
 		{% include "ashandapp/partials/patient_careteam_info_6.html" %}
 		{% endfor %}
 		{% endblock caselink_area %}
+		</div>				
+		<div class = "span-6">
+		{% block case_metadata %}
+		<ul>
+			<li>{{case.category}}</li>
+			<li>{{case.status}}</li>
+			<li>{{case.last_case_event}}</li>
+			
+		</ul>
+		{% endblock %} 		
+			
+		</div>
+					
 	</div> <!-- end case link block -->
+
 </div>	
 {% endblock content %}

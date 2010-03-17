@@ -230,7 +230,7 @@ class CareTeam(CachedModel):
         Return a queryset of the cases in this careteam that are active
         """
         
-        return self.cases.all().filter(Q(status__state_class=constants.CASE_STATE_OPEN) | Q(status__state_class=constants.CASE_STATE_NEW))
+        return self.cases.all().filter(Q(status__state_class=constants.CASE_STATE_OPEN))
     
     
     def resolved_cases(self):

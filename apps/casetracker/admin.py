@@ -62,7 +62,6 @@ class CaseReversion(VersionAdmin):
                                                     ('category','status','priority'),
                                                     'body',
                                                     'assigned_to',
-                                                    'next_action',
                                                     'parent_case')
                                         }),
                  ('Activity Information', { 'fields': (('opened_by','opened_date'),

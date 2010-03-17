@@ -11,11 +11,9 @@
 <div id="newsfeed-tabs">
 	<ul>
 		<li><a>Case History</a></li>
-		{% comment %}
-		<li><a href="{%url user-newsfeed subject.id %}">By Date</a></li>		
-		<li><a href="{%url user-newsfeed subject.id %}?sort=person">By Person</a></li> 
-        <li><a href="{%url user-newsfeed subject.id %}?sort=activity">By Action</a></li>
-		{% endcomment %}        
+		<li><a href="{%url case-newsfeed case.id %}">By Date</a></li>		
+		<li><a href="{%url case-newsfeed case.id %}?sort=person">By Person</a></li> 
+        <li><a href="{%url case-newsfeed case.id %}?sort=activity">By Action</a></li>        
 	</ul>
 	
 	<div id="newsfeed-tabs1">&nbsp;</div>

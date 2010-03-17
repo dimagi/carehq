@@ -19,6 +19,10 @@ class CareTeamCaseFormBase(forms.Form):
                      ('specific', "Specific Care Team member" ),
                      )
 
+    recipient = forms.ChoiceField(choices=RECIPIENT_CHOICES,
+                                  label="To", 
+                                  required=True)
+
     #basic fields for a case form
     description = forms.CharField(max_length=160,
                                   required=True, 
@@ -28,12 +32,10 @@ class CareTeamCaseFormBase(forms.Form):
     body = forms.CharField(required=True,
                            help_text="Enter a short description (required)",
                            error_messages = {'required': 'You must enter a message body'},
-                           widget = widgets.Textarea(attrs={'cols':50,'rows':10}))         
+                           widget = widgets.Textarea(attrs={'cols':80,'rows':10}))         
     
 
-    recipient = forms.ChoiceField(choices=RECIPIENT_CHOICES,
-                                  help_text="Who should receive this question first?", 
-                                  required=True)
+    
  
     
     priority = forms.ModelChoiceField(queryset=Priority.objects.all(), required=True,

@@ -3,6 +3,8 @@ from casetracker.caseregistry import registry
 from casetracker.caseregistry import CategoryBridge, StatusBridge, ActivityBridge
 from casetracker.models import Category, EventActivity, Status
 
+from ashandapp.caseregistry import ashand_case_context, get_careteam_assignment_choices
+
 
 CATEGORY_MODULE = 'ashandapp.caseregistry.question'
 SLUG_PREFIX = 'question-'
@@ -21,6 +23,14 @@ class QuestionCategory(CategoryBridge):
         
     custom_create = False
     custom_read = False        
+    def read_template(self, request, context, *args, **kwargs):
+        return 'ashandapp/cases/view_question.html'    
+    
+    def read_context(self, case, request, context, *args, **kwargs):        
+        return ashand_case_context(case, request, context)        
+        
+    def get_user_list_choices(self, case):
+        return get_careteam_assignment_choices(case)
 
 category_type_class = QuestionCategory
 
@@ -113,11 +123,11 @@ class QuestionEventClose(ActivityBridge):
 
 
 
-class QuestionNew(StatusBridge):
-    slug = SLUG_PREFIX + 'new-default'
-    display = 'New'
-    state_class = constants.CASE_STATE_NEW
-    category_bridge = category_type_class
+#class QuestionNew(StatusBridge):
+#    slug = SLUG_PREFIX + 'new-default'
+#    display = 'New'
+#    state_class = constants.CASE_STATE_NEW
+#    category_bridge = category_type_class
 
     
 class QuestionOpen(StatusBridge):
@@ -150,14 +160,14 @@ class QuestionClosed(StatusBridge):
 
 
 def register_category():
-    registry.RegisterCategory(QuestionCategory)    
+    registry.RegisterCategory(QuestionCategory)
+    registry.RegisterStatelessActivity(QuestionEventOpen)    
     
-    registry.RegisterStatus(QuestionNew)
-    registry.RegisterActivity(QuestionNew, QuestionEventComment)
-    registry.RegisterActivity(QuestionNew, QuestionEventAssign)
+#    registry.RegisterStatus(QuestionNew)    
+#    registry.RegisterActivity(QuestionNew, QuestionEventComment)
+#    registry.RegisterActivity(QuestionNew, QuestionEventAssign)
     
-    registry.RegisterStatus(QuestionOpen)
-    registry.RegisterActivity(QuestionOpen, QuestionEventOpen)
+    registry.RegisterStatus(QuestionOpen)    
     registry.RegisterActivity(QuestionOpen, QuestionEventComment)
     registry.RegisterActivity(QuestionOpen, QuestionEventAssign)
     registry.RegisterActivity(QuestionOpen, QuestionEventResolve)

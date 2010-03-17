@@ -62,7 +62,7 @@ def inject_casemonitor(careteam, event_arr):
     newcase.opened_date = datetime.utcnow() - startdelta
     newcase.last_edit_by = creator
     newcase.last_edit_date = newcase.opened_date
-    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_NEW)[0]
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
 
     newcase.assigned_to = careteam.primary_provider.user
     newcase.assigned_date = newcase.opened_date 

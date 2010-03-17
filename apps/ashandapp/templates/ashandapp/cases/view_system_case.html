@@ -1,32 +1,32 @@
-{% extends "casetracker/view_case.html" %}
+{% extends "casetracker/manage_case.html" %}
 {% load i18n %}
 {% block title %}{% trans "View Issue" %}{% endblock %}
 {% block extrahead %}
 {{block.super}}
 {% endblock extrahead %}
 	{% block case_actions %}
-			<a href="{% url view-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
+			<a href="{% url manage-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
 		
-		{% if case.is_active or case.is_new %}			
+		{% if case.is_active %}			
 			
 			{% comment %}
 			{# in reality, these don't need to be edited, just resolved and closed #}
 			{% if can_assign %}						
-	        <a href="{% url view-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
+	        <a href="{% url manage-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
 	        {%endif%}	        
 	        {% if can_edit %}
-	        <a href="{% url view-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>
+	        <a href="{% url manage-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>
 	        {% endif %}
 			{% endcomment %}
 	        
 	        {% if can_resolve%}        
-	        <a href="{% url view-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Resolve</a>
+	        <a href="{% url manage-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Resolve</a>
 	        {% endif %}	        
 	        {% endif %}
 	        {# endif #}
 	        {% if case.is_resolved %}	        
 			{% if can_close and not case.is_closed %}        
-	       	 <a href="{% url view-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
+	       	 <a href="{% url manage-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
 	        {% endif %}
         {% endif %}
         
