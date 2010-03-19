@@ -17,15 +17,13 @@ from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-from ashandapp.templatetags.filter_tags import case_column
+from ashandapp.templatetags.filter_tags import case_column_plain
 from ashandapp.views.cases import queries
 
 
 @login_required
-def get_json_for_paging(request):
-    
-    user = request.user
-    
+def get_json_for_paging(request):    
+    user = request.user    
     display_filter = None    
     start_index = None
     length = None
@@ -82,7 +80,7 @@ def get_json_for_paging(request):
         json_string += "["
         json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
         for col in filter.gridpreference.get_display_columns:
-            table_entry = case_column(case, col.name)
+            table_entry = case_column_plain(case, col.name)
             if len(table_entry) > 45:
                 table_entry = table_entry[0:45] + "..."
             # terribly hardcoded...quick fix to add links

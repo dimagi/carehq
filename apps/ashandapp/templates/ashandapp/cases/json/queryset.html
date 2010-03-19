@@ -28,12 +28,7 @@ $(document).ready(function() {
 		
 		"sPaginationType": "two_button",
 		"bAutoWidth": false,
-		"aoColumns" : [
-		              {"sType": "html"},
-		              {% for col in columns %}
-		              	{"sType": {% get_sType col %}},
-		              {%endfor%}
-		      		],
+		"aoColumns" : {%autoescape off %}{{column_stype_json}}{%endautoescape%},
 		"oLanguage": {
 		      	     "sZeroRecords": "No Records Found"
 		      	   	 },
@@ -46,8 +41,7 @@ $(document).ready(function() {
 
 <table class="{{grid_name}}">
 	<thead>
-		<tr>
-			<th>Patient</th>
+		<tr>		
 			{% for col in columns %}
 				<th>{% pretty_column col %}</th>
 			{%endfor %}

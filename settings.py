@@ -65,6 +65,9 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
+    
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -109,7 +112,8 @@ INSTALLED_APPS = (
     'tinymce',
     'debug_toolbar',
     'django_extensions',
-    'djcaching', 
+    #'djcaching',
+    'johnny', 
     #end third party apps
     
             
@@ -117,7 +121,7 @@ INSTALLED_APPS = (
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
-
+JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_myproj'
 
 DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.version.VersionDebugPanel',

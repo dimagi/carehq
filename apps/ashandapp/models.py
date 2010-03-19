@@ -9,9 +9,6 @@ from provider.models import Provider
 import datetime
 import uuid
 
-from djcaching.models import CachedModel
-from djcaching.managers import CachingManager
-
 from casetracker import constants
 
 def make_uuid():
@@ -68,14 +65,11 @@ class ProviderRole(models.Model):
 
 
 
-class ProviderLink(CachedModel):
-#class ProviderLink(models.Model):
+class ProviderLink(models.Model):
     """
     Simple link of a provider object to a careteam.
     """
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    
-    objects = CachingManager()
     
     careteam = models.ForeignKey("CareTeam")
     provider = models.ForeignKey(Provider, related_name='providerlink_provider')
@@ -96,8 +90,7 @@ class ProviderLink(CachedModel):
         #who they are, and are able to actually be attached/saved in this way
         super(ProviderLink, self).save()
     
-#class CareRelationship(models.Model):
-class CareRelationship(CachedModel):
+class CareRelationship(models.Model):
     """
     Define a particular caregivers' relationship for the given patient.  This is different from their actual title
     Though the actual roles may need to be made into their own model, as should permissions and such.
@@ -113,8 +106,7 @@ class CareRelationship(CachedModel):
                       ('neighbor', 'Neighbor'),
                       ('other', 'Other'),
     )    
-    objects = CachingManager()
-    
+   
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     relationship_type = models.CharField(choices=RELATIONSHIP_CHOICES,max_length=32)    
     other_description = models.CharField(max_length=64, null=True, blank=True) 
@@ -123,13 +115,11 @@ class CareRelationship(CachedModel):
     def __unicode__(self):
         return self.get_relationship_type_display()
   
-class CaregiverLink(CachedModel):
-#class CaregiverLink(models.Model):
+class CaregiverLink(models.Model):
     """
     The actual link for a user object to be come a caregiver.
     """
     
-    objects = CachingManager()
     
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey("CareTeam")
@@ -149,18 +139,18 @@ class CareTeamCaseLink(models.Model):
     """
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey('CareTeam')
-    case = models.ForeignKey(Case)
+    case = models.ForeignKey(Case, related_name='careteam_linked', unique=True)
+    
+    class Meta:
+        unique_together = ('case','careteam')
 
-#class CareTeam(models.Model):
-class CareTeam(CachedModel):
+class CareTeam(models.Model):
     """
     A care team revolves around a patient.  It will contain providers and caregivers with their linked roles
     on their linkage.
     
     Cases for this patient will be linked as well thorugh this model.
     """
-    objects = CachingManager()
-    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     patient = models.ForeignKey(Patient, related_name='my_careteam')
     providers = models.ManyToManyField(Provider, through='ProviderLink', related_name="careteam_providers")

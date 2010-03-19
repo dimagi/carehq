@@ -14,7 +14,7 @@
 	<td></td>
 	{% endif %}
 	{% for col in columns %}
-		<td><a href="{% url manage-case case.id %}">{% case_column case col %}</a></td>
+		<td><a href="{% url manage-case case.id %}">{% case_column_plain case col %}</a></td>
 	{% endfor %}
 {%endfor %}
 </table>

@@ -12,8 +12,6 @@ from django.contrib.contenttypes import generic
 from datetime import datetime, timedelta
 from middleware import threadlocals
 
-from djcaching.models import CachedModel
-from djcaching.managers import CachingManager
 from django.core.urlresolvers import reverse
 import uuid
 from django.utils.translation import ugettext_lazy as _
@@ -55,8 +53,7 @@ CASE_STATES = (
 )
 
     
-#class Category(models.Model):
-class Category(CachedModel):
+class Category(models.Model):
     """
     The Category is the central piece of the casetracker model tree.
     
@@ -94,8 +91,6 @@ class Category(CachedModel):
     bridge_class = models.CharField(max_length=64, blank=True, null=True,
                                      help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
     
-
-    objects = CachingManager()
     
     @property
     def bridge(self): #from handler
@@ -133,8 +128,7 @@ class Category(CachedModel):
 
 
 
-#class CaseAction(models.Model):
-class CaseAction(CachedModel):
+class CaseAction(models.Model):
     """
     A case action is a descriptor for capturing the types of actions you can actuate upon a case.
     These are linked to a case to describe the desired NEXT action to take upon a case.
@@ -148,7 +142,6 @@ class CaseAction(CachedModel):
     
     These should be universal across all categories.
     """
-    objects = CachingManager()
     description = models.CharField(max_length=64)
     def __unicode__(self):
         return "%s" % (self.description)
@@ -159,8 +152,7 @@ class CaseAction(CachedModel):
 
 
     
-#class Priority(models.Model):
-class Priority(CachedModel):
+class Priority(models.Model):
     """
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
@@ -168,7 +160,6 @@ class Priority(CachedModel):
     magnitude = models.IntegerField()
     description = models.CharField(max_length=32)
     default = models.BooleanField()    
-    objects = CachingManager()
     def __unicode__(self):
         return "%d" % (self.magnitude)
 
@@ -177,22 +168,20 @@ class Priority(CachedModel):
         verbose_name_plural = "Priority Types"
 
 
-class StatusActivities(CachedModel):
+class StatusActivities(models.Model):
     """
     ManyToMany linkage of Status and the activities that are allowable from that case state.
     
     Hopefully with this through model being here, more enforcement and/model define-able state information
     can be recorded and be database  
-    """
-    objects = CachingManager()
+    """    
     status = models.ForeignKey("Status", related_name='legal_activities_list')
     legal_activity = models.ForeignKey("EventActivity", related_name="legal_for_status")
     
     class Meta:
         unique_together=('status','legal_activity')
 
-#class Status (models.Model):
-class Status (CachedModel):
+class Status (models.Model):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
@@ -205,8 +194,7 @@ class Status (CachedModel):
     category = models.ForeignKey(Category, related_name='category_states')
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
     
-    objects = CachingManager()    
-    
+
     ##this should have a limit choices to for self.category, but that's a nasty hack.
     #allowable_actions = models.ManyToManyField("EventActivity", through="StatusActivityLink", related_name='legal_action_for_states') 
     @property
@@ -240,8 +228,7 @@ class Status (CachedModel):
     
 
 
-#class EventActivity(models.Model):
-class EventActivity(CachedModel):
+class EventActivity(models.Model):
     """
     An Event Activity describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
@@ -256,9 +243,6 @@ class EventActivity(CachedModel):
     make a phone call
     sms         
     """
-    objects = CachingManager()
-    
-        
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     slug = models.SlugField(unique=True) #from name
     past_tense = models.CharField(max_length=64) #from phrasing
@@ -365,8 +349,7 @@ class CaseTag(models.Model):
     content_object = generic.GenericForeignKey('object_type', 'object_uuid')
    
 
-#class Case(models.Model):
-class Case(CachedModel):
+class Case(models.Model):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
     
@@ -380,8 +363,6 @@ class Case(CachedModel):
     The uuid should be the primary key, but for the synchronization framework, having a uuid key do all the queries
     and potentially be the primary key should be a top priority.    
     """    
-    
-    objects = CachingManager()
     id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     
     description = models.CharField(max_length=160)

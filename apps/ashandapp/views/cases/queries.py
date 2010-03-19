@@ -13,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.template import Context, loader
 
 from casetracker.models import Case, Filter, CaseEvent
 from ashandapp.models import CaseProfile, CareTeam, ProviderLink
@@ -20,46 +21,64 @@ from provider.models import Provider
 from patient.models import Patient
 from careplan.models import CarePlan, CarePlanItem
 
-from ashandapp.templatetags.filter_tags import case_column
+from ashandapp.templatetags.filter_tags import render_case_column, get_column_types
 from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member
 from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,CareTeamCaseLink
 from django.db import connection
 
 from casetracker import constants
+import json 
 
 #patient implicitly first
 DEFAULT_COLUMNS = ['category', 'description','priority','assigned_to']
 
 
-def do_get_json(cases_qset, columns):
+def do_get_patient_case_json(cases_qset, columns, request):
     #build json_string with information from data    
-    json_string = "{ \"aaData\": ["
-   
-    #adding user
+    context = {}    
+    output = {'aaData':[]}
     for case in cases_qset:
-        #todo, this is pretty inefficient on db lookups since we're pulling the reverse of the careteam on each case
-        careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
-        json_string += "["
-        json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
+        row_arr = []
         for col in columns:
-            table_entry = case_column(case, col)
-            if len(table_entry) > 80:
-                table_entry = table_entry[0:80] + "..."
-            # terribly hardcoded...quick fix to add links
-            if (col == "description"):
-                json_string +=  "\"<a href = '%s'>%s</a>\"," % (reverse('manage-case', kwargs={'case_id':case.id }), table_entry)
-            else:
-                json_string += "\"%s\"," % table_entry
-        json_string += "],"
+            table_entry = render_case_column(case, col, plain_text=False)
+            row_arr.append(table_entry)
+        output['aaData'].append(row_arr)
+    context['json_string'] = json.dumps(output)    
     
+#    json_string = "{ \"aaData\": ["
+#   
+#    #adding user
+#    for case in cases_qset:
+#        #todo, this is pretty inefficient on db lookups since we're pulling the reverse of the careteam on each case
+#        careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
+#        json_string += "["
+#        #json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
+#        for col in columns:
+#            table_entry = case_column(case, col)
+#            if len(table_entry) > 80:
+#                table_entry = table_entry[0:80] + "..."
+#            # terribly hardcoded...quick fix to add links
+#            if (col == "description"):
+#                json_string +=  "\"<a href = '%s'>%s</a>\"," % (reverse('manage-case', kwargs={'case_id':case.id }), table_entry)
+#            else:
+#                json_string += "\"%s\"," % table_entry
+#        json_string += "],"
+#    
     #terribly inefficient, but quick fix to allow sorting of links....
 #    json_string += " ], \"aoColumns\": [ null,"
 #    for col in filter.gridpreference.display_columns.all():
 #        json_string += "{\"sType\": \"html\"},"
     #closing json_string
-    json_string += "] }"
-
-    return HttpResponse(json_string)
+    #json_string += "] }"
+    
+    #context['json_string'] = json_string
+    if request.GET.has_key('debug'):
+        template = 'ashandapp/json_debug.html'
+    else:
+        template = 'ashandapp/json.html'
+    return render_to_response(template, context, context_instance=RequestContext(request))
+    #return HttpResponse(json_string)
+    
 
 @login_required
 def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html"):
@@ -67,7 +86,7 @@ def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html
     Return a case queryset of all the patients that this caregiver is working on.        
     """
     context = {} 
-    columns = ['description','status', 'last_case_event','last_event_date']       
+    columns = ['patient', 'description','status', 'last_case_event','last_event_date']       
     context['colsort_array'] = [[4,'asc']]   
     do_json=False
     if len(request.GET.items()) > 0:
@@ -81,11 +100,23 @@ def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html
                                           'priority','category','status').filter(id__in=last_activity_list).distinct()
         assigned_cases = Case.objects.all().filter(assigned_to=request.user).distinct()
         
-        return  do_get_json((cases | assigned_cases), columns)
+        return  do_get_patient_case_json((cases | assigned_cases), columns, request)
     else:
         context['grid_name'] = 'grid_recents'
         context['json_qset_url'] = request.path + "?json"
         context['columns'] = columns
+        context['column_stype_json'] = get_column_types(columns)
+#        [                      
+#                      
+#                          {"sType": "html"},
+#                      
+#                          {"sType": "html"},
+#                      
+#                          {"sType": "html"},
+#                      
+#                          {"sType": "html"},
+#                      
+#                      ],
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -96,7 +127,7 @@ def grid_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html
     Return a case queryset of all the patients that this caregiver is working on.        
     """
     context = {} 
-    columns = ['description','status', 'last_case_event','last_event_by', 'last_event_date']
+    columns = ['patient', 'description','status', 'last_case_event','last_event_by', 'last_event_date']
     context['colsort_array'] = [[5,'desc']]          
     do_json=False
     if len(request.GET.items()) > 0:
@@ -109,11 +140,12 @@ def grid_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html
         qset= Case.objects.all().select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=careteam_cases)         
-        return  do_get_json(qset, columns)
+        return  do_get_patient_case_json(qset, columns, request)
     else:
         context['grid_name'] = 'grid_caregiver_cases'
         context['json_qset_url'] = request.path + "?json"
         context['columns'] = columns
+        context['column_stype_json'] = []
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -145,7 +177,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
     For a given provider, return all the cases merged for whom they triage
     """
     context = {}
-    columns = ['opened_by', 'description','opened_date',]
+    columns = ['patient', 'opened_by', 'description','opened_date',]
     context['colsort_array'] = [[3,'desc']]
     do_json=False
     if len(request.GET.items()) > 0:
@@ -161,11 +193,12 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
                                           'priority','category','status').filter(id__in=careteam_cases)        
         qset = qset.filter(status__state_class=constants.CASE_STATE_OPEN) #changed from CASE_STATE_NEW.  this should be a CASE_STATE_OPEN with a where on the "triage" status
         
-        return do_get_json(qset, columns)    
+        return do_get_patient_case_json(qset, columns, request)    
     else:               
         context['grid_name'] = 'grid_triage_cases'
         context['json_qset_url'] = request.path + "?json"
         context['columns'] = columns
+        context['column_stype_json'] = get_column_types(columns)
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -184,7 +217,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
             if item[0] == 'json':
                 do_json=True    
     context = {}        
-    columns = ['assigned_to','description','last_event_by', 'last_event_date']
+    columns = ['patient', 'assigned_to','description','last_event_by', 'last_event_date']
     context['colsort_array'] = [[5,'desc']]
     if do_json:
         from django.db import connection
@@ -194,7 +227,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
         qset = Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').filter(id__in=caselink_ids)
-        ret = do_get_json(qset, columns)
+        ret = do_get_patient_case_json(qset, columns, request)
 #        sql = [x['sql'] for x in connection.queries]
 #        fout = open('/home/dmyung/provider-sql','w')
 #        for s in sql:
@@ -207,6 +240,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
         context['json_qset_url'] = request.path + "?json" 
         
         context['columns'] = columns
+        context['column_stype_json'] = get_column_types(columns)
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -252,11 +286,12 @@ def grid_careteam_cases(request, careteam_id, template_name="ashandapp/cases/bar
             qset = careteam.closed_cases()
         elif viewmode == 'all':
             qset = careteam.all_cases()
-        return  do_get_json(qset, columns)
+        return  do_get_patient_case_json(qset, columns, request)
     else:
         context['grid_name'] = 'grid_caregiver_cases'
         context['json_qset_url'] = request.path + "?mode=%s&json" % viewmode
         context['columns'] = columns
+        context['column_stype_json'] = get_column_types(columns)
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -291,11 +326,12 @@ def grid_cases_for_object(request, content_type_name=None, content_uuid=None, te
             cases_qset = obj.cases.all()
         elif isinstance(obj, CarePlanItem):
             pass    
-        return do_get_json(cases_qset, DEFAULT_COLUMNS)
+        return do_get_patient_case_json(cases_qset, DEFAULT_COLUMNS, request)
     else:        
         context['obj'] = obj
         context['obj_type'] = content_type_name    
         
         context['columns'] = DEFAULT_COLUMNS
+        context['column_stype_json'] = get_column_types(DEFAULT_COLUMNS)
         return render_to_response(template_name, context, context_instance=RequestContext(request))
     
