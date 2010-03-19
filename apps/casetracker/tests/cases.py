@@ -23,13 +23,14 @@ def create_user(username='mockuser', password='mockmock'):
 
 class EventActivityVerificationTest(TestCase):
     fixtures = ['0-caseaction.json',
-                '1-category.json',
-                '2-eventactivity.json',
                 '3-priority.json',
-                '4-status.json',
                 ]
 
     def setUp(self):
+        from ashandapp.caseregistry import issue
+        from ashandapp.caseregistry import question
+        issue.register_category()        
+        question.register_category()         
         create_user()
 
     def testCreateCase(self):
@@ -68,7 +69,8 @@ class EventActivityVerificationTest(TestCase):
         case = Case.objects.all().get(description = "this is a case made by the test case")
         case.description = "i just changed it, foo"
         case.last_edit_by = user
-        case.save()
+        activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
+        case.save(activity=activity, save_comment="editing in testCaseModifyDescription")
         
         
         events = CaseEvent.objects.filter(case=case)
@@ -107,7 +109,9 @@ class EventActivityVerificationTest(TestCase):
             newcase = self._makeCase(user)
             newcase.parent_case = case
             newcase.last_edit_by = user
-            newcase.save()
+            activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            newcase.save(activity=activity, save_comment="editing in testCaseCreateChildCases")
+            
             
         self.assertEqual(case.child_cases.count(), CHILD_CASES)
         

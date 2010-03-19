@@ -165,6 +165,7 @@ def register_category():
 #    registry.RegisterActivity(IssueNew, IssueEventAssign)
     
     registry.RegisterStatus(IssueOpen)    
+    registry.RegisterActivity(IssueOpen, IssueEventEdit)
     registry.RegisterActivity(IssueOpen, IssueEventComment)
     registry.RegisterActivity(IssueOpen, IssueEventAssign)
     registry.RegisterActivity(IssueOpen, IssueEventResolve)

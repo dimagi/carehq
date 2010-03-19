@@ -168,6 +168,7 @@ def register_category():
 #    registry.RegisterActivity(QuestionNew, QuestionEventAssign)
     
     registry.RegisterStatus(QuestionOpen)    
+    registry.RegisterActivity(QuestionOpen, QuestionEventEdit)
     registry.RegisterActivity(QuestionOpen, QuestionEventComment)
     registry.RegisterActivity(QuestionOpen, QuestionEventAssign)
     registry.RegisterActivity(QuestionOpen, QuestionEventResolve)
