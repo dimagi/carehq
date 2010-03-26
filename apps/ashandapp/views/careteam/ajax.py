@@ -9,7 +9,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam,ProviderLink
+from ashandapp.models import CareTeam,ProviderLink
 from provider.models import Provider
 from patient.models import Patient
 from django.db.models import Q

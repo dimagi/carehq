@@ -16,7 +16,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import Context, loader
 
 from casetracker.models import Case, Filter, CaseEvent
-from ashandapp.models import CaseProfile, CareTeam, ProviderLink
+from ashandapp.models import CareTeam, ProviderLink
 from provider.models import Provider
 from patient.models import Patient
 from careplan.models import CarePlan, CarePlanItem
@@ -106,17 +106,6 @@ def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html
         context['json_qset_url'] = request.path + "?json"
         context['columns'] = columns
         context['column_stype_json'] = get_column_types(columns)
-#        [                      
-#                      
-#                          {"sType": "html"},
-#                      
-#                          {"sType": "html"},
-#                      
-#                          {"sType": "html"},
-#                      
-#                          {"sType": "html"},
-#                      
-#                      ],
         return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -313,6 +302,7 @@ def grid_cases_for_object(request, content_type_name=None, content_uuid=None, te
     
     if do_json:
         user = request.user          
+        columns = DEFAULT_COLUMNS
         if isinstance(obj, CareTeam):
             cases_qset = obj.all_cases()
         elif isinstance(obj, Provider):
@@ -326,7 +316,11 @@ def grid_cases_for_object(request, content_type_name=None, content_uuid=None, te
             cases_qset = obj.cases.all()
         elif isinstance(obj, CarePlanItem):
             pass    
-        return do_get_patient_case_json(cases_qset, DEFAULT_COLUMNS, request)
+        elif isinstance(obj, Filter):
+            cases_qset = obj.get_filter_queryset()
+            columns = obj.gridpreference.get_display_columns
+            
+        return do_get_patient_case_json(cases_qset, columns, request)
     else:        
         context['obj'] = obj
         context['obj_type'] = content_type_name    

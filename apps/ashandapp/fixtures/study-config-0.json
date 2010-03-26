@@ -446,7 +446,7 @@
   }, 
   {
     "pk": 2, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 16:41:53", 
@@ -456,7 +456,7 @@
   }, 
   {
     "pk": 3, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 16:46:38", 
@@ -466,7 +466,7 @@
   }, 
   {
     "pk": 4, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 17:12:25", 

@@ -27,7 +27,7 @@ GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 
 #providers are individual entities set as "profiles" from the django user
 
-class CaseProfile(models.Model):
+class FilterProfile(models.Model):
     """Proof of concept case/filter view stuff for user profile
     This will need to be replaced by a more sophisticated tracking (for login and sessions)
     as well as user profile management

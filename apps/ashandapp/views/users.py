@@ -5,7 +5,7 @@ from django.template import RequestContext
 import logging
 from django.contrib.auth.models import User
 from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam, ProviderLink, CaregiverLink
+from ashandapp.models import CareTeam, ProviderLink, CaregiverLink
 from provider.models import Provider
 from patient.models import Patient
 

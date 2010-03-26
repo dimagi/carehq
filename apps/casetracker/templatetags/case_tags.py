@@ -6,7 +6,7 @@ from django.template import Context, Template
 
 from datetime import datetime
 register = template.Library() 
- 
+     
 @register.simple_tag 
 def time_interval(date):
     if date > datetime.utcnow():

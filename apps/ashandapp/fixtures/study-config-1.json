@@ -66,7 +66,7 @@
     "pk": 79, 
     "model": "auth.permission", 
     "fields": {
-      "codename": "add_caseprofile", 
+      "codename": "add_filterprofile", 
       "name": "Can add case profile", 
       "content_type": 27
     }
@@ -129,7 +129,7 @@
     "pk": 80, 
     "model": "auth.permission", 
     "fields": {
-      "codename": "change_caseprofile", 
+      "codename": "change_filterprofile", 
       "name": "Can change case profile", 
       "content_type": 27
     }
@@ -192,7 +192,7 @@
     "pk": 81, 
     "model": "auth.permission", 
     "fields": {
-      "codename": "delete_caseprofile", 
+      "codename": "delete_filterprofile", 
       "name": "Can delete case profile", 
       "content_type": 27
     }
@@ -1596,8 +1596,8 @@
     "pk": 27, 
     "model": "contenttypes.contenttype", 
     "fields": {
-      "model": "caseprofile", 
-      "name": "case profile", 
+      "model": "filterprofile", 
+      "name": "filter profile", 
       "app_label": "ashandapp"
     }
   }, 
@@ -2663,7 +2663,7 @@
       "closed_date": null, 
       "resolved_date": "2010-02-04 17:58:52", 
       "priority": 1, 
-      "next_action_date": "2010-02-05 12:57:18", 
+       
       "orig_description": "Rashes are getting out of control", 
       "resolved_by": 155, 
        
@@ -2690,7 +2690,7 @@
       "closed_date": null, 
       "resolved_date": "2010-02-04 17:48:25", 
       "priority": 4, 
-      "next_action_date": null, 
+       
       "orig_description": "Can I be present at the next visit?", 
       "resolved_by": 160, 
        
@@ -2717,7 +2717,7 @@
       "resolved_date": null, 
       "last_event_type": null, 
       "priority": null, 
-      "next_action_date": null, 
+       
       "assigned_to": 1, 
       "shared": 1, 
       "last_event_date": null, 
@@ -2742,7 +2742,7 @@
       "resolved_date": null, 
       "last_event_type": null, 
       "priority": null, 
-      "next_action_date": null, 
+       
       "assigned_to": 1, 
       "shared": 1, 
       "last_event_date": null, 
@@ -3132,7 +3132,7 @@
   }, 
   {
     "pk": 2, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 17:59:17", 
@@ -3142,7 +3142,7 @@
   }, 
   {
     "pk": 3, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 17:59:07", 
@@ -3152,7 +3152,7 @@
   }, 
   {
     "pk": 4, 
-    "model": "ashandapp.caseprofile", 
+    "model": "ashandapp.filterprofile", 
     "fields": {
       "last_login_from": "127.0.1.1", 
       "last_login": "2010-02-04 17:57:44", 

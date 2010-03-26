@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 {% load i18n %}
-
+{% load casefilter_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <title>{% block title %}{% endblock %}{% block title_suffix %} :: ASHand{% endblock %}</title>
@@ -17,40 +17,85 @@
 	        <![endif]-->
 
 	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand.css" type="text/css">                   
-            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.8rc1.custom.css" type="text/css">	        
+            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.8.custom.css" type="text/css">	        
 	        {% block page_stylesheets %}{% endblock %}        
         {% endblock %} {# stylesheets #}
         
         <!-- javascripts (global, app, page) -->
-        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.4.1.min.js"></script>        
-		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.8rc1.custom.min.js"></script>
+        <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.4.2.min.js"></script>        
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.8.custom.min.js"></script>
 		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.address-1.1.min.js"></script>
 		
-		
-		{#<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.3.2.min.js"></script>#}        
-        {#<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.7.2.min.js"></script>#}    
-        {% for js in javascripts %}<script type="text/javascript" src="{{ js }}"></script>{% endfor %}
-        
-        {% block javascripts %}
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.js"></script>
+		<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.css">
+				
         <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/careteam.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.cookie.yc.js"></script>
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.cookie.yc.js"></script>		
+		<script type="text/javascript">
+		(function($) {
+			$(document).ready(function(){
+				$('#navbar-menu').ptMenu({vertical:false});
+			});
+		})(jQuery);
+		</script>
 		
-        {% endblock %}
+		<style type="text/css">
+			li.potato-menu-item {
+				font-size:12px;
+				outline: 0; 
+				margin:0 4px 0 0; 
+				   padding: .4em 1em; 
+				   text-decoration:none !important; 
+				   cursor:pointer; 
+				   position: relative; 
+				   
+				   zoom: 1; 
+				  
+			}
+			ul.potato-menu-group {
+				border-top: 1px solid #666;
+				background: #333;
+			}
+			ul.potato-menu-group a {
+				width: 200px;
+			}
+			.potato-menu a {
+				padding:5px 12px 5px 12px;
+				background: #F6A828;
+				color: #fff;
+				padding-right:20px;
+				 
+			}
+			.potato-menu a:hover {
+				background: #666;
+			}
+			.potato-menu-has-vertical > a {
+				background: #F6A828 url({{MEDIA_URL}}ashandapp/img/arrow-down.png) 95% 50% no-repeat;
+			}
+			.potato-menu-has-holizontal > a {
+				background: #F6A828 url(/images/icons/fammini/arrow_right.gif) right no-repeat;
+			}
+			.potato-menu-has-vertical > a:hover {
+				background: #666 url({{MEDIA_URL}}ashandapp/img/arrow-down.png) 95% 50% no-repeat;
+				
+			}
+			.potato-menu-has-holizontal > a:hover {
+				background: #666 url(/images/icons/fammini/arrow_right.gif) right no-repeat;
+			}			
+		</style>
         {% block extrahead %}{% endblock %}
     </head>
     <body class="container">    
-      	{% block header %}
-      		{% block auth %}
-      		
-		    <div class="span-8 prepend-16" id="auth">
-		        {% if user.is_authenticated %}
-		            <p><strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a> </p>
-		        {% else %}
-		            {#<p><a href="/accounts/login/">{% trans "Log in" %}</a></p>#}
-		        {% endif %}		        
-        	</div>
-     		{% endblock %} {# auth #}
-      	
+      	{% block header %}      	
+			{% block auth %}      		
+			    <div class="span-7 prepend-17">
+			        {% if user.is_authenticated %}
+			            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
+			        {% else %}
+			            <a href="/accounts/login/">{% trans "Log in" %}</a>
+			        {% endif %}		        
+	        	</div>
+	     		{% endblock auth %}	
       		<div class="span-24"> <!-- header class -->
                  {% block branding %}
                  <div class="span-2" id="branding">                    
@@ -61,34 +106,23 @@
                  {% endblock %} {# branding #}                  
               
               	{% block page_tabs %}					
-              	{% if user.is_authenticated %}			
-				<div class="span-22 last">				
-					<div id ="modernbricksmenu2" class="span-20 last">					
-						<ul>
-						<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Home</a></li>                        
-						{% if request.is_patient %}
-						<li><a href="{%url ashandapp.views.careteam.network.my_careteam %}">My Care Team</a></li>
-						{% endif%}
-						
-						{% if request.is_provider %}
-						<li><a href="{% url ashandapp.views.careteam.network.my_patients %}">My Patients</a></li>
-						{% endif%}
-						
-						{% if request.is_caregiver %}
-						<li><a href="{%url ashandapp.views.careteam.network.my_care_recipients %}">People I Care For</a></li>
-						{% endif%}
-						
-						<li><a href="{%url ashandapp.views.dashboard.my_dashboard %}">Help</a></li>           
-						</ul>					
-					</div>
-					<div id="modernbricksmenuline">&nbsp;</div>						
+              	{% if user.is_authenticated %}
+				
+				<div class="span-22 last">										
+					<ul id="navbar-menu"> 
+						<li><a href="{% url my_dashboard %}" class="ui-state-default ui-corner-all">Dashboard</a></li> 
+						<li><a href="#" class="ui-state-default ui-corner-all">List Cases</a></li> 
+						<li><a href="#" onclick="return false" class="ui-state-default ui-corner-all">Case Filter</a>						
+								{% get_casefilters_for_user_ul request.user %}
+						</li> 
+						<li><a href="#" class="ui-state-default ui-corner-all">My Care Plan</a></li> 
+						<li><a href="#" class="ui-state-default ui-corner-all">My Care Team</a></li>
+						<li><a href="#" class="ui-state-default ui-corner-all">My Patients</a></li>
+						<li><a href="#" class="ui-state-default ui-corner-all">Ask a Question</a></li>
+					</ul>									
 					{% endif %}
-				</div>				
-				{% endblock %}{# page tabs#}
-                 
-                 
-                             
-            	
+				</div>					
+				{% endblock page_tabs%}            	
             </div> <!-- end header class -->
             
             {% endblock %} {#header#}

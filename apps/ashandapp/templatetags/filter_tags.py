@@ -91,8 +91,7 @@ def render_case_column(case, column, plain_text=True):
             data = CareTeamCaseLink.objects.get(case=case).careteam 
         else:        
             data = getattr(case, column)
-        
-        print "render_case_column: %s %s %s" % (column, plain_text, data.__class__)        
+                
         datatype = data.__class__
         if datatype == datetime:
             if data > datetime.utcnow():

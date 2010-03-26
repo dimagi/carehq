@@ -15,9 +15,9 @@ class UserRevision(VersionAdmin):
 
 admin.site.register(User, UserRevision)
 
-class CaseProfileAdmin(VersionAdmin):
+class FilterProfileAdmin(VersionAdmin):
     list_display = ('user','last_filter','last_login','last_login_from')
-admin.site.register(CaseProfile, CaseProfileAdmin)
+admin.site.register(FilterProfile, FilterProfileAdmin)
     
 
 class ProviderLinkAdminInline(admin.TabularInline):#StackedInlineTabularInline

@@ -7,13 +7,14 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from casetracker.models import Filter, Case, CaseEvent
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 from provider.models import Provider
 
 
-from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,CaseProfile
+from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,FilterProfile
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
@@ -29,13 +30,13 @@ def get_json_for_paging(request):
     length = None
 
     try:
-        profile = CaseProfile.objects.get(user = user)                
+        profile = FilterProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
         #make the new case profile
-        profile = CaseProfile()
+        profile = FilterProfile()
         profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
+        profile.filter = Filter.objects.all()[0]
+        profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
     
     
     if len(request.GET.items()) > 0:
@@ -109,13 +110,13 @@ def my_dashboard_tab(request, template_name="ashandapp/filter_datatable.html"):
     display_filter = None    
         
     try:
-        profile = CaseProfile.objects.get(user = user)                
+        profile = FilterProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
         #make the new case profile
-        profile = CaseProfile()
+        profile = FilterProfile()
         profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
+        profile.filter = Filter.objects.all()[0]
+        profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
     
     
     if len(request.GET.items()) > 0:
@@ -136,11 +137,7 @@ def my_dashboard_tab(request, template_name="ashandapp/filter_datatable.html"):
     profile.last_filter = display_filter
     profile.save()        
     
-    shared_filters = Filter.objects.filter(shared=True)
-    context['shared_filters'] = shared_filters
-    context['grid_name'] = "filter-%d" % profile.last_filter.id
-    context['display_filter'] = display_filter
-        
+    context['display_filter'] = display_filter        
     context['profile'] = profile    
     context['filter'] = profile.last_filter
     
@@ -160,6 +157,14 @@ def my_dashboard_tab(request, template_name="ashandapp/filter_datatable.html"):
         
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+
+@login_required
+def view_caselist_fbstyle(request, filter_id):
+    context = {}
+    for key, value in request.GET.items():            
+        if key == "sort":
+            sorting = value
+
 @login_required
 def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     context = {}
@@ -167,16 +172,17 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     
     
     ########################
-    #get the shared filters
+    #get the logged in user's filter profile, if the profile doesn't exist, make a new FilterProfile and arbitrarily use the first case filter
+    # if it does exist, load up the last filter used, OR whatever the query string is saying it is.
     display_filter = None        
     try:
-        profile = CaseProfile.objects.get(user = user)                
+        profile = FilterProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
         #make the new case profile
-        profile = CaseProfile()
+        profile = FilterProfile()
         profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
+        profile.filter = Filter.objects.all()[0]
+        profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
     
     
     if len(request.GET.items()) > 0:
@@ -195,38 +201,38 @@ def my_dashboard(request, template_name="ashandapp/dashboard.html"):
     profile.last_filter = display_filter
     profile.save()        
     
-    shared_filters = Filter.objects.select_related('gridpreference').filter(shared=True)
-    if request.is_caregiver:
-        shared_filters = [shared_filters[1]] #totally nasty hack, we don't want the "due today"
-        
-    context['shared_filters'] = shared_filters    
-    context['display_filter'] = display_filter    
-    
     context['profile'] = profile    
-    context['filter'] = profile.last_filter
+    context['filter'] = display_filter
     context['gridpreference'] = context['filter'].gridpreference
     ############################
     
+#    #if a patient, get their careteam's cases
+#    if request.is_patient:
+#        pass
+#    
+#    #if a caregiver, get querysets for all the patients that they care for
+#    if request.is_caregiver:        
+#        context['user_grids'].append(('caregiver_cases', 'People I Care For', reverse('grid_caregiver_cases')))    
+#    
+#    if request.is_provider:
+#        #if a provider/nurse, get the inbound triage for all their patients
+#        #if a doctor, just get all cases for all their patients            
+#        if request.provider.job_title == 'Nurse':            
+#            context['user_grids'].append(('triage_cases', 'Inbound Triage',reverse('grid_triage_cases')))
+#        context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
+#                    
+#    context['recent_activity_grid'] = [('recent_cases', 'Recent Activity', reverse('grid_recent_activity'))]
+
+    #{{json_qset_url}}
+    #filter_columns = display_filter.gridpreference.get_display_columns.values_list('name', flat=True)
+    
+    filter_columns = display_filter.gridpreference.gridpreference_displayorder.all().values_list('column__name', flat=True)
+    print filter_columns
+    context['column_stype_json'] = queries.get_column_types(filter_columns)
+    context['obj_type'] = ContentType.objects.get_for_model(display_filter).model
+    context['obj'] = display_filter
+    context['grid_name'] = display_filter.id
+    context['columns'] = filter_columns
     
     
-    #get the specific case querysets based upon the user logged in.
-    context['user_grids'] = []
-    
-    #if a patient, get their careteam's cases
-    if request.is_patient:
-        pass
-    
-    #if a caregiver, get querysets for all the patients that they care for
-    if request.is_caregiver:        
-        context['user_grids'].append(('caregiver_cases', 'People I Care For', reverse('grid_caregiver_cases')))    
-    
-    if request.is_provider:
-        #if a provider/nurse, get the inbound triage for all their patients
-        #if a doctor, just get all cases for all their patients            
-        if request.provider.job_title == 'Nurse':            
-            context['user_grids'].append(('triage_cases', 'Inbound Triage',reverse('grid_triage_cases')))
-        context['user_grids'].append(('patient_cases', 'My Patients', reverse('grid_provider_patient_cases')))
-                    
-    context['recent_activity_grid'] = [('recent_cases', 'Recent Activity', reverse('grid_recent_activity'))]
-            
     return render_to_response(template_name, context, context_instance=RequestContext(request))

@@ -54,8 +54,6 @@ def _get_next(request):
     return next
 
 
-
-
 #
 #def close_or_resolve_case(request, case_id, edit_mode=None, template_name = 'casetracker/manage/edit_case.html'):
 #    context = {}    
@@ -187,9 +185,6 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     for key, value in request.GET.items():            
         if key == 'activity':            
             activity = EventActivity.objects.get(slug=value)
-#    if activity == None:
-#        activity = EventActivity.objects.get(slug=constants.CASE_EVENT_VIEW)
-#        not all cases have a case_event_view activity yet defined.  not sure if this should be defined in the audit log or something else
     context['case'] = thecase
    
     template_name = thecase.category.bridge.read_template(request, context)    
@@ -300,20 +295,18 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
         context['formatting'] = True
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
-#def view_filter(request, filter_id):
-#    context = {}
-#    showfilter = False
-#    for item in request.GET.items():
-#        if item[0] == 'filterinfo':
-#            showfilter = True
-#    
-#    if showfilter:
-#        template_name = "casetracker/show_filter.html"
-#        return render_to_response(context, template_name)
-#    else:
-#        #get the filter from the db
-#        filter = Filter.objects.get(id=filter_id)
-#        gridpref = GridPreference.objects.get(filter=filter)
-#        template_name='casetracker/case_datagrid.html'   
-#        context['cases'] = filter.get_filter_queryset()
-#        return render_to_response(context, template_name)        
+def view_filter(request, filter_id):
+    context = {}
+    showfilter = False        
+    #get the filter from the db
+    filter = Filter.objects.get(id=filter_id)
+    gridpref = filter.gridpreference
+    
+    for key, value in request.GET.items():            
+        if key == "groupBy":
+            group_by = value
+    
+    context['filter'] = filter
+    context['gridpref'] = gridpref    
+    template_name='casetracker/filter/filter_simpletable.html'    
+    return render_to_response(template_name, context, context_instance=RequestContext(request))        

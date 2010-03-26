@@ -1,0 +1,104 @@
+{% extends "base.html"%}
+{% load filter_tags %}
+
+{% block content %}
+
+<h2>Filter {{filter.description}}</h2>
+<table>
+	<tr>
+	<td>Creator:</td> <td>{{filter.creator}}</td>
+	</tr>
+	<tr>
+	<td>Shared:</td><td>{{filter.shared}}</td>
+	</tr>
+</table>
+<h3>Filter Params:</h3>
+<table>
+	<tr>
+	<td>Category:</td><td> {{filter.category}}</td>
+	</tr>
+	<tr>
+	<td>Status:</td><td> {{filter.status}}</td>
+	</tr>
+	<tr>
+	<td>Priority:</td><td> {{filter.priority}}</td>
+	</tr>
+	<tr>
+	<td>Assigned To: </td><td>{{filter.assigned_to}}</td>
+	</tr>
+	<tr>
+	<td>Opened by:</td><td> {{filter.opened_by}}</td>
+	</tr>
+	<tr>
+	<td>Last Edit by: </td><td>{{filter.last_edit_by}}</td>
+	</tr>
+	<tr>
+	<td>Resolved By:</td><td> {{filter.resolved_by}}</td>
+	</tr>
+	<tr>
+	<td>Closed By: </td><td>{{filter.closed_by}}</td>
+	</tr>
+	<tr>
+	<td>Opened Date: </td><td>{{filter.opened_date}}</td>
+	</tr>
+	<tr>
+	<td>Resolved Date:</td><td> {{filter.resolved_date}}</td>
+	</tr>
+	<tr>
+	<td>Last Edit Date:</td><td> {{filter.last_edit_date}}</td>
+	</tr>
+	<tr>
+	<td>Resolved By:</td><td> {{filter.resolved_by}}</td>
+	</tr>
+	<tr>	
+	<td>Last Event: {{filter.creator}}</td>
+	</tr>
+	<tr>
+	<td>Last Event Date: {{filter.creator}}</td>
+	</tr>
+	<tr>
+	<td>Last Event By: {{filter.creator}}</td>
+	</tr>	
+</table>
+
+<h2>Display Options</h2>
+<table>
+	<tr>
+		<th>Display Order</th>
+		{% for col in filter.gridpreference.get_display_columns %}
+			<td>{{col}}</td>
+		{%endfor %}
+	</tr>	
+	
+	<tr>
+		<th>Sort</th>
+		{% for col in filter.gridpreference.get_sort_columns_raw %}
+			<td>{{col}}</td>
+		{%endfor %}
+	</tr>
+	
+</table>
+
+{% with filter.get_filter_queryset as cases %}
+<h2>Query Output</h2>
+<strong>Num Cases:</strong> {{cases.count}}
+<table>
+	<thead>
+		<tr>		
+			{% for col in filter.gridpreference.get_display_columns %}
+				<th>{% pretty_column col %}</th>
+			{%endfor %}			
+		</tr>
+	</thead>
+		{% for case in cases %}
+			<tr>
+			{% for col in filter.gridpreference.get_display_columns %}
+				<td>
+					{% case_column_plain case col %}
+				</td>
+			{% endfor %}
+			</tr>
+		{% endfor %}
+</table>
+{% endwith %}
+{% endblock content %}

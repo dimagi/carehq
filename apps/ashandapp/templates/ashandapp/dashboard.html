@@ -10,30 +10,8 @@
 </script> 
 {% endblock %}
 {% block content %}
-<h2> Home :: My Case Views</h2>
-{% comment %}
-<p>Last login: {{profile.last_login|date}}</p>
-<p>Last login from: {{profile.last_login_from}}</p>
-{% endcomment %}
+<h2> Dashboard :: {{filter.description}}</h2>
 <div id="tabs" class="ui-tabs span-24"> 
-	<ul>	   
-		
-	   {% for tabid, tab_title, json_qset_url in user_grids %}	       	
-	       <li>
-	           <a href="{{json_qset_url}}" title="{{tab_title}}" rel="address:{{json_qset_url}}">{{tab_title}}</a>        
-	       </li>	       
-	   {% endfor %}	
-	{% for filter in shared_filters %}
-		<li>
-			<a href="{% url my_dashboard_tab %}?filter={{filter.id}}" title="{{filter.description}}" rel="address:{% url my_dashboard_tab %}?filter={{filter.id}}">{{filter.description}}</a>
-		</li>
-	{% endfor %}	
-	
-	{% for tabid, tab_title, json_qset_url in recent_activity_grid %}				       	
-	       <li style="float:right;">
-	           <a href="{{json_qset_url}}" title="{{tab_title}}" rel="address:{{json_qset_url}}">{{tab_title}}</a>        
-	       </li>	       
-	{% endfor %}	
-	</ul>
+{% include "ashandapp/cases/json/queryset.html" %}
 </div>
 {% endblock %}

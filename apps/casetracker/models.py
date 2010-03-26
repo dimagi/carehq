@@ -125,6 +125,8 @@ class Category(models.Model):
     class Meta:
         verbose_name = "Category Type"
         verbose_name_plural = "Category Types"
+        ordering = ['display']
+        
 
 
 
@@ -149,6 +151,7 @@ class CaseAction(models.Model):
     class Meta:
         verbose_name = "Case Action Type"
         verbose_name_plural = "Case Action Types"
+        ordering = ['description']
 
 
     
@@ -166,6 +169,7 @@ class Priority(models.Model):
     class Meta:
         verbose_name = "Priority Type"
         verbose_name_plural = "Priority Types"
+        ordering = ['magnitude']
 
 
 class StatusActivities(models.Model):
@@ -179,7 +183,7 @@ class StatusActivities(models.Model):
     legal_activity = models.ForeignKey("EventActivity", related_name="legal_for_status")
     
     class Meta:
-        unique_together=('status','legal_activity')
+        unique_together = ('status', 'legal_activity')
 
 class Status (models.Model):
     """
@@ -200,7 +204,7 @@ class Status (models.Model):
     @property
     def allowable_actions(self):
         if not hasattr(self, '_allowable_actions'):            
-            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity',flat=True)
+            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
             self._allowable_actions = EventActivity.objects.select_related().filter(id__in=legal_activities)        
         return self._allowable_actions
     
@@ -224,7 +228,7 @@ class Status (models.Model):
     class Meta:
         verbose_name = "Case Status Type"
         verbose_name_plural = "Case Status Types"
-        ordering = ['category', 'id']
+        ordering = ['category', 'display']
     
 
 
@@ -254,8 +258,8 @@ class EventActivity(models.Model):
     ######################
     #target_status is currently unused (3/17/2010), however there may come a time for events to be totally manage
     #via the DB, so this field is being kept live in the model even though it has no use at the moment.
-    target_status = models.ForeignKey("Status", blank=True, null=True, 
-                                      help_text = _("This event activity may alter the case's status.  If it does, it must exist here.",
+    target_status = models.ForeignKey("Status", blank=True, null=True,
+                                      help_text=_("This event activity may alter the case's status.  If it does, it must exist here.",
                                     related_name="set_by_activities"))
     
 
@@ -273,6 +277,7 @@ class EventActivity(models.Model):
     class Meta:
         verbose_name = "Case Event Activity Type"
         verbose_name_plural = "Case Event Activity Types"        
+        ordering=['category','event_class', 'slug']
    
     @property
     def bridge(self): #from handler
@@ -610,7 +615,9 @@ class Filter(models.Model):
         (-THREE_MONTHS, 'In the past three months'),
         (-SIX_MONTHS, 'In the past six months'),
         (-ONE_YEAR, 'In the past year'),
-    )
+    )    
+    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    
     #metadata about the query
     description = models.CharField(max_length=64)
     creator = models.ForeignKey(User, related_name="filter_creator")
@@ -621,25 +628,30 @@ class Filter(models.Model):
     status = models.ForeignKey(Status, null=True, blank=True)
     priority = models.ForeignKey(Priority, null=True, blank=True)
     
-    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name="filter_assigned_to")
     opened_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_opened_by")
+    assigned_to = models.ForeignKey(User, null=True, blank=True, related_name="filter_assigned_to")
     last_edit_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_last_edit_by")    
     resolved_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_resolved_by")
     closed_by = models.ForeignKey(User, null=True, blank=True, related_name="filter_closed_by")
         
     opened_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
+    assigned_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)    
     last_edit_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     resolved_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     closed_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     
-    next_action_date = models.IntegerField(choices=TIME_DURATION_FUTURE_CHOICES, null=True, blank=True)    
+    #next_action_date = models.IntegerField(choices=TIME_DURATION_FUTURE_CHOICES, null=True, blank=True) #should be deprecated    
     
     #case Event information
     last_event_type = models.ForeignKey(EventActivity, null=True, blank=True)
     last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(User, null=True, blank=True)
     
-        
+
+    def get_absolute_url(self):
+        #return reverse('view-filter', args=[self.id])
+        return '/filter/%s' % self.id
+
     #this should come in as a dictionary of key-value pairs that are compatible with a 
     #django query when resolved as a kwargs.
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
@@ -669,7 +681,8 @@ class Filter(models.Model):
                 #run the query with the threadlocals current user                
                 case_query_arr.append(Q(assigned_to=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(assigned_to=self.assigned_to))        
+                case_query_arr.append(Q(assigned_to=self.assigned_to))       
+         
         if self.opened_by:
             if self.opened_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
@@ -699,6 +712,9 @@ class Filter(models.Model):
         if self.opened_date:
             compare_date = utcnow + timedelta(days=self.opened_date)
             case_query_arr.append(Q(opened_date__gte=compare_date))
+        if self.assigned_date:
+            compare_date = utcnow + timedelta(days=self.assigned_date)
+            case_query_arr.append(Q(assigned_date__gte=compare_date))
         if self.last_edit_date:
             compare_date = utcnow + timedelta(days=self.last_edit_date)
             case_query_arr.append(Q(last_edit_date__gte=compare_date))
@@ -708,12 +724,6 @@ class Filter(models.Model):
         if self.closed_date:
             compare_date = utcnow + timedelta(days=self.closed_date)
             case_query_arr.append(Q(closed_date__gte=compare_date))
-        
-        
-        if self.next_action_date:
-            compare_date = utcnow + timedelta(days=self.next_action_date)
-            case_query_arr.append(Q(next_action_date__lte=compare_date))
-                             
         
         #ok, this is getting a little tricky.
         #query CaseEvent and we will get the actual cases.  we will get the id's of the cases and apply
@@ -802,6 +812,7 @@ class GridSort(models.Model):
             ascend = "descending"
         return "GridSort - %s %s" % (self.column, ascend)
     
+    
     class Meta:
         verbose_name = "Grid column sort ordering"
         verbose_name_plural = "Grid column sort order definitions"
@@ -825,19 +836,20 @@ class GridOrder (models.Model):
         verbose_name = "Grid column display ordering"
         verbose_name_plural = "Grid column display order definitions"
         ordering = ['order']
+    def __unicode__(self):
+        return "%d - %s" % (self.order, self.column.name)
     
 
 class GridPreference(models.Model):
     """
     A filter will have a one to one mapping to this model for showing how to display the given grid.    
     """
+    id = models.CharField(_('Unique id'), max_length=32, unique=True, editable=False, default=make_uuid, primary_key=True) #primary_key override?
     filter = models.OneToOneField(Filter, related_name='gridpreference') #this could be just a foreign key and have multiple preferences to a given filter.
     
     display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
     sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name="sort_columns")
-    
-    
-    
+        
     def __unicode__(self):
         return "Grid Display Preference: %s" % self.filter.description    
     
@@ -850,9 +862,12 @@ class GridPreference(models.Model):
     def get_display_columns(self):
         """
         returns the display columns in order of the through class's definition
-        """
-        col_orders = self.gridpreference_displayorder.all().values_list('column__id', flat=True)
-        return GridColumn.objects.all().filter(id__in=col_orders)
+        """        
+        #gridpreference_displayorder.all().values_list('column__name', flat=True)
+#        print "get display columns:"
+#        print self.gridpreference_displayorder.all()
+        return self.gridpreference_displayorder.all().values_list('column__name', flat=True)
+        
     
     @property
     def get_sort_columns(self):
@@ -861,6 +876,15 @@ class GridPreference(models.Model):
         """
         col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
         return GridColumn.objects.all().filter(id__in=col_sort_orders)    
+    
+    @property
+    def get_sort_columns_raw(self):
+        """
+        returns the display columns in order of the through class's definition
+        """
+        col_sort_orders = self.gridpreference_sort.all()
+        
+        return [x.sort_display for x in col_sort_orders]    
     
     @property
     def get_colsort_jsonarray(self):
