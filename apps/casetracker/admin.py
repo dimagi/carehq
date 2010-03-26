@@ -94,7 +94,8 @@ class ColumnOrderInline(admin.TabularInline):
 
 
 class GridColumnAdmin(admin.ModelAdmin):
-    list_display= ('id','name')
+    list_display= ('id','name', 'display', 'column_type', 'attribute')
+    list_filter = ['column_type']
 admin.site.register(GridColumn, GridColumnAdmin)
 
 class GridPreferenceAdmin(admin.ModelAdmin):

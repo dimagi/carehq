@@ -24,7 +24,7 @@ from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
 
-from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status
+from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status, Priority, Category
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
 
@@ -295,18 +295,35 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
         context['formatting'] = True
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+
+
+
 def view_filter(request, filter_id):
     context = {}
     showfilter = False        
-    #get the filter from the db
     filter = Filter.objects.get(id=filter_id)
     gridpref = filter.gridpreference
     
+    group_by = None
     for key, value in request.GET.items():            
         if key == "groupBy":
-            group_by = value
+            group_by_col = value
+    
+    split_headings = True
+    qset = filter.get_filter_queryset()    
+    
     
     context['filter'] = filter
-    context['gridpref'] = gridpref    
-    template_name='casetracker/filter/filter_simpletable.html'    
-    return render_to_response(template_name, context, context_instance=RequestContext(request))        
+    context['gridpref'] = gridpref
+    
+        
+    context['filter_cases'] = qset
+    template_name='casetracker/filter/filter_simpletable.html'
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+
+
+
+
+

@@ -32,7 +32,8 @@
 	    {% endif %}
 		<a href="{% url manage-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
 	{% endblock case_actions %}
-		
+
+	
 	{% block caselink_area %}	
 		<h3>This Issue </h3>
 		{% for careteam in case_careteams %}

@@ -13,16 +13,10 @@ from datetime import datetime, timedelta
 from middleware import threadlocals
 
 from django.core.urlresolvers import reverse
-import uuid
 from django.utils.translation import ugettext_lazy as _
 
-import constants as constants
-#from casetracker.CategoryHandler import CategoryHandlerBase, DefaultCategoryHandler
-
-
-
-#from django.db.models.fields.related import RelatedManager, ManyRelatedManager
-
+from casetracker import constants
+import uuid
 
 def make_uuid():
     return uuid.uuid1().hex
@@ -52,7 +46,24 @@ CASE_STATES = (
         (constants.CASE_STATE_CLOSED, 'Closed'),
 )
 
-    
+
+class Priority(models.Model):
+    """
+    Priorities are assigned on a case basis, and are universally assigned.
+    Sorting would presumably need to be defined first by case category, then by priority    
+    """    
+    magnitude = models.IntegerField()
+    description = models.CharField(max_length=32)
+    default = models.BooleanField()    
+    def __unicode__(self):
+        return "%d" % (self.magnitude)
+
+    class Meta:
+        verbose_name = "Priority Type"
+        verbose_name_plural = "Priority Types"
+        ordering = ['magnitude']
+
+
 class Category(models.Model):
     """
     The Category is the central piece of the casetracker model tree.
@@ -126,50 +137,8 @@ class Category(models.Model):
         verbose_name = "Category Type"
         verbose_name_plural = "Category Types"
         ordering = ['display']
-        
 
 
-
-class CaseAction(models.Model):
-    """
-    A case action is a descriptor for capturing the types of actions you can actuate upon a case.
-    These are linked to a case to describe the desired NEXT action to take upon a case.
-    
-    In this case, we want to be able to capture the differing types of 'todo for next time' actions you 
-    can assign to a case.
-    
-    The main desired actions are
-    Follow up w/ subject: A date bound action that says I should follow up with the patient
-    To Resolve: A date bound action that says I should finish said case by the next_action_date - which effectively becomes a due date.
-    
-    These should be universal across all categories.
-    """
-    description = models.CharField(max_length=64)
-    def __unicode__(self):
-        return "%s" % (self.description)
-    
-    class Meta:
-        verbose_name = "Case Action Type"
-        verbose_name_plural = "Case Action Types"
-        ordering = ['description']
-
-
-    
-class Priority(models.Model):
-    """
-    Priorities are assigned on a case basis, and are universally assigned.
-    Sorting would presumably need to be defined first by case category, then by priority    
-    """    
-    magnitude = models.IntegerField()
-    description = models.CharField(max_length=32)
-    default = models.BooleanField()    
-    def __unicode__(self):
-        return "%d" % (self.magnitude)
-
-    class Meta:
-        verbose_name = "Priority Type"
-        verbose_name_plural = "Priority Types"
-        ordering = ['magnitude']
 
 
 class StatusActivities(models.Model):
@@ -230,6 +199,30 @@ class Status (models.Model):
         verbose_name_plural = "Case Status Types"
         ordering = ['category', 'display']
     
+
+
+class CaseAction(models.Model):
+    """
+    A case action is a descriptor for capturing the types of actions you can actuate upon a case.
+    These are linked to a case to describe the desired NEXT action to take upon a case.
+    
+    In this case, we want to be able to capture the differing types of 'todo for next time' actions you 
+    can assign to a case.
+    
+    The main desired actions are
+    Follow up w/ subject: A date bound action that says I should follow up with the patient
+    To Resolve: A date bound action that says I should finish said case by the next_action_date - which effectively becomes a due date.
+    
+    These should be universal across all categories.
+    """
+    description = models.CharField(max_length=64)
+    def __unicode__(self):
+        return "%s" % (self.description)
+    
+    class Meta:
+        verbose_name = "Case Action Type"
+        verbose_name_plural = "Case Action Types"
+        ordering = ['description']
 
 
 class EventActivity(models.Model):
@@ -345,6 +338,7 @@ class CaseEvent(models.Model):
         verbose_name_plural = "Case Events"
         ordering = ['-created_date']
 
+
 class CaseTag(models.Model):
     case = models.ForeignKey("Case", related_name="tagged_case_objects")
     
@@ -403,6 +397,9 @@ class Case(models.Model):
     
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
+    def get_absolute_url(self):
+        return reverse('manage_case', kwargs={'case_id': self.i})
+    
     @property
     def is_active(self):
         if self.status.state_class == constants.CASE_STATE_OPEN:
@@ -426,6 +423,7 @@ class Case(models.Model):
     
     @property
     def last_case_event(self):
+        #with the models split up for readability, need to make sure no circular dependencies are introduced on import
         if not getattr(self, '_last_case_event', None):        
             if CaseEvent.objects.select_related('case', 'activity').filter(case=self).order_by('-created_date').count() > 0:
                 self._last_case_event = CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
@@ -547,7 +545,9 @@ class Case(models.Model):
                 else:
                     #ok, closed by is set, let's double check that it's been resolved
                     if self.resolved_by == None:
-                        raise Exception("Error, this case must be resolved before it can be closed")
+                        #raise Exception("Error, this case must be resolved before it can be closed")
+                        self.resolved_by = self.closed_by
+                        self.resolved_date = datetime.utcnow()
                     self.closed_date = datetime.utcnow()
 
             self.last_edit_date = datetime.utcnow()            
@@ -572,12 +572,58 @@ class Case(models.Model):
         verbose_name_plural = "Cases"
         ordering = ['-opened_date']
 
+    
+
+#class Message(models.Model):    
+#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    subject = models.CharField(max_length=255)
+#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?    
+#    is_public = models.BooleanField(default=False)    
+#    body = models.TextField()
+#    
+#    author = models.ForeignKey(User, related_name='messages_authored')
+#    recipients = models.ManyToManyField(User, related_name='messages_received') #straight recipients, no bcc's here
+#    
+#    #cased = generic.GenericRelation(TaggedItem)
+#    parent_message = models.ForeignKey('self', related_name='replies')
+#    
+#    
+#    
+#    def can_read(self, user):
+#        """
+#        Can the given User object read this message? This depends on the public flag, and authorship
+#        """         
+#        if self.is_public:
+#            return True
+#        else:
+#            if self.author == user or self.recipients.all().filter(id=user.id):
+#                return True
+#            else:
+#                return False
+
+#
+#class Reminder(models.Model):
+#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
+#    creator = models.ForeignKey(User, related_name='reminder_creator')
+#    recipient = models.ForeignKey(User, related_name='reminder_recipient')
+#    fire_date = models.DateField()
+#    fire_time = models.TimeField(blank=True, null=True)
+
+class Follow(models.Model):
+    """
+    Simple model for a user to follow a particular case
+    """
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
+    is_public = models.BooleanField(default=False)    
+    author = models.ForeignKey(User, related_name='messages_authored')    
+    
 
 class Filter(models.Model):
     """
     
     """
-
     #below are the enumerated integer choices because integer fields don't like choices that aren't ints.
     #for more information see here:
     #http://www.b-list.org/weblog/2007/nov/02/handle-choices-right-way/
@@ -648,8 +694,7 @@ class Filter(models.Model):
     last_event_by = models.ForeignKey(User, null=True, blank=True)
     
 
-    def get_absolute_url(self):
-        #return reverse('view-filter', args=[self.id])
+    def get_absolute_url(self):        
         return '/filter/%s' % self.id
 
     #this should come in as a dictionary of key-value pairs that are compatible with a 
@@ -668,7 +713,6 @@ class Filter(models.Model):
                 
         case_query_arr = []        
         case_event_query_arr = []
-
         
         if self.category:
             case_query_arr.append(Q(category=self.category))        
@@ -706,8 +750,7 @@ class Filter(models.Model):
                 #run the query with the threadlocals current user
                 case_query_arr.append(Q(closed_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(closed_by=self.closed_by))        
-                
+                case_query_arr.append(Q(closed_by=self.closed_by))                
                 
         if self.opened_date:
             compare_date = utcnow + timedelta(days=self.opened_date)
@@ -772,6 +815,8 @@ class Filter(models.Model):
         verbose_name_plural = "Case Filters"
 
 
+    
+
 class GridColumn(models.Model):
     """
     The gridcolumn is the main, flat store for all columns that could be used in a grid.
@@ -780,11 +825,29 @@ class GridColumn(models.Model):
     So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
     
     In other words, the GridColumn's name MUST be a property of case and casefilter for it to be useful.
-    
     """
-    name = models.CharField(max_length=32)
+    
+    GRIDCOLUMN_CHOICES = (
+                          ('case_field', "Case Field"),
+                          ('related_field',"Related Field"),
+                          ('custom_func',"Custom Function Call"),
+                          )
+    name = models.SlugField(max_length=32, unique=True)
+    display = models.CharField(max_length=64, null=True, blank=True)
+    column_type = models.CharField(max_length=16, choices=GRIDCOLUMN_CHOICES, default=GRIDCOLUMN_CHOICES[0][0], null=True, blank=True)
+    attribute = models.CharField(max_length=160, null=True, blank=True)
+    
+    class Meta:
+        ordering = ('name',)
+        
     def __unicode__(self):
         return self.name
+    
+    def get_column_value(self, case):
+        """
+        TODO: do the getattr() off the case if it's a case_field, else, if it's related or custom field, do some magic
+        """
+        return None
 
 
 class GridSort(models.Model):
@@ -798,7 +861,9 @@ class GridSort(models.Model):
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
     preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
     ascending = models.BooleanField()
+    display_split = models.BooleanField(default=False)
     order = models.PositiveIntegerField()
+    
     @property
     def sort_display(self):
         if self.ascending:
@@ -818,6 +883,8 @@ class GridSort(models.Model):
         verbose_name_plural = "Grid column sort order definitions"
         ordering = ['order']
     
+
+
 
 class GridOrder (models.Model):
     """
@@ -863,16 +930,12 @@ class GridPreference(models.Model):
         """
         returns the display columns in order of the through class's definition
         """        
-        #gridpreference_displayorder.all().values_list('column__name', flat=True)
-#        print "get display columns:"
-#        print self.gridpreference_displayorder.all()
-        return self.gridpreference_displayorder.all().values_list('column__name', flat=True)
-        
+        return self.gridpreference_displayorder.all()        
     
     @property
     def get_sort_columns(self):
         """
-        returns the display columns in order of the through class's definition
+        Returns the display columns in order of the through class's definition
         """
         col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
         return GridColumn.objects.all().filter(id__in=col_sort_orders)    
@@ -902,53 +965,10 @@ class GridPreference(models.Model):
             
             self._sort_json = ret        
         return self._sort_json
-    
 
-#class Message(models.Model):    
-#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-#    subject = models.CharField(max_length=255)
-#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?    
-#    is_public = models.BooleanField(default=False)    
-#    body = models.TextField()
-#    
-#    author = models.ForeignKey(User, related_name='messages_authored')
-#    recipients = models.ManyToManyField(User, related_name='messages_received') #straight recipients, no bcc's here
-#    
-#    #cased = generic.GenericRelation(TaggedItem)
-#    parent_message = models.ForeignKey('self', related_name='replies')
-#    
-#    
-#    
-#    def can_read(self, user):
-#        """
-#        Can the given User object read this message? This depends on the public flag, and authorship
-#        """         
-#        if self.is_public:
-#            return True
-#        else:
-#            if self.author == user or self.recipients.all().filter(id=user.id):
-#                return True
-#            else:
-#                return False
-
-#
-#class Reminder(models.Model):
-#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
-#    creator = models.ForeignKey(User, related_name='reminder_creator')
-#    recipient = models.ForeignKey(User, related_name='reminder_recipient')
-#    fire_date = models.DateField()
-#    fire_time = models.TimeField(blank=True, null=True)
-
-class Follow(models.Model):
-    """
-    Simple model for a user to follow a particular case
-    """
-    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
-    is_public = models.BooleanField(default=False)    
-    author = models.ForeignKey(User, related_name='messages_authored')    
-    
 #We recognize this is a nasty practice to do an import, but we hate putting signal code
 #at the bottom of models.py even more.
 import signals
+
+
+

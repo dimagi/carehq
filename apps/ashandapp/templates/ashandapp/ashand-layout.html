@@ -31,10 +31,13 @@
 				
         <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/careteam.js"></script>
 		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.cookie.yc.js"></script>		
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.timeago.js"></script>
 		<script type="text/javascript">
 		(function($) {
 			$(document).ready(function(){
 				$('#navbar-menu').ptMenu({vertical:false});
+				jQuery("abbr.timeago").timeago();
+				jQuery.timeago.settings.allowFuture = true;
 			});
 		})(jQuery);
 		</script>

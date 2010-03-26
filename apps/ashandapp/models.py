@@ -8,7 +8,7 @@ from patient.models import Patient
 from provider.models import Provider
 import datetime
 import uuid
-
+from django.core.urlresolvers import reverse
 from casetracker import constants
 
 def make_uuid():
@@ -160,7 +160,8 @@ class CareTeam(models.Model):
     def add_case(self, case):
         CareTeamCaseLink(case=case, careteam=self).save()
         
-    
+    def get_absolute_url(self):
+        return reverse('view-careteam', kwargs={'careteam_id':self.id })
     @property
     def primary_provider(self):
         """The primary provider for new cases going to this careteam for assignment"""

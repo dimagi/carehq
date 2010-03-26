@@ -44,8 +44,8 @@ $(document).ready(function() {
 <table class="{{grid_name}}">
 	<thead>
 		<tr>		
-			{% for col in columns %}
-				<th>{% pretty_column col %}</th>
+			{% for col in display_filter.gridpreference.get_display_columns %}
+				<th>{% case_column_plain case col.column.name %}</th>
 			{%endfor %}
 		</tr>
 	</thead>

@@ -2,7 +2,8 @@ from casetracker import constants
 from casetracker.caseregistry import registry
 from casetracker.caseregistry import CategoryBridge, StatusBridge, ActivityBridge
 from casetracker.models import Category, EventActivity, Status
-from ashandapp.caseregistry import get_careteam_assignment_choices
+
+from ashandapp.caseregistry import ashand_case_context, get_careteam_assignment_choices
 
 CATEGORY_MODULE = 'ashandapp.caseregistry.issue'
 SLUG_PREFIX = 'issue-'
@@ -22,8 +23,15 @@ class IssueCategory(CategoryBridge):
     custom_create = False
     custom_read = False        
     
+    def read_template(self, request, context, *args, **kwargs):
+        return 'ashandapp/cases/view_question.html'    
+    
+    def read_context(self, case, request, context, *args, **kwargs):        
+        return ashand_case_context(case, request, context)        
+        
     def get_user_list_choices(self, case):
         return get_careteam_assignment_choices(case)
+
         
 
 category_type_class = IssueCategory
