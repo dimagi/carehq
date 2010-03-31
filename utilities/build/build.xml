@@ -133,7 +133,7 @@
 					<arg value="-a" />
 					<arg value="-g" />
 					<arg value="-o" />
-					<arg value="${project.dir}/apps/ashandapp/static/modelgraph.png" />
+					<arg value="${project.dir}apps/ashandapp/static/modelgraph.png" />
 					
 				</py-run>
 		</target>
