@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.template import Context, Template
 
 from casetracker.models import Case
-from casetracker.models import EventActivity, CaseEvent, Status, CaseAction
+from casetracker.models import EventActivity, CaseEvent, Status, CaseAction, Category
 from ashandapp.models import CareTeamCaseLink, CareTeam
 from datetime import datetime
 register = template.Library() 
@@ -36,35 +36,38 @@ register = template.Library()
 #"last_event_by": "Last Event By",
 #}
 
-column_types = {
-"patient":"html",
-"description":"html",
-"category":"html",
-"status":"html",
-"priority":"html",
+#column_types = {
+#"patient":"html",
+#"description":"html",
+#"category":"html",
+#"status":"html",
+#"priority":"html",
+#
+#"assigned_to":"html",
+#"opened_by":"html",
+#"last_edit_by":"html",
+#"resolved_by":"html",
+#"closed_by":"html",
+#
+#"opened_date":"pretty_time",
+#"last_edit_date":"pretty_time",
+#"resolved_date":"pretty_time",
+#"closed_date":"pretty_time",
+#
+#"last_case_event": "html",
+#"last_event_date": "pretty_time",
+#"last_event_by": "html",
+#}
 
-"assigned_to":"html",
-"opened_by":"html",
-"last_edit_by":"html",
-"resolved_by":"html",
-"closed_by":"html",
-
-"opened_date":"pretty_time",
-"last_edit_date":"pretty_time",
-"resolved_date":"pretty_time",
-"closed_date":"pretty_time",
-
-"last_case_event": "html",
-"last_event_date": "pretty_time",
-"last_event_by": "html",
-}
 
 
-def get_column_types(column_names):
-    ret = []
-    for name in column_names:
-        ret.append({'sType': column_types[name]})
-    return ret
+
+#
+#def get_column_types(column_names):
+#    ret = []
+#    for name in column_names:
+#        ret.append({'sType': column_types[name]})
+#    return ret
 
 #@register.simple_tag 
 #def get_sType(col_name):
@@ -79,6 +82,22 @@ def get_column_types(column_names):
 #        return dirty_column_map[column]
 #    else:
 #        return column.replace("_","")
+ 
+ 
+@register.simple_tag
+def render_filter_heading(heading_object):
+    #return "Some heading: %s" % heading_object.get_absolute_url()
+    if isinstance(heading_object, CareTeam):
+        return render_to_string('ashandapp/partials/careteam_heading.html', { 'careteam': heading_object })        
+    elif isinstance(heading_object, Category):
+        return "some category"
+    elif isinstance(heading_object, User):
+        return "some user"
+    elif isinstance(heading_object, Status):
+        return "some status"
+    else:
+        return "some other object"
+
  
 @register.simple_tag
 def case_column_plain(case, column):

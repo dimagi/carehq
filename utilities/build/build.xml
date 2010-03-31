@@ -128,6 +128,14 @@
 					<arg value="runscript" />
 					<arg value="ashandapp.scripts.apache_reload" />
 				</py-run>
+				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+					<arg value="graph_models" />
+					<arg value="-a" />
+					<arg value="-g" />
+					<arg value="-o" />
+					<arg value="${project.dir}/apps/ashandapp/static/modelgraph.png" />
+					
+				</py-run>
 		</target>
 	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">

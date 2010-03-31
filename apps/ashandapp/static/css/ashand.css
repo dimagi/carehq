@@ -1,148 +1,3 @@
-/** Navigation toolbar styles **/
-/*Credits: Dynamic Drive CSS Library */
-/*URL: http://www.dynamicdrive.com/style/ */
-
-#modernbricksmenu{
-padding: 0;
-
-background: transparent;
-voice-family: "\"}\"";
-voice-family: inherit;
-}
-
-#modernbricksmenu ul{
-font: bold 11px Arial;
-margin:0;
-margin-left: 40px; /*margin between first menu item and left browser edge*/
-padding: 0;
-list-style: none;
-}
-
-#modernbricksmenu li{
-display: inline;
-margin: 0 2px 0 0;
-padding: 0;
-text-transform:uppercase;
-}
-
-#modernbricksmenu a{
-float: left;
-display: block;
-color: white;
-margin: 0 1px 0 0; /*Margin between each menu item*/
-padding: 5px 10px;
-text-decoration: none;
-letter-spacing: 1px;
-background-color: #eeb34e; 
-border-bottom: 1px solid white;
-}
-
-#modernbricksmenu a:hover{
-background-color: #a68f36; /*Brown color theme*/ 
-border-color: #a68f36; /*Brown color theme*/
-}
-
-#modernbricksmenu #current a{ /*currently selected tab*/
-background-color: #a68f36; /*Brown color theme*/ 
-border-color: #a68f36; /*Brown color theme*/ 
-}
-
-#modernbricksmenuline{
-clear: both;
-padding: 0;
-width: 100%;
-height: 5px;
-line-height: 5px;
-background: #dd9417;  
-}
-
-#myform{ /*CSS for sample search box. Remove if desired */
-float: right;
-margin: 0;
-padding: 0;
-}
-
-#myform .textinput{
-width: 190px;
-border: 1px solid gray;
-}
-
-#myform .submit{
-font: bold 11px Verdana;
-height: 22px;
-background-color: lightyellow;
-}
-
-.message {
-font-size:125%;
-}
-
-.info {
-position:relative;
-left:20px;
-filter:alpha(opacity=50);
--moz-opacity:0.5;
--khtml-opacity: 0.5;
-opacity: 0.5;
-}
-
-.container {
-position:relative;
-left:20px
-}
-/** End Navigation toolbar styles **/
-/** End Navigation toolbar styles **/
-
-
-
-/*Credits: Dynamic Drive CSS Library */
-/*URL: http://www.dynamicdrive.com/style/ */
-
-#modernbricksmenu2{
-padding: 0; 
-background: transparent;
-voice-family: "\"}\"";
-voice-family: inherit;
-}
-
-#modernbricksmenu2 ul{
-margin:0;
-margin-left: 20px; /*margin between first menu item and left browser edge*/
-padding: 0;
-list-style: none;
-}
-
-#modernbricksmenu2 li{
-display: inline;
-margin: 0 2px 0 0;
-padding: 0;
-text-transform:uppercase;
-}
-
-#modernbricksmenu2 a{
-float: left;
-display: block;
-font: bold 11px Arial;
-color: white;
-text-decoration: none;
-margin: 0 1px 0 0; /*Margin between each menu item*/
-padding: 5px 10px;
-background-color: #ee8d4e; /*Brown color theme*/ 
-border-top: 1px solid white;
-}
-
-#modernbricksmenu2 a:hover{
-background-color: #D25A0B; /*Brown color theme*/ 
-color: white;
-}
-
-#modernbricksmenu2 #current a{ /*currently selected tab*/
-background-color: #eea779; /*Brown color theme*/ 
-color: white;
-border-color: #eea779; /*Brown color theme*/ 
-}
-
-
 #SO style menus
 #hmenus {
 	width:705px;
@@ -158,6 +13,19 @@ nav {float:left;font-size:125%;}
 .nav li:hover{background-color:#f90;}
 .nav a{color:#fff;display:block;font-weight:bold;padding:6px 12px 6px 12px;text-decoration:none;}
 
+/*patientSetMenu is a pulldown for choosing patients to focus in on
+ */
+#ptSetMenu {
+	z-index: 7;
+}
+
+#ptQuestionMenu{
+	z-index: 7;
+}
+
+#filterMenu{
+	z-index: 7;
+}
 
 /* jquery ui button themes from:
 http://www.filamentgroup.com/lab/styling_buttons_and_toolbars_with_the_jquery_ui_css_framework/

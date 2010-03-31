@@ -2,17 +2,13 @@
 {% load case_tags %}
 <div class="span-18">  <!-- case info block -->
         <div class="span-18">
-            <h2>{{case.description}}</h2>
+            <span style="font-size:2.5em;">{{case.description}}</span><br>
+			<small>Created {{case.opened_date|timesince}} ago by <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.get_full_name}}</a></small>
             <hr>
             <p style="font-size:1.5em;">{{case.body}}</p>
         </div>
         
-        <div class="span-18 prepend-2">
-        	
-            <div class="span-4">
-                <strong>{% trans "Opened" %}</strong> {{case.opened_date|date}}<br>
-                <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.get_full_name}}</a>            
-            </div>			
+        <div class="span-18 prepend-2">        	
 			<div class="span-4">
                 <strong>{% trans "Assigned" %}</strong> {{case.assigned_date|date}}<br>
                 to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.get_full_name}}</a>            

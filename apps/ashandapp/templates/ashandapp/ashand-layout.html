@@ -38,6 +38,18 @@
 				$('#navbar-menu').ptMenu({vertical:false});
 				jQuery("abbr.timeago").timeago();
 				jQuery.timeago.settings.allowFuture = true;
+				
+				$('#ptSetMenu').hide();
+				$('#patientChooser').click(function(){$('#ptSetMenu').fadeIn();}, function(){});
+				$('#ptSetMenu').hover(function(){}, function(){$(this).fadeOut();});
+				
+				$('#filterMenu').hide();
+				$('#filterChooser').click(function(){$('#filterMenu').fadeIn();}, function(){});
+				$('#filterMenu').hover(function(){}, function(){$(this).fadeOut();});
+				
+				$('#ptQuestionMenu').hide();
+				$('#ptQMenu').click(function(){$('#ptQuestionMenu').fadeIn();}, function(){});
+				$('#ptQuestionMenu').hover(function(){}, function(){$(this).fadeOut();});
 			});
 		})(jQuery);
 		</script>
@@ -115,13 +127,23 @@
 					<ul id="navbar-menu"> 
 						<li><a href="{% url my_dashboard %}" class="ui-state-default ui-corner-all">Dashboard</a></li> 
 						<li><a href="#" class="ui-state-default ui-corner-all">List Cases</a></li> 
-						<li><a href="#" onclick="return false" class="ui-state-default ui-corner-all">Case Filter</a>						
+						<li><a href="#" id="filterChooser" class="ui-state-default ui-corner-all">Case Filter</a>						
 								{% get_casefilters_for_user_ul request.user %}
 						</li> 
 						<li><a href="#" class="ui-state-default ui-corner-all">My Care Plan</a></li> 
 						<li><a href="#" class="ui-state-default ui-corner-all">My Care Team</a></li>
-						<li><a href="#" class="ui-state-default ui-corner-all">My Patients</a></li>
-						<li><a href="#" class="ui-state-default ui-corner-all">Ask a Question</a></li>
+						<li><a href="#" id="patientChooser" class="ui-state-default ui-corner-all">My Patients</a>
+						<span id="ptSetMenu" style="position: absolute; left: 0; top: 30px;"> 
+							<a href="jquery-ui-themeroller.smoothness.css" title="Smoothness">Some Patient</a> 
+							<a href="jquery-ui-themeroller.blacktie.css" title="Smoothness">Someone else</a>
+						</span> 
+						</li>
+						<li><a href="#" id="ptQMenu" class="ui-state-default ui-corner-all">Ask a Question</a>
+							<span id="ptQuestionMenu" style="position: absolute; left: 0; top: 30px;"> 
+							<a href="jquery-ui-themeroller.smoothness.css" title="Smoothness">Some Patient</a> 
+							<a href="jquery-ui-themeroller.blacktie.css" title="Smoothness">Someone else</a>
+						</span>
+						</li>
 					</ul>									
 					{% endif %}
 				</div>					

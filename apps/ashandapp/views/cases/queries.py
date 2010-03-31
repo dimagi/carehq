@@ -21,7 +21,7 @@ from provider.models import Provider
 from patient.models import Patient
 from careplan.models import CarePlan, CarePlanItem
 
-from ashandapp.templatetags.filter_tags import render_case_column, get_column_types
+from ashandapp.templatetags.filter_tags import render_case_column
 from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member
 from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,CareTeamCaseLink
 from django.db import connection

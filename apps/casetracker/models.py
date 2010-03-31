@@ -315,7 +315,8 @@ class CaseEvent(models.Model):
     activity = models.ForeignKey(EventActivity)
     
     created_date = models.DateTimeField()
-    created_by = models.ForeignKey(User)        
+    created_by = models.ForeignKey(User)
+    parent_event = models.ForeignKey("self", blank=True, null=True, related_name="child_events")        
     
     def save(self, unsafe=False):
         if unsafe:
@@ -541,7 +542,7 @@ class Case(models.Model):
                     self.resolved_date = datetime.utcnow()
             elif state_class == constants.CASE_STATE_CLOSED:
                 if self.closed_by == None:
-                    raise Exception("Case state is now resolved, you must set a resolved_by")
+                    raise Exception("Case state is now closed, you must set a closed_by")
                 else:
                     #ok, closed by is set, let's double check that it's been resolved
                     if self.resolved_by == None:

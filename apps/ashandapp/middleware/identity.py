@@ -7,13 +7,12 @@ from patient.models import Patient
 from django.http import HttpResponse
 
 #http://www.djangosnippets.org/snippets/1661/
-
 #from django.contrib.sessions.middleware import SessionMiddleware 
 from django.core.exceptions import ObjectDoesNotExist
 
 class LazyPatient(object):
     """
-    These are following the precedence for LazyUser in the django authehtnication middleware
+    These are following the precedence for LazyUser in t        he django authehtnication middleware
     but, until something is made more clear on why it's necessary, we'll just do direct assignment
     
     For more reference see from django.contrib.auth.middleware import AuthenticationMiddleware 
@@ -96,10 +95,6 @@ class AshandIdentityMiddleware(object):
         careteams = CaregiverLink.objects.all().filter(user=request.user)
         if careteams.count() > 0:
             is_caregiver = True
-        
-        
-        
-        
         
         
         request.is_provider = is_provider
