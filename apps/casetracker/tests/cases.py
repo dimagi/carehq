@@ -32,8 +32,9 @@ class EventActivityVerificationTest(TestCase):
         issue.register_category()        
         question.register_category()         
         create_user()
+        Case.objects.all().delete()
 
-    def testCreateCase(self):
+    def testCreateCase(self, description="this is a case made by the test case"):
         
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
@@ -41,13 +42,13 @@ class EventActivityVerificationTest(TestCase):
         
         user = User.objects.get(username='mockuser')
         newcase = Case()
-        newcase.description = "this is a case made by the test case"
+        newcase.description = description
         newcase.opened_by = user
         newcase.assigned_date = datetime.utcnow()
         newcase.assigned_to = user
         
         newcase.category = Category.objects.all()[0]
-        newcase.status = Status.objects.all()[0]
+        newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
         newcase.priority = Priority.objects.all()[0]
         
         newcase.save()
@@ -61,12 +62,14 @@ class EventActivityVerificationTest(TestCase):
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
         self.assertEqual(constants.CASE_EVENT_OPEN, events[0].activity.event_class)
+        return newcase
     
     def testCaseModifyDescription(self):
-        self.testCreateCase()
+        desc= uuid.uuid1().hex
+        self.testCreateCase(description=desc)
         user = User.objects.get(username='mockuser')
         
-        case = Case.objects.all().get(description = "this is a case made by the test case")
+        case = Case.objects.all().get(description = desc)
         case.description = "i just changed it, foo"
         case.last_edit_by = user
         activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
@@ -84,7 +87,7 @@ class EventActivityVerificationTest(TestCase):
         #quickly verify that the original description is still unchanged
         dbcase = Case.objects.all().get(description='i just changed it, foo')
         self.assertEqual(dbcase.id, case.id)        
-        self.assertEqual(dbcase.orig_description, "this is a case made by the test case")
+        self.assertEqual(dbcase.orig_description, desc)
     
     def _makeCase(self, user):        
         newcase = Case()
@@ -106,7 +109,8 @@ class EventActivityVerificationTest(TestCase):
         case = Case.objects.all().get(description = "this is a case made by the test case")
         CHILD_CASES=10
         for num in range(0,CHILD_CASES):
-            newcase = self._makeCase(user)
+            desc = uuid.uuid1().hex
+            newcase = self.testCreateCase(description=desc)
             newcase.parent_case = case
             newcase.last_edit_by = user
             activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
