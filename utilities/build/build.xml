@@ -3,7 +3,7 @@
 <project name="ashand_build" default="compile">
 
 		
-	<property name="project.dir" value="../../"/>
+	<property name="project.dir" value="${basedir}../../"/>
 	<property name="apps.dir" value="../../apps"/>	
 	<property name="pydoc.dir" value="../../docs"/>
 	<property name="libs.dir" value="../../lib" />
