@@ -118,9 +118,7 @@ class CareRelationship(models.Model):
 class CaregiverLink(models.Model):
     """
     The actual link for a user object to be come a caregiver.
-    """
-    
-    
+    """    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey("CareTeam")
     user = models.ForeignKey(User, related_name="caregiverlink_user")

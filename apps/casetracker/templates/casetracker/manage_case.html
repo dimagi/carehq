@@ -20,17 +20,14 @@
 		{% include "casetracker/partials/case/basic_case_info.html" %}
 		{% endblock %}		
 		<hr>
-		{% if not show_form and not show_comment %}		
+		{% if not show_form %}		
 			{% block case_actions %}
 			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
 			{% endblock case_actions %}
 		{% endif %}
-		
-		{% if show_form %}		
-		<div class="span-18">						
+		{% if show_form %}
 			{% include "casetracker/manage/inline_case_edit.html" %}
-		</div>
-		{% endif %}		
+		{% endif %}	
 	
 		<div class="span-18 prepend-top">	
 		<hr>		
@@ -40,16 +37,14 @@
 		<script type="text/javascript">
   			$("#casehistory").load("{%url case-newsfeed case.id %}");
 		</script>		
-		{% endblock newsfeed-area %}
-		{% if show_comment %}			
-			<div class="span-18">				
-			{% include "casetracker/manage/comment.html" %}			
-			</div>
-		{% endif %}		
+		{% if can_comment %}
+		{% include "casetracker/manage/comment.html" %}
+		{% endif %}
+		{% endblock newsfeed-area %}										
 		</div>		
 	</div>	<!-- end case body and info container -->	
 	<div class="span-6 last"> <!-- specialized category block -->
-		<div class="span-6">
+		<div class="span-6">						
 		{% block caselink_area %}				
 		{% endblock caselink_area %}
 		</div>				
@@ -61,11 +56,8 @@
 			<li>{{case.status}}</li>
 			<li>{{case.last_case_event}}</li>		
 		</ul>
-		{% endblock %}	
-		
-		</div>
-					
+		{% endblock %}		
+		</div>					
 	</div> <!-- end case link block -->
-
 </div>	
 {% endblock content %}

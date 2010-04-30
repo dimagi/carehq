@@ -8,9 +8,9 @@ from casetracker.models import Case
 from casetracker.models import EventActivity, CaseEvent, Status, CaseAction, Category
 from ashandapp.models import CareTeamCaseLink, CareTeam
 from datetime import datetime
-register = template.Library() 
-# 
-# 
+register = template.Library()
+
+ 
 #dirty_column_map = {
 #"patient":"Patient",
 #"description":"Description",
@@ -90,13 +90,13 @@ def render_filter_heading(heading_object):
     if isinstance(heading_object, CareTeam):
         return render_to_string('ashandapp/partials/careteam_heading.html', { 'careteam': heading_object })        
     elif isinstance(heading_object, Category):
-        return "some category"
+        return "<h3>Category: %s</h3>" % heading_object.display
     elif isinstance(heading_object, User):
-        return "some user"
+        return "<h3>By: %s</h3>" % heading_object.get_full_name()
     elif isinstance(heading_object, Status):
         return "some status"
     else:
-        return "some other object"
+        return ""
 
  
 @register.simple_tag
@@ -129,8 +129,10 @@ def render_case_column(case, gridorder, plain_text=True):
 
         elif isinstance(data, CareTeam):
             datastring = "%s" % (data.patient.user.get_full_name())
+        elif isinstance(data, Category):
+            datastring = data.display
         elif isinstance(data, User):
-            datastring = "%s" % (data.get_full_name())
+            datastring = '<a href="%s">%s</a>' % (reverse('ashandapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
         elif isinstance (data, CaseAction):
             return data.description
         elif isinstance(data, CaseEvent):

@@ -2,6 +2,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 {% load i18n %}
 {% load casefilter_tags %}
+{% load ashand_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <title>{% block title %}{% endblock %}{% block title_suffix %} :: ASHand{% endblock %}</title>
@@ -17,7 +18,8 @@
 	        <![endif]-->
 
 	        <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand.css" type="text/css">                   
-            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.8.custom.css" type="text/css">	        
+            <link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/jquery-ui-1.8.custom.css" type="text/css">	   
+			<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/flickr-menu-style.css" type="text/css">     
 	        {% block page_stylesheets %}{% endblock %}        
         {% endblock %} {# stylesheets #}
         
@@ -26,147 +28,81 @@
 		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-ui-1.8.custom.min.js"></script>
 		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.address-1.1.min.js"></script>
 		
-		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.js"></script>
-		<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.css">
+{#		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.js"></script>#}
+{#		<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}ashandapp/pmenu/jquery.ui.potato.menu.css">#}
 				
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.flickrmenu.js"></script>				
         <script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/careteam.js"></script>
 		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.cookie.yc.js"></script>		
-		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.timeago.js"></script>
-		<script type="text/javascript">
-		(function($) {
-			$(document).ready(function(){
-				$('#navbar-menu').ptMenu({vertical:false});
-				jQuery("abbr.timeago").timeago();
-				jQuery.timeago.settings.allowFuture = true;
-				
-				$('#ptSetMenu').hide();
-				$('#patientChooser').click(function(){$('#ptSetMenu').fadeIn();}, function(){});
-				$('#ptSetMenu').hover(function(){}, function(){$(this).fadeOut();});
-				
-				$('#filterMenu').hide();
-				$('#filterChooser').click(function(){$('#filterMenu').fadeIn();}, function(){});
-				$('#filterMenu').hover(function(){}, function(){$(this).fadeOut();});
-				
-				$('#ptQuestionMenu').hide();
-				$('#ptQMenu').click(function(){$('#ptQuestionMenu').fadeIn();}, function(){});
-				$('#ptQuestionMenu').hover(function(){}, function(){$(this).fadeOut();});
-			});
-		})(jQuery);
-		</script>
+		<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.timeago.js"></script>		
 		
-		<style type="text/css">
-			li.potato-menu-item {
-				font-size:12px;
-				outline: 0; 
-				margin:0 4px 0 0; 
-				   padding: .4em 1em; 
-				   text-decoration:none !important; 
-				   cursor:pointer; 
-				   position: relative; 
-				   
-				   zoom: 1; 
-				  
-			}
-			ul.potato-menu-group {
-				border-top: 1px solid #666;
-				background: #333;
-			}
-			ul.potato-menu-group a {
-				width: 200px;
-			}
-			.potato-menu a {
-				padding:5px 12px 5px 12px;
-				background: #F6A828;
-				color: #fff;
-				padding-right:20px;
-				 
-			}
-			.potato-menu a:hover {
-				background: #666;
-			}
-			.potato-menu-has-vertical > a {
-				background: #F6A828 url({{MEDIA_URL}}ashandapp/img/arrow-down.png) 95% 50% no-repeat;
-			}
-			.potato-menu-has-holizontal > a {
-				background: #F6A828 url(/images/icons/fammini/arrow_right.gif) right no-repeat;
-			}
-			.potato-menu-has-vertical > a:hover {
-				background: #666 url({{MEDIA_URL}}ashandapp/img/arrow-down.png) 95% 50% no-repeat;
-				
-			}
-			.potato-menu-has-holizontal > a:hover {
-				background: #666 url(/images/icons/fammini/arrow_right.gif) right no-repeat;
-			}			
-		</style>
         {% block extrahead %}{% endblock %}
     </head>
-    <body class="container">    
-      	{% block header %}      	
-			{% block auth %}      		
-			    <div class="span-7 prepend-17">
-			        {% if user.is_authenticated %}
-			            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
-			        {% else %}
-			            <a href="/accounts/login/">{% trans "Log in" %}</a>
-			        {% endif %}		        
-	        	</div>
-	     		{% endblock auth %}	
-      		<div class="span-24"> <!-- header class -->
-                 {% block branding %}
-                 <div class="span-2" id="branding">                    
-                        <a title="Return to the Dashboard" href="/">
-                            <img src="{{MEDIA_URL}}ashandapp/img/dimagilogo.png">
-                        </a>                    
-                 </div>
-                 {% endblock %} {# branding #}                  
-              
-              	{% block page_tabs %}					
-              	{% if user.is_authenticated %}
-				
-				<div class="span-22 last">										
-					<ul id="navbar-menu"> 
-						<li><a href="{% url my_dashboard %}" class="ui-state-default ui-corner-all">Dashboard</a></li> 
-						<li><a href="#" class="ui-state-default ui-corner-all">List Cases</a></li> 
-						<li><a href="#" id="filterChooser" class="ui-state-default ui-corner-all">Case Filter</a>						
-								{% get_casefilters_for_user_ul request.user %}
-						</li> 
-						<li><a href="#" class="ui-state-default ui-corner-all">My Care Plan</a></li> 
-						<li><a href="#" class="ui-state-default ui-corner-all">My Care Team</a></li>
-						<li><a href="#" id="patientChooser" class="ui-state-default ui-corner-all">My Patients</a>
-						<span id="ptSetMenu" style="position: absolute; left: 0; top: 30px;"> 
-							<a href="jquery-ui-themeroller.smoothness.css" title="Smoothness">Some Patient</a> 
-							<a href="jquery-ui-themeroller.blacktie.css" title="Smoothness">Someone else</a>
-						</span> 
-						</li>
-						<li><a href="#" id="ptQMenu" class="ui-state-default ui-corner-all">Ask a Question</a>
-							<span id="ptQuestionMenu" style="position: absolute; left: 0; top: 30px;"> 
-							<a href="jquery-ui-themeroller.smoothness.css" title="Smoothness">Some Patient</a> 
-							<a href="jquery-ui-themeroller.blacktie.css" title="Smoothness">Someone else</a>
-						</span>
-						</li>
-					</ul>									
+    <body>    	
+		{% block tophat %}      		
+  		<div id="tophat">		    	
+			{% block searchbar %}
+			{% comment %}
+			<div id="searchbar">
+			<form method="POST" action="{{request.path}}?activity=issue-event-comment" >
+				<textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>						
+				<input type="hidden" name="next" value="{{ request.path }}" />
+				</form>
+			</div>
+			{% endcomment %}
+			{% endblock searchbar %}
+			{% block auth %}
+			<div id="identityblock">
+		        {% if user.is_authenticated %}
+		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
+		        {% else %}
+		            {#<a href="/accounts/login/">{% trans "Log in" %}</a>#}
+		        {% endif %}		        
+        	</div>
+        	{% endblock auth %}
+    	</div>	     			
+	    {% endblock tophat %}
+	     
+		<div class="container">
+      		<div class="span-24"> <!-- Header div -->
+				{% block branding %}
+				<div class="span-2">                    
+					<a title="Return to the Dashboard" href="/">
+					<img src="{{MEDIA_URL}}ashandapp/img/dimagilogo.png">
+					</a>                    
+				</div>
+				{% endblock branding %}              
+				      	
+				{% block navigation_menu %}
+				<div class="span-22 last">
+					{% if user.is_authenticated %}										
+					{% navigation_menu %}						
 					{% endif %}
-				</div>					
-				{% endblock page_tabs%}            	
-            </div> <!-- end header class -->
-            
-            {% endblock %} {#header#}
-            
-            
+				</div>
+				{% endblock navigation_menu %}					
+				
+				<div id="breadcrumbs" class="span-24">
+					{% block breadcrumbs %}
+					<span class="crumb">Put &#62; Crumbs &#62; </span>
+					<span class="active">Here</span> 
+					{% endblock breadcrumbs %}
+				</div>
+			</div> <!-- end header class -->            
+	
             {% if USE_I18N %}
                 <div id="language" class="span-8 prepend-16">
                     <form action="/i18n/setlang/" method="post" style="float:right">
                         <select name="language">
-                        {% for lang in LANGUAGES %}
-                          <option value="{{ lang.0 }}" 
-                          {% ifequal LANGUAGE_CODE lang.0 %}selected{% endifequal %}>
-                          {{ lang.1 }}
-                          </option>
-                        {% endfor %}
+	                        {% for lang in LANGUAGES %}
+	                          <option value="{{ lang.0 }}" 
+	                          {% ifequal LANGUAGE_CODE lang.0 %}selected{% endifequal %}>
+	                          {{ lang.1 }}
+	                          </option>
+	                        {% endfor %}
                         </select>
-                    <input type="submit" class="small" value="Submit"/>
+                    	<input type="submit" class="small" value="Submit"/>
                     </form>
-             </div>
+             	</div>
             {% endif %}
             
             <div class="span-24">

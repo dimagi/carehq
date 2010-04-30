@@ -27,6 +27,7 @@ class CaseResolveCloseForm(forms.Form):
     state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True,
                                    widget=widgets.RadioSelect())
     comment = forms.CharField(required=True,
+                            label="Note", 
                            error_messages = {'required': 'You must enter a comment'},
                            widget = widgets.Textarea(attrs={'cols':80,'rows':5}),                            
                           )
@@ -62,7 +63,7 @@ class CaseModelForm(forms.ModelForm):
         
     description = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     body = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':8}))
-    comment = forms.CharField(required=False, widget = widgets.Textarea(attrs={'cols':80, 'rows':4}))    
+    comment = forms.CharField(required=False, label="Reason", widget = widgets.Textarea(attrs={'cols':80, 'rows':4}))    
     
     class Meta:
         model = Case

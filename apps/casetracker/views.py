@@ -23,6 +23,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
+from tracking_ext.decorators import log_access
+
 
 from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status, Priority, Category
 from casetracker import constants
@@ -168,6 +170,7 @@ def _get_next(request):
 
 
 @login_required
+@log_access
 def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
@@ -190,6 +193,8 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     template_name = thecase.category.bridge.read_template(request, context)    
     context = thecase.category.bridge.read_context(thecase,request, context)
 
+    if thecase.status.allowable_actions.filter(event_class=constants.CASE_EVENT_COMMENT).count() > 0:
+        context['can_comment'] = True
     ########################
     # Inline Form display
     if activity:                
@@ -251,14 +256,17 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 
             if caseform == CaseModelForm:
                 context['form'] = caseform(instance=thecase, editor_user=request.user, activity=activity)
+                context['can_comment'] = False
             elif caseform== CaseResolveCloseForm:
-                context['form'] = caseform(case=thecase, activity=activity)                        
+                context['form'] = caseform(case=thecase, activity=activity)
+                context['can_comment'] = False                        
             elif caseform == CaseCommentForm:
-                context['form'] = caseform()         
+                context['form'] = caseform()
+                        
+                
             else:
-                print "WTF"  
-            context['submit_url'] = ''            
-
+                logging.error("no form definition")
+            context['submit_url'] = ''
          
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
@@ -283,10 +291,9 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
         if key == "sort":
             sorting = value
     
-    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase)
+    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
     context['case'] = thecase        
     context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
-    
     context['formatting'] = False
     event_arr = context['events']
     event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)

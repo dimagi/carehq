@@ -59,7 +59,7 @@ class NewQuestionForm(CareTeamCaseFormBase):
 
         newcase.assigned_date = datetime.utcnow()
                 
-        newcase.next_action = CaseAction.objects.get(id=7) #triage                
+        #newcase.next_action = CaseAction.objects.get(id=7) #triage                
         td = timedelta(hours=1)
         newcase.next_action_date = datetime.utcnow() + td
         

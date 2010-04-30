@@ -5,28 +5,56 @@
 <script type="text/javascript"> 
             $(function(){                
                 // Tabs
-                $('#tabs').tabs({ cookie: { expires: 30,name: "tabs_coo" } });                
+                $('#tabs').tabs({ cookie: { expires: 30,name: "tabs_coo" } }).addClass('ui-tabs-vertical ui-helper-clearfix');    
+				$("#tabs li").removeClass('ui-corner-top').addClass('ui-corner-left');
+				            
                 });
 </script>
+
 {% endblock extrahead %}
 
 {% block content %}
-
-<div id="tabs" class="span-24"> 
+<style type="text/css"> 
+	
+/* Vertical Tabs
+----------------------------------*/
+.ui-tabs-vertical { width: 55em; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+	</style> 
+	
+{%with current_careteam as careteam %}			
+	<div class="span-24 box">
+		<div class="span-2 border">
+			<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+		</div>
+		<div class="span-10 border">
+			<h3>
+				<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+				{{careteam.patient.user.get_full_name}}'s</a> Care Team
+			</h3>
+		</div>	
+	</div>
+	{% endwith %}		
+<div  class="span-24">
+	
+			
+<div id="tabs"> 
     <ul> 
         <li><a href="#tabs-info">CareTeam Info</a></li>		
         <li><a href="#tabs-2">Care Plan</a></li>
         <li><a href="{% url careteam-cases-tabpage careteam_id=current_careteam.id %}">Case History</a></li>
     </ul> 
-    <div id="tabs-info">
+    <div id="tabs-info" class="span-24">
     	{%with current_careteam as careteam %}			
 		<div class="span-8">				
 			<div class="span-7 box last">
-				<div class="span-2 border">
-					<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
-				</div>
-				<div class="span-4 last border">
+				<div class="span-7 border">
 					<h3>
+						About
 						<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
 						{{careteam.patient.user.get_full_name}}
 						</a>
@@ -127,5 +155,5 @@
     </div>
     
 </div> <!-- end tabs -->
-
+</div> <!-- end container -->
 {% endblock %}

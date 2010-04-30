@@ -1,12 +1,10 @@
-<form method="POST" action="{% url case-comment case.id %}" id="comment_form_{{ case.id }}">
+<form method="POST" action="{{request.path}}?activity=issue-event-comment" id="comment_form_{{ case.id }}">
+<h4>Add a comment to this {{case.category.display.lower}}</h4>
 <table>
 <tr>
-    <td><textarea id="id_comment" rows="4" cols="50" name="comment"></textarea></td></tr>
-<tr>
-    <td><input type="submit" value="Add Comment" class="fg-button ui-state-default ui-corner-all"/>&nbsp;
-	<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/></td>
+    <td><textarea id="id_comment" rows="4" cols="80" name="comment"></textarea>
+	<input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/></td>
 </tr>
-	
 </table>
 <input type="hidden" name="next" value="{{ request.path }}" />
 </form>

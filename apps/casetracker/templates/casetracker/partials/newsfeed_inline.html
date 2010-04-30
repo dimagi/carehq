@@ -2,13 +2,9 @@
 <div class="span-18">
 	{% for event in events %}				
 		<div class = "span-18">
-			<strong>From:</strong>	<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> - <small>{{event.activity.past_tense }} {% time_interval event.created_date %}</small>
+			<strong>{{event.activity.past_tense|title }}</strong> by <a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> - <small> {% time_interval event.created_date %}</small>
 			<div>{{event.notes}}</div>
 			<hr>						
 		</div>	
-	{% endfor %}
-	<div id="event-commentblock">		
-		{% include "casetracker/manage/comment.html" %}					
-	</div>	
-	
+	{% endfor %}	
 </div>

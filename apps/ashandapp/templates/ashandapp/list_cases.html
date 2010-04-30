@@ -22,9 +22,10 @@
 </script>
 {% endblock %}
 {% block content %}
-<div id="tabs" class="ui-tabs span-24"> 
+{#<h3>List Cases > <strong>{{filter.description}}</strong></h3>#}
+<div class="ui-tabs span-24"> 
 <table>
-	{% for heading_obj, qset in qset_dict.items %}
+	{% for heading_obj, qset in qset_dict.items %}	
 	<thead>
 		<tr>
 			<td colspan={{filter.gridpreference.get_display_columns|length}}>{% render_filter_heading heading_obj %}</td>
@@ -35,6 +36,7 @@
 			{%endfor %}			
 		</tr>
 	</thead>
+	
 		{% for case in qset %}
 			<tr>
 			{% for col in filter.gridpreference.get_display_columns %}

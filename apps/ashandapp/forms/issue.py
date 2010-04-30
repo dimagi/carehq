@@ -51,9 +51,9 @@ class NewIssueForm(CareTeamCaseFormBase):
         newcase.description = self.cleaned_data['description']
         newcase.body = self.cleaned_data['body']
         
-        newcase.next_action = CaseAction.objects.get(id=7) #triage                
+        #newcase.next_action = CaseAction.objects.get(id=7) #triage                
         td = timedelta(hours=1)
-        newcase.next_action_date = datetime.utcnow() + td        
+        #newcase.next_action_date = datetime.utcnow() + td        
         
         if self._careteam.primary_provider:
             newcase.assigned_to = self._careteam.primary_provider.user

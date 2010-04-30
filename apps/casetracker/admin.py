@@ -2,7 +2,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 
-from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter,GridPreference,GridColumn,GridOrder,GridSort
+from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 class CaseActionAdmin(admin.ModelAdmin):
@@ -27,7 +27,7 @@ class StatusAdmin(admin.ModelAdmin):
     list_display=('slug', 'display', 'state_class','category')
     list_filter = ['category', 'state_class']
     radio_fields = {
-        "category": admin.HORIZONTAL,
+        "category": admin.VERTICAL,
         'state_class': admin.HORIZONTAL,
     }
 
@@ -85,6 +85,7 @@ class FilterAdmin(admin.ModelAdmin):
     list_filter= ['shared','creator']
 #    inlines=[GridPreferenceInline]
 admin.site.register(Filter, FilterAdmin)
+
 
 class ColumnSortInline(admin.TabularInline):
     model = GridSort

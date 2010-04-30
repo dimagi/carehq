@@ -177,6 +177,17 @@ class Status (models.Model):
             self._allowable_actions = EventActivity.objects.select_related().filter(id__in=legal_activities)        
         return self._allowable_actions
     
+    @property
+    def transitional_actions(self):
+        """
+        These are a subset of the cases that actually are stateful changing actions
+        """
+        if not hasattr(self, '_transitional_actions'):            
+            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
+            self._transitional_actions = EventActivity.objects.select_related().filter(id__in=legal_activities).exclude(event_class=constants.CASE_EVENT_COMMENT)     
+        return self._transitional_actions
+
+    
     def set_activity(self, event_activity):
         try:
             slink = StatusActivities(status=self, legal_activity=event_activity)
@@ -621,6 +632,7 @@ class Follow(models.Model):
     author = models.ForeignKey(User, related_name='messages_authored')    
     
 
+    
 class Filter(models.Model):
     """
     
@@ -669,6 +681,15 @@ class Filter(models.Model):
     description = models.CharField(max_length=64)
     creator = models.ForeignKey(User, related_name="filter_creator")
     shared = models.BooleanField(default=False)
+    
+    
+    custom_function=models.BooleanField(default=False)
+    #Code based filter functions    
+    filter_module = models.CharField(max_length=128, blank=True, null=True,
+                                      help_text=_("This is the fully qualified name of the module that implements the filter function."))
+    
+    filter_class = models.CharField(max_length=64, blank=True, null=True,
+                                     help_text=_('This is the actual method name of the model filter you wish to run.'))
     
     #case related properties
     category = models.ForeignKey(Category, null=True, blank=True)
@@ -809,11 +830,11 @@ class Filter(models.Model):
         return cases
         
     def __unicode__(self):
-        return "Filter - %s" % (self.description)
+        return "Model Filter - %s" % (self.description)
     
     class Meta:
-        verbose_name = "Case Filter"
-        verbose_name_plural = "Case Filters"
+        verbose_name = "Model Filter"
+        verbose_name_plural = "Model Filters"
 
 
     

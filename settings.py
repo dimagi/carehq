@@ -74,6 +74,7 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'ashandapp.middleware.identity.AshandIdentityMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
 )
 
 ROOT_URLCONF = 'ashand.urls'
@@ -107,13 +108,14 @@ INSTALLED_APPS = (
     'careplan',
     #end ashand apps
     
-    #third party paps
+    #third party apps
     'reversion',    
     'tinymce',
     'debug_toolbar',
-    'django_extensions',
-    #'djcaching',
+    'django_extensions',    
     'johnny', 
+    'tracking', 
+    'tracking_ext',
     #end third party apps
     
             
@@ -155,6 +157,17 @@ CASE_CATEGORIES = (
                    'ashandapp.caseregistry.system',
                    'ashandapp.caseregistry.question',
                    )
+
+AUDITABLE_MODELS = [
+                    'casetracker.models.Case',
+                    'casetracker.models.CaseEvent',
+                    'ashandapp.models.CareTeam',
+                    'provider.models.Provider',
+                    'patient.models.Patient',
+                    'patient.models.PatientIdentifier',                    
+                    ]
+                    
+                   
 
 try:
     from settings_local import *

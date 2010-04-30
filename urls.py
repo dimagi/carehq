@@ -69,7 +69,7 @@ for appname in settings.INSTALLED_APPS:
             #ok, so it has urls, now for debug purposes
             
     except Exception, e:
-        logging.error("Url load: %s" % str(e))
+        logging.error("Url load (%s): %s" % (appname, str(e)))
 
 
 

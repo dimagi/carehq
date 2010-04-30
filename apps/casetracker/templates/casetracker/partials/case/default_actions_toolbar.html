@@ -1,23 +1,7 @@
 {% load i18n %}
-<div class="nav">
-    <ul>
-    	{% comment %}
-        {% if case.is_active %}
-		<li><a href="{% url manage-case case.id %}?activity=assign">Assign</a></li>
-        <li><a href="{% url manage-case case.id %}?activity=edit">Edit</a></li>        
-        
-        {% endif %}
-        
-        {% if case.is_resolved %}        
-        <li><a href="{% url close-case case.id %}">Close</a></li>
-        {% endif %}
-        
-        {% if case.is_closed %}
-        <li><a href="#">Reopen</a></li>
-        {% endif %}
-		{%endcomment %}
-		
-		{% for activity in case.status.allowable_actions %}
+<div class="nav prepend-10">
+    <ul>		
+		{% for activity in case.status.transitional_actions %}
 			<li>
 				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>
 			</li>			

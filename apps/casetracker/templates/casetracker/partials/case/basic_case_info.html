@@ -8,29 +8,24 @@
             <p style="font-size:1.5em;">{{case.body}}</p>
         </div>
         
-        <div class="span-18 prepend-2">        	
-			<div class="span-4">
-                <strong>{% trans "Assigned" %}</strong> {{case.assigned_date|date}}<br>
-                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.get_full_name}}</a>            
-            </div>            
-			
-            <div class="span-4">
-                <strong>{% trans "Edited" %}</strong> {% time_interval case.last_edit_date %}<br>
-                by <a href="{% url ashandapp.views.users.single  case.last_edit_by.id %}">{{case.last_edit_by.get_full_name}}</a>            
-            </div>        
-			
+        <div class="span-18">        	
+			<div class="span-5 prepend-2">
+                <strong>{% trans "Assigned" %}</strong>
+                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.get_full_name}}</a><br>
+				<small>{{case.assigned_date|date}}</small>				
+            </div>		
 			
 			{% if case.is_resolved and not case.is_closed%}
-			<div class="span-4 notice">
-                <strong>{% trans "Resolved" %}</strong> {{case.resolved_date|date}}<br>
-                by <a href="{% url ashandapp.views.users.single  case.resolved_by.id %}">{{case.resolved_by.get_full_name}}</a>            
+			<div class="span-5">
+                <strong>{% trans "Resolved" %}</strong> by <a href="{% url ashandapp.views.users.single  case.resolved_by.id %}">{{case.resolved_by.get_full_name}}</a><br>
+				<small>{{case.resolved_date|date}}</small>            
             </div>
 			{% endif %}
 			
 			{% if case.is_closed %}
-			<div class="span-4 notice">
-                <strong>{% trans "Closed" %}</strong> {{case.closed_date|date}}<br>
-                by <a href="{% url ashandapp.views.users.single  case.closed_by.id %}">{{case.closed_by.get_full_name}}</a>            
+			<div class="span-5 notice">
+                <strong>{% trans "Closed" %}</strong> by <a href="{% url ashandapp.views.users.single  case.closed_by.id %}">{{case.closed_by.get_full_name}}</a><br>
+				<small>{{case.closed_date|date}}</small>            
             </div>
 			{% endif %}			
         </div>        

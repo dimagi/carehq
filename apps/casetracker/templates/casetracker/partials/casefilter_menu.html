@@ -1,18 +1,23 @@
-<div id="filterMenu" style="outline-width" class="ui-dialog ui-widget-content ui-corner-all">
-	<p>Manage filters</p>
+{% spaceless %}
+<div class="sub_menu">	
+	
+	<a href="#">Manage filters</a>
 	<hr>
 	{% if shared_filters %}
 	<strong>Shared Filters</strong>	
 	{% for filter in shared_filters %}
-	<a href="{% url my_dashboard %}?filter={{filter.id}}" class="ui-state-default ui-corner-all">{{filter.description}}</a>
+	<a href="{% url list_cases %}?filter={{filter.id}}">{{filter.description}}</a>
 	{% endfor %}
 	<hr>
 	{% endif%}
 	
 	{% if user_filters %}
-	<strong>My Filters</strong>	
+	<strong>My Filters</strong>
+		
 	{% for filter in user_filters %}
-	<a href="{% url my_dashboard %}?filter={{filter.id}}" class="ui-state-default ui-corner-all">{{filter.description}}</a>	{% endfor %}
+	<a href="{% url list_cases %}?filter={{filter.id}}">{{filter.description}}</a>	{% endfor %}
 	{% endif %}
-	<p>Customize filter</p>
+	<a href="#">Customize filter</a>
+	
 </div>
+{% endspaceless %}

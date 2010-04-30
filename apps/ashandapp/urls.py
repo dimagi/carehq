@@ -8,8 +8,7 @@ urlpatterns = patterns('',
     
     
     #main navigation tabs
-    url(r'^$', 'ashandapp.views.dashboard.my_dashboard', name='my_dashboard'),
-    #url(r'^tabbed/$', 'ashandapp.views.dashboard.my_dashboard_tab', name='my_dashboard_tab'),
+    url(r'^$', 'ashandapp.views.filters.list_cases', name='list_cases'),
     url(r'^tabbed/json/$', 'ashandapp.views.dashboard.get_json_for_paging', name='json_string'),
     
     #generic json case queryset
