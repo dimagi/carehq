@@ -84,7 +84,7 @@
 
 	
 	<target name="django-tests-all" depends="compile">	
-		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}" optimize="0">
+		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}" optimize="0">
 			<arg value="test" />
 			<arg value="casetracker" />
 		</py-run>
@@ -93,26 +93,26 @@
 	
 	<!-- Note, this is extremely dangerous for running on your own environment -->
 	<target name="reset_db" depends="compile,django-tests-all">
-		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 			<arg value="reset_db" />
 			<arg value="--noinput" />
 		</py-run>		
-		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 			<arg value="syncdb" />
 			<arg value="--noinput" />
 		</py-run>
 	</target>
 	
 	<target name="bootstrap_build" depends="reset_db">
-			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 				<arg value="runscript" />
 				<arg value="utilities.bootstrap_database" />
 			</py-run>		
-			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 				<arg value="runscript" />
 				<arg value="utilities.generate_cases" />
 			</py-run>
-			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 				<arg value="loaddata" />
 				<arg value="build-example_filters.json" />
 			</py-run>
@@ -120,15 +120,15 @@
 	
 	
 	<target name="build_demo" depends="reset_db">
-				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 					<arg value="runscript" />
 					<arg value="ashandapp.scripts.demo_load" />
 				</py-run>
-				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 					<arg value="runscript" />
 					<arg value="ashandapp.scripts.apache_reload" />
 				</py-run>
-				<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+				<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 					<arg value="graph_models" />
 					<arg value="-a" />
 					<arg value="-g" />
@@ -139,14 +139,14 @@
 		</target>
 	
 	<target name="syncdb" depends="compile,django-tests-all,setstatic">
-			<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+			<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 				<arg value="syncdb" />
 				<arg value="--noinput" />
 			</py-run>		
 	</target>
 	
 	<target name="setstatic" depends="">
-		<py-run script="${project.dir}/djmanage.py" pythonpath="${project.dir}">
+		<py-run script="${project.dir}/manage.py" pythonpath="${project.dir}">
 			<arg value="runscript" />
 			<arg value="utilities.setapache_static" />
 		</py-run>		

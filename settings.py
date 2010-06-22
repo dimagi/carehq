@@ -69,8 +69,8 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    #'johnny.middleware.LocalStoreClearMiddleware',
-    #'johnny.middleware.QueryCacheMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -122,7 +122,7 @@ INSTALLED_APPS = (
     #'tinymce',
     'debug_toolbar',
     'django_extensions',    
-    #'johnny', 
+    'johnny', 
     'tracking', 
     'tracking_ext',
     #end third party apps
