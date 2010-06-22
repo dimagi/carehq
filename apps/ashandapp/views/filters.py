@@ -50,7 +50,7 @@ def list_cases(request, template_name="ashandapp/list_cases.html"):
         profile.filter = Filter.objects.all()[0]
         profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
 
-    display_filter = profile.last_filter    
+    display_filter = profile.last_filter   
     
     
     group_by_col = None

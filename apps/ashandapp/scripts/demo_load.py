@@ -180,12 +180,14 @@ def create_case(user, all_users, case_no):
 #    #case.next_action_date = case.next_action_date + td    
 #    case.save()        
 
+from django.db import transaction
+
 
 
 def run():    
     #reset the database
-    call_command('reset_db', interactive=False)    
-    call_command('syncdb', interactive=False)
+    #call_command('reset_db', interactive=False)    
+    #scall_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
     load_fixtures()    

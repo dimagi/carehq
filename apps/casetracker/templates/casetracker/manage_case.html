@@ -50,12 +50,14 @@
 		</div>				
 		<div class = "span-6">
 		{% block case_metadata %}
+		{% comment %}
 		<strong>Basic Metadata</strong>
 		<ul>
 			<li>{{case.category}}</li>
 			<li>{{case.status}}</li>
 			<li>{{case.last_case_event}}</li>		
 		</ul>
+		{% endcomment %}
 		{% endblock %}		
 		</div>					
 	</div> <!-- end case link block -->

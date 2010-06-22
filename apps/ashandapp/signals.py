@@ -14,7 +14,7 @@ from ashandapp.caseregistry.system import SystemCategory, SystemEventOpen, Syste
 
 def make_system_case(user, patient, role, link_object):
     case = Case()
-    case.category=Category.objects.get(slug='System')
+    case.category=Category.objects.get(slug="system")
     case.description = "%s added as %s to %s's careteam" % (user.get_full_name(), role, patient.user.get_full_name())
     case.body = "You have accepted the invitation to join this care team."
     case.opened_by = User.objects.get(username='ashand-system')

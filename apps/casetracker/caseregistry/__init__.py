@@ -74,15 +74,21 @@ class StatusBridge(object):
     display = None
     state_class = None
     category_bridge = None
-    def __init__(self, *args, **kwargs): 
-        if self.slug == None:
+    def __init__(self, slug=None, display = None, state_class=None, category_bridge = None): 
+        if slug == None:
             raise Exception("Error, you must specify a slug to match the entry to appear in the Status model table")
-        if self.display == None:
+        if display == None:
             raise Exception("Error, you must specify a display string to match the entry to appear in the Status model table")
-        if self.state_class == None:
+        if state_class == None:
             raise Exception("Error, you must specify the state_class string to match the entry to appear in the Status model table")
-        if self.category_bridge == None:
+        if category_bridge == None:
             raise Exception("Error, you must specify the class of the category to bind this status to")
+        
+        self.slug = slug
+        self.display = display
+        self.state_class = state_class  
+        self.category_bridge = category_bridge
+        
 
             
         
@@ -110,27 +116,40 @@ class ActivityBridge(object):
     bridge_module = None
     bridge_class = None
     
-    def __init__(self, *args, **kwargs):                       
-        if self.slug == None:
+    def __init__(self, slug=None, summary=None, past_tense = None, active_tense = None, event_class=None, category_bridge = None, bridge_class=None, bridge_module=None, custom_view = None):                       
+        if slug == None:
             raise Exception("Error, you must specify a slug to match the entry to appear in the Activity model table")
-        if self.summary == None:
+        if summary == None:
             raise Exception("Error, you must specify a summary string to match the entry to appear in the Activity model table")
-        if self.past_tense == None:
+        if past_tense == None:
             raise Exception("Error, you must specify the past_tense string to match the entry to appear in the Activity model table")
         
-        if self.active_tense == None:
+        if active_tense == None:
             raise Exception("Error, you must specify the active_tense string to match the entry to appear in the Activity model table")
         
-        if self.event_class == None:
+        if event_class == None:
             raise Exception("Error, you must specify an event_class to match the entry to appear in the Activity model table")        
         
-        if self.category_bridge == None:
+        if category_bridge == None:
             raise Exception("Error, you must specify a category_bridge instance for this event activity bridge to exist")
         
-        if self.bridge_class == None:
+        if bridge_class == None:
             raise Exception("Error, you must specify a bridge class to match the entry to appear in the Activity model table")
-        if self.bridge_module == None:
+        if bridge_module == None:
             raise Exception("Error, you must specify a bridge module namespace to match the entry to appear in the Activity model table")
+        
+        if custom_view:
+            self.custom_view = custom_view
+        
+        self.slug = slug
+        self.summary = summary
+        self.past_tense = past_tense
+        self.active_tense = active_tense
+        self.event_class = event_class
+        self.category_bridge = category_bridge
+        self.bridge_module = bridge_module
+        
+        
 
     def template(self):
         """

@@ -11,12 +11,16 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '',                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -65,17 +69,21 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    'johnny.middleware.LocalStoreClearMiddleware',
-    'johnny.middleware.QueryCacheMiddleware',
+    #'johnny.middleware.LocalStoreClearMiddleware',
+    #'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django_digest.middleware.HttpDigestMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',    
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'ashandapp.middleware.identity.AshandIdentityMiddleware',
     'tracking.middleware.VisitorTrackingMiddleware',
 )
+
+DIGEST_ENFORCE_NONCE_COUNT = False
 
 ROOT_URLCONF = 'ashand.urls'
 
@@ -89,7 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.auth', 
                                'django.core.context_processors.debug', 
                                'django.core.context_processors.i18n', 
-                               'django.core.context_processors.media',
+                               'django.core.context_processors.media',                               
                                'django.core.context_processors.request',                               
                                )
 
@@ -101,7 +109,7 @@ INSTALLED_APPS = (
     
     
     #section ashand apps
-    'casetracker',    
+    'casetracker',
     'provider',
     'patient',
     'ashandapp',
@@ -110,10 +118,11 @@ INSTALLED_APPS = (
     
     #third party apps
     'reversion',    
-    'tinymce',
+    'django_digest',
+    #'tinymce',
     'debug_toolbar',
     'django_extensions',    
-    'johnny', 
+    #'johnny', 
     'tracking', 
     'tracking_ext',
     #end third party apps

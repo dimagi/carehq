@@ -358,7 +358,11 @@ class CaseTag(models.Model):
     object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
     object_uuid = models.CharField('object_uuid', max_length=32, db_index=True, blank=True, null=True)
     content_object = generic.GenericForeignKey('object_type', 'object_uuid')
-   
+
+class Affiliation(models.Model):
+    id = models.CharField(_('Affiliation Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True)
+    slug = models.SlugField(unique=True)
+    display = models.CharField(max_length=64)
 
 class Case(models.Model):
     """
@@ -379,8 +383,9 @@ class Case(models.Model):
     description = models.CharField(max_length=160)
     orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
     
-    category = models.ForeignKey(Category)
-    status = models.ForeignKey(Status)    
+#    affiliation = models.ForeignKey(Affiliation, verbose_name=_('Affiliation'))
+    category = models.ForeignKey(Category, verbose_name=_('Category'))
+    status = models.ForeignKey(Status, verbose_name=_('Status'))    
     
     body = models.TextField(blank=True, null=True)
         
@@ -817,6 +822,7 @@ class Filter(models.Model):
             cases = cases.filter(qu)
         
         if len(case_event_query_arr) > 0:            
+            print "case event subquery"
             case_events = CaseEvent.objects.select_related().all()                  
             for qe in case_event_query_arr:
                 case_events = case_events.filter(qe)
@@ -835,6 +841,12 @@ class Filter(models.Model):
     class Meta:
         verbose_name = "Model Filter"
         verbose_name_plural = "Model Filters"
+        
+    @property
+    def get_gridpreference(self):
+        if not hasattr(self, '_gridpreference'):
+            self._gridpreference = self.gridpreference
+        return self._gridpreference
 
 
     
@@ -952,7 +964,9 @@ class GridPreference(models.Model):
         """
         returns the display columns in order of the through class's definition
         """        
-        return self.gridpreference_displayorder.all()        
+        if not hasattr(self, '_display_columns'):
+            self._display_columns = self.gridpreference_displayorder.all().select_related()
+        return self._display_columns 
     
     @property
     def get_sort_columns(self):
@@ -960,14 +974,14 @@ class GridPreference(models.Model):
         Returns the display columns in order of the through class's definition
         """
         col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
-        return GridColumn.objects.all().filter(id__in=col_sort_orders)    
+        return GridColumn.objects.select_related().all().filter(id__in=col_sort_orders)    
     
     @property
     def get_sort_columns_raw(self):
         """
         returns the display columns in order of the through class's definition
         """
-        col_sort_orders = self.gridpreference_sort.all()
+        col_sort_orders = self.gridpreference_sort.all().select_related()
         
         return [x.sort_display for x in col_sort_orders]    
     

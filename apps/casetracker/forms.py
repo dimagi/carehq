@@ -9,11 +9,8 @@ from django.contrib.auth.models import User
 from django.forms.util import ErrorList, ValidationError
 from datetime import datetime
 import settings
-from django.contrib.admin import widgets as admwidgets                                       
-
-
+from django.contrib.admin import widgets as admwidgets
 from django.utils.safestring import mark_safe
-
 from casetracker import constants
 
 class CaseCommentForm(forms.Form):    

@@ -5,7 +5,7 @@
 {% load ashand_tags %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>{% block title %}{% endblock %}{% block title_suffix %} :: ASHand{% endblock %}</title>
+        <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         
         {% block stylesheets %}        
@@ -53,6 +53,10 @@
 			{% endblock searchbar %}
 			{% block auth %}
 			<div id="identityblock">
+				{% if user.is_superuser %}
+				<a href="/admin">Admin</a> | <a href="{% url new_provider%}">New Provider</a>
+				{% endif %}
+				
 		        {% if user.is_authenticated %}
 		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
 		        {% else %}
@@ -83,8 +87,8 @@
 				
 				<div id="breadcrumbs" class="span-24">
 					{% block breadcrumbs %}
-					<span class="crumb">Put &#62; Crumbs &#62; </span>
-					<span class="active">Here</span> 
+					{#<span class="crumb">Put &#62; Crumbs &#62; </span>#}
+					{#<span class="active">Here</span>#} 
 					{% endblock breadcrumbs %}
 				</div>
 			</div> <!-- end header class -->            

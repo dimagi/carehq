@@ -6,15 +6,8 @@ filedir = os.path.dirname(__file__)
 sys.path.append('..')
 sys.path.append(os.path.join(filedir))
 sys.path.append(os.path.join(filedir,'apps'))
-sys.path.append(os.path.join(filedir,'contrib'))
-sys.path.append(os.path.join(filedir,'rapidsms','apps'))
+sys.path.append(os.path.join(filedir,'contrib_apps'))
 sys.path.append(os.path.join(filedir,'lib'))
-
-
-#rapidsms lib stuff
-sys.path.append(os.path.join(filedir,'rapidsms','lib'))
-sys.path.append(os.path.join(filedir,'rapidsms','lib','rapidsms'))
-sys.path.append(os.path.join(filedir,'rapidsms','lib','rapidsms','webui'))
 
 from django.core.management import execute_manager
 try:

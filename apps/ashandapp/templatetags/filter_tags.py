@@ -101,6 +101,7 @@ def render_filter_heading(heading_object):
  
 @register.simple_tag
 def case_column_plain(case, column):
+    #print column
     return render_case_column(case, column, plain_text=False)    
     
 def render_case_column(case, gridorder, plain_text=True):    
@@ -132,6 +133,7 @@ def render_case_column(case, gridorder, plain_text=True):
         elif isinstance(data, Category):
             datastring = data.display
         elif isinstance(data, User):
+            #print "is a freaking user: "  + str(data)
             datastring = '<a href="%s">%s</a>' % (reverse('ashandapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
         elif isinstance (data, CaseAction):
             return data.description

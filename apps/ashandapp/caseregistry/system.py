@@ -27,29 +27,29 @@ category_type_class = SystemCategory
 ##################################################################
 #Event Activity Instances
 
-class SystemEventOpen(ActivityBridge):
-    slug = SLUG_PREFIX + 'event-open'
-    summary = 'open system event'
-    past_tense = 'opened'
-    active_tense = 'open'
-    event_class = constants.CASE_EVENT_OPEN
-    custom_view = False
-    category_bridge = category_type_class
-    bridge_module = CATEGORY_MODULE
-    bridge_class = 'SystemEventOpen'
+SystemEventOpen = ActivityBridge(\
+    slug = SLUG_PREFIX + 'event-open',
+    summary = 'open system event',
+    past_tense = 'opened',
+    active_tense = 'open',
+    event_class = constants.CASE_EVENT_OPEN,
+    custom_view = False,
+    category_bridge = category_type_class,
+    bridge_module = CATEGORY_MODULE,
+    bridge_class = 'SystemEventOpen')
 
-class SystemEventView(ActivityBridge):
-    slug = SLUG_PREFIX + 'event-view'
-    summary = 'view system event'
-    past_tense = 'viewed'
-    active_tense = 'view'
-    event_class = constants.CASE_EVENT_VIEW         
-    custom_view = False
-    category_bridge = category_type_class
-    bridge_module = CATEGORY_MODULE
-    bridge_class = 'SystemEventView'
+SystemEventView = ActivityBridge(\
+    slug = SLUG_PREFIX + 'event-view',
+    summary = 'view system event',
+    past_tense = 'viewed',
+    active_tense = 'view',
+    event_class = constants.CASE_EVENT_VIEW,         
+    custom_view = False,
+    category_bridge = category_type_class,
+    bridge_module = CATEGORY_MODULE,
+    bridge_class = 'SystemEventView')
     
-#class IssueEventEdit(ActivityBridge):
+#class IssueEventEdit = ActivityBridge(\:
 #    slug = SLUG_PREFIX + 'event-edit'
 #    summary = 'edit system event'
 #    past_tense = 'edited'
@@ -60,7 +60,7 @@ class SystemEventView(ActivityBridge):
 #    bridge_module = CATEGORY_MODULE
 #    bridge_class = 'SystemEventEdit'
 #    
-#class SystemEventAssign(ActivityBridge):
+#class SystemEventAssign = ActivityBridge(\:
 #    slug = SLUG_PREFIX + 'event-assign'
 #    summary = 'assign system event'
 #    past_tense = 'assigned'
@@ -71,7 +71,7 @@ class SystemEventView(ActivityBridge):
 #    bridge_module = CATEGORY_MODULE
 #    bridge_class = 'SystemEventAssign'
 #    
-#class SystemEventComment(ActivityBridge):
+#class SystemEventComment = ActivityBridge(\:
 #    slug = SLUG_PREFIX + 'event-comment'
 #    summary = 'comment system event'
 #    past_tense = 'commented'
@@ -82,7 +82,7 @@ class SystemEventView(ActivityBridge):
 #    bridge_module = CATEGORY_MODULE
 #    bridge_class = 'SystemEventComment'
 
-#class SystemEventResolve(ActivityBridge):
+#class SystemEventResolve = ActivityBridge(\:
 #    slug = SLUG_PREFIX + 'event-resolve'
 #    summary = 'resolve system event'
 #    past_tense = 'resolved'
@@ -93,16 +93,16 @@ class SystemEventView(ActivityBridge):
 #    bridge_module = CATEGORY_MODULE
 #    bridge_class = 'SystemEventResolve'
 
-class SystemEventClose(ActivityBridge):
-    slug = SLUG_PREFIX + 'event-close'
-    summary = 'close system event'
-    past_tense = 'closed'
-    active_tense = 'close'
-    event_class = constants.CASE_EVENT_CLOSE         
-    custom_view = False
-    category_bridge = category_type_class
-    bridge_module = CATEGORY_MODULE
-    bridge_class = 'SystemEventClose'
+SystemEventClose = ActivityBridge(\
+    slug = SLUG_PREFIX + 'event-close',
+    summary = 'close system event',
+    past_tense = 'closed',
+    active_tense = 'close',
+    event_class = constants.CASE_EVENT_CLOSE,         
+    custom_view = False,
+    category_bridge = category_type_class,
+    bridge_module = CATEGORY_MODULE,
+    bridge_class = 'SystemEventClose')
 
 #End Event Activity Instances
 ##################################################################
@@ -113,35 +113,35 @@ class SystemEventClose(ActivityBridge):
 
 
 
-#class SystemNew(StatusBridge):
-#    slug = SLUG_PREFIX + 'new-default'
-#    display = 'New'
-#    state_class = constants.CASE_STATE_NEW
-#    category_bridge = SystemCategory
+#class SystemNew = StatusBridge(\:
+#    slug = SLUG_PREFIX + 'new-default',
+#    display = 'New',
+#    state_class = constants.CASE_STATE_NEW,
+#    category_bridge = SystemCategory)
         
-class SystemStateOpen(StatusBridge):
-    slug = SLUG_PREFIX + 'open-default'
-    display = 'Open'
-    state_class = constants.CASE_STATE_OPEN
-    category_bridge = SystemCategory
+SystemStateOpen = StatusBridge(\
+    slug = SLUG_PREFIX + 'open-default',
+    display = 'Open',
+    state_class = constants.CASE_STATE_OPEN,
+    category_bridge = SystemCategory)
 
-#class SystemResolved(StatusBridge):
-#    slug = SLUG_PREFIX + 'resolved-default'
-#    display = 'Resolved (default)'
-#    state_class = constants.CASE_STATE_RESOLVED
-#    category_bridge = SystemCategory
+#class SystemResolved = StatusBridge(\:
+#    slug = SLUG_PREFIX + 'resolved-default',
+#    display = 'Resolved (default)',
+#    state_class = constants.CASE_STATE_RESOLVED,
+#    category_bridge = SystemCategory)
 
-#class SystemResolvedCanceled(StatusBridge):
+#class SystemResolvedCanceled = StatusBridge(\:
 #    slug = SLUG_PREFIX + 'resolved-canceled'
 #    display = 'Resolved (canceled)'
 #    state_class = constants.CASE_STATE_RESOLVED
 #    category_bridge = SystemCategory
 
-class SystemStateClosed(StatusBridge):
-    slug = SLUG_PREFIX + 'closed-default'
-    display = 'Closed'
-    state_class = constants.CASE_STATE_CLOSED
-    category_bridge = SystemCategory
+SystemStateClosed = StatusBridge(\
+    slug = SLUG_PREFIX + 'closed-default',
+    display = 'Closed',
+    state_class = constants.CASE_STATE_CLOSED,
+    category_bridge = SystemCategory)
 
 
 #End Status Instances

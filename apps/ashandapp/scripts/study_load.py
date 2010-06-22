@@ -25,8 +25,8 @@ def run():
     
     
     #reset the database
-    call_command('reset_db', interactive=False)    
-    call_command('syncdb', interactive=False)
+    #call_command('reset_db', interactive=False)    
+    #call_command('syncdb', interactive=False)
     
     #load all the demo categories for cases
     load_fixtures()

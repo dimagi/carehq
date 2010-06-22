@@ -10,7 +10,7 @@ urlpatterns =  []
 urlpatterns += patterns('',
                         (r'^accounts/login/$', 'django.contrib.auth.views.login', 
                                                 {"template_name": settings.LOGIN_TEMPLATE }),
-                        (r'^accounts/logout/$', 'django.contrib.auth.views.logout', 
+                        (r'^accounts/logout/$', 'views.logout', 
                                                 {"template_name": settings.LOGGEDOUT_TEMPLATE }),
                         #todo, other auth related urls (password_X, reset)
                         )

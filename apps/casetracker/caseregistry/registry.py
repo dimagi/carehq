@@ -1,8 +1,10 @@
 from casetracker.models import Category, EventActivity, Status
+from django.db import transaction
 
 
+@transaction.commit_manually
 def RegisterCategory(category_bridge_class, overwrite = False, except_on_collision = False):
-    bridge = category_bridge_class()
+    bridge = category_bridge_class
     print 'registering: ' + bridge.slug
     exists=False
     try:    
@@ -24,11 +26,14 @@ def RegisterCategory(category_bridge_class, overwrite = False, except_on_collisi
         pass
     else:
         cat.save()
-        
-        
+    transaction.commit()
 
+        
+        
+@transaction.commit_manually
 def RegisterStatus(status_bridge_class):
-    bridge = status_bridge_class()    
+    bridge = status_bridge_class
+    print "registering status %s" % bridge.slug
     exists=False
     try:    
         status = Status.objects.get(slug=bridge.slug)
@@ -37,10 +42,14 @@ def RegisterStatus(status_bridge_class):
         stat = Status()        
         stat.slug = bridge.slug
         stat.display = bridge.display
-        stat.category = Category.objects.get(slug=bridge.category_bridge().slug)
+        stat.category = Category.objects.get(slug=bridge.category_bridge.slug)
         stat.state_class = bridge.state_class
         stat.save()
         exists = False        
+        
+    print "status registered: %s %s" % (status_bridge_class.slug, exists)
+    transaction.commit()
+    return exists
     
     
 def RegisterDefaultStates(category_bridge_class):
@@ -51,6 +60,7 @@ def RegisterDefaultActivities(status_bridge_class):
     #raise Exception("not implemented")
     pass
 
+@transaction.commit_manually
 def _do_register_activity(status, activity_bridge):    
     try:
         activity = EventActivity.objects.get(slug=activity_bridge.slug)
@@ -74,10 +84,11 @@ def _do_register_activity(status, activity_bridge):
         status.set_activity(activity)
     except:
         pass
+    transaction.commit()
     
-    
+@transaction.commit_manually
 def RegisterStatelessActivity(activity_bridge_class):    
-    activity_bridge = activity_bridge_class()    
+    activity_bridge = activity_bridge_class    
     try:
         activity = EventActivity.objects.get(slug=activity_bridge.slug)
     except:
@@ -96,11 +107,16 @@ def RegisterStatelessActivity(activity_bridge_class):
     print "Adding Activity [%s] with no valid status" % ( activity.slug  )
         
                       
-
-def RegisterActivity(status_bridge_class, activity_bridge_class):    
-    status = Status.objects.get(slug=status_bridge_class().slug)
-    activity_bridge = activity_bridge_class()    
+@transaction.commit_manually
+def RegisterActivity(status_bridge_class, activity_bridge_class):  
+    print "Registering activity: %s %s" %  (status_bridge_class.slug, activity_bridge_class)  
+    
+    status = Status.objects.get(slug=status_bridge_class.slug)    
+    
+    activity_bridge = activity_bridge_class    
     _do_register_activity(status, activity_bridge)  
+    
+    
     
 #def InitRegistrar():
 #    for cls in CategoryRegistrar.__subclasses__():

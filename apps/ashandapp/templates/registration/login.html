@@ -7,8 +7,8 @@
 {% else %}
 <div class="span-24">
 <div class="span-10 prepend-2 prepend-top note box">
-<h2>ASHand</h2>
-<h4>ASHand is a tool to help coordinate medical care between you, doctors, and people you care about</h4>
+<h2>CareHQ</h2>
+<h4>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about</h4>
 </div>
 <div class="span-10 prepend-2 last">    
 <script type="text/javascript">
@@ -21,7 +21,7 @@
 
     <h4>Please sign in</h4>
     <fieldset>
-    <form method="post" action=".">
+    <form method="post" action=".">{% csrf_token %}     	
         <table>
             <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
             <tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>

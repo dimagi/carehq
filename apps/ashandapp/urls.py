@@ -27,6 +27,9 @@ urlpatterns = patterns('',
     url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
     url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
     
+    url(r'^mobile/caselist$', 'ashandapp.views.mobile.case_list', name='mobile_case_list'),
+    url(r'^mobile/newprovider', 'ashandapp.views.mobile.new_provider', name='new_provider'),
+    
     url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/cases$', 'ashandapp.views.careteam.ajax.view_careteam_cases', name='careteam-cases-tabpage'),
     url(r'^grid/careteam/(?P<careteam_id>[0-9a-f]{32})/cases$', 'ashandapp.views.cases.queries.grid_careteam_cases', name='careteam-cases-grid'),
     

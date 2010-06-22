@@ -14,14 +14,10 @@ class CaseActionAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display=('slug','display','plural', 'bridge_module', 'bridge_class')
     list_filter = []
-    
-
 
 class PriorityAdmin(admin.ModelAdmin):
     list_display=('id', 'description','default')
     list_filter = []
-
-
     
 class StatusAdmin(admin.ModelAdmin):
     list_display=('slug', 'display', 'state_class','category')
@@ -30,8 +26,6 @@ class StatusAdmin(admin.ModelAdmin):
         "category": admin.VERTICAL,
         'state_class': admin.HORIZONTAL,
     }
-
-
     
 class EventActivityAdmin(admin.ModelAdmin):
     list_display=('slug','past_tense','summary','event_class', 'past_tense', 'active_tense', 'category','bridge_module','bridge_class')
@@ -41,17 +35,15 @@ class EventActivityAdmin(admin.ModelAdmin):
         'event_class': admin.HORIZONTAL,
     }
 
-
 class CaseEventInline(admin.StackedInline):
     model = CaseEvent    
-class CaseEventAdmin(admin.ModelAdmin):
 
+class CaseEventAdmin(admin.ModelAdmin):
     list_display=('id','notes','case','activity')
     list_filter = ['activity',]
 
 class CaseInline(admin.StackedInline):
     model = Case
-
 
 class CaseReversion(VersionAdmin):
     list_display=('description','orig_description','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
