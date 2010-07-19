@@ -6,6 +6,11 @@
 	</div>
 	<div class="span-18 prepend-1">
 	<h2>{{user.first_name}} {{user.last_name}}</h2>
+	<table>
+	<tr>
+		<td><strong>{% trans "Email" %}</strong></td><td>{{user.email }}</td>
+		<td><strong>{% trans "Member Since" %}</strong></td><td>{{user.date_joined|date }}</td>
+	</table>
 	</div>
 	<div class="span-2 last">
 	{% ifequal request.user user %}
@@ -15,15 +20,4 @@
 	{% endifequal %}	
 	</div>
 	</fieldset>
-</div>
-<div class="span-11 box">
-
-<h3>{% trans "Basic Information" %} </h3>
-<dl>
-	<dt>{% trans "Email" %}:</dt>
-		<dd>{{user.email }}</dd>
-	<dt>{% trans "Member Since" %}:</dt>
-		<dd>{{user.date_joined|date }}</dd>
-</dl>
-
 </div>

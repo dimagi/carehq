@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+{%spaceless%}
+{%autoescape off %}
+{{json_string}}
+{%endautoescape%}
+{%endspaceless%}
+
+{% endblock content %}

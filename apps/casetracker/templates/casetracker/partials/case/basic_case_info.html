@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load case_tags %}
+<div class="span-18">  <!-- case info block -->
+        <div class="span-18">
+            <span style="font-size:2.5em;">{{case.description}}</span><br>
+			<small>Created {{case.opened_date|timesince}} ago by <a href="{% url ashandapp.views.users.single  case.opened_by.id %}">{{case.opened_by.get_full_name}}</a></small>
+            <hr>
+            <p style="font-size:1.5em;">{{case.body}}</p>
+        </div>
+        
+        <div class="span-18">        	
+			<div class="span-5 prepend-2">
+                <strong>{% trans "Assigned" %}</strong>
+                to <a href="{% url ashandapp.views.users.single  case.assigned_to.id %}">{{case.assigned_to.get_full_name}}</a><br>
+				<small>{{case.assigned_date|date}}</small>				
+            </div>		
+			
+			{% if case.is_resolved and not case.is_closed%}
+			<div class="span-5">
+                <strong>{% trans "Resolved" %}</strong> by <a href="{% url ashandapp.views.users.single  case.resolved_by.id %}">{{case.resolved_by.get_full_name}}</a><br>
+				<small>{{case.resolved_date|date}}</small>            
+            </div>
+			{% endif %}
+			
+			{% if case.is_closed %}
+			<div class="span-5 notice">
+                <strong>{% trans "Closed" %}</strong> by <a href="{% url ashandapp.views.users.single  case.closed_by.id %}">{{case.closed_by.get_full_name}}</a><br>
+				<small>{{case.closed_date|date}}</small>            
+            </div>
+			{% endif %}			
+        </div>        
+</div> <!-- end case info block -->    

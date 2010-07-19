@@ -3,7 +3,7 @@
 {% load patient_tags %}
 {% block title %}Provider View{% endblock %}
 {% block extrahead %}
-{% include "casetracker/partials/datagrid_media.html" %}
+
 {% endblock %}
 
 {% block content %}
@@ -13,14 +13,14 @@
 
 {% if selected_is_provider %}
 	{% with selected_provider as provider %}
-	<div class="span-12 last">
+	<div class="span-24">
 		{% include "ashandapp/partials/user_profile_provider.html" %}
 	</div>
 	{%endwith%}
 <hr>	
 	{% if common_careteams %}
 	<div class="span-24">
-		<h3>{% trans "Shared Patients" %}({{common_careteams|length}})</h3>
+		<h3>{% trans "Shared Patients" %} ({{common_careteams|length}})</h3>
 		{% for careteam in common_careteams %}
 			{% include "ashandapp/partials/inline_careteam.html" %}
 		{% endfor %}	

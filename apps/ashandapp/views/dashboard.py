@@ -1,44 +1,44 @@
-from django.shortcuts import render_to_response
+from datetime import datetime
+import logging
 
+from django.contrib.auth.models import User
+from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-import logging
 from django.http import HttpResponse
-from django.contrib.auth.models import User
-from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam,ProviderLink
-from provider.models import Provider
-from patient.models import Patient
-
+from casetracker.models import Filter, Case, CaseEvent, Category, Status, Priority
 from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core import serializers
+
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
-from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
+from django.core.urlresolvers import reverse
+
+from provider.models import Provider
+
+
+from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,FilterProfile
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-from ashandapp.templatetags.filter_tags import case_column
-from datetime import datetime
+from ashandapp.templatetags.filter_tags import case_column_plain
+from ashandapp.views.cases import queries
+
 
 @login_required
-def get_json_for_paging(request):
-    
-    user = request.user
-    
+def get_json_for_paging(request):    
+    user = request.user    
     display_filter = None    
     start_index = None
     length = None
 
     try:
-        profile = CaseProfile.objects.get(user = user)                
+        profile = FilterProfile.objects.get(user = user)                
     except ObjectDoesNotExist:
         #make the new case profile
-        profile = CaseProfile()
+        profile = FilterProfile()
         profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
+        profile.filter = Filter.objects.all()[0]
+        profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
     
     
     if len(request.GET.items()) > 0:
@@ -74,14 +74,16 @@ def get_json_for_paging(request):
     
     
     #build json_string with information from data    
+     
     json_string = "{ \"aaData\": ["
    
     #adding user
     for case in display_filter:
+        careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
         json_string += "["
-        json_string += "\"<a href = 'users/%s'>%s %s</a>\"," % (case.careteam_set.get().patient.user.id, case.careteam_set.get().patient.user.first_name, case.careteam_set.get().patient.user.last_name)
-        for col in filter.gridpreference.display_columns.all():
-            table_entry = case_column(case, col.name)
+        json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
+        for col in filter.gridpreference.get_display_columns:
+            table_entry = case_column_plain(case, col.name)
             if len(table_entry) > 45:
                 table_entry = table_entry[0:45] + "..."
             # terribly hardcoded...quick fix to add links
@@ -100,124 +102,76 @@ def get_json_for_paging(request):
 
     return HttpResponse(json_string)
 
-@login_required
-#@cache_page(60 * 5)
-def my_dashboard_tab(request, template_name="ashandapp/test.html"): 
- 
+
+def dashboard_case_filter(request, filter_id):
     context = {}
-    user = request.user
-    
-    display_filter = None    
+    showfilter = False        
+    filter = Filter.objects.get(id=filter_id)
+    gridpref = filter.gridpreference    
+    group_by = None    
         
-    try:
-        profile = CaseProfile.objects.get(user = user)                
-    except ObjectDoesNotExist:
-        #make the new case profile
-        profile = CaseProfile()
-        profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
+    for key, value in request.GET.items():            
+        if key == "groupBy":
+            group_by_col = value
     
+    split_headings = True
+    qset = filter.get_filter_queryset()    
+        
+    if group_by_col.count('_date') > 0:
+        split_headings = False
+        qset.order_by(group_by_col)
+    elif group_by_col == 'description':
+        split_headings = False
+        qset.order_by('description')
+    elif  group_by_col == 'assigned_to' or group_by_col == 'closed_by' or group_by_col == 'opened_by'\
+        or group_by_col == 'last_edit_by' or group_by_col == 'resolved_by' or group_by_col == 'last_event_by':        
+        model_class = User
+    elif group_by_col == 'patient':        
+        model_class = CareTeam
+    elif group_by_col == 'status':
+        model_class = Status
+    elif group_by_col == 'priority':
+        model_class = Priority
+    elif group_by_col == 'category':
+        model_class = Category
     
-    if len(request.GET.items()) > 0:
-            for item in request.GET.items():
-                if item[0] == 'filter':
-                    filter_id = item[1]            
-                    try:
-                        display_filter = Filter.objects.get(id=filter_id)                                                
-                    except:
-                        pass
+    qset_dict = {}
+    
+    if split_headings:
+        heading_keys = model_class.objects.all().distinct()
+        for key in heading_keys:
+            #http://www.nomadjourney.com/2009/04/dynamic-django-queries-with-kwargs/
+            #dynamic django queries baby
+            #kwargs = { 'deleted_datetime__isnull': True }
+            #args = ( Q( title__icontains = 'Foo' ) | Q( title__icontains = 'Bar' ) )
+            #entries = Entry.objects.filter( *args, **kwargs )
+            if group_by_col == 'patient':
+                ptq = Q(careteam=key)
+                subq = qset.filter(ptq)
+            else:
+                kwargs = {str(group_by_col): key, }
+                subq = qset.filter(**kwargs)        
     else:
-        display_filter = profile.last_filter
+        pass
+
     
+    context['filter'] = filter
+    context['gridpref'] = gridpref
     
-    #doing this on very load seems incredibly inefficient.  perhaps update the request object and cache stuff?
-    profile.last_login = datetime.utcnow()
-    profile.last_login_from = request.META['REMOTE_ADDR']
-    profile.last_filter = display_filter
-    profile.save()        
-    
-    shared_filters = Filter.objects.filter(shared=True)
-    context['shared_filters'] = shared_filters
-    
-    context['display_filter'] = display_filter
         
-    context['profile'] = profile    
-    context['filter'] = profile.last_filter
-    
-    providers = Provider.objects.filter(user=user)
-    if len(providers) > 0:
-        context['providers'] = providers
-        
-        #commenting out because filters should do this now        
-        #opened = Q(opened_by=user)
-        #last_edit = Q(last_edit_by=user)
-        #assigned = Q(assigned_to=user)        
-        #cases = Case.objects.filter(opened | last_edit | assigned)
-        #qtitle = "Cases for this provider"        
-                
-        careteam_membership = ProviderLink.objects.filter(provider__id=user.id).values_list("careteam__id",flat=True)
-        context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)  
-        
+    context['filter_cases'] = qset
+    template_name='casetracker/filter/filter_simpletable.html'
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+
+        
+
+
+
 @login_required
-def my_dashboard(request, template_name="ashandapp/dashboard.html"):
+def view_caselist_fbstyle(request, filter_id):
     context = {}
-    user = request.user
-    
-    display_filter = None    
-        
-    try:
-        profile = CaseProfile.objects.get(user = user)                
-    except ObjectDoesNotExist:
-        #make the new case profile
-        profile = CaseProfile()
-        profile.user = user
-        profile.filter = Filter.objects.get(id=1)
-        profile.last_filter = Filter.objects.get(id=1) #this is a nasty hack, as we're assuming id 1 is the reflexive one 
-    
-    
-    if len(request.GET.items()) > 0:
-            for item in request.GET.items():
-                if item[0] == 'filter':
-                    filter_id = item[1]            
-                    try:
-                        display_filter = Filter.objects.get(id=filter_id)                                                
-                    except:
-                        pass
-                    
-    else:
-        display_filter = profile.last_filter
-    
-    
-    #doing this on very load seems incredibly inefficient.  perhaps update the request object and cache stuff?
-    profile.last_login = datetime.utcnow()
-    profile.last_login_from = request.META['REMOTE_ADDR']
-    profile.last_filter = display_filter
-    profile.save()        
-    
-    shared_filters = Filter.objects.select_related('gridpreference').filter(shared=True)
-    context['shared_filters'] = shared_filters
-    
-    context['display_filter'] = display_filter
-    
-    
-    context['profile'] = profile    
-    context['filter'] = profile.last_filter
-    context['gridpreference'] = context['filter'].gridpreference
-    
-    providers = Provider.objects.filter(user=user)
-    if len(providers) > 0:
-        context['providers'] = providers
-        
-        #commenting out because filters should do this now        
-        #opened = Q(opened_by=user)
-        #last_edit = Q(last_edit_by=user)
-        #assigned = Q(assigned_to=user)        
-        #cases = Case.objects.filter(opened | last_edit | assigned)
-        #qtitle = "Cases for this provider"        
-                
-        careteam_membership = ProviderLink.objects.filter(provider=request.provider).values_list("careteam__id",flat=True)
-        context['careteams'] = CareTeam.objects.filter(id__in=careteam_membership)    
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+    for key, value in request.GET.items():            
+        if key == "sort":
+            sorting = value
+

@@ -1,0 +1,88 @@
+{% load casefilter_tags %}
+<script type="text/javascript" charset="utf-8">
+	$().ready(function(){
+		$("#menu").flickrmenu();
+	});
+</script>
+
+<div id="menu">
+	<ul> 
+		{# provider dashboard - not sure what to actually put here #}
+		{% if request.is_provider %}
+		<li>
+			<span class="head_menu">
+			<a href="{% url list_cases %}">Dashboard</a>
+			</span>
+		</li>
+		{% endif %} 
+		
+		
+		<li>
+			<span class="head_menu">
+				<a href="{% url list_cases %}">List Cases</a>
+			</span>			
+		</li>
+		
+		<li>
+			<span class="head_menu">
+				<a href="#">Case Filters</a>				
+				<img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+			</span>						
+			{% get_casefilters_for_user_ul request.user %}
+		</li>		
+		
+		{# patient relevant inforamtion #}
+		{% if request.is_patient %}
+			<li>
+				<span class="head_menu">
+				<a href="#">My Care Plan</a>
+				</span>
+			</li> 
+			<li>
+				<span class="head_menu">
+				<a href="{% url my_careteam %}">My Care Team</a>
+				</span>
+			</li>
+		{% endif %}
+	
+		{# My Patients #}
+		{% if request.is_caregiver or request.is_provider %} 		
+			<li>				
+			{% if patient_careteams %}
+				<span class="head_menu">
+					<a href="#">My Patients</a>
+					<img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+				</span>			
+				<div class="sub_menu"> 
+				{% for careteam in patient_careteams %}
+					<a href="{% url view-careteam careteam.id %}" >{{ careteam.patient.user.get_full_name }}</a>
+				{% endfor %} 
+				</div>		
+			{% endif %}	
+			</li>		
+		{% endif %}		
+		
+		{% if request.is_patient %}
+			<li>
+			<span class="head_menu">
+				<a href="{% url ashandapp.views.cases.create.new_question request.my_careteam.id %}" id="ptQMenu" >Ask a Question</a>			
+			</span>
+			</li>
+		{% endif %} 
+		
+		{% if request.is_caregiver %}
+		<li>
+			<span class="head_menu">
+			<a href="#" id="ptQMenu" >Ask a Question</a>
+			<img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+			</span>
+			
+			<div class="sub_menu"> 
+			{% for careteam in request.patient_careteams %}
+				<a href="{% url ashandapp.views.cases.create.new_question careteam.id %}">For {{careteam.patient.user.get_full_name }}</a> 
+			{% endfor %}
+			</div>
+		</li>
+		{% endif %}
+	</ul>		
+</div>	

@@ -8,10 +8,7 @@ from patient.models import Patient
 from provider.models import Provider
 import datetime
 import uuid
-
-from djcaching.models import CachedModel
-from djcaching.managers import CachingManager
-
+from django.core.urlresolvers import reverse
 from casetracker import constants
 
 def make_uuid():
@@ -30,7 +27,7 @@ GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
 
 #providers are individual entities set as "profiles" from the django user
 
-class CaseProfile(models.Model):
+class FilterProfile(models.Model):
     """Proof of concept case/filter view stuff for user profile
     This will need to be replaced by a more sophisticated tracking (for login and sessions)
     as well as user profile management
@@ -68,14 +65,11 @@ class ProviderRole(models.Model):
 
 
 
-class ProviderLink(CachedModel):
-#class ProviderLink(models.Model):
+class ProviderLink(models.Model):
     """
     Simple link of a provider object to a careteam.
     """
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    
-    objects = CachingManager()
     
     careteam = models.ForeignKey("CareTeam")
     provider = models.ForeignKey(Provider, related_name='providerlink_provider')
@@ -96,8 +90,7 @@ class ProviderLink(CachedModel):
         #who they are, and are able to actually be attached/saved in this way
         super(ProviderLink, self).save()
     
-#class CareRelationship(models.Model):
-class CareRelationship(CachedModel):
+class CareRelationship(models.Model):
     """
     Define a particular caregivers' relationship for the given patient.  This is different from their actual title
     Though the actual roles may need to be made into their own model, as should permissions and such.
@@ -113,8 +106,7 @@ class CareRelationship(CachedModel):
                       ('neighbor', 'Neighbor'),
                       ('other', 'Other'),
     )    
-    objects = CachingManager()
-    
+   
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     relationship_type = models.CharField(choices=RELATIONSHIP_CHOICES,max_length=32)    
     other_description = models.CharField(max_length=64, null=True, blank=True) 
@@ -123,14 +115,10 @@ class CareRelationship(CachedModel):
     def __unicode__(self):
         return self.get_relationship_type_display()
   
-class CaregiverLink(CachedModel):
-#class CaregiverLink(models.Model):
+class CaregiverLink(models.Model):
     """
     The actual link for a user object to be come a caregiver.
-    """
-    
-    objects = CachingManager()
-    
+    """    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey("CareTeam")
     user = models.ForeignKey(User, related_name="caregiverlink_user")
@@ -149,18 +137,18 @@ class CareTeamCaseLink(models.Model):
     """
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     careteam = models.ForeignKey('CareTeam')
-    case = models.ForeignKey(Case)
+    case = models.ForeignKey(Case, related_name='careteam_linked', unique=True)
+    
+    class Meta:
+        unique_together = ('case','careteam')
 
-#class CareTeam(models.Model):
-class CareTeam(CachedModel):
+class CareTeam(models.Model):
     """
     A care team revolves around a patient.  It will contain providers and caregivers with their linked roles
     on their linkage.
     
     Cases for this patient will be linked as well thorugh this model.
     """
-    objects = CachingManager()
-    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     patient = models.ForeignKey(Patient, related_name='my_careteam')
     providers = models.ManyToManyField(Provider, through='ProviderLink', related_name="careteam_providers")
@@ -170,7 +158,8 @@ class CareTeam(CachedModel):
     def add_case(self, case):
         CareTeamCaseLink(case=case, careteam=self).save()
         
-    
+    def get_absolute_url(self):
+        return reverse('view-careteam', kwargs={'careteam_id':self.id })
     @property
     def primary_provider(self):
         """The primary provider for new cases going to this careteam for assignment"""
@@ -186,13 +175,13 @@ class CareTeam(CachedModel):
         triage_nurse = self.providerlink_set.all().filter(role__role='nurse-triage')
         if len(triage_nurse) > 0:
             self._primary_provider = triage_nurse[0].provider
-        
-        pcp = self.providerlink_set.all().filter(role__role='pcp')
-        if len(pcp) > 0:            
-            self._primary_provider = pcp[0].provider
         else:
-            self._primary_provider = None
-        
+            pcp = self.providerlink_set.all().filter(role__role='pcp')
+            if len(pcp) > 0:            
+                self._primary_provider = pcp[0].provider
+            else:
+                self._primary_provider = None
+            
         return self._primary_provider
     
     @property
@@ -229,7 +218,8 @@ class CareTeam(CachedModel):
         """
         Return a queryset of the cases in this careteam that are active
         """
-        return self.cases.all().filter(status__state_class=constants.CASE_STATE_OPEN)
+        
+        return self.cases.all().filter(Q(status__state_class=constants.CASE_STATE_OPEN))
     
     
     def resolved_cases(self):
@@ -257,3 +247,7 @@ class CareTeam(CachedModel):
             self._stringname = "Careteam for %s" % self.patient.user.username
         return self._stringname
     
+    
+#We recognize this is a nasty practice to do an import, but we hate putting signal code
+#at the bottom of models.py even more.
+import signals

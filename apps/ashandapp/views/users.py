@@ -5,7 +5,7 @@ from django.template import RequestContext
 import logging
 from django.contrib.auth.models import User
 from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam, ProviderLink, CaregiverLink
+from ashandapp.models import CareTeam, ProviderLink, CaregiverLink
 from provider.models import Provider
 from patient.models import Patient
 
@@ -17,14 +17,10 @@ from casetracker.queries.caseevents import get_latest_event, get_latest_for_case
 
 from ashandapp.forms.question import NewQuestionForm
 from ashandapp.forms.issue import NewIssueForm
-from casetracker.views import get_sorted_dictionary 
+from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary 
  
 
-@cache_page(60 * 5)
-def all(request, template_name='ashandapp/user_datagrid.html'):    
-    pass
-
-
+@login_required
 def my_profile(request, template_name = 'ashandapp/my_profile.html'):
     user = request.user
     context = {}        
@@ -87,7 +83,7 @@ def single(request, user_id=None):
             context['formatting'] = False     
         
             sorted_dic = {}
-            sorted_dic = get_sorted_dictionary(sort, context['events'])
+            sorted_dic = get_sorted_caseevent_dictionary(sort, context['events'])
                         
             if (len(sorted_dic) > 0):
                 context['events'] = sorted_dic
@@ -122,6 +118,8 @@ def single(request, user_id=None):
             careteams_me = ProviderLink.objects.all().filter(provider=request.provider).values_list('careteam', flat=True)                 
         elif request.is_caregiver:
             careteams_me = CaregiverLink.objects.all().filter(user=request.user).values_list('careteam', flat=True)
+        else:
+            careteams_me = []
         
         common_careteam_ids = plink_selected.filter(careteam__in=careteams_me).values_list('careteam',flat=True)
         context['common_careteams'] = CareTeam.objects.filter(id__in=common_careteam_ids)

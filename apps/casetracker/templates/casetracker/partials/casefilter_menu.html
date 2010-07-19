@@ -1,0 +1,23 @@
+{% spaceless %}
+<div class="sub_menu">	
+	
+	<a href="#">Manage filters</a>
+	<hr>
+	{% if shared_filters %}
+	<strong>Shared Filters</strong>	
+	{% for filter in shared_filters %}
+	<a href="{% url list_cases %}?filter={{filter.id}}">{{filter.description}}</a>
+	{% endfor %}
+	<hr>
+	{% endif%}
+	
+	{% if user_filters %}
+	<strong>My Filters</strong>
+		
+	{% for filter in user_filters %}
+	<a href="{% url list_cases %}?filter={{filter.id}}">{{filter.description}}</a>	{% endfor %}
+	{% endif %}
+	<a href="#">Customize filter</a>
+	
+</div>
+{% endspaceless %}

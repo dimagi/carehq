@@ -38,8 +38,9 @@ def caregiver_only(view_func):
     """
     Decorator for views that checks whether a user is an extuser.
     Redirecting to the no permissions page if necessary.
-    """
+    """    
     def _is_caregiver(request, *args, **kwargs):
+        
         if not request.is_caregiver:
             raise Http404    
         return view_func(request, * args, **kwargs)

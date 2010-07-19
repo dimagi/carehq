@@ -5,7 +5,7 @@ import sys
 import os
 
 from django.core import serializers
-from casetracker.models import CaseAction, Category, Priority, Status, EventActivity
+from casetracker.models import CaseAction, Category, Priority, Status, EventActivity, GridColumn
 
 
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
         else:
             print_stdout = False
         
-        models = [CaseAction,Category,Priority,Status,EventActivity]
+        models = [CaseAction,Category,Priority,Status,EventActivity, GridColumn]
         
         if print_stdout or (not splitfiles):
             all_data = []

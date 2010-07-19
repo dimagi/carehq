@@ -7,11 +7,11 @@ function toggle_careteam_block(id) {
     var flipper = $('#careteam_flipper_' + id);
     
     if(cteam_block.hasClass('hidden')) {
-        flipper.text("Hide details");
+        flipper.text("Hide People");
         cteam_block.slideDown();
     }
     else {
-        flipper.text("Show details");
+        flipper.text("Show People");
         cteam_block.slideUp();
     }
     cteam_block.toggleClass('hidden');

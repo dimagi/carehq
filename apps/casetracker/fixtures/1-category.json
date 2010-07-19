@@ -5,7 +5,9 @@
     "fields": {
       "category": "Question", 
       "plural": "Questions", 
-      "default_status": null
+      "default_status": null,
+      "handler_module": "ashandapp.CategoryHandler",
+      "handler_class": "QuestionHandler"
     }
   }, 
   {
@@ -14,7 +16,9 @@
     "fields": {
       "category": "Issue", 
       "plural": "Issues", 
-      "default_status": null
+      "default_status": null,
+      "handler_module": "ashandapp.CategoryHandler",
+      "handler_class": "IssueHandler"
     }
   }, 
   {
@@ -48,8 +52,8 @@
     "pk": 6, 
     "model": "casetracker.category", 
     "fields": {
-      "category": "Laboratory", 
-      "plural": "laboratory", 
+      "category": "HomeVisit", 
+      "plural": "home visits", 
       "default_status": null
     }
   }, 
@@ -57,9 +61,22 @@
     "pk": 7, 
     "model": "casetracker.category", 
     "fields": {
-      "category": "Measurement", 
-      "plural": "measurements", 
+      "category": "HomeMonitoring", 
+      "handler_class": "HomeMonitoringHandler", 
+      "plural": "Home Measurement", 
+      "handler_module": "ashandapp.CategoryHandler", 
       "default_status": null
-    }
+   }
+  },
+  {
+    "pk": 8, 
+    "model": "casetracker.category", 
+    "fields": {
+      "category": "System", 
+      "handler_class": "SystemCaseHandler", 
+      "plural": "System Cases", 
+      "handler_module": "ashandapp.CategoryHandler", 
+      "default_status": null
+   }
   }
 ]

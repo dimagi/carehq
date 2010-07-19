@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "View Case" %}{% endblock %}
+{% block extrahead %}
+	<script type="text/javascript" src="/my_admin/jsi18n"></script>
+	<script type="text/javascript" src="/media/admin/js/core.js"></script>	
+	<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
+	<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/ashand-forms.css" type="text/css">                  
+	{{form.media}}
+{% endblock extrahead %} 
+{% block content %}
+<script type="text/javascript">
+	$('#result').load('ajax/test.html');
+</script>
+
+
+<div class="span-24">	
+	<div class="span-18"> {# the basic case info block is span 18 #}
+		{% block case_info %}			
+		{% include "casetracker/partials/case/basic_case_info.html" %}
+		{% endblock %}		
+		<hr>
+		{% if not show_form %}		
+			{% block case_actions %}
+			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
+			{% endblock case_actions %}
+		{% endif %}
+		{% if show_form %}
+			{% include "casetracker/manage/inline_case_edit.html" %}
+		{% endif %}	
+	
+		<div class="span-18 prepend-top">	
+		<hr>		
+		{% block newsfeed-area %}
+		<div id="casehistory">			
+		</div>
+		<script type="text/javascript">
+  			$("#casehistory").load("{%url case-newsfeed case.id %}");
+		</script>		
+		{% if can_comment %}
+		{% include "casetracker/manage/comment.html" %}
+		{% endif %}
+		{% endblock newsfeed-area %}										
+		</div>		
+	</div>	<!-- end case body and info container -->	
+	<div class="span-6 last"> <!-- specialized category block -->
+		<div class="span-6">						
+		{% block caselink_area %}				
+		{% endblock caselink_area %}
+		</div>				
+		<div class = "span-6">
+		{% block case_metadata %}
+		{% comment %}
+		<strong>Basic Metadata</strong>
+		<ul>
+			<li>{{case.category}}</li>
+			<li>{{case.status}}</li>
+			<li>{{case.last_case_event}}</li>		
+		</ul>
+		{% endcomment %}
+		{% endblock %}		
+		</div>					
+	</div> <!-- end case link block -->
+</div>	
+{% endblock content %}

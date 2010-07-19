@@ -1,0 +1,606 @@
+[
+  {
+    "pk": 164, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "nancy_apple", 
+      "first_name": "Nancy", 
+      "last_name": "Apple", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$bb7cb$72a1eade66174ac55a3cf909ae22649b492df766", 
+      "email": "Nancy_Apple@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 163, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "john_carter", 
+      "first_name": "John", 
+      "last_name": "Carter", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$05d3d$d87838bd9c5c0a37a34b2c2a4bdab63bb9b3853e", 
+      "email": "John_Carter@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 162, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "robert_chase", 
+      "first_name": "Robert", 
+      "last_name": "Chase", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$ef72b$814fab49f852bd74bbf972fda5c8da14aa60e884", 
+      "email": "Robert_Chase@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 161, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "allison_cameron", 
+      "first_name": "Allison", 
+      "last_name": "Cameron", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$b2e5d$bd0d7bf9f8aeb4f83d75ad52db37370ad4169452", 
+      "email": "Allison_Cameron@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 160, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "alyssa_ogawa", 
+      "first_name": "Alyssa", 
+      "last_name": "Ogawa", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:47:29", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$92d42$70c51a113f4e75263dd28bbde05d91a709732c2b", 
+      "email": "Alyssa_Ogawa@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 159, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "christine_chapel", 
+      "first_name": "Christine", 
+      "last_name": "Chapel", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$10506$f588497f486643605fc72a47b0bcd3f0938f5863", 
+      "email": "Christine_Chapel@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 158, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "james_wilson", 
+      "first_name": "James", 
+      "last_name": "Wilson", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$f4321$577c4bb8b6513968efaa82adfdf55c9b49bdb4be", 
+      "email": "James_Wilson@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 157, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "eric_foreman", 
+      "first_name": "Eric", 
+      "last_name": "Foreman", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$b2286$9f18829cc2cb4cdf6f879a0daa6f69a77c6fe973", 
+      "email": "Eric_Foreman@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 156, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "lisa_cuddy", 
+      "first_name": "Lisa", 
+      "last_name": "Cuddy", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$0d552$0db2c3e363a634d22c8f0b370aeaead03dcd1741", 
+      "email": "Lisa_Cuddy@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 155, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "gregory_house", 
+      "first_name": "Gregory", 
+      "last_name": "House", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 12:12:23", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$384ab$607405182689dd4c15a5020bcb14b7f3b6088e55", 
+      "email": "Gregory_House@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 154, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "clara_barton", 
+      "first_name": "Clara", 
+      "last_name": "Barton", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$35803$5d7c01c5254281c304ce758b01bbf07bc9a18bfb", 
+      "email": "Clara_Barton@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 153, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "dorothy_day", 
+      "first_name": "Dorothy", 
+      "last_name": "Day", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:44:07", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$83d25$2e5ffeb9c14346b46d5917cad7d22bea8b496858", 
+      "email": "Dorothy_Day@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 152, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "kara_thrace", 
+      "first_name": "Kara", 
+      "last_name": "Thrace", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$86031$98ac3daa3077ba93d07b6b2a967995a385b4aab6", 
+      "email": "Kara_Thrace@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 151, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "pat_patient", 
+      "first_name": "Pat", 
+      "last_name": "Patient", 
+      "is_active": 1, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2010-02-04 10:25:34", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$35755$303bcdc3a8fab4dbaecc30ddfc2409e890297f09", 
+      "email": "Pat_Patient@ashand.com", 
+      "date_joined": "2010-02-04 10:25:34"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "dimagi", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": 1, 
+      "is_superuser": 1, 
+      "is_staff": 1, 
+      "last_login": "2009-11-13 14:19:26", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$54813$6eccf50b0d2f62449bd9507f322d51aff19d3dbf", 
+      "email": "ashand@dimagi.com", 
+      "date_joined": "2009-11-13 14:19:26"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "ashand-reflexive", 
+      "first_name": "ashand", 
+      "last_name": "reflexive", 
+      "is_active": 0, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2009-11-13 14:19:26", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$54813$6eccf50b0d2f62449bd9507f322d51aff19d3dbf", 
+      "email": "ashand-reflexive@dimagi.com", 
+      "date_joined": "2009-11-13 14:19:26"
+    }
+  },
+  {
+    "pk": 2, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "ashand-system", 
+      "first_name": "ashand", 
+      "last_name": "system", 
+      "is_active": 0, 
+      "is_superuser": 0, 
+      "is_staff": 0, 
+      "last_login": "2009-11-13 14:19:26", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$54813$6eccf50b0d2f62449bd9507f322d51aff19d3dbf", 
+      "email": "ashand-system@dimagi.com", 
+      "date_joined": "2009-11-13 14:19:26"
+    }
+  },
+  {
+    "pk": "8a1f118411a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Community Rehabilitation Hopsital", 
+      "user": 163, 
+      "job_title": "Physical Therapy"
+    }
+  }, 
+  {
+    "pk": "8a1f118311a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Plainsboro Teaching Hospital", 
+      "user": 162, 
+      "job_title": "Radiology"
+    }
+  }, 
+  {
+    "pk": "8a1f118211a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Mass General", 
+      "user": 161, 
+      "job_title": "Immunology"
+    }
+  }, 
+  {
+    "pk": "8a1f118111a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Boston University Medical Center", 
+      "user": 160, 
+      "job_title": "Triage Nurse"
+    }
+  }, 
+  {
+    "pk": "8a1f118011a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Boston Medical Center", 
+      "user": 159, 
+      "job_title": "Nurse"
+    }
+  }, 
+  {
+    "pk": "8a1f117f11a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Plainsboro Teaching Hospital", 
+      "user": 158, 
+      "job_title": "Oncologist"
+    }
+  }, 
+  {
+    "pk": "8a1f117e11a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Mass General", 
+      "user": 157, 
+      "job_title": "Neurology"
+    }
+  }, 
+  {
+    "pk": "8a1f117d11a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Plainsboro Teaching Hospital", 
+      "user": 156, 
+      "job_title": "Endocrinology"
+    }
+  }, 
+  {
+    "pk": "8a1f117c11a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Plainsboro Teaching Hospital", 
+      "user": 155, 
+      "job_title": "Internal Medicine"
+    }
+  }, 
+  {
+    "pk": "8a1f118511a111dfa56d001641e25144", 
+    "model": "provider.provider", 
+    "fields": {
+      "affiliation": "Community Health Center", 
+      "user": 164, 
+      "job_title": "Nutritionist"
+    }
+  }, 
+  {
+    "pk": "8f2c61f0eb5d11debd52001641e25144", 
+    "model": "patient.identifiertype", 
+    "fields": {
+      "regex": "", 
+      "shortname": "MRN", 
+      "description": "Medical Record Number"
+    }
+  }, 
+  {
+    "pk": "be38e861eb5d11de966e001641e25144", 
+    "model": "patient.identifiertype", 
+    "fields": {
+      "regex": "", 
+      "shortname": "SSN", 
+      "description": "Social Security Number"
+    }
+  }, 
+  {
+    "pk": "de38e861eb5d11de966e001641e25144", 
+    "model": "patient.identifiertype", 
+    "fields": {
+      "regex": "", 
+      "shortname": "NHINCID", 
+      "description": "National Record Number"
+    }
+  }, 
+  {
+    "pk": "8a1f117b11a111dfa56d001641e25144", 
+    "model": "patient.patient", 
+    "fields": {
+      "dob": "1946-07-19", 
+      "is_primary": 1, 
+      "user": 152, 
+      "root_patient": null, 
+      "sex": "f"
+    }
+  }, 
+  {
+    "pk": "8a1f117a11a111dfa56d001641e25144", 
+    "model": "patient.patient", 
+    "fields": {
+      "dob": "1947-10-15", 
+      "is_primary": 1, 
+      "user": 151, 
+      "root_patient": null, 
+      "sex": "f"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "ashandapp.filterprofile", 
+    "fields": {
+      "last_login_from": "127.0.1.1", 
+      "last_login": "2010-02-04 16:41:53", 
+      "user": 153, 
+      "last_filter": 2
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "ashandapp.filterprofile", 
+    "fields": {
+      "last_login_from": "127.0.1.1", 
+      "last_login": "2010-02-04 16:46:38", 
+      "user": 160, 
+      "last_filter": 2
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "ashandapp.filterprofile", 
+    "fields": {
+      "last_login_from": "127.0.1.1", 
+      "last_login": "2010-02-04 17:12:25", 
+      "user": 155, 
+      "last_filter": 1
+    }
+  }, 
+  {
+    "pk": "a479f24011a311dfa56d001641e25144", 
+    "model": "ashandapp.providerrole", 
+    "fields": {
+      "notes": "", 
+      "role_description": "", 
+      "role": "oncologist"
+    }
+  }, 
+  {
+    "pk": "4feeedb211a211dfa56d001641e25144", 
+    "model": "ashandapp.providerrole", 
+    "fields": {
+      "notes": "main", 
+      "role_description": "Main Triage Nurse", 
+      "role": "nurse-triage"
+    }
+  }, 
+  {
+    "pk": "418ef32f11a211dfa56d001641e25144", 
+    "model": "ashandapp.providerrole", 
+    "fields": {
+      "notes": "Long time doctor", 
+      "role_description": "Primary Care Physician", 
+      "role": "pcp"
+    }
+  }, 
+  {
+    "pk": "a73102aa11a111dfa56d001641e25144", 
+    "model": "ashandapp.careteam", 
+    "fields": {
+      "patient": "8a1f117b11a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "a13628da11a111dfa56d001641e25144", 
+    "model": "ashandapp.careteam", 
+    "fields": {
+      "patient": "8a1f117a11a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "bb8fad3011a311dfa56d001641e25144", 
+    "model": "ashandapp.providerlink", 
+    "fields": {
+      "careteam": "a13628da11a111dfa56d001641e25144", 
+      "notes": "", 
+      "role": "4feeedb211a211dfa56d001641e25144", 
+      "provider": "8a1f118111a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "a5fcf87411a311dfa56d001641e25144", 
+    "model": "ashandapp.providerlink", 
+    "fields": {
+      "careteam": "a73102aa11a111dfa56d001641e25144", 
+      "notes": "", 
+      "role": "a479f24011a311dfa56d001641e25144", 
+      "provider": "8a1f117f11a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "9b9295f611a311dfa56d001641e25144", 
+    "model": "ashandapp.providerlink", 
+    "fields": {
+      "careteam": "a13628da11a111dfa56d001641e25144", 
+      "notes": "", 
+      "role": "418ef32f11a211dfa56d001641e25144", 
+      "provider": "8a1f117c11a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "93142e5811a311dfa56d001641e25144", 
+    "model": "ashandapp.providerlink", 
+    "fields": {
+      "careteam": "a73102aa11a111dfa56d001641e25144", 
+      "notes": "", 
+      "role": "4feeedb211a211dfa56d001641e25144", 
+      "provider": "8a1f118011a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "815750be11a311dfa56d001641e25144", 
+    "model": "ashandapp.providerlink", 
+    "fields": {
+      "careteam": "a73102aa11a111dfa56d001641e25144", 
+      "notes": "", 
+      "role": "418ef32f11a211dfa56d001641e25144", 
+      "provider": "8a1f117c11a111dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "cc10439a11a311dfa56d001641e25144", 
+    "model": "ashandapp.carerelationship", 
+    "fields": {
+      "relationship_type": "relative", 
+      "other_description": "", 
+      "notes": ""
+    }
+  }, 
+  {
+    "pk": "7ecb83d811a311dfa56d001641e25144", 
+    "model": "ashandapp.carerelationship", 
+    "fields": {
+      "relationship_type": "neighbor", 
+      "other_description": "", 
+      "notes": ""
+    }
+  }, 
+  {
+    "pk": "cd056b2211a311dfa56d001641e25144", 
+    "model": "ashandapp.caregiverlink", 
+    "fields": {
+      "careteam": "a13628da11a111dfa56d001641e25144", 
+      "notes": "", 
+      "user": 153, 
+      "relationship": "cc10439a11a311dfa56d001641e25144"
+    }
+  }, 
+  {
+    "pk": "815750bf11a311dfa56d001641e25144", 
+    "model": "ashandapp.caregiverlink", 
+    "fields": {
+      "careteam": "a73102aa11a111dfa56d001641e25144", 
+      "notes": "", 
+      "user": 154, 
+      "relationship": "7ecb83d811a311dfa56d001641e25144"
+    }
+  }
+]

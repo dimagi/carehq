@@ -1,0 +1,51 @@
+{% load case_tags %}
+{% if not formatting %}
+<div class="span-18">
+	{% for event in events %}				
+		<div class = "span-17">	
+			<div>{{event.notes}}</div>
+			<div class="prepend-1">
+				<small>
+				{% if case %}
+				{{event.activity.past_tense|capfirst}} by
+				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a>
+				{% time_interval event.created_date %}.
+				{% else %}
+				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> 
+				{{event.activity.past_tense}} this {{event.activity.category|lower}}: 
+					<a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> 
+						on {{event.created_date|date}} {{event.created_date|time}}
+				{% endif %}
+				</small> 
+			</div>
+			<hr>						
+		</div>	
+	{% endfor %}
+</div>
+{% else %}
+<div class="span-18">
+	{% for key, value in events.items %}	
+		<div class="span-17"><strong>{{key|safe}}</strong></div>
+		{% for event in value%}
+		<div class="span-17">
+				<div>{{event.notes}}</div>
+				<div class="prepend-1">
+				<small>
+				{% if case %}
+				{{event.activity.past_tense|capfirst}} by
+				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a>
+				{% time_interval event.created_date %}.
+				{% else %}
+				<a href="{% url ashandapp.views.users.single event.created_by.id %}">{{event.created_by.get_full_name}}</a> 
+				{{event.activity.past_tense}} this {{event.activity.category|lower}}: 
+					<a href="{% url casetracker.views.view_case event.case.id %}"> {{event.case.description|truncatewords:10}}</a> 
+						on {{event.created_date|date}} {{event.created_date|time}}
+				{% endif %}
+				</small>
+				</div>
+			<hr> 		
+		</div>
+		{% endfor %}			
+	{% endfor %}
+</div>
+{% endif %}

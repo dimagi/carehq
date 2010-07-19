@@ -14,7 +14,7 @@
     "fields": {
       "magnitude": 2,
       "default": 0, 
-      "description": "Serious"
+      "description": "Warning"
     }
   }, 
   {
@@ -22,8 +22,8 @@
     "model": "casetracker.priority", 
     "fields": {
       "magnitude": 3,
-      "default": 1, 
-      "description": "Will Do"
+      "default": 0, 
+      "description": "Moderate"
     }
   }, 
   {
@@ -31,8 +31,8 @@
     "model": "casetracker.priority", 
     "fields": {
       "magnitude": 4,
-      "default": 0, 
-      "description": "Need in Future"
+      "default": 1, 
+      "description": "Normal"
     }
   }, 
   {
@@ -41,7 +41,7 @@
     "fields": {
       "magnitude": 5,
       "default": 0, 
-      "description": "Helpful in Future"
+      "description": "Informative"
     }
   }, 
   {
@@ -50,7 +50,7 @@
     "fields": {
       "magnitude": 6,
       "default": 0, 
-      "description": "Address If Time"
+      "description": "Informative"
     }
   }, 
   {
@@ -59,7 +59,7 @@
     "fields": {
       "magnitude": 7,
       "default": 0, 
-      "description": "TBD"
+      "description": "System Message"
     }
   }
 ]

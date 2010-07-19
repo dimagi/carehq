@@ -1,107 +1,1 @@
-[
-  {
-    "pk": 2, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "description"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "category"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "status"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "priority"
-    }
-  }, 
-  {
-    "pk": 6, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "assigned_to"
-    }
-  }, 
-  {
-    "pk": 7, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "opened_by"
-    }
-  }, 
-  {
-    "pk": 8, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "last_edit_by"
-    }
-  }, 
-  {
-    "pk": 9, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "closed_by"
-    }
-  }, 
-  {
-    "pk": 10, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "resolved_by"
-    }
-  }, 
-  {
-    "pk": 11, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "opened_date"
-    }
-  }, 
-  {
-    "pk": 12, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "last_edit_date"
-    }
-  }, 
-  {
-    "pk": 13, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "resolved_date"
-    }
-  }, 
-  {
-    "pk": 14, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "closed_date"
-    }
-  }, 
-  {
-    "pk": 15, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "next_action"
-    }
-  }, 
-  {
-    "pk": 16, 
-    "model": "casetracker.gridcolumn", 
-    "fields": {
-      "name": "next_action_date"
-    }
-  }
-]
+[  {    "pk": 18,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "assigned_date",       "column_type": "case_field",       "display": "Assigned Date"    }  },   {    "pk": 6,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "assigned_to",       "column_type": "case_field",       "display": "Assigned To"    }  },   {    "pk": 3,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "category",       "column_type": "case_field",       "display": "Category"    }  },   {    "pk": 9,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "closed_by",       "column_type": "case_field",       "display": "Closed By"    }  },   {    "pk": 14,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "closed_date",       "column_type": "case_field",       "display": "Closed Date"    }  },   {    "pk": 2,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "description",       "column_type": "case_field",       "display": "Description"    }  },   {    "pk": 20,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "last_case_event",       "column_type": "case_field",       "display": "Last Event"    }  },   {    "pk": 8,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "last_edit_by",       "column_type": "case_field",       "display": "Last Edit By"    }  },   {    "pk": 12,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "last_edit_date",       "column_type": "case_field",       "display": "Last Edit"    }  },   {    "pk": 22,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "last_event_by",       "column_type": "case_field",       "display": "Last Event By"    }  },   {    "pk": 21,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "last_event_date",       "column_type": "case_field",       "display": "Last Event Date"    }  },   {    "pk": 7,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "opened_by",       "column_type": "case_field",       "display": "Opened By"    }  },   {    "pk": 11,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "opened_date",       "column_type": "case_field",       "display": "Opened"    }  },   {    "pk": 17,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "orig_description",       "column_type": "case_field",       "display": "Orig Description"    }  },   {    "pk": 19,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "careteam_linked",       "name": "patient",       "column_type": "related_field",       "display": "Patient"    }  },   {    "pk": 5,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "priority",       "column_type": "case_field",       "display": "Priority"    }  },   {    "pk": 10,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "resolved_by",       "column_type": "case_field",       "display": "Resolved By"    }  },   {    "pk": 13,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "resolved_date",       "column_type": "case_field",       "display": "Resolved Date"    }  },   {    "pk": 4,     "model": "casetracker.gridcolumn",     "fields": {      "attribute": "",       "name": "status",       "column_type": "case_field",       "display": "Status"    }  }]

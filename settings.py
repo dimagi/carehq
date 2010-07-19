@@ -11,12 +11,16 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '',                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -65,13 +69,21 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
+    
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django_digest.middleware.HttpDigestMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',    
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'ashandapp.middleware.identity.AshandIdentityMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
 )
+
+DIGEST_ENFORCE_NONCE_COUNT = False
 
 ROOT_URLCONF = 'ashand.urls'
 
@@ -85,7 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.auth', 
                                'django.core.context_processors.debug', 
                                'django.core.context_processors.i18n', 
-                               'django.core.context_processors.media',
+                               'django.core.context_processors.media',                               
                                'django.core.context_processors.request',                               
                                )
 
@@ -94,23 +106,33 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'ashandapp',
+    
+    
+    #section ashand apps
     'casetracker',
     'provider',
     'patient',
-    'debug_toolbar',
-    'django_extensions',
-    'djcaching', # removing due to the fact that local dev enivornments without memecached puke
- #   'userprofile',
-    'reversion',
+    'ashandapp',
     'careplan',
-    #'django_tables',
+    #end ashand apps
     
+    #third party apps
+    'reversion',    
+    'django_digest',
+    #'tinymce',
+    'debug_toolbar',
+    'django_extensions',    
+    'johnny', 
+    'tracking', 
+    'tracking_ext',
+    #end third party apps
+    
+            
     'django.contrib.admin',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
-
+JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_myproj'
 
 DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.version.VersionDebugPanel',
@@ -139,6 +161,22 @@ LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
+CASE_CATEGORIES = (
+                   'ashandapp.caseregistry.issue',
+                   'ashandapp.caseregistry.system',
+                   'ashandapp.caseregistry.question',
+                   )
+
+AUDITABLE_MODELS = [
+                    'casetracker.models.Case',
+                    'casetracker.models.CaseEvent',
+                    'ashandapp.models.CareTeam',
+                    'provider.models.Provider',
+                    'patient.models.Patient',
+                    'patient.models.PatientIdentifier',                    
+                    ]
+                    
+                   
 
 try:
     from settings_local import *

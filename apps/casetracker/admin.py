@@ -2,7 +2,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 
-from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter,GridPreference,GridColumn,GridOrder,GridSort
+from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 class CaseActionAdmin(admin.ModelAdmin):
@@ -12,35 +12,28 @@ class CaseActionAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display=('id','category','plural','default_status')
+    list_display=('slug','display','plural', 'bridge_module', 'bridge_class')
     list_filter = []
-    
-
 
 class PriorityAdmin(admin.ModelAdmin):
     list_display=('id', 'description','default')
     list_filter = []
-
-
     
 class StatusAdmin(admin.ModelAdmin):
-    list_display=('id', 'description', 'category', 'state_class')
+    list_display=('slug', 'display', 'state_class','category')
     list_filter = ['category', 'state_class']
     radio_fields = {
-        "category": admin.HORIZONTAL,
+        "category": admin.VERTICAL,
         'state_class': admin.HORIZONTAL,
     }
-
-
     
 class EventActivityAdmin(admin.ModelAdmin):
-    list_display=('id', 'name','summary','category','event_class', 'phrasing')
+    list_display=('slug','past_tense','summary','event_class', 'past_tense', 'active_tense', 'category','bridge_module','bridge_class')
     list_filter = ['category','event_class']
     radio_fields = {
         "category": admin.HORIZONTAL,
         'event_class': admin.HORIZONTAL,
     }
-
 
 class CaseEventInline(admin.StackedInline):
     model = CaseEvent    
@@ -52,16 +45,15 @@ class CaseEventAdmin(admin.ModelAdmin):
 class CaseInline(admin.StackedInline):
     model = Case
 
-
 class CaseReversion(VersionAdmin):
     list_display=('description','orig_description','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
-    list_filter=['id','description','status','category','last_edit_by','assigned_to']
+    list_filter=['status','category','opened_by', 'last_edit_by','assigned_to']
     
     fieldsets = (
                  ('Basic Information', { 'fields': ('description',
                                                     ('category','status','priority'),
+                                                    'body',
                                                     'assigned_to',
-                                                    'next_action',
                                                     'parent_case')
                                         }),
                  ('Activity Information', { 'fields': (('opened_by','opened_date'),
@@ -86,6 +78,7 @@ class FilterAdmin(admin.ModelAdmin):
 #    inlines=[GridPreferenceInline]
 admin.site.register(Filter, FilterAdmin)
 
+
 class ColumnSortInline(admin.TabularInline):
     model = GridSort
     
@@ -94,7 +87,8 @@ class ColumnOrderInline(admin.TabularInline):
 
 
 class GridColumnAdmin(admin.ModelAdmin):
-    list_display= ('id','name')
+    list_display= ('id','name', 'display', 'column_type', 'attribute')
+    list_filter = ['column_type']
 admin.site.register(GridColumn, GridColumnAdmin)
 
 class GridPreferenceAdmin(admin.ModelAdmin):

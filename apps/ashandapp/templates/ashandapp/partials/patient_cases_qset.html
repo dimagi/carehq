@@ -1,0 +1,20 @@
+{% load filter_tags %}
+<table>
+<tr>
+{% if show_patient %}
+	<th>Patient</th>
+{% endif %}	
+{% for col in columns %}
+	<th>{% pretty_column col %}</th>
+{% endfor %}
+</tr>
+{% for case in cases %}
+<tr>
+	{% if show_patient %}
+	<td></td>
+	{% endif %}
+	{% for col in columns %}
+		<td><a href="{% url manage-case case.id %}">{% case_column_plain case col %}</a></td>
+	{% endfor %}
+{%endfor %}
+</table>

@@ -5,7 +5,7 @@ from django.template import RequestContext
 import logging
 from django.contrib.auth.models import User
 from casetracker.models import Case, Filter
-from ashandapp.models import CaseProfile, CareTeam,ProviderLink
+from ashandapp.models import CareTeam,ProviderLink
 from provider.models import Provider
 from patient.models import Patient
 from django.db.models import Q
@@ -31,9 +31,9 @@ def do_create_case(request, careteam_id, form_class=None, template_name="casetra
     if not form_class:
         raise Exception("Error, you MUST define a form class for this helper method to work")
     
-    careteam=CareTeam.objects.get(id=careteam_id)
+    careteam = CareTeam.objects.get(id=careteam_id)
     context['form'] = form_class(careteam=careteam)
-    
+    context['careteam'] = careteam
     if request.method == 'POST':
         form = form_class(data=request.POST, careteam=CareTeam.objects.get(id=careteam_id))
         if form.is_valid():

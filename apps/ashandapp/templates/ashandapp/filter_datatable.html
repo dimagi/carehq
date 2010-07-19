@@ -1,0 +1,55 @@
+{# note, depredcating filter_datatable to use the queryset.html generic template for case filters #}
+
+{% load filter_tags %}
+<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.4.1.min.js"></script>
+
+<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table.css" type="text/css">
+<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table_jui.css" type="text/css">
+<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/datatable.dateformat.js"></script>
+
+{% with display_filter as filter %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.{{grid_name}}').dataTable( {
+		"bJQueryUI": true,
+		"iDisplayLength": 25,
+		"bProcessing": '<img src="{{MEDIA_URL}}ashandapp/img/ajax-loader.gif">',
+		"sAjaxSource": "{% url json_string %}",
+		"sPaginationType": "two_button",		
+		{% autoescape off %}
+		"aaSorting": {{ filter.gridpreference.get_colsort_jsonarray}},
+		{% endautoescape %}
+		"bAutoWidth": false,
+		"aoColumns" : [
+		              {"sType": "html"},
+		              {% for col in filter.gridpreference.display_columns.all %}
+		              {"sType": {% get_sType col.name %}},
+		              {%endfor%}
+		      		],
+		"oLanguage": {
+		      	     "sZeroRecords": "No Records"
+		      	   	 },
+	    "fnInitComplete": function ( oSettings ) {
+		      	     oSettings.oLanguage.sZeroRecords = "No matching records found"
+		      	     }
+	} );
+
+} );
+</script>
+
+
+<table class="{{grid_name}}">
+	<thead>
+		<tr>
+			<th>Patient</th>
+			{% for col in filter.gridpreference.get_display_columns %}
+				<th>{% pretty_column col.name %}</th>
+			{%endfor %}
+		</tr>
+	</thead>
+
+
+</table>
+{% endwith %}
+

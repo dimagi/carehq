@@ -5,81 +5,121 @@
 <script type="text/javascript"> 
             $(function(){                
                 // Tabs
-                $('#tabs').tabs();                
+                $('#tabs').tabs({ cookie: { expires: 30,name: "tabs_coo" } }).addClass('ui-tabs-vertical ui-helper-clearfix');    
+				$("#tabs li").removeClass('ui-corner-top').addClass('ui-corner-left');
+				            
                 });
 </script>
-{% endblock %}
+
+{% endblock extrahead %}
 
 {% block content %}
-
-{%with current_careteam as careteam %}
-{# pulling from the inline_careteam but we want to custom display it here #}
-<div class="span-24">
-<div class="span-18"> <!-- careteam header -->    
- <h3><a href="{% url view-careteam careteam.id %}"> {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}'s</a> Care Team</h3>
- <table>
-     <tr>
-        <th>DOB</th>
-        <th>Sex</th>
-        <th>Primary Provider</th> 
-     </tr>
-     <tr>     
-        <td>{{careteam.patient.dob|date}}</td> 
-        <td>{{careteam.patient.get_sex_display}}</td>
-        <td>
-            {% if careteam.primary_provider %}
-                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
-            {% else %}
-                Not Set
-            {% endif %}
-        </td>
-    </tr> 
-</table>
-</div> <!-- end careteam header -->
-{%endwith %}
-<div class="span-6 last">
-<h4>Actions</h4>
-<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a><br><br>
-<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
-<br>
-<a href="" class="fg-button ui-state-default ui-corner-all">Invite provider</a><br>
-<a href="" class="fg-button ui-state-default ui-corner-all">Invite caregiver</a><br>
-</div>
-
-</div>
-
-
-<div id="tabs" class="span-24"> 
+<style type="text/css"> 
+	
+/* Vertical Tabs
+----------------------------------*/
+.ui-tabs-vertical { width: 55em; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+	</style> 
+	
+{%with current_careteam as careteam %}			
+	<div class="span-24 box">
+		<div class="span-2 border">
+			<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+		</div>
+		<div class="span-10 border">
+			<h3>
+				<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+				{{careteam.patient.user.get_full_name}}'s</a> Care Team
+			</h3>
+		</div>	
+	</div>
+	{% endwith %}		
+<div  class="span-24">
+	
+			
+<div id="tabs"> 
     <ul> 
-        <li><a href="#tabs-1">Care Team</a></li>         
+        <li><a href="#tabs-info">CareTeam Info</a></li>		
         <li><a href="#tabs-2">Care Plan</a></li>
-        <li><a href="{% url ashandapp.views.careteam.ajax.view_careteam_cases current_careteam.id %}">Cases</a></li>
-        {% comment %}
-        <li><a href="#tabs-3">Active Cases</a></li>
-        <li><a href="#tabs-4">Resolved Cases</a></li> 
-        <li><a href="#tabs-5">Closed Cases</a></li>
-        <li><a href="#tabs-6">All Cases</a></li>
-        {% endcomment %}
-{#        <li><a href="{% url show-cases-ajax careteam.id%}">Ajax Cases</a></li> #}
+        <li><a href="{% url careteam-cases-tabpage careteam_id=current_careteam.id %}">Case History</a></li>
     </ul> 
-    <div id="tabs-1">
-        {% with current_careteam as careteam %}
-        <div class="span-24"><!-- careteam tab block -->
-            <div class="span-9"><!--provider block -->
-                <h3>{%trans "Providers" %}</h3>                
-                <ul class="span-12">
+    <div id="tabs-info" class="span-24">
+    	{%with current_careteam as careteam %}			
+		<div class="span-8">				
+			<div class="span-7 box last">
+				<div class="span-7 border">
+					<h3>
+						About
+						<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+						{{careteam.patient.user.get_full_name}}
+						</a>
+					</h3>
+				</div>			
+					<table>				    
+						 <tr>
+					        <td><strong>Age</strong></td>
+							<td>{{careteam.patient.age}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Sex</strong></td>
+							<td>{{careteam.patient.get_sex_display}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Primary Provider</strong></td>
+							<td>
+					            {% if careteam.primary_provider %}
+					                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+					            {% else %}
+					                Not Set
+					            {% endif %}
+					        </td> 
+						<tr>      
+					</table>			
+			</div>
+			<div class="span-7 prepend-1">
+			<a href="{%url ashandapp.views.cases.create.new_question current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a>
+			&nbsp;
+			<a href="{%url ashandapp.views.cases.create.new_issue current_careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
+			</div>
+		</div>
+		
+        <div class="span-7 prepend-1 prepend-top"><!--provider block -->				
+                <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Providers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite provider</a>
+					</div>
+				</div>
+                <div class="span-7">
+				<ul>
                 {% for prov in careteam.providers.all %}
                     <li>            
                         <a href="{%url ashandapp.views.users.single prov.user.id %}">
                         {{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
-                        <em>{{prov.job_title }} with {{prov.affiliation }}</em> <br>
+                        <em>{{prov.job_title }} - {{prov.affiliation }}</em> <br>
                     </li>
                 {% endfor %}
                 </ul>
-            </div> <!-- end provider block -->
+				</div>
+        </div> <!-- end provider block -->
         
-            <div class="span-9"> <!-- caregiver block -->
-            <h3>{%trans "Caregivers"%}</h3>         
+        <div class="span-7 prepend-top last"> <!-- caregiver block -->
+            <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Caregivers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite caregiver</a>
+					</div>
+				</div>
+			<div class="span-7">
             {% if careteam.caregiver_data %}
                 <ul>
                 {% for cglink in careteam.caregiver_data %}
@@ -92,23 +132,17 @@
                 </ul>
             {%else %}
                 <em>{%trans "No Caregivers"%}</em>
-            {%endif %}    
-            </div> <!-- end caregiver block -->
-            
-            <div class="span-6 last">            
-            
-            </div>
-            
-        </div> <!-- end careteam tab block -->
-        {%endwith %}
-        
-    </div> <!-- end tabs-1 -->    
+            {%endif %}
+			</div>    
+        </div> <!-- end caregiver block -->
+        {%endwith %}        
+    </div> <!-- end tabs-info -->    
     <div id="tabs-2">
         {# {{careplan}}#} 
          
          <h2>{{careplan.title}}</h2>
             <dl>
-                <dt>Created by:</dt> <dd>{{careplan.created_by}}</dd>
+                <dt>Created by:</dt> <dd>{{careplan.created_by.get_full_name}}</dd>
                 <dt>Created date:</dt> <dd>{{careplan.created_date|date}}</dd>    
             </dl>
             <ul>
@@ -121,5 +155,5 @@
     </div>
     
 </div> <!-- end tabs -->
-
+</div> <!-- end container -->
 {% endblock %}

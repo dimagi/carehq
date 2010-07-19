@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="nav prepend-10">
+    <ul>		
+		{% for activity in case.status.transitional_actions %}
+			<li>
+				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>
+			</li>			
+		{% endfor %}
+    </ul>
+</div>
