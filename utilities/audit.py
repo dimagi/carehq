@@ -54,4 +54,8 @@ def expandWithNodes(nodeList):
             result += node
     return result 
 
-#def expandForNodes(nodeList):
+def expandForNodes(nodeList):
+    result = []
+    for node in nodeList.nodelist_loop:
+        result += node
+    return result
