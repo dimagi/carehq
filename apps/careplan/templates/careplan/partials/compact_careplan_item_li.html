@@ -1,7 +1,7 @@
-
-<li><a href="{{plan_item.get_absolute_url}}">{{plan_item.name}}</a>
+<div class="span-5 prepend-1 last">
+<a href="{{plan_item.get_absolute_url}}">{{plan_item.name}}</a>
 {% if show_children %}
-    <ul>
+	<div class="span-6">
     {% for subitem in plan_item.children %}           
       {% with "careplan/partials/compact_careplan_item_li.html" as recurse_template %}            
         {% with subitem as plan_item %}
@@ -9,6 +9,6 @@
         {%endwith %}        
       {%endwith %}
     {% endfor %}
-    </ul>
+    </div>
 {% endif %}
-</li>
+</div>

@@ -8,3 +8,4 @@ settings_local.py
 *.py~
 .tmp_*
 .json~
+*.class

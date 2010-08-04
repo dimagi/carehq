@@ -71,12 +71,12 @@ def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html
 
 @login_required
 @patient_only
-def my_careteam(request, template_name='ashandapp/view_careteam.html'):
+def my_careteam(request, template_name='ashandapp/careteam/view_careteam.html'):
     #i'm a patient, get my careteam and show providers    
     context = {}    
     try:
         careteam = CareTeam.objects.get(patient__user=request.user)
-        context['current_careteam'] = careteam 
+        context['careteam'] = careteam 
         
         cases = careteam.cases.all()
         context['cases'] = cases    

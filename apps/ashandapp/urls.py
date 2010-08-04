@@ -36,6 +36,8 @@ urlpatterns = patterns('',
     
     #careteam specific links
     url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})$', 'ashandapp.views.careteam.single', name='view-careteam'),
+    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/careplan$', 'ashandapp.views.careteam.single_careplan', name='view-careteam-careplan'),
+    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/history$', 'ashandapp.views.careteam.single_history', name='view-careteam-history'),    
             
     (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/question$', 'ashandapp.views.cases.create.new_question'),
     (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/issue$', 'ashandapp.views.cases.create.new_issue'),

@@ -9,13 +9,13 @@
     <dt>Created by:</dt> <dd>{{careplan.created_by}}</dd>
     <dt>Created date:</dt> <dd>{{careplan.created_date|date}}</dd>    
 </dl>
-<ul>
+<div class="span-24">
 {% for itemlink in plan_items %}
     {% with itemlink.item  as plan_item %}    
         {% include "careplan/partials/compact_careplan_item_li.html" %}    
     {%endwith%}
 {%endfor%}
-</ul>
+</div>
 {% endblock %}
 
 

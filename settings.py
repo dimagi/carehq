@@ -69,12 +69,12 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    'johnny.middleware.LocalStoreClearMiddleware',
-    'johnny.middleware.QueryCacheMiddleware',
+    #'johnny.middleware.LocalStoreClearMiddleware',
+    #'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django_digest.middleware.HttpDigestMiddleware',    
+#    'django_digest.middleware.HttpDigestMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',    
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -118,11 +118,11 @@ INSTALLED_APPS = (
     
     #third party apps
     'reversion',    
-    'django_digest',
+#    'django_digest',
     #'tinymce',
     'debug_toolbar',
     'django_extensions',    
-    'johnny', 
+    #'johnny', 
     'tracking', 
     'tracking_ext',
     #end third party apps

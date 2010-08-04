@@ -1,11 +1,11 @@
 {% load casefilter_tags %}
 <script type="text/javascript" charset="utf-8">
 	$().ready(function(){
-		$("#menu").flickrmenu();
+		$("#menu").flickrmenu();		
 	});
 </script>
 
-<div id="menu">
+<div id="menu" style="z-index:-1;">
 	<ul> 
 		{# provider dashboard - not sure what to actually put here #}
 		{% if request.is_provider %}
