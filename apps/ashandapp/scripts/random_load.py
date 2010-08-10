@@ -10,21 +10,15 @@ from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority,
 from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
 from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
-
-from patient_caregiver_pairs import care_pair_arr
-
-from example_interactions import interactions_arr, triage_arr, long_cases
-from inject_data import generate_triage
-
 from django.core.management import call_command
-from demoproviders import provider_arr
-
-from bootstrap import load_fixtures
-
+from staticdata.demo_providers import provider_arr
 from casetracker import constants
-from loader import assign_interactions, load_interaction, add_long_cases
+from loader import assign_interactions, add_long_cases
+from factory import create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
 
-from factory import create_user, create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
+
+from staticdata.patient_caregiver_pairs import care_pair_arr
+from staticdata.demo_questions import question_arr
 
 MAX_DELTA=365
 PROVIDERS_PER_PATIENT=5
@@ -187,10 +181,10 @@ from django.db import transaction
 def run():    
     #reset the database
     #call_command('reset_db', interactive=False)    
-    #scall_command('syncdb', interactive=False)
-    
+    #call_command('syncdb', interactive=False)
+        
     #load all the demo categories for cases
-    load_fixtures()    
+    #load_fixtures()    
 
     for provarr in provider_arr:
         #firstname, lastname, job_title, affiliation        

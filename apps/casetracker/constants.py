@@ -1,3 +1,6 @@
+#system constants
+SYSTEM_USERNAME='ASHand-System'
+
 
 #constants for model Status
 

@@ -11,19 +11,15 @@ from provider.models import Provider
 from django.db import transaction
 
 
-#@transaction.commit_manually
+@transaction.commit_manually
 def create_user(username='mockuser', password='demouser', firstname=None, lastname=None):    
+    transaction.commit()
     try:
         return User.objects.get(username=username)
     except:
+ 
         user = User()    
         user.username = username
-        # here, we mimic what the django auth system does
-        # only we specify the salt to be 12345
-        salt = '12345'
-        hashed_pass = hashlib.sha1(salt+password).hexdigest()
-        user.password = 'sha1$%s$%s' % (salt, hashed_pass)
-        
         user.first_name = firstname
         user.last_name=lastname
         user.email = '%s_%s@ashand.com' % (firstname, lastname)
@@ -32,7 +28,7 @@ def create_user(username='mockuser', password='demouser', firstname=None, lastna
         transaction.commit()
         return user
         
-#@transaction.commit_manually
+@transaction.commit_manually
 def create_provider(firstname, lastname, job_title, affiliation):
     firstclean = firstname.replace("'","")
     lastclean = lastname.replace("'","")
@@ -77,16 +73,16 @@ def create_caregiver(firstname, middlename, lastname, sex):
     return user
 
 
-#@transaction.commit_manually
-def create_patient(firstname, middlename, lastname, sex):
+@transaction.commit_manually
+def create_patient(firstname, middlename, lastname, sex):    
     try:
-        usr = User.objects.get(firstname=firstname, lastname=lastname)
+        usr = User.objects.get(first_name=firstname, last_name=lastname)
         return Patient.objects.get(user=usr) 
-    except:
+    except Exception, e:
         firstclean = firstname.replace("'","")
-        lastclean = lastname.replace("'","")
-        dob = date(random.randint(1955,2008), random.randint(1,12), random.randint(1,28))
-            
+        lastclean = lastname.replace("'","")            
+        
+        dob = date(random.randint(1955,2008), random.randint(1,12), random.randint(1,28))            
         pt = Patient()    
         pt.sex = sex
         pt.dob = dob
@@ -94,11 +90,10 @@ def create_patient(firstname, middlename, lastname, sex):
         pt.user = create_user(username=firstclean.lower() + "_" + lastclean.lower(), password='demo', firstname=firstname, lastname=lastname)
         
         pt.is_primary = True
-        try:
-            pt.save()
-            transaction.commit()
-        except:
-            pass
+        
+        pt.save()
+        transaction.commit()
+    
         return pt
 
 

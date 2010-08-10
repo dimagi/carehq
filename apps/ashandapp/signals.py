@@ -17,10 +17,10 @@ def make_system_case(user, patient, role, link_object):
     case.category=Category.objects.get(slug="system")
     case.description = "%s added as %s to %s's careteam" % (user.get_full_name(), role, patient.user.get_full_name())
     case.body = "You have accepted the invitation to join this care team."
-    case.opened_by = User.objects.get(username='ashand-system')
+    case.opened_by = User.objects.get(username=constants.SYSTEM_USERNAME)
     case.opened_date = datetime.utcnow()
     
-    case.last_edit_by = User.objects.get(username='ashand-system')
+    case.last_edit_by = User.objects.get(username=constants.SYSTEM_USERNAME)
     case.priority= Priority.objects.get(id=6)
     case.status = Status.objects.filter(category=case.category).filter(state_class=SystemStateOpen.state_class)[0] #get the default opener - this is a bit sketchy
     case.assigned_to = user

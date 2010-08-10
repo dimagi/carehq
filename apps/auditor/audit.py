@@ -2,6 +2,8 @@ from django.template import VariableNode, Node, TextNode
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, BlockNode
 from django.template.defaulttags import WithNode
+
+
 '''
 Method loads template and iterates through the template's NodeList to 
 check for auditable types. Currently does not consider the request

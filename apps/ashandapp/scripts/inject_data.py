@@ -11,13 +11,11 @@ from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
 from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
 
-from example_interactions import interactions_arr, triage_arr
+from staticdata.example_interactions import interactions_arr, triage_arr
 
 from django.core.management import call_command
-from demopatients import patient_arr
-from demoproviders import provider_arr
-
-from bootstrap import load_fixtures
+from staticdata.demo_patients import patient_arr
+from staticdata.demo_providers import provider_arr
 
 from casetracker import constants
 

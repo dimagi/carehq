@@ -20,8 +20,8 @@ from demo_resolve_close import resolve_arr
 from example_interactions import interactions_arr, triage_arr
 
 from django.core.management import call_command
-from demopatients import patient_arr
-from demoproviders import provider_arr
+from demo_patients import patient_arr
+from demo_providers import provider_arr
 
 from bootstrap import load_fixtures
 

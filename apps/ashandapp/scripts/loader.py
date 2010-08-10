@@ -1,15 +1,12 @@
 import random
 
-from example_interactions import interactions_arr, triage_arr, long_cases
-
 from datetime import datetime, timedelta
 from casetracker.models import Category, Case, CaseAction,Priority, Status, EventActivity, CaseEvent
 from casetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
 from django.contrib.auth.models import User 
-
-from example_interactions import interactions_arr
+from staticdata.example_interactions import interactions_arr, long_cases
 
 def load_interaction(careteam, interaction_arr):
     """
@@ -114,7 +111,7 @@ def add_long_cases():
     """
     Specific hack to add a long case to Pat Patient's caseload
     """
-    pt = Patient.objects.get(user__first_name='pat', user__last_name='patient')
+    pt = Patient.objects.get(user__first_name='Pat', user__last_name='Patient')
     ct = CareTeam.objects.get(patient=pt)
     for c in long_cases:
         load_interaction(ct, c)

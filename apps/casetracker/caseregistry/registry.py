@@ -104,6 +104,7 @@ def RegisterStatelessActivity(activity_bridge_class):
         
         activity.category = Category.objects.get(slug=activity_bridge.category_bridge.slug)
         activity.save()    
+        transaction.commit()
     print "Adding Activity [%s] with no valid status" % ( activity.slug  )
         
                       

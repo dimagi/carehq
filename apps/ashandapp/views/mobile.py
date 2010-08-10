@@ -12,7 +12,7 @@ from django.db.models import Q
 
 import uuid
 
-from django_digest.decorators import *
+#from django_digest.decorators import *
 
 from ashandapp.forms.provider_register import  NewProviderForm
 from provider.models import Provider
@@ -153,7 +153,7 @@ static_response = """
         </restoredata>
 """
 
-@httpdigest
+#@httpdigest
 def case_list(request):
     uname = request.user.username
     pwd = request.user.password

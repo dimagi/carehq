@@ -1,6 +1,8 @@
 import os
 import sys
 
+#a simple linux command to find the running process and kill it -sometimes linux runserver is sticky
+
 netstat = os.popen('netstat -nlp')
 
 fullcmd = netstat.read()
