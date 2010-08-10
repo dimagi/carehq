@@ -415,6 +415,7 @@ class Case(models.Model):
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
     def get_absolute_url(self):
+        return "/case/%s" % self.id
         return reverse('manage_case', kwargs={'case_id': self.i})
     
     @property

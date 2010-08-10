@@ -12,5 +12,8 @@ urlpatterns = patterns ('',
     #url(r'^case/(?P<case_id>[0-9a-f]{32})/edit$', 'casetracker.views.edit_case', name="edit-case"),
     #url(r'^case/(?P<case_id>[0-9a-f]{32})/comment$', 'casetracker.views.case_comment', name="case-comment"),
    
+   #haystack
+   (r'^search/', include('haystack.urls')),
+   
 )    
     
