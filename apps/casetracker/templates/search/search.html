@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load filter_tags %}
-
+{% load highlight %}
 {% block content %}
     <h2>Search</h2>
 
@@ -18,9 +18,14 @@
         {% if query %}
             <h3>Results</h3>
             {% for result in page.object_list %}
-    			<p>
+    			<div>
                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.description }}</a>
-                </p>
+                        {% for comment in result.object.case_events.all %}
+                            {% if query in comment.notes %}
+                                <p><strong>Comment:</strong> {% highlight comment.notes with query html_tag "em" max_length 60 %}</p>
+                            {% endif %}
+                        {% endfor %}
+                </div>
             {% empty %}
                 <p>No results found.</p>
             {% endfor %}
