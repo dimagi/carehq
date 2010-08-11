@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from casetracker import constants
+from haystack.views import SearchView
 
 
 urlpatterns = patterns ('',   
@@ -13,7 +14,8 @@ urlpatterns = patterns ('',
     #url(r'^case/(?P<case_id>[0-9a-f]{32})/comment$', 'casetracker.views.case_comment', name="case-comment"),
    
    #haystack
-   (r'^search/', include('haystack.urls')),
+   url(r'^search/$', SearchView(), name='haystack_search'),
+   
    
 )    
     

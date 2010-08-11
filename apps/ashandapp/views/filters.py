@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from provider.models import Provider
+from patient.models import Patient
 from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship, FilterProfile
 from django.db.models import Q
 
@@ -27,6 +28,13 @@ def process_filter_change(request):
     """
     pass
 
+def filter_cases_for_user(qset, user):
+    if user.is_superuser:
+        return qset
+    providers = Provider.objects.filter(user=user)
+    patient = user.patient_user.only()
+    careteams = CareTeam.objects.filter( Q(caregivers=user) | Q(providers=providers) | Q(patient=patient) )
+    return qset.filter(careteam=careteams)
 
 @login_required
 def list_cases(request, template_name="ashandapp/list_cases.html"):
@@ -50,20 +58,18 @@ def list_cases(request, template_name="ashandapp/list_cases.html"):
         profile.filter = Filter.objects.all()[0]
         profile.last_filter = Filter.objects.all()[0] #this is a nasty hack, as we're assuming id 1 is the reflexive one 
 
-    display_filter = profile.last_filter   
+    display_filter = profile.last_filter  
     
-    
+     
     group_by_col = None
-    if len(request.GET.items()) > 0:
-            for item in request.GET.items():
-                if item[0] == 'filter':
-                    filter_id = item[1]            
-                    try:
-                        display_filter = Filter.objects.get(id=filter_id)                                                
-                    except:
-                        pass
-                if item[0] == "groupBy":
-                    group_by_col = item[1]
+
+    if 'filter' in request.GET:
+        filter_id = request.GET['filter']
+        display_filter = Filter.objects.get(id=filter_id)
+    else:
+        display_filter = profile.last_filter
+    group_by_col = request.GET.get('groupBy', None)
+
             
     profile.last_login = datetime.utcnow()
     profile.last_login_from = request.META['REMOTE_ADDR']
@@ -73,6 +79,7 @@ def list_cases(request, template_name="ashandapp/list_cases.html"):
     split_headings = False
     qset = display_filter.get_filter_queryset()    
     
+    qset = filter_cases_for_user(qset, user)
     
     if group_by_col and group_by_col.count('_date') > 0:
         split_headings = False
@@ -107,21 +114,20 @@ def list_cases(request, template_name="ashandapp/list_cases.html"):
             #http://www.nomadjourney.com/2009/04/dynamic-django-queries-with-kwargs/
             #dynamic django queries baby
             if group_by_col == 'patient':
-                ptq = Q(careteam=key)
-                subq = qset.filter(ptq)
+                subq = qset.filter(careteam=key)
             else:
                 kwargs = {str(group_by_col +"__id__endswith"): str(key.id), }
-                subq = qset.filter(**kwargs)        
+                subq = qset.filter(**kwargs)
             if subq.count() > 0:
                 qset_dict[key] = subq
     else:
-        qset_dict[display_filter.description] = display_filter.get_filter_queryset()
+        qset_dict[display_filter.description] = qset
         
     
     context['qset_dict'] = qset_dict
     context['profile'] = profile    
     context['filter'] = display_filter
-    context['filter_cases'] = display_filter.get_filter_queryset()    
+    #context['filter_cases'] = display_filter.get_filter_queryset()    
     context['gridpreference'] = context['filter'].gridpreference
     ############################
     

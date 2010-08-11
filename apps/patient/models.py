@@ -35,7 +35,6 @@ class Address(models.Model):
 class PatientIdentifier(models.Model):
     id = models.CharField(_('Identifier Instance Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     id_type = models.ForeignKey("IdentifierType")
-    patient = models.ForeignKey("Patient")    
     id_value = models.CharField(max_length=128)    
     
     #todo:  put an update procedure that points all the patient instances to the actual root patient
@@ -53,7 +52,7 @@ class Patient(models.Model):
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     user = models.ForeignKey(User, related_name='patient_user', null=True, unique=True, blank=True)
     
-    identifiers = models.ManyToManyField(PatientIdentifier,  through=IdentifierType)
+    identifiers = models.ManyToManyField(PatientIdentifier)
     address = models.ManyToManyField(Address)    
     
     dob = models.DateField(_("Date of birth"), null=True, blank=True)
