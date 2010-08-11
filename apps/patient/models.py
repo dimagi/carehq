@@ -3,6 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 import uuid
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from reversion.admin import VersionAdmin
+
 
 def make_uuid():
     return uuid.uuid1().hex
@@ -21,19 +23,21 @@ class IdentifierType(models.Model):
     def save(self):
         super(IdentifierType, self).save()
 
+class Address(models.Model):
+    id = models.CharField(_('Identifier Instance Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    type = models.CharField(max_length=24, blank=True, null=True)
+    street1 = models.CharField(max_length=160, blank=True, null=True)
+    street2 = models.CharField(max_length=160, blank=True, null=True)
+    city = models.CharField(max_length=128, blank=True, null=True)
+    state = models.CharField(max_length=16, blank=True, null=True)
+    postal_code = models.CharField(max_length=12, blank=True, null=True)
+
 class PatientIdentifier(models.Model):
     id = models.CharField(_('Identifier Instance Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     id_type = models.ForeignKey("IdentifierType")
-    patient = models.ForeignKey("Patient")
+    patient = models.ForeignKey("Patient")    
+    id_value = models.CharField(max_length=128)    
     
-    id_value = models.CharField(max_length=128)
-    
-    
-    
-    #link_date = models.DateTimeField()
-    #link_by = models.ForeignKey(User)
-    #origin = models.CharField(max_length=160) #not sure if this linkage is where we want to put it vs an actual case
-
     #todo:  put an update procedure that points all the patient instances to the actual root patient
     def save(self):
         super(PatientIdentifier, self).save()
@@ -49,14 +53,15 @@ class Patient(models.Model):
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     user = models.ForeignKey(User, related_name='patient_user', null=True, unique=True, blank=True)
     
-    identifiers = models.ManyToManyField(IdentifierType, through=PatientIdentifier)
+    identifiers = models.ManyToManyField(PatientIdentifier,  through=IdentifierType)
+    address = models.ManyToManyField(Address)    
     
     dob = models.DateField(_("Date of birth"), null=True, blank=True)
     sex = models.CharField(_("Sex"), choices=GENDER_CHOICES, max_length=1)
     
     is_primary = models.BooleanField(_("Is this patient the primary, merged"), default=True)
     root_patient = models.ForeignKey("self", null=True, blank=True)
-    
+      
     @property
     def age(self):
         if not hasattr(self, '_age'):

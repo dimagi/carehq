@@ -23,7 +23,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.cache import cache_page
 
-from tracking_ext.decorators import log_access
+from auditor.decorators import log_access
 
 
 from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status, Priority, Category
@@ -175,7 +175,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
-    context = {}
+    context = RequestContext(request)
     
     thecase = Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
@@ -199,7 +199,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     # Inline Form display
     if activity:                
         context['show_form'] = True
-        context['form_headline'] = activity.active_tense.title()            
+        context['form_headline' ] = activity.active_tense.title()            
         
         if request.method == 'POST': 
             if activity.event_class == constants.CASE_EVENT_EDIT or activity.event_class == constants.CASE_EVENT_ASSIGN:
@@ -266,9 +266,8 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
                 
             else:
                 logging.error("no form definition")
-            context['submit_url'] = ''
-         
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+            context['submit_url'] = ''    
+    return render_to_response(template_name, context_instance=context)
 
 
 @login_required

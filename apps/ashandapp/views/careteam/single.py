@@ -12,6 +12,8 @@ from django.db.models import Q
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from auditor.decorators import log_access
+
 
 from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 from ashandapp.decorators import is_careteam_member
@@ -22,7 +24,7 @@ from careplan.models import TemplateCarePlan
 @login_required
 @is_careteam_member
 def single(request, careteam_id, template_name="ashandapp/careteam/view_careteam.html"):    
-    context = {}
+    context = RequestContext(request)
     careteam = CareTeam.objects.get(id=careteam_id)
     
     context['careteam'] = careteam
@@ -37,10 +39,9 @@ def single(request, careteam_id, template_name="ashandapp/careteam/view_careteam
     
     context['careplan'] = TemplateCarePlan.objects.all()[0]
     context['show_children'] = True
-    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()
+    context['plan_items'] = context['careplan'].templatecareplanitemlink_set.all()    
     
-    
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+    return render_to_response(template_name, context_instance=context)
 
 
 @login_required
