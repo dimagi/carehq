@@ -11,7 +11,7 @@ If you want to do some basic testing of patients and a demo setup, run these com
 python manage.py syncdb #create the databaase
 python manage.py runscript loadfixtures #register basic static content into the database
 python manage.py register_categories #registers the categories already baked in via the CaseRegistry framework
-python manage.py random_load #generates some basic case information for review
+python manage.py runscript random_load #generates some basic case information for review
 
 
 It'll prompt you to blow away your database, only do this if you want to populate the db with lots of dummy data.
