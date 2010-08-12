@@ -60,6 +60,8 @@ class Patient(models.Model):
     
     is_primary = models.BooleanField(_("Is this patient the primary, merged"), default=True)
     root_patient = models.ForeignKey("self", null=True, blank=True)
+    
+    notes = models.TextField()
       
     @property
     def age(self):
