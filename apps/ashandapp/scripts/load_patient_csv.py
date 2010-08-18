@@ -103,13 +103,11 @@ def run():
         addresses = patient['address']
         chw_membership = patient['chw_membership']        
         providers = patient['provider']
-        
-        
-        
+                
         try:
             pt_model = Patient.objects.get(user=user, sex="f")
-        except:
-            pt_model = Patient(user=user, sex="f")
+        except Exception, e:            
+            pt_model = Patient(user=user, sex="f")        
         
         pt_model.notes = str([chw_membership,providers])
         pt_model.save()

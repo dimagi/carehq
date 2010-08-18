@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from reversion.admin import VersionAdmin
 
 
+def make_time():
+    return datetime.utcnow()
+
 def make_uuid():
     return uuid.uuid1().hex
 
@@ -61,6 +64,7 @@ class Patient(models.Model):
     is_primary = models.BooleanField(_("Is this patient the primary, merged"), default=True)
     root_patient = models.ForeignKey("self", null=True, blank=True)
     
+    added_date = models.DateTimeField(default=make_time)
     notes = models.TextField()
       
     @property

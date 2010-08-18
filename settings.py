@@ -124,7 +124,7 @@ INSTALLED_APPS = (
     'django_extensions',    
     #'johnny', 
     'tracking', 
-    'tracking_ext',
+#    'tracking_ext',
     #end third party apps
     
             
