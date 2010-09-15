@@ -1,0 +1,65 @@
+[
+  {
+    "pk": 1, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 1,
+      "default": 0, 
+      "description": "Critical"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 2,
+      "default": 0, 
+      "description": "Warning"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 3,
+      "default": 0, 
+      "description": "Moderate"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 4,
+      "default": 1, 
+      "description": "Normal"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 5,
+      "default": 0, 
+      "description": "Informative"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 6,
+      "default": 0, 
+      "description": "Informative"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "casetracker.priority", 
+    "fields": {
+      "magnitude": 7,
+      "default": 0, 
+      "description": "System Message"
+    }
+  }
+]

@@ -67,7 +67,6 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
-
 MIDDLEWARE_CLASSES = (
     #'johnny.middleware.LocalStoreClearMiddleware',
     #'johnny.middleware.QueryCacheMiddleware',
@@ -109,22 +108,30 @@ INSTALLED_APPS = (
     
     
     #section ashand apps
-    'casetracker',
+    #'casetracker',
     'provider',
-    'patient',
+    #'patient',
     'ashandapp',
-    'careplan',
+    #'careplan',
     #end ashand apps
     
+    #clinical_core
+    'casetracker',
+    'patient',
+    'actors',    
+    #end clinical_core
+    
+    
     #third party apps
+    'autofixture',
     'reversion',    
-#    'django_digest',
+    #'django_digest',
     #'tinymce',
     'debug_toolbar',
     'django_extensions',    
     #'johnny', 
     'tracking', 
-#    'tracking_ext',
+    #'tracking_ext',
     #end third party apps
     
             
@@ -132,6 +139,7 @@ INSTALLED_APPS = (
     
     #haystack
     'haystack',
+    'gunicorn',
 )
 
 #haystack
@@ -176,6 +184,7 @@ CASE_CATEGORIES = (
                    )
 
 AUDITABLE_MODELS = [
+                    'django.contrib.auth.models.User',
                     'casetracker.models.Case',
                     'casetracker.models.CaseEvent',
                     'ashandapp.models.CareTeam',
