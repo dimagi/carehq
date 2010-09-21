@@ -1,8 +1,0 @@
-This version of django-reversion included is the django 1.0 compatible build.
-
-When upgrading to django 1.1, please pull from the reversion project, the 1.1 compatible build.
-
-For more information, please see: http://code.google.com/p/django-reversion/
-
-Adding diff-match-patch directly into source tree for patch usage
-http://code.google.com/p/google-diff-match-patch/
