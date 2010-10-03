@@ -1,5 +1,5 @@
 from django.test import TestCase
-from casetracker.models import Category, EventActivity
+from casetracker.models import Category, ActivityClass
 from casetracker.models import CASE_EVENT_CHOICES
 class EventActivityVerificationTest(TestCase):
     fixtures = ['0-caseaction.json',
@@ -18,7 +18,7 @@ class EventActivityVerificationTest(TestCase):
         #and that they are non zero and the special cases are only 1.
         classes = CASE_EVENT_CHOICES
         for cat in Category.objects.all():
-            activities = EventActivity.objects.filter(category=cat)
+            activities = ActivityClass.objects.filter(category=cat)
             for class_tuple in classes:
                 storage_name = class_tuple[0]
                 

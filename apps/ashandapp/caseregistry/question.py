@@ -1,7 +1,7 @@
 from casetracker import constants
-from casetracker.caseregistry import registry
-from casetracker.caseregistry import CategoryBridge, StatusBridge, ActivityBridge
-from casetracker.models import Category, EventActivity, Status
+from casetracker.registry import registry
+from casetracker.registry import CategoryBridge, StatusBridge, ActivityBridge
+from casetracker.models import Category, ActivityClass, Status
 
 from ashandapp.caseregistry import ashand_case_context, get_careteam_assignment_choices
 

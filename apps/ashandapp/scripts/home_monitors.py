@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, date
 import hashlib
 from django.contrib.auth.models import User
-from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category, CaseAction
+from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
 
 from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
@@ -41,7 +41,7 @@ def create_homemonitoring_alert(num_alerts, careteam):
     
     for n in range(0, num_alerts):
         newcase = Case()
-       
+               
         newcase.description = "%s" % alerts[n][0]
         newcase.body = alerts[n][1]
         

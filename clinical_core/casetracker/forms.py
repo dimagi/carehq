@@ -3,7 +3,7 @@
 
 from django import forms
 from django.forms import widgets
-from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category, EventActivity
+from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category, ActivityClass
 from ashandapp.models import CareTeam
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList, ValidationError

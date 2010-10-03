@@ -1,4 +1,4 @@
-from casetracker.models import Category, EventActivity, Status
+from casetracker.models import Category, ActivityClass, Status
 from django.db import transaction
 
 
@@ -63,9 +63,9 @@ def RegisterDefaultActivities(status_bridge_class):
 @transaction.commit_manually
 def _do_register_activity(status, activity_bridge):    
     try:
-        activity = EventActivity.objects.get(slug=activity_bridge.slug)
+        activity = ActivityClass.objects.get(slug=activity_bridge.slug)
     except:
-        activity = EventActivity()
+        activity = ActivityClass()
         activity.slug = activity_bridge.slug
         activity.past_tense = activity_bridge.past_tense
         activity.active_tense = activity_bridge.active_tense
@@ -90,9 +90,9 @@ def _do_register_activity(status, activity_bridge):
 def RegisterStatelessActivity(activity_bridge_class):    
     activity_bridge = activity_bridge_class    
     try:
-        activity = EventActivity.objects.get(slug=activity_bridge.slug)
+        activity = ActivityClass.objects.get(slug=activity_bridge.slug)
     except:
-        activity = EventActivity()
+        activity = ActivityClass()
         activity.slug = activity_bridge.slug
         activity.past_tense = activity_bridge.past_tense
         activity.active_tense = activity_bridge.active_tense

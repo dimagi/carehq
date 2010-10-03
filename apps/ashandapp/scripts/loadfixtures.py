@@ -8,10 +8,10 @@ def do_load_fixtures():
     """
     call_command('loaddata', 'example-priority.json')
     call_command('loaddata', 'example-gridcolumns.json')
-    call_command('loaddata', 'example-filters.json')
+#    call_command('loaddata', 'example-filters.json')
         
     call_command('loaddata', 'demo-identifiers.json')    
-    call_command('loaddata', 'careplan-templates.json')
+ #   call_command('loaddata', 'careplan-templates.json')
     
     #call_command('register_categories') #this ought to be called as a separate command    
     

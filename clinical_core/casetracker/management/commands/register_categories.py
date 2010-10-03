@@ -16,8 +16,8 @@ class Command(BaseCommand):
     args = ""
  
     def handle(self, *scripts, **options):
-        from casetracker.models import CaseAction, Category, Priority, Status, EventActivity
-        from casetracker.caseregistry import CategoryBridge, StatusBridge, ActivityBridge
+        from casetracker.models import CaseAction, Category, Priority, Status, ActivityClass
+        from casetracker.registry import CategoryBridge, StatusBridge, ActivityBridge
         
         if not hasattr(settings, 'CASE_CATEGORIES'):
             raise Exception("Error, you don't have a CASE_CATEGORIES settings variable to define case types")

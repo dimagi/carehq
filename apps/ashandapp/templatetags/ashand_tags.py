@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.template import Context, Template
 
 from casetracker.models import Case
-from casetracker.models import EventActivity, CaseEvent, Status, CaseAction, Category
+from casetracker.models import ActivityClass, CaseEvent, Status, CaseAction, Category
 from ashandapp.models import CareTeamCaseLink, CareTeam
 from datetime import datetime
 register = template.Library()

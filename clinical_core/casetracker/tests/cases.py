@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category
+from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
 from casetracker import constants
 
 
@@ -28,14 +28,21 @@ class EventActivityVerificationTest(TestCase):
     def setUp(self):
         from ashandapp.caseregistry import issue
         from ashandapp.caseregistry import question
+        Category.objects.all().delete()
         issue.register_category()        
         question.register_category()         
         create_user()
         Case.objects.all().delete()
 
-    def testCreateCase(self, description="this is a case made by the test case"):        
+    def testCreateCaseView(self, description = "create a case via the test client"):
+        self.assertFalse(True)
+
+    def testCreateCaseApi(self, description="this is a case made by the test case"):        
+        #get the basic counts        
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()        
+        
+        
         user = User.objects.get(username='mockuser')
         newcase = Case()
         newcase.description = description
@@ -60,7 +67,10 @@ class EventActivityVerificationTest(TestCase):
         self.assertEqual(constants.CASE_EVENT_OPEN, events[0].activity.event_class)
         return newcase
     
-    def testCaseModifyDescription(self):
+    def testCaseModifyClient(self):
+        self.assertFalse(True)
+    
+    def testCaseModifyDescriptionApi(self):
         desc= uuid.uuid1().hex
         self.testCreateCase(description=desc)
         user = User.objects.get(username='mockuser')
@@ -68,7 +78,7 @@ class EventActivityVerificationTest(TestCase):
         case = Case.objects.all().get(description = desc)
         case.description = "i just changed it, foo"
         case.last_edit_by = user
-        activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
+        activity = ActivityClass.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
         case.save(activity=activity, save_comment="editing in testCaseModifyDescription")
         
         
@@ -109,7 +119,7 @@ class EventActivityVerificationTest(TestCase):
             newcase = self.testCreateCase(description=desc)
             newcase.parent_case = case
             newcase.last_edit_by = user
-            activity = EventActivity.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity = ActivityClass.objects.filter(category=case.category).filter(event_class=constants.CASE_EVENT_EDIT)[0]
             newcase.save(activity=activity, save_comment="editing in testCaseCreateChildCases")
             
             

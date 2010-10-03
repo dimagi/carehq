@@ -5,7 +5,7 @@ import random
 import uuid
 
 
-from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category, CaseAction
+from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
 
 from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier

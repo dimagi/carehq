@@ -5,7 +5,7 @@ import random
 import uuid
 
 
-from casetracker.models import Case, Status, EventActivity, CaseEvent, Priority, Category, CaseAction
+from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
 
 from provider.models import Provider
 from patient.models import Patient, IdentifierType, PatientIdentifier
@@ -143,7 +143,7 @@ def create_case(user, all_users, case_no):
 #def work_case(case, user):
 #    all_descriptions = resolve_arr + working_arr    
 #    evt = CaseEvent()
-#    evt.activity = EventActivity.objects.all()[random.randint(0,EventActivity.objects.all().count()-1)]
+#    evt.activity = ActivityClass.objects.all()[random.randint(0,ActivityClass.objects.all().count()-1)]
 #    evt.case = case
 #    evt.notes = all_descriptions[random.randint(0, len(all_descriptions) -1 )]
 #    evt.created_by = user 

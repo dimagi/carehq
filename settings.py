@@ -76,10 +76,10 @@ MIDDLEWARE_CLASSES = (
 #    'django_digest.middleware.HttpDigestMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',    
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'ashandapp.middleware.identity.AshandIdentityMiddleware',
-    'tracking.middleware.VisitorTrackingMiddleware',
+    #'tracking.middleware.VisitorTrackingMiddleware',
 )
 
 DIGEST_ENFORCE_NONCE_COUNT = False
@@ -105,14 +105,14 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    
+    'couchdbkit.ext.django',
     
     #section ashand apps
     #'casetracker',
     'provider',
     #'patient',
     'ashandapp',
-    #'careplan',
+    'careplan',
     #end ashand apps
     
     #clinical_core
@@ -127,19 +127,19 @@ INSTALLED_APPS = (
     'reversion',    
     #'django_digest',
     #'tinymce',
-    'debug_toolbar',
+    #'debug_toolbar',
     'django_extensions',    
     #'johnny', 
-    'tracking', 
+    #'tracking', 
     #'tracking_ext',
     #end third party apps
     
             
     'django.contrib.admin',
     
-    #haystack
     'haystack',
-    'gunicorn',
+    #'gunicorn',
+    'devserver',
 )
 
 #haystack
@@ -193,7 +193,7 @@ AUDITABLE_MODELS = [
                     'patient.models.PatientIdentifier',                    
                     ]
                     
-                   
+PATIENT_DOCUMENT_MODEL = 'clinical_core.models.couch.CCareHQPatient'                   
 
 try:
     from settings_local import *

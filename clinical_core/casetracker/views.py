@@ -26,7 +26,7 @@ from django.views.decorators.cache import cache_page
 from auditor.decorators import log_access
 
 
-from casetracker.models import Case, CaseEvent, Filter, GridPreference, EventActivity,Status, Priority, Category
+from casetracker.models import Case, CaseEvent, Filter, GridPreference, ActivityClass, Status, Priority, Category
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
 
@@ -79,7 +79,7 @@ def _get_next(request):
 #            comment = form.cleaned_data['comment']
 #            
 #            #just grab the first close/resolve event class
-#            activity = EventActivity.objects.filter(category=case.category).filter(event_class=event_class)[0]
+#            activity = ActivityClass.objects.filter(category=case.category).filter(event_class=event_class)[0]
 #            case.status = status 
 #            case.last_edit_by = request.user
 #            case.edit_comment = comment
@@ -160,7 +160,7 @@ def _get_next(request):
 #            evt = CaseEvent()
 #            evt.case = case
 #            evt.notes = comment
-#            evt.activity = EventActivity.objects.filter(category=case.category)\
+#            evt.activity = ActivityClass.objects.filter(category=case.category)\
 #                .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
 #            evt.created_by = request.user            
 #            evt.save()
@@ -187,7 +187,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     activity = None
     for key, value in request.GET.items():            
         if key == 'activity':            
-            activity = EventActivity.objects.get(slug=value)
+            activity = ActivityClass.objects.get(slug=value)
     context['case'] = thecase
    
     template_name = thecase.category.bridge.read_template(request, context)    
@@ -245,7 +245,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
                     evt = CaseEvent()
                     evt.case = thecase
                     evt.notes = comment
-                    evt.activity = EventActivity.objects.filter(category=thecase.category)\
+                    evt.activity = ActivityClass.objects.filter(category=thecase.category)\
                         .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
                     evt.created_by = request.user            
                     evt.save()
@@ -292,7 +292,7 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
     
     context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
     context['case'] = thecase        
-    context['custom_activity'] = EventActivity.objects.filter(category=thecase.category).filter(event_class='event-custom')
+    context['custom_activity'] = ActivityClass.objects.filter(category=thecase.category).filter(event_class='event-custom')
     context['formatting'] = False
     event_arr = context['events']
     event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)

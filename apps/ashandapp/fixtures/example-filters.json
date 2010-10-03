@@ -18,7 +18,7 @@
 
       "opened_by": null, 
 
-      "creator": 1, 
+      "creator": null, 
 
       "opened_date": null, 
 
@@ -68,7 +68,7 @@
 
       "opened_by": null, 
 
-      "creator": 1, 
+      "creator": null, 
 
       "opened_date": null, 
 
@@ -116,9 +116,9 @@
 
       "description": "Opened by me", 
 
-      "opened_by": 1, 
+      "opened_by": null, 
 
-      "creator": 1, 
+      "creator": null, 
 
       "opened_date": null, 
 

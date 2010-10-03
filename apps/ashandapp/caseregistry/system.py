@@ -1,7 +1,7 @@
 from casetracker import constants
-from casetracker.caseregistry import registry
-from casetracker.caseregistry import CategoryBridge, StatusBridge, ActivityBridge
-from casetracker.models import Category, EventActivity, Status
+from casetracker.registry import registry
+from casetracker.registry import CategoryBridge, StatusBridge, ActivityBridge
+from casetracker.models import Category, ActivityClass, Status
 
 
 CATEGORY_MODULE = 'ashandapp.caseregistry.system'

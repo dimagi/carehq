@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 from datetime import datetime, timedelta
-from middleware import threadlocals
+from casetracker.middleware import threadlocals
 
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -19,11 +19,12 @@ from django.utils.translation import ugettext_lazy as _
 from casetracker import constants
 from clinical_core.patient.models import Patient
 
+from casetracker.managers import CaseManager
+
 import uuid
 
 def make_uuid():
     return uuid.uuid1().hex
-
 
 
 CASE_EVENT_CHOICES = (
@@ -99,16 +100,16 @@ class Category(models.Model):
                                       help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
     
     bridge_class = models.CharField(max_length=64, blank=True, null=True,
-                                     help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
+                                     help_text=_('This is the actual class name of the subclass of CategoryBridge you want to handle this category of case.'))
     
     
     @property
     def bridge(self): #from handler
         """
-        Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
+        Returns the class instance of the category category
         """
         #nasty hack here, but due to prevent circular refernces, we need to make sure it's not referenced until necessary
-        from casetracker.caseregistry import CategoryBridge, ActivityBridge
+        from casetracker.registry import CategoryBridge, ActivityBridge
         handler = None
         if not hasattr(self, '_bridge'):            
             if self.bridge_module == None or self.bridge_class == None:
@@ -148,7 +149,7 @@ class StatusActivities(models.Model):
     can be recorded and be database  
     """    
     status = models.ForeignKey("Status", related_name='legal_activities_list')
-    legal_activity = models.ForeignKey("EventActivity", related_name="legal_for_status")
+    legal_activity = models.ForeignKey("ActivityClass", related_name="legal_for_status")
     
     class Meta:
         unique_together = ('status', 'legal_activity')
@@ -168,12 +169,12 @@ class Status (models.Model):
     
 
     ##this should have a limit choices to for self.category, but that's a nasty hack.
-    #allowable_actions = models.ManyToManyField("EventActivity", through="StatusActivityLink", related_name='legal_action_for_states') 
+    #allowable_actions = models.ManyToManyField("ActivityClass", through="StatusActivityLink", related_name='legal_action_for_states')
     @property
     def allowable_actions(self):
         if not hasattr(self, '_allowable_actions'):            
             legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
-            self._allowable_actions = EventActivity.objects.select_related().filter(id__in=legal_activities)        
+            self._allowable_actions = ActivityClass.objects.select_related().filter(id__in=legal_activities)
         return self._allowable_actions
     
     @property
@@ -183,7 +184,7 @@ class Status (models.Model):
         """
         if not hasattr(self, '_transitional_actions'):            
             legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
-            self._transitional_actions = EventActivity.objects.select_related().filter(id__in=legal_activities).exclude(event_class=constants.CASE_EVENT_COMMENT)     
+            self._transitional_actions = ActivityClass.objects.select_related().filter(id__in=legal_activities).exclude(event_class=constants.CASE_EVENT_COMMENT)
         return self._transitional_actions
 
     
@@ -235,9 +236,9 @@ class CaseAction(models.Model):
         ordering = ['description']
 
 
-class EventActivity(models.Model):
+class ActivityClass(models.Model):
     """
-    An Event Activity describes sanction-able actions that can be done revolving around a case.
+    An ActivityClass describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
     
     These are SPECIFIC to the category that they are a part of.  
@@ -322,23 +323,23 @@ class CaseEvent(models.Model):
     case = models.ForeignKey("Case", related_name='case_events')    
     notes = models.TextField(blank=True)
     
-    activity = models.ForeignKey(EventActivity)
+    activity = models.ForeignKey(ActivityClass)
     
     created_date = models.DateTimeField()
     created_by = models.ForeignKey(Actor)
     parent_event = models.ForeignKey("self", blank=True, null=True, related_name="child_events")        
     
     def save(self, unsafe=False):
-        if unsafe:
+        if self.id == None:
             self.id = uuid.uuid1().hex
+        if unsafe:            
             super(CaseEvent, self).save()
             return
             
         if self.created_date == None:     
             if self.created_by == None:
                 raise Exception("Missing fields in Case creation - created by")           
-            self.created_date = datetime.utcnow()                            
-            self.id = uuid.uuid1().hex
+            self.created_date = datetime.utcnow()            
         super(CaseEvent, self).save()  
     
     def __unicode__(self):
@@ -357,9 +358,7 @@ class Case(models.Model):
     These are finite and discrete tasks that must be done.  Linking these cases to someone or something
     must be implemented elsewhere. 
     
-    The scope of these cases are currently attached to the actual agents that need to work on them.
-    
-    Changes to these cases will be managed by django-reversion.  Actions revolving around these cases will be done via encounters.
+    The scope of these cases are currently attached to the actual agents that need to work on them.    
     
     The uuid should be the primary key, but for the synchronization framework, having a uuid key do all the queries
     and potentially be the primary key should be a top priority.    
@@ -379,21 +378,25 @@ class Case(models.Model):
     priority = models.ForeignKey(Priority)    
     
     opened_date = models.DateTimeField()
-    opened_by = models.ForeignKey(Actor, related_name="case_opened_by")
+    opened_by = models.ForeignKey(Actor, related_name="case_opened_by") #cannot be null because this has to have originated from somewhere
+    
+    assigned_to = models.ForeignKey(Actor, related_name="case_assigned_to", null=True, blank=True)   
+    assigned_date = models.DateTimeField(null=True, blank=True)
     
     last_edit_date = models.DateTimeField(null=True, blank=True)
     last_edit_by = models.ForeignKey(Actor, related_name="case_last_edit_by", null=True, blank=True) 
-        
+                
     resolved_date = models.DateTimeField(null=True, blank=True)
     resolved_by = models.ForeignKey(Actor, related_name="case_resolved_by", null=True, blank=True)
         
     closed_date = models.DateTimeField(null=True, blank=True)
     closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)    
     
-    assigned_to = models.ForeignKey(Actor, related_name="case_assigned_to", null=True, blank=True)   
-    assigned_date = models.DateTimeField(null=True, blank=True)
-    
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
+    
+    
+    default_objects = models.Manager() # The default manager.
+    objects = CaseManager() 
     
     def get_absolute_url(self):
         return "/case/%s" % self.id
@@ -483,76 +486,52 @@ class Case(models.Model):
             self._related_objects = self._get_related_objects()
         return self._related_objects
                 
-    def save(self, activity=None, save_comment=None, unsafe=False):
+    def save(self, activity=None):
         """
-        Save a case.
-        
-        There are two ways to save a case.
-        If activity is None, then it implies that this is a NEW case.        
-        If that's saved, then an EventActivity that does a basic OPEN will be saved.
-        
-        If activity != None, then this implies that a structured activity did changes to the case.
-        
-        The unsafe flag is only for unit testing to alter properties of the datetimes and such.        
+        Save a case.        
+        Note, this needs to be profoundly updated to be more thread safe using update()
+        http://www.slideshare.net/zeeg/db-tips-tricks-django-meetup - look for mccurdy   
         """
-        if unsafe:
-            if self.opened_date == None:
-                logging.warning("Case save unsafe: no opened date set")            
-            if self.opened_by == None:
-                logging.warning("Case save unsafe: no opened by set")
-            if self.last_edit_date == None:
-                logging.warning("Case save unsafe: no last edit date set")
-            if self.last_edit_by == None:
-                logging.warning("Case save unsafe: no last edit by set")
-    
-            super(Case, self).save()
-            return
-                
-        #NEW CASE
-        if self.opened_date == None: #this is a bit hackish, with the overriden id, the null ID is hard to verify.  so, we should verify it by the null opened_date
-            if self.opened_by == None or self.description == None:
-                raise Exception("Missing fields in Case creation - opened by and description")            
-            
-            #if we're brand new, we'll update the dates in this way:
-            self.opened_date = datetime.utcnow()
-            self.last_edit_date = self.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
-            self.last_edit_by = self.opened_by
-            self.orig_description = self.description            
+#        if unsafe:
+#            if self.opened_date == None:
+#                logging.warning("Case save unsafe: no opened date set")            
+#            if self.opened_by == None:
+#                logging.warning("Case save unsafe: no opened by set")
+#            if self.last_edit_date == None:
+#                logging.warning("Case save unsafe: no last edit date set")
+#            if self.last_edit_by == None:
+#                logging.warning("Case save unsafe: no last edit by set")    
+#            super(Case, self).save()
+#            return
+#        
+        
+        if activity == None:
+            raise Exception("Error, you must set an ActivityClass for this Case Save")
         else:
-            #EXISTING CASE
-            if activity == None:
-                raise Exception("Error, you must set an EventActivity for this Case Save")
-            else:
-                self.event_activity = activity
-            if save_comment != None:
-                self.save_comment = save_comment
-            
-            
-            if self.last_edit_by == None:
-                raise Exception("Missing fields in Case edit - last_edit_by")
-                        
-            #now, we need to check the status change being done to this.            
-            state_class = self.status.state_class
-            if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
-                if self.resolved_by == None:
-                    raise Exception("Case state is now resolved, you must set a resolved_by")
-                else:
-                    self.resolved_date = datetime.utcnow()
-            elif state_class == constants.CASE_STATE_CLOSED:
-                if self.closed_by == None:
-                    raise Exception("Case state is now closed, you must set a closed_by")
-                else:
-                    #ok, closed by is set, let's double check that it's been resolved
-                    if self.resolved_by == None:
-                        #raise Exception("Error, this case must be resolved before it can be closed")
-                        self.resolved_by = self.closed_by
-                        self.resolved_date = datetime.utcnow()
-                    self.closed_date = datetime.utcnow()
-
-            self.last_edit_date = datetime.utcnow()            
-            
-            
+            self.event_activity = activity        
+       
+        if self.last_edit_by == None:
+            raise Exception("Missing fields in edited Case: last_edit_by")
                     
+        #now, we need to check the status change being done to this.            
+        state_class = self.status.state_class
+        if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+            if self.resolved_by == None:
+                raise Exception("Case state is now resolved, you must set a resolved_by")
+            else:
+                self.resolved_date = datetime.utcnow()
+        elif state_class == constants.CASE_STATE_CLOSED:
+            if self.closed_by == None:
+                raise Exception("Case state is now closed, you must set a closed_by")
+            else:
+                #ok, closed by is set, let's double check that it's been resolved
+                if self.resolved_by == None:
+                    #raise Exception("Error, this case must be resolved before it can be closed")
+                    self.resolved_by = self.closed_by
+                    self.resolved_date = datetime.utcnow()
+                self.closed_date = datetime.utcnow()
+
+        self.last_edit_date = datetime.utcnow()                    
         super(Case, self).save()        
     
     def __unicode__(self):
@@ -602,7 +581,7 @@ class Filter(models.Model):
     ONE_YEAR = 365
     
     TIME_DURATION_FUTURE_CHOICES = (
-        (-ONE_DAY, 'In the past'),
+        (-ONE_DAY, 'In the past day'),
         (TODAY, 'Today'),
         (ONE_DAY, 'Today or tomorrow'),
         (THREE_DAYS, 'In the next three days'),
@@ -659,7 +638,7 @@ class Filter(models.Model):
     closed_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     
     #case Event information
-    last_event_type = models.ForeignKey(EventActivity, null=True, blank=True)
+    last_event_type = models.ForeignKey(ActivityClass, null=True, blank=True)
     last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(Actor, null=True, blank=True)
     
@@ -765,7 +744,7 @@ class Filter(models.Model):
             cases = cases.filter(qu)
         
         if len(case_event_query_arr) > 0:            
-            print "case event subquery"
+            #print "case event subquery"
             case_events = CaseEvent.objects.select_related().all()                  
             for qe in case_event_query_arr:
                 case_events = case_events.filter(qe)
@@ -794,160 +773,8 @@ class Filter(models.Model):
 
     
 
-class GridColumn(models.Model):
-    """
-    The gridcolumn is the main, flat store for all columns that could be used in a grid.
-    
-    It's flat, the name of the column is directly used in the Case column selector and sort criteria.
-    So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
-    
-    In other words, the GridColumn's name MUST be a property of case and casefilter for it to be useful.
-    """
-    
-    GRIDCOLUMN_CHOICES = (
-                          ('case_field', "Case Field"),
-                          ('related_field',"Related Field"),
-                          ('custom_func',"Custom Function Call"),
-                          )
-    name = models.SlugField(max_length=32, unique=True)
-    display = models.CharField(max_length=64, null=True, blank=True)
-    column_type = models.CharField(max_length=16, choices=GRIDCOLUMN_CHOICES, default=GRIDCOLUMN_CHOICES[0][0], null=True, blank=True)
-    attribute = models.CharField(max_length=160, null=True, blank=True)
-    
-    class Meta:
-        ordering = ('name',)
-        
-    def __unicode__(self):
-        return self.name
-    
-    def get_column_value(self, case):
-        """
-        TODO: do the getattr() off the case if it's a case_field, else, if it's related or custom field, do some magic
-        """
-        return None
 
 
-class GridSort(models.Model):
-    """
-    When a grid preference FKs to a GridColumn, this through model will tell how to represent it
-    when using the column as a sorting column.  In representation it'll be either be name or -name.
-    
-    The gridcolumn presents the actual case property of the Case queryset you pass into the ordering() method.
-    The filter queryset will be built using these strings.
-    """
-    column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
-    preference = models.ForeignKey("GridPreference", related_name="gridpreference_sort")
-    ascending = models.BooleanField()
-    display_split = models.BooleanField(default=False)
-    order = models.PositiveIntegerField()
-    
-    @property
-    def sort_display(self):
-        if self.ascending:
-            return self.column.name
-        else:
-            return "-%s" % self.column.name
-    def __unicode__(self):
-        if self.ascending:
-            ascend = "ascending"
-        else:
-            ascend = "descending"
-        return "GridSort - %s %s" % (self.column, ascend)
-    
-    
-    class Meta:
-        verbose_name = "Grid column sort ordering"
-        verbose_name_plural = "Grid column sort order definitions"
-        ordering = ['order']
-    
-
-
-
-class GridOrder (models.Model):
-    """
-    When a grid preference FKs to a GridColumn, this through model will tell how to represent it
-    when using the column as a column for display.  This tells us which columns will be arranged in what order
-    for display on the data table.
-    
-    The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
-    in this through model.
-    """
-    column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')
-    preference = models.ForeignKey("GridPreference", related_name="gridpreference_displayorder")
-    order = models.PositiveIntegerField()
-    
-    class Meta:
-        verbose_name = "Grid column display ordering"
-        verbose_name_plural = "Grid column display order definitions"
-        ordering = ['order']
-    def __unicode__(self):
-        return "%d - %s" % (self.order, self.column.name)
-    
-
-class GridPreference(models.Model):
-    """
-    A filter will have a one to one mapping to this model for showing how to display the given grid.    
-    """
-    id = models.CharField(_('Unique id'), max_length=32, unique=True, editable=False, default=make_uuid, primary_key=True) #primary_key override?
-    filter = models.OneToOneField(Filter, related_name='gridpreference') #this could be just a foreign key and have multiple preferences to a given filter.
-    
-    display_columns = models.ManyToManyField(GridColumn, through=GridOrder, related_name="display_columns")
-    sort_columns = models.ManyToManyField(GridColumn, through=GridSort, related_name="sort_columns")
-        
-    def __unicode__(self):
-        return "Grid Display Preference: %s" % self.filter.description    
-    
-    class Meta:
-        verbose_name = "Filter Grid Display Preference"
-        verbose_name_plural = "Filter Grid Display Preferences"
-        ordering = ['filter']
-        
-    @property
-    def get_display_columns(self):
-        """
-        returns the display columns in order of the through class's definition
-        """        
-        if not hasattr(self, '_display_columns'):
-            self._display_columns = self.gridpreference_displayorder.all().select_related()
-        return self._display_columns 
-    
-    @property
-    def get_sort_columns(self):
-        """
-        Returns the display columns in order of the through class's definition
-        """
-        col_sort_orders = self.gridpreference_sort.all().values_list('column__id', flat=True)
-        return GridColumn.objects.select_related().all().filter(id__in=col_sort_orders)    
-    
-    @property
-    def get_sort_columns_raw(self):
-        """
-        returns the display columns in order of the through class's definition
-        """
-        col_sort_orders = self.gridpreference_sort.all().select_related()
-        
-        return [x.sort_display for x in col_sort_orders]    
-    
-    @property
-    def get_colsort_jsonarray(self):
-        #"aaSorting": [ [0,'asc'], [1,'asc'] ],
-        if not hasattr(self, '_sort_json'):                
-            cols = list(self.get_display_columns)
-            sorts = self.gridpreference_sort.all()
-            ret = []
-            for s in sorts:
-                idx = cols.index(s.column)
-                if s.ascending == 1:
-                    ret.append([idx + 1, 'asc'])
-                else:
-                    ret.append([idx + 1, 'desc'])
-            
-            self._sort_json = ret        
-        return self._sort_json
-
-
-
-import signals
 
 
 

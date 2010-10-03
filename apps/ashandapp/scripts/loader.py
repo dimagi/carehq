@@ -1,7 +1,7 @@
 import random
 
 from datetime import datetime, timedelta
-from casetracker.models import Category, Case, CaseAction,Priority, Status, EventActivity, CaseEvent
+from casetracker.models import Category, Case, CaseAction,Priority, Status, ActivityClass, CaseEvent
 from casetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
@@ -83,7 +83,7 @@ def load_interaction(careteam, interaction_arr):
         if resp.count("%s") == 1:
             resp = resp % careteam.patient.user.first_name
         evt.notes = resp
-        evt.activity = EventActivity.objects.filter(category=newcase.category)\
+        evt.activity = ActivityClass.objects.filter(category=newcase.category)\
             .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
         evt.created_by = responder
         startdelta = startdelta - timedelta(minutes=random.randint(4,480))

@@ -39,29 +39,23 @@ class NewQuestionForm(CareTeamCaseFormBase):
     def get_case(self, request):
         if not self.is_valid():
             raise Exception("Error, trying to generate case from question form when form is not valid!")
-        newcase = Case()
-        newcase.category = Category.objects.get(slug=CATEGORY_SLUG)
-        newcase.priority = self.cleaned_data['priority']
-        newcase.priority = Priority.objects.get(id=4)
-        newcase.opened_by = request.user
-        newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
-        newcase.description = self.cleaned_data['description']
-        newcase.body = self.cleaned_data['body']
         
-        newcase.assigned_to = self.cleaned_data['recipient']
-#        if self.cleaned_data['recipient'] == 'primary':            
-#            if self._careteam.primary_provider:
-#                newcase.assigned_to = self._careteam.primary_provider.user
-#            else:                        
-#                newcase.assigned_to = request.user
-#        elif self.cleaned_data['recipient'] == 'specific':            
-#            newcase.assigned_to = self.cleaned_data['other_recipient']
-
+        category = Category.objects.get(category='issue')
+        status=Status.objects.filter(category=category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+        newcase = Case.objects.create_case(category,
+                                           Priority.objects.get(id=4),
+                                           request.actor, 
+                                           self.cleaned_data['description'],
+                                           self.cleaned_data['body'],
+                                           status = status,
+                                           commit=False)
+        
+        td = timedelta(hours=1)        
+        if self._careteam.primary_provider:
+            newcase.assigned_to = self._careteam.primary_provider.user
+        else:
+            newcase.assigned_to = request.user
         newcase.assigned_date = datetime.utcnow()
-                
-        #newcase.next_action = CaseAction.objects.get(id=7) #triage                
-        td = timedelta(hours=1)
-        newcase.next_action_date = datetime.utcnow() + td
         
         return newcase
     

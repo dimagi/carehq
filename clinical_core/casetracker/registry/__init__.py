@@ -1,5 +1,5 @@
 from casetracker import constants
-from casetracker.models import Category, Status, EventActivity
+from casetracker.models import Category, Status, ActivityClass
 from casetracker.forms import CaseModelForm, CaseResolveCloseForm, CaseCommentForm
 from django.contrib.auth.models import User
 

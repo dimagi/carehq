@@ -2,7 +2,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 
-from models import CaseAction, Category, Priority, Status, EventActivity, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
+from models import CaseAction, Category, Priority, Status, ActivityClass, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 class CaseActionAdmin(admin.ModelAdmin):
@@ -106,7 +106,7 @@ class GridOrderAdmin(admin.ModelAdmin):
 admin.site.register(GridOrder, GridOrderAdmin)
 
 
-admin.site.register(EventActivity, EventActivityAdmin)
+admin.site.register(ActivityClass, EventActivityAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(CaseAction, CaseActionAdmin)
 admin.site.register(Priority, PriorityAdmin)
