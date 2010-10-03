@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+        *** GENERATED FROM jax-ws.xml - DO NOT EDIT !                             ***
+        *** TO MODIFY wsimport options USE Web Service node -> Edit WS Attributes ***
+        *** TO CHANGE TARGETS GENERATED TO jaxws-build.xml COPY THOSE             ***
+        *** TARGETS TO ../build.xml AND MODIFY THAT FILE INSTEAD                  ***
+
+        -->
+<project xmlns:xalan="http://xml.apache.org/xslt" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3" xmlns:jaxws="http://www.netbeans.org/ns/jax-ws/1">
+    <!--
+                ===================
+                JAX-WS WSIMPORT SECTION
+                ===================
+            -->
+    <target name="wsimport-init" depends="init">
+        <mkdir dir="${build.generated.sources.dir}/jax-ws"/>
+        <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+            <classpath path="${libs.jaxws21.classpath}"/>
+        </taskdef>
+    </target>
+    <target name="wsimport-client-healthcare.intel.com.integration.authenticate" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate"/>
+        <property name="wsdl-healthcare.intel.com.integration.authenticate" location="xml-resources/web-service-references/healthcare.intel.com.integration.authenticate/wsdl/healthcare.intel.com.integration.authenticate.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate" destdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate" wsdl="${wsdl-healthcare.intel.com.integration.authenticate}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.authenticate.wsdl" xendorsed="true">
+            <binding dir="xml-resources/web-service-references/healthcare.intel.com.integration.authenticate/bindings" includes="simple-binding.xjb"/>
+            <depends file="${wsdl-healthcare.intel.com.integration.authenticate}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-healthcare.intel.com.integration.authenticate" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.authenticate"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/intel/healthcare/integration/authenticate"/>
+    </target>
+    <target name="wsimport-client-healthcare.intel.com.integration.extracts" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts"/>
+        <property name="wsdl-healthcare.intel.com.integration.extracts" location="xml-resources/web-service-references/healthcare.intel.com.integration.extracts/wsdl/healthcare.intel.com.integration.extracts.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts" destdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts" wsdl="${wsdl-healthcare.intel.com.integration.extracts}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.extracts.wsdl" xendorsed="true">
+            <binding dir="xml-resources/web-service-references/healthcare.intel.com.integration.extracts/bindings" includes="simple-binding.xjb"/>
+            <depends file="${wsdl-healthcare.intel.com.integration.extracts}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-healthcare.intel.com.integration.extracts" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.extracts"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/intel/healthcare/integration/extracts"/>
+    </target>
+    <target name="wsimport-client-healthcare.intel.com.integration.importdata" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata"/>
+        <property name="wsdl-healthcare.intel.com.integration.importdata" location="xml-resources/web-service-references/healthcare.intel.com.integration.importdata/wsdl/healthcare.intel.com.integration.importdata.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata" destdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata" wsdl="${wsdl-healthcare.intel.com.integration.importdata}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.importdata.wsdl" xendorsed="true">
+            <binding dir="xml-resources/web-service-references/healthcare.intel.com.integration.importdata/bindings" includes="simple-binding.xjb"/>
+            <depends file="${wsdl-healthcare.intel.com.integration.importdata}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-healthcare.intel.com.integration.importdata" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.importdata"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/intel/healthcare/integration/importdata"/>
+    </target>
+    <target name="wsimport-client-healthcare.intel.com.integration.userlookup" depends="wsimport-init">
+        <mkdir dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup"/>
+        <property name="wsdl-healthcare.intel.com.integration.userlookup" location="xml-resources/web-service-references/healthcare.intel.com.integration.userlookup/wsdl/healthcare.intel.com.integration.userlookup.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup" destdir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup" wsdl="${wsdl-healthcare.intel.com.integration.userlookup}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.userlookup.wsdl" xendorsed="true">
+            <binding dir="xml-resources/web-service-references/healthcare.intel.com.integration.userlookup/bindings" includes="simple-binding.xjb"/>
+            <depends file="${wsdl-healthcare.intel.com.integration.userlookup}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup"/>
+        </wsimport>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup">
+                <include name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="wsimport-client-clean-healthcare.intel.com.integration.userlookup" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/healthcare.intel.com.integration.userlookup"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/com/intel/healthcare/integration/userlookup"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-healthcare.intel.com.integration.authenticate, wsimport-client-healthcare.intel.com.integration.extracts, wsimport-client-healthcare.intel.com.integration.importdata, wsimport-client-healthcare.intel.com.integration.userlookup"/>
+</project>

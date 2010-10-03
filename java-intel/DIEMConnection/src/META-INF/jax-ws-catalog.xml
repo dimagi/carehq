@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.authenticate.wsdl" uri="wsdl/healthcare.intel.com.integration.authenticate.wsdl"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.authenticate.xsd" uri="wsdl/healthcare.intel.com.integration.authenticate.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/schemas.microsoft.com.2003.10.Serialization.xsd" uri="wsdl/schemas.microsoft.com.2003.10.Serialization.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.extracts.wsdl" uri="wsdl/healthcare.intel.com.integration.extracts.wsdl"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.extracts.xsd" uri="wsdl/healthcare.intel.com.integration.extracts.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" uri="wsdl/schemas.microsoft.com.2003.10.Serialization.Arrays.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/Intel.Healthcare.Integration.Extracts.xsd" uri="wsdl/Intel.Healthcare.Integration.Extracts.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.importdata.wsdl" uri="wsdl/healthcare.intel.com.integration.importdata.wsdl"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.importdata.xsd" uri="wsdl/healthcare.intel.com.integration.importdata.xsd"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.userlookup.wsdl" uri="wsdl/healthcare.intel.com.integration.userlookup.wsdl"/>
+    <system systemId="file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.userlookup.xsd" uri="wsdl/healthcare.intel.com.integration.userlookup.xsd"/>
+</catalog>

@@ -1,0 +1,455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://healthcare.intel.com/integration/extracts" elementFormDefault="qualified" targetNamespace="http://healthcare.intel.com/integration/extracts" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="Intel.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+  <xs:element name="GetExtract">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="extractType" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q1:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExtractResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetExtractResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="extractData" nillable="true" type="q2:ArrayOfanyType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="ExtractResult">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Starting" />
+      <xs:enumeration value="InProgress" />
+      <xs:enumeration value="Complete" />
+      <xs:enumeration value="Unauthorized" />
+      <xs:enumeration value="Error" />
+      <xs:enumeration value="DataCacheNotFoundError" />
+      <xs:enumeration value="ExtractNotAvailable" />
+      <xs:enumeration value="ExtractFilterError" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ExtractResult" nillable="true" type="tns:ExtractResult" />
+  <xs:element name="GetAdherenceDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q3:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q4:ArrayOfAdherenceDetail.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAdherenceDetailsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAdherenceDetailsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q5:ArrayOfAdherenceDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAdherenceSummaries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q6:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q7:ArrayOfAdherenceSummary.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAdherenceSummariesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAdherenceSummariesResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q8:ArrayOfAdherenceSummary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAdherenceSummaryTotals">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q9:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q10:ArrayOfAdherenceSummaryTotal.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAdherenceSummaryTotalsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAdherenceSummaryTotalsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q11:ArrayOfAdherenceSummaryTotal" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCareManagerInterventions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q12:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q13:ArrayOfCareManagerIntervention.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCareManagerInterventionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCareManagerInterventionsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q14:ArrayOfCareManagerIntervention" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCarePlanDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q15:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q16:ArrayOfCarePlanDetail.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCarePlanDetailsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCarePlanDetailsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q17:ArrayOfCarePlanDetail" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCarePlanSummaries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q18="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q18:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q19:ArrayOfCarePlanSummary.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCarePlanSummariesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCarePlanSummariesResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q20:ArrayOfCarePlanSummary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q21:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q22:ArrayOfClinician.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCliniciansResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q23:ArrayOfClinician" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetEventLogs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q24="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q24:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q25:ArrayOfEventLog.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetEventLogsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetEventLogsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q26:ArrayOfEventLog" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMachineInventories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q27="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q27:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q28:ArrayOfMachineInventory.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMachineInventoriesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMachineInventoriesResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q29="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q29:ArrayOfMachineInventory" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMasterCarePlans">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q30="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q30:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q31="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q31:ArrayOfMasterCarePlan.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMasterCarePlansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMasterCarePlansResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q32="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q32:ArrayOfMasterCarePlan" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMeasurements">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q33="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q33:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q34="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q34:ArrayOfMeasurement.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMeasurementsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMeasurementsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q35="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q35:ArrayOfMeasurement" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNotifications">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q36="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q36:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q37="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q37:ArrayOfNotification.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNotificationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetNotificationsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q38="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q38:ArrayOfNotification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q39="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q39:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q40="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q40:ArrayOfPatient.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q41="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q41:ArrayOfPatient" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q42="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q42:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q43="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q43:ArrayOfPatientClinician.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientCliniciansResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q44="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q44:ArrayOfPatientClinician" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMachines">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q45="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q45:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q46="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q46:ArrayOfPatientMachine.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMachinesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientMachinesResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q47="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q47:ArrayOfPatientMachine" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSessionIDs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q48="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q48:guid" />
+        <xs:element minOccurs="0" name="unsentOnly" type="xs:boolean" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q49="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q49:ArrayOfPatientSession.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSessionIDsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientSessionIDsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q50="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="extractData" nillable="true" type="q50:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSession">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q51:guid" />
+        <xs:element minOccurs="0" name="patientSessionID" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="markSent" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSessionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientSessionResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q52="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="patientSession" nillable="true" type="q52:PatientSession" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSessions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q53="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q53:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element minOccurs="0" name="markSent" type="xs:boolean" />
+        <xs:element minOccurs="0" name="unsentOnly" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientSessionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientSessionsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q54="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q54:ArrayOfPatientSession" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientSessionTransfer">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q55:guid" />
+        <xs:element minOccurs="0" name="patientSessionID" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientSessionDestinationUrl" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientSessionTransferResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStandardFormatPatientSession">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q56="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q56:guid" />
+        <xs:element minOccurs="0" name="patientSessionID" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="markSent" type="xs:boolean" />
+        <xs:element minOccurs="0" name="dataFormatType" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStandardFormatPatientSessionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetStandardFormatPatientSessionResult" type="tns:ExtractResult" />
+        <xs:element minOccurs="0" name="patientSession" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStandardFormatPatientSessions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q57="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q57:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element minOccurs="0" name="markSent" type="xs:boolean" />
+        <xs:element minOccurs="0" name="unsentOnly" type="xs:boolean" />
+        <xs:element minOccurs="0" name="dataFormatType" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStandardFormatPatientSessionsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetStandardFormatPatientSessionsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q58="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="extractData" nillable="true" type="q58:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetThresholds">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q59="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q59:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q60="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q60:ArrayOfThreshold.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetThresholdsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetThresholdsResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q61="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q61:ArrayOfThreshold" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVideoConferences">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q62="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q62:guid" />
+        <xs:element minOccurs="0" name="continueExtract" type="xs:boolean" />
+        <xs:element xmlns:q63="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="filterConditions" nillable="true" type="q63:ArrayOfVideoConference.FilterCondition" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVideoConferencesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetVideoConferencesResult" type="tns:ExtractResult" />
+        <xs:element xmlns:q64="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" minOccurs="0" name="extractData" nillable="true" type="q64:ArrayOfVideoConference" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientSessionSent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientSessionID" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientSessionSentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="IsPatientSessionSentResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Ping">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PingResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="PingResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

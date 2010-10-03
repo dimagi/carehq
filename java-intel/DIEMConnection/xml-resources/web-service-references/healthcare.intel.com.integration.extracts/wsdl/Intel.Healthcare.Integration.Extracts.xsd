@@ -1,0 +1,1156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ArrayOfAdherenceDetail.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceDetail.FilterCondition" nillable="true" type="tns:AdherenceDetail.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceDetail.FilterCondition" nillable="true" type="tns:ArrayOfAdherenceDetail.FilterCondition" />
+  <xs:complexType name="AdherenceDetail.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="AdherenceDetail.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:AdherenceDetail.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceDetail.FilterCondition" nillable="true" type="tns:AdherenceDetail.FilterCondition" />
+  <xs:complexType name="BaseFilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Operator" type="tns:FilterOperator" />
+      <xs:element minOccurs="0" name="RValue" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BaseFilterCondition" nillable="true" type="tns:BaseFilterCondition" />
+  <xs:simpleType name="FilterOperator">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Equals" />
+      <xs:enumeration value="NotEquals" />
+      <xs:enumeration value="GreaterThan" />
+      <xs:enumeration value="LessThan" />
+      <xs:enumeration value="GreaterThanEqual" />
+      <xs:enumeration value="LessThanEqual" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="FilterOperator" nillable="true" type="tns:FilterOperator" />
+  <xs:simpleType name="AdherenceDetail.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateSubmitted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="AdherenceDetail.Filter" nillable="true" type="tns:AdherenceDetail.Filter" />
+  <xs:complexType name="ArrayOfAdherenceDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceDetail" nillable="true" type="tns:AdherenceDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceDetail" nillable="true" type="tns:ArrayOfAdherenceDetail" />
+  <xs:complexType name="AdherenceDetail">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AdherenceID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarePlanComponentID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanProtocol" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarePlanProtocolID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanProtocolStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanTask" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateCaptured" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateSubmitted" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInitiated" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Points" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="RecurrenceType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="RecurrenceTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="Reminder" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ResultID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="SessionID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StartDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="TaskType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TaskTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="ThresholdViolation" nillable="true" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceDetail" nillable="true" type="tns:AdherenceDetail" />
+  <xs:complexType name="AbstractFileExtract">
+    <xs:sequence />
+  </xs:complexType>
+  <xs:element name="AbstractFileExtract" nillable="true" type="tns:AbstractFileExtract" />
+  <xs:complexType name="ArrayOfAdherenceSummary.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceSummary.FilterCondition" nillable="true" type="tns:AdherenceSummary.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceSummary.FilterCondition" nillable="true" type="tns:ArrayOfAdherenceSummary.FilterCondition" />
+  <xs:complexType name="AdherenceSummary.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="AdherenceSummary.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:AdherenceSummary.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceSummary.FilterCondition" nillable="true" type="tns:AdherenceSummary.FilterCondition" />
+  <xs:simpleType name="AdherenceSummary.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateSubmitted" />
+      <xs:enumeration value="DateScheduled" />
+      <xs:enumeration value="DatePerformed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="AdherenceSummary.Filter" nillable="true" type="tns:AdherenceSummary.Filter" />
+  <xs:complexType name="ArrayOfAdherenceSummary">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceSummary" nillable="true" type="tns:AdherenceSummary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceSummary" nillable="true" type="tns:ArrayOfAdherenceSummary" />
+  <xs:complexType name="AdherenceSummary">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CarePlanID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DatePerformed" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateScheduled" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateSubmitted" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="ExtraSession" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="MeasurementID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SessionID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusID" nillable="true" type="xs:short" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceSummary" nillable="true" type="tns:AdherenceSummary" />
+  <xs:complexType name="ArrayOfAdherenceSummaryTotal.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceSummaryTotal.FilterCondition" nillable="true" type="tns:AdherenceSummaryTotal.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceSummaryTotal.FilterCondition" nillable="true" type="tns:ArrayOfAdherenceSummaryTotal.FilterCondition" />
+  <xs:complexType name="AdherenceSummaryTotal.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="AdherenceSummaryTotal.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:AdherenceSummaryTotal.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceSummaryTotal.FilterCondition" nillable="true" type="tns:AdherenceSummaryTotal.FilterCondition" />
+  <xs:simpleType name="AdherenceSummaryTotal.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateLastMonitored" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="AdherenceSummaryTotal.Filter" nillable="true" type="tns:AdherenceSummaryTotal.Filter" />
+  <xs:complexType name="ArrayOfAdherenceSummaryTotal">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AdherenceSummaryTotal" nillable="true" type="tns:AdherenceSummaryTotal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAdherenceSummaryTotal" nillable="true" type="tns:ArrayOfAdherenceSummaryTotal" />
+  <xs:complexType name="AdherenceSummaryTotal">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CompletedSessions" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateLastMonitored" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DaysActivity" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="DaysMonitored" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PercentAdherence" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PercentUtilization" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ScheduledSessions" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="TotalInteractions" nillable="true" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AdherenceSummaryTotal" nillable="true" type="tns:AdherenceSummaryTotal" />
+  <xs:complexType name="ArrayOfCareManagerIntervention.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CareManagerIntervention.FilterCondition" nillable="true" type="tns:CareManagerIntervention.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCareManagerIntervention.FilterCondition" nillable="true" type="tns:ArrayOfCareManagerIntervention.FilterCondition" />
+  <xs:complexType name="CareManagerIntervention.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="CareManagerIntervention.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:CareManagerIntervention.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CareManagerIntervention.FilterCondition" nillable="true" type="tns:CareManagerIntervention.FilterCondition" />
+  <xs:simpleType name="CareManagerIntervention.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateSubmitted" />
+      <xs:enumeration value="DateCaptured" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="CareManagerIntervention.Filter" nillable="true" type="tns:CareManagerIntervention.Filter" />
+  <xs:complexType name="ArrayOfCareManagerIntervention">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CareManagerIntervention" nillable="true" type="tns:CareManagerIntervention" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCareManagerIntervention" nillable="true" type="tns:ArrayOfCareManagerIntervention" />
+  <xs:complexType name="CareManagerIntervention">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Acknowledged" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="ClinicianExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ClinicianInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateCaptured" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DateSubmitted" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="ElementID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="InterventionDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NoteID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="NoteType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NoteTypeID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SubjectType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SubjectTypeID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="ThresholdViolation" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="UserFirstName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserLastName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserRole" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserRoleID" nillable="true" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CareManagerIntervention" nillable="true" type="tns:CareManagerIntervention" />
+  <xs:complexType name="ArrayOfCarePlanDetail.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CarePlanDetail.FilterCondition" nillable="true" type="tns:CarePlanDetail.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCarePlanDetail.FilterCondition" nillable="true" type="tns:ArrayOfCarePlanDetail.FilterCondition" />
+  <xs:complexType name="CarePlanDetail.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="CarePlanDetail.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:CarePlanDetail.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CarePlanDetail.FilterCondition" nillable="true" type="tns:CarePlanDetail.FilterCondition" />
+  <xs:simpleType name="CarePlanDetail.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="CarePlanDetail.Filter" nillable="true" type="tns:CarePlanDetail.Filter" />
+  <xs:complexType name="ArrayOfCarePlanDetail">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CarePlanDetail" nillable="true" type="tns:CarePlanDetail" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCarePlanDetail" nillable="true" type="tns:ArrayOfCarePlanDetail" />
+  <xs:complexType name="CarePlanDetail">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CarePlanComponentGUID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="CarePlanComponentID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanParentStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanProtocol" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarePlanProtocolID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanProtocolStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanTask" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Points" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="RecurrenceType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="RecurrenceTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="Reminder" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TaskType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TaskTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="ThresholdViolation" nillable="true" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CarePlanDetail" nillable="true" type="tns:CarePlanDetail" />
+  <xs:complexType name="ArrayOfCarePlanSummary.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CarePlanSummary.FilterCondition" nillable="true" type="tns:CarePlanSummary.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCarePlanSummary.FilterCondition" nillable="true" type="tns:ArrayOfCarePlanSummary.FilterCondition" />
+  <xs:complexType name="CarePlanSummary.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="CarePlanSummary.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:CarePlanSummary.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CarePlanSummary.FilterCondition" nillable="true" type="tns:CarePlanSummary.FilterCondition" />
+  <xs:simpleType name="CarePlanSummary.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="CarePlanSummary.Filter" nillable="true" type="tns:CarePlanSummary.Filter" />
+  <xs:complexType name="ArrayOfCarePlanSummary">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CarePlanSummary" nillable="true" type="tns:CarePlanSummary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCarePlanSummary" nillable="true" type="tns:ArrayOfCarePlanSummary" />
+  <xs:complexType name="CarePlanSummary">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CarePlanComponentGUID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="CarePlanID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanProtocol" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarePlanProtocolID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="EndDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Friday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Monday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PatientDefault" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="RecurrenceType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="RecurrenceTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="Reminder" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Saturday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="StartDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="Sunday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Thursday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Tuesday" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Wednesday" nillable="true" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="CarePlanSummary" nillable="true" type="tns:CarePlanSummary" />
+  <xs:complexType name="ArrayOfClinician.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Clinician.FilterCondition" nillable="true" type="tns:Clinician.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClinician.FilterCondition" nillable="true" type="tns:ArrayOfClinician.FilterCondition" />
+  <xs:complexType name="Clinician.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="Clinician.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:Clinician.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Clinician.FilterCondition" nillable="true" type="tns:Clinician.FilterCondition" />
+  <xs:simpleType name="Clinician.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="InternalUserID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Clinician.Filter" nillable="true" type="tns:Clinician.Filter" />
+  <xs:complexType name="ArrayOfClinician">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Clinician" nillable="true" type="tns:Clinician" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClinician" nillable="true" type="tns:ArrayOfClinician" />
+  <xs:complexType name="Clinician">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Address1" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Address3" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="BirthDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Culture" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CultureID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email1" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email3" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ExternalUserID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Gender" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="HcmsUserName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="InternalUserID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MiddleInitial" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PhoneNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Pin" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PinEntryRequired" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PostalCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="TimeZone" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TimeZoneID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="UserRole" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserRoleID" nillable="true" type="xs:short" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Clinician" nillable="true" type="tns:Clinician" />
+  <xs:complexType name="ArrayOfEventLog.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="EventLog.FilterCondition" nillable="true" type="tns:EventLog.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfEventLog.FilterCondition" nillable="true" type="tns:ArrayOfEventLog.FilterCondition" />
+  <xs:complexType name="EventLog.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="EventLog.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:EventLog.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="EventLog.FilterCondition" nillable="true" type="tns:EventLog.FilterCondition" />
+  <xs:simpleType name="EventLog.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="ClinicianInternalID" />
+      <xs:enumeration value="EventDate" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EventLog.Filter" nillable="true" type="tns:EventLog.Filter" />
+  <xs:complexType name="ArrayOfEventLog">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="EventLog" nillable="true" type="tns:EventLog" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfEventLog" nillable="true" type="tns:ArrayOfEventLog" />
+  <xs:complexType name="EventLog">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ClinicianExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ClinicianInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="EventDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="EventName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="EventTrackID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="EventTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="EventLog" nillable="true" type="tns:EventLog" />
+  <xs:complexType name="ArrayOfMachineInventory.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MachineInventory.FilterCondition" nillable="true" type="tns:MachineInventory.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMachineInventory.FilterCondition" nillable="true" type="tns:ArrayOfMachineInventory.FilterCondition" />
+  <xs:complexType name="MachineInventory.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="MachineInventory.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:MachineInventory.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MachineInventory.FilterCondition" nillable="true" type="tns:MachineInventory.FilterCondition" />
+  <xs:simpleType name="MachineInventory.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="MachineInventory.Filter" nillable="true" type="tns:MachineInventory.Filter" />
+  <xs:complexType name="ArrayOfMachineInventory">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MachineInventory" nillable="true" type="tns:MachineInventory" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMachineInventory" nillable="true" type="tns:ArrayOfMachineInventory" />
+  <xs:complexType name="MachineInventory">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="LatestSyncDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="MachineID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="MachineName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MachineStatus" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MachineStatusID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="SerialNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SoftwareVersion" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MachineInventory" nillable="true" type="tns:MachineInventory" />
+  <xs:complexType name="ArrayOfMasterCarePlan.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MasterCarePlan.FilterCondition" nillable="true" type="tns:MasterCarePlan.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMasterCarePlan.FilterCondition" nillable="true" type="tns:ArrayOfMasterCarePlan.FilterCondition" />
+  <xs:complexType name="MasterCarePlan.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="MasterCarePlan.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:MasterCarePlan.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MasterCarePlan.FilterCondition" nillable="true" type="tns:MasterCarePlan.FilterCondition" />
+  <xs:simpleType name="MasterCarePlan.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="MasterCarePlan.Filter" nillable="true" type="tns:MasterCarePlan.Filter" />
+  <xs:complexType name="ArrayOfMasterCarePlan">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MasterCarePlan" nillable="true" type="tns:MasterCarePlan" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMasterCarePlan" nillable="true" type="tns:ArrayOfMasterCarePlan" />
+  <xs:complexType name="MasterCarePlan">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AnswerSetID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanComponentID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanParentStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanProtocol" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CarePlanProtocolID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="CarePlanProtocolStep" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="CarePlanTask" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ComponentGUID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ParentComponentID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="Points" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="TaskType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TaskTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="ThresholdViolation" nillable="true" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MasterCarePlan" nillable="true" type="tns:MasterCarePlan" />
+  <xs:complexType name="ArrayOfMeasurement.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Measurement.FilterCondition" nillable="true" type="tns:Measurement.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurement.FilterCondition" nillable="true" type="tns:ArrayOfMeasurement.FilterCondition" />
+  <xs:complexType name="Measurement.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="Measurement.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:Measurement.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Measurement.FilterCondition" nillable="true" type="tns:Measurement.FilterCondition" />
+  <xs:simpleType name="Measurement.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateSubmitted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Measurement.Filter" nillable="true" type="tns:Measurement.Filter" />
+  <xs:complexType name="ArrayOfMeasurement">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Measurement" nillable="true" type="tns:Measurement" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurement" nillable="true" type="tns:ArrayOfMeasurement" />
+  <xs:complexType name="Measurement">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CapturedTime" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="CarePlanComponentGUID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateSubmitted" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DecimalPlaces" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="DeviceName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="IsManualEntry" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="IsThresholdViolation" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="MeasurementFieldTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="MeasurementFieldTypeName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MeasurementID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PeripheralTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="PeripheralTypeName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ResultID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="SessionID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ThresholdHigh" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="ThresholdLow" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="Units" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Value" nillable="true" type="xs:decimal" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Measurement" nillable="true" type="tns:Measurement" />
+  <xs:complexType name="ArrayOfNotification.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Notification.FilterCondition" nillable="true" type="tns:Notification.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotification.FilterCondition" nillable="true" type="tns:ArrayOfNotification.FilterCondition" />
+  <xs:complexType name="Notification.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="Notification.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:Notification.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Notification.FilterCondition" nillable="true" type="tns:Notification.FilterCondition" />
+  <xs:simpleType name="Notification.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Notification.Filter" nillable="true" type="tns:Notification.Filter" />
+  <xs:complexType name="ArrayOfNotification">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Notification" nillable="true" type="tns:Notification" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotification" nillable="true" type="tns:ArrayOfNotification" />
+  <xs:complexType name="Notification">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NotificationID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Notification" nillable="true" type="tns:Notification" />
+  <xs:complexType name="ArrayOfPatient.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Patient.FilterCondition" nillable="true" type="tns:Patient.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatient.FilterCondition" nillable="true" type="tns:ArrayOfPatient.FilterCondition" />
+  <xs:complexType name="Patient.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="Patient.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:Patient.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Patient.FilterCondition" nillable="true" type="tns:Patient.FilterCondition" />
+  <xs:simpleType name="Patient.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="InternalUserID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Patient.Filter" nillable="true" type="tns:Patient.Filter" />
+  <xs:complexType name="ArrayOfPatient">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Patient" nillable="true" type="tns:Patient" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatient" nillable="true" type="tns:ArrayOfPatient" />
+  <xs:complexType name="Patient">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Address1" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Address2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Address3" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="BirthDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Culture" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="CultureID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email1" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email2" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Email3" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ExternalUserID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Gender" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="HcmsUserName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="InternalUserID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MiddleInitial" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PhoneNumber" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Pin" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PinEntryRequired" nillable="true" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PostalCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="TimeZone" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TimeZoneID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="UserRole" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserRoleID" nillable="true" type="xs:short" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Patient" nillable="true" type="tns:Patient" />
+  <xs:complexType name="ArrayOfPatientClinician.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientClinician.FilterCondition" nillable="true" type="tns:PatientClinician.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientClinician.FilterCondition" nillable="true" type="tns:ArrayOfPatientClinician.FilterCondition" />
+  <xs:complexType name="PatientClinician.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="PatientClinician.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:PatientClinician.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PatientClinician.FilterCondition" nillable="true" type="tns:PatientClinician.FilterCondition" />
+  <xs:simpleType name="PatientClinician.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="ClinicianInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="PatientClinician.Filter" nillable="true" type="tns:PatientClinician.Filter" />
+  <xs:complexType name="ArrayOfPatientClinician">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientClinician" nillable="true" type="tns:PatientClinician" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientClinician" nillable="true" type="tns:ArrayOfPatientClinician" />
+  <xs:complexType name="PatientClinician">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ClinicianExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ClinicianInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PCAssignID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PatientClinician" nillable="true" type="tns:PatientClinician" />
+  <xs:complexType name="ArrayOfPatientMachine.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientMachine.FilterCondition" nillable="true" type="tns:PatientMachine.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientMachine.FilterCondition" nillable="true" type="tns:ArrayOfPatientMachine.FilterCondition" />
+  <xs:complexType name="PatientMachine.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="PatientMachine.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:PatientMachine.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PatientMachine.FilterCondition" nillable="true" type="tns:PatientMachine.FilterCondition" />
+  <xs:simpleType name="PatientMachine.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="PatientMachine.Filter" nillable="true" type="tns:PatientMachine.Filter" />
+  <xs:complexType name="ArrayOfPatientMachine">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientMachine" nillable="true" type="tns:PatientMachine" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientMachine" nillable="true" type="tns:ArrayOfPatientMachine" />
+  <xs:complexType name="PatientMachine">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MachineID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PMAssignID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PatientMachine" nillable="true" type="tns:PatientMachine" />
+  <xs:complexType name="ArrayOfPatientSession.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientSession.FilterCondition" nillable="true" type="tns:PatientSession.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientSession.FilterCondition" nillable="true" type="tns:ArrayOfPatientSession.FilterCondition" />
+  <xs:complexType name="PatientSession.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="PatientSession.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:PatientSession.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PatientSession.FilterCondition" nillable="true" type="tns:PatientSession.FilterCondition" />
+  <xs:simpleType name="PatientSession.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="DateSubmitted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="PatientSession.Filter" nillable="true" type="tns:PatientSession.Filter" />
+  <xs:complexType name="PatientSession">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BeginTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CarePlanID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="Clinician" nillable="true" type="tns:Clinician" />
+      <xs:element minOccurs="0" name="CustomerID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CustomerName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EndTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="IsDefaultSession" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsNewSession" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Measurements" nillable="true" type="tns:ArrayOfMeasurement" />
+      <xs:element minOccurs="0" name="Patient" nillable="true" type="tns:Patient" />
+      <xs:element minOccurs="0" name="PatientThresholds" nillable="true" type="tns:ArrayOfThreshold" />
+      <xs:element minOccurs="0" name="ProtocolsPerformed" nillable="true" type="tns:ArrayOfProtocolPerformed" />
+      <xs:element minOccurs="0" name="ReminderText" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SessionID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubmittedTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="UtcOffset" nillable="true" type="ser:duration" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PatientSession" nillable="true" type="tns:PatientSession" />
+  <xs:complexType name="ArrayOfThreshold">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Threshold" nillable="true" type="tns:Threshold" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfThreshold" nillable="true" type="tns:ArrayOfThreshold" />
+  <xs:complexType name="Threshold">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DateModified" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DecimalPlaces" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="High" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="Low" nillable="true" type="xs:decimal" />
+          <xs:element minOccurs="0" name="MeasurementFieldTypeID" nillable="true" type="xs:short" />
+          <xs:element minOccurs="0" name="MeasurementFieldTypeName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ThresholdID" nillable="true" type="xs:int" />
+          <xs:element minOccurs="0" name="Units" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Threshold" nillable="true" type="tns:Threshold" />
+  <xs:complexType name="ArrayOfProtocolPerformed">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ProtocolPerformed" nillable="true" type="tns:ProtocolPerformed" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfProtocolPerformed" nillable="true" type="tns:ArrayOfProtocolPerformed" />
+  <xs:complexType name="ProtocolPerformed">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProtocolComponents" nillable="true" type="tns:ArrayOfProtocolComponent" />
+      <xs:element minOccurs="0" name="ProtocolGUID" nillable="true" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProtocolPerformed" nillable="true" type="tns:ProtocolPerformed" />
+  <xs:complexType name="ArrayOfProtocolComponent">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ProtocolComponent" nillable="true" type="tns:ProtocolComponent" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfProtocolComponent" nillable="true" type="tns:ArrayOfProtocolComponent" />
+  <xs:complexType name="ProtocolComponent">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ComponentGUID" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="IsFailedDeviceReading" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsThresholdViolation" nillable="true" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Points" nillable="true" type="xs:short" />
+      <xs:element minOccurs="0" name="ProtocolGUID" nillable="true" type="ser:guid" />
+      <xs:element minOccurs="0" name="ProtocolStep" nillable="true" type="xs:short" />
+      <xs:element minOccurs="0" name="TaskDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TaskType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TaskTypeID" nillable="true" type="xs:short" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProtocolComponent" nillable="true" type="tns:ProtocolComponent" />
+  <xs:complexType name="ArrayOfPatientSession">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientSession" nillable="true" type="tns:PatientSession" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientSession" nillable="true" type="tns:ArrayOfPatientSession" />
+  <xs:complexType name="ArrayOfThreshold.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Threshold.FilterCondition" nillable="true" type="tns:Threshold.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfThreshold.FilterCondition" nillable="true" type="tns:ArrayOfThreshold.FilterCondition" />
+  <xs:complexType name="Threshold.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="Threshold.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:Threshold.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Threshold.FilterCondition" nillable="true" type="tns:Threshold.FilterCondition" />
+  <xs:simpleType name="Threshold.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Threshold.Filter" nillable="true" type="tns:Threshold.Filter" />
+  <xs:complexType name="ArrayOfVideoConference.FilterCondition">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VideoConference.FilterCondition" nillable="true" type="tns:VideoConference.FilterCondition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVideoConference.FilterCondition" nillable="true" type="tns:ArrayOfVideoConference.FilterCondition" />
+  <xs:complexType name="VideoConference.FilterCondition">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="{0}Condition" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="VideoConference.Filter" Namespace="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:BaseFilterCondition">
+        <xs:sequence>
+          <xs:element name="LValue" type="tns:VideoConference.Filter" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VideoConference.FilterCondition" nillable="true" type="tns:VideoConference.FilterCondition" />
+  <xs:simpleType name="VideoConference.Filter">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="PatientInternalID" />
+      <xs:enumeration value="ClinicianInternalID" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="VideoConference.Filter" nillable="true" type="tns:VideoConference.Filter" />
+  <xs:complexType name="ArrayOfVideoConference">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="VideoConference" nillable="true" type="tns:VideoConference" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfVideoConference" nillable="true" type="tns:ArrayOfVideoConference" />
+  <xs:complexType name="VideoConference">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:AbstractFileExtract">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ClinicianExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ClinicianInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DataSource" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Duration" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="EndDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="PatientInternalID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StartDate" nillable="true" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="VCSessionID" nillable="true" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VideoConference" nillable="true" type="tns:VideoConference" />
+</xs:schema>
