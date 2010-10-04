@@ -1,6 +1,6 @@
 from casetracker import constants
 from casetracker.registry import registry
-from casetracker.registry import CategoryBridge, StatusBridge, ActivityBridge
+from casetracker.registry import CategoryHandler, StatusBridge, ActivityBridge
 from casetracker.models import Category, ActivityClass, Status
 
 
@@ -11,7 +11,7 @@ CATEGORY_SLUG = 'system'
 CATGEGORY_DISPLAY = 'System'
 CATEGORY_PLURAL = 'system messages'
 
-class SystemCategory(CategoryBridge):    
+class SystemCategory(CategoryHandler):
     slug = CATEGORY_SLUG
     display = CATGEGORY_DISPLAY    
     plural = CATEGORY_PLURAL

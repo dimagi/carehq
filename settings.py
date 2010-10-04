@@ -108,9 +108,6 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
     
     #section ashand apps
-    #'casetracker',
-    'provider',
-    #'patient',
     'ashandapp',
     'careplan',
     #end ashand apps

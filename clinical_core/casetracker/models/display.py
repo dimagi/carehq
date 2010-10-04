@@ -1,14 +1,7 @@
 from django.db import models
-
 from django.utils.translation import ugettext_lazy as _
-import uuid
-
 from casecore import Filter
-
-def make_uuid():
-    return uuid.uuid1().hex
-
-
+from clincore.utils import make_uuid
 
 
 class GridColumn(models.Model):

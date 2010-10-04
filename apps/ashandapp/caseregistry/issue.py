@@ -1,6 +1,6 @@
 from casetracker import constants
 from casetracker.registry import registry
-from casetracker.registry import CategoryBridge, StatusBridge, ActivityBridge
+from casetracker.registry import CategoryHandler, StatusBridge, ActivityBridge
 from casetracker.models import Category, ActivityClass, Status
 
 from ashandapp.caseregistry import ashand_case_context, get_careteam_assignment_choices
@@ -12,7 +12,7 @@ CATEGORY_SLUG = 'ashand-issue'
 CATEGORY_DISPLAY = 'Issue'
 CATEGORY_PLURAL = 'issues'
 
-class IssueCategory(CategoryBridge):    
+class IssueCategory(CategoryHandler):
     slug = CATEGORY_SLUG
     display = CATEGORY_DISPLAY    
     plural = CATEGORY_PLURAL

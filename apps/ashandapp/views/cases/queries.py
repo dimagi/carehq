@@ -1,30 +1,18 @@
-import logging
-from datetime import datetime
-
-from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.http import HttpResponse
 from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
-from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.template import Context, loader
 
 from casetracker.models import Case, Filter, CaseEvent
-from ashandapp.models import CareTeam, ProviderLink
-from provider.models import Provider
 from patient.models import Patient
 from careplan.models import CarePlan, CarePlanItem
 
 from ashandapp.templatetags.filter_tags import render_case_column
-from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member
-from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship,CareTeamCaseLink
-from django.db import connection
+from ashandapp.decorators import provider_only
+from ashandapp.models import CareTeam, ProviderLink, CaregiverLink, CareTeamCaseLink
+
 
 from casetracker import constants
 import json 

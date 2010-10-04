@@ -3,7 +3,6 @@ SYSTEM_USERNAME='ASHand-System'
 
 
 #constants for model Status
-
 #CASE_STATE_NEW = 'state-new' # a state-new case is one that is brand new and unassigned, needing triageing.
 CASE_STATE_OPEN = 'state-open'
 CASE_STATE_RESOLVED = 'state-resolved'

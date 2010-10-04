@@ -3,13 +3,9 @@
 
 from datetime import datetime, timedelta
 from django import forms
-from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category
-from ashandapp.models import CareTeam
-from django.contrib.auth.models import User
-from django.forms.util import ErrorList, ValidationError
+from casetracker.models import Case, Priority, Status, Category
 from datetime import datetime
 from django.forms import widgets
-
 from casetracker import constants 
 from ashandapp.forms import CareTeamCaseFormBase
 

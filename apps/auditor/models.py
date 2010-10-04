@@ -1,18 +1,11 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-import uuid
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
-from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.sessions.models import Session
 from tracking.models import Visitor
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from clincore.utils import make_uuid, make_time
 
-def make_uuid():
-    return uuid.uuid1().hex
-def getdate():
-    return datetime.utcnow()
 
 class DeepTracking(models.Model):
     """
@@ -27,7 +20,7 @@ class AuditEvent(models.Model):
     content_object = generic.GenericForeignKey('object_type', 'object_uuid')
     
     user = models.ForeignKey(User)
-    accessed = models.DateTimeField(default = getdate())
+    accessed = models.DateTimeField(default=make_time)
     
 class FieldAccess(models.Model):
     object_type = models.ForeignKey(ContentType, verbose_name='Case linking content type', blank=True, null=True)
@@ -47,7 +40,6 @@ class ModelAccessLog(models.Model):
     property_data = models.TextField() #json of the actual fields accessed
     
     user = models.ForeignKey(User)
-    accessed = models.DateTimeField(default = getdate())
+    accessed = models.DateTimeField(default = make_time)
 
 
-import signals

@@ -15,7 +15,6 @@ import uuid
 #from django_digest.decorators import *
 
 from ashandapp.forms.provider_register import  NewProviderForm
-from provider.models import Provider
 
 less_static_response = """
 <restoredata>

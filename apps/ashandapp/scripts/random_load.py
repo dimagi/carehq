@@ -1,21 +1,13 @@
-from datetime import datetime, timedelta, date
-import hashlib
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 import random
-import uuid
-
-
-from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
-
+from casetracker.models import Case, Status, Priority, Category
 from provider.models import Provider
-from patient.models import Patient, IdentifierType, PatientIdentifier
-from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
-from django.core.management import call_command
+from ashandapp.models import CareTeam,ProviderLink, CaregiverLink, CareRelationship
 from staticdata.demo_providers import provider_arr
 from casetracker import constants
 from loader import assign_interactions, add_long_cases
-from factory import create_provider, create_or_get_provider_role, create_patient, create_caregiver, set_random_identifiers
-
+from factory import create_provider, create_or_get_provider_role, create_patient, create_caregiver
 
 from staticdata.patient_caregiver_pairs import care_pair_arr
 from staticdata.demo_questions import question_arr
@@ -123,17 +115,12 @@ def create_case(user, all_users, case_no):
     newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
     
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-    newcase.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
-    
+
     if newcase.category.slug == "Question":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]
     elif newcase.category.slug == "Issue":
         newcase.description = question_arr[random.randint(0,len(question_arr))-1]
-    
-    #newcase.description = "test case generated - %d" % case_no    
-    td = timedelta(days=random.randint(0,MAX_DELTA))
-    newcase.next_action_date = datetime.utcnow() + td
-    
+
     newcase.save()
     return newcase
 
@@ -172,9 +159,7 @@ def create_case(user, all_users, case_no):
 #    #case.next_action = CaseAction.objects.all()[random.randint(0, CaseAction.objects.all().count() -1)]
 #    #td = timedelta(days=random.randint(0,MAX_DELTA))    
 #    #case.next_action_date = case.next_action_date + td    
-#    case.save()        
-
-from django.db import transaction
+#    case.save()
 
 
 

@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-import uuid
 from casetracker.models import Case
 from patient.models import Patient
 from datetime import datetime
@@ -9,12 +8,7 @@ from django.core.urlresolvers import reverse
 
 
 # Create your models here.
-
-def make_uuid():
-    return uuid.uuid1().hex
-
-def make_time():
-    return datetime.utcnow()
+from clincore.utils import make_uuid, make_time
 
 class PlanCategory(models.Model):
     """

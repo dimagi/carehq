@@ -1,13 +1,7 @@
 from django import template
-from django.core.urlresolvers import reverse
-from django.template.loader import render_to_string
-from django.contrib.auth.models import User
-from django.template import Context, Template
 
-from casetracker.models import Case
-from casetracker.models import ActivityClass, CaseEvent, Status, CaseAction, Category
-from ashandapp.models import CareTeamCaseLink, CareTeam
-from datetime import datetime
+from ashandapp.models import  CareTeam
+
 register = template.Library()
 
 

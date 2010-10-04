@@ -1,14 +1,9 @@
 from itertools import chain
 
-import logging
 from django.db import models
 
 from django.db.models import Q
 from clinical_core.actors.models import Actor
-
-
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 
 from datetime import datetime, timedelta
 from casetracker.middleware import threadlocals
@@ -20,21 +15,17 @@ from casetracker import constants
 from clinical_core.patient.models import Patient
 
 from casetracker.managers import CaseManager
-
-import uuid
-
-def make_uuid():
-    return uuid.uuid1().hex
+from clincore.utils import make_uuid
 
 
 CASE_EVENT_CHOICES = (
-        (constants.CASE_EVENT_OPEN, 'Open/Create'), #case statust state
+        (constants.CASE_EVENT_OPEN, 'Open/Create'), #case state
         (constants.CASE_EVENT_VIEW, 'View'),
         (constants.CASE_EVENT_EDIT, 'Edit'),
-        (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous                
+        (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous
         (constants.CASE_EVENT_REOPEN, 'Reopen'), #case state
         (constants.CASE_EVENT_COMMENT, 'Comment'),
-        (constants.CASE_EVENT_CUSTOM, 'Custom'), #custom are activites that don't resolve around the basic open/edit/view/resolve/close        
+        (constants.CASE_EVENT_CUSTOM, 'Custom'), #custom are activities that don't resolve around the basic open/edit/view/resolve/close
         (constants.CASE_EVENT_RESOLVE, 'Resolve'), #case status state
         (constants.CASE_EVENT_CLOSE, 'Close'), #case status state
     )
@@ -44,7 +35,7 @@ CASE_EVENT_CHOICES = (
 
 
 CASE_STATES = (
-        (constants.CASE_STATE_OPEN, 'Open/Active'),
+        (constants.CASE_STATE_OPEN, 'Open'),
         (constants.CASE_STATE_RESOLVED, 'Resolved'),
         (constants.CASE_STATE_CLOSED, 'Closed'),
 )
@@ -73,86 +64,45 @@ class Category(models.Model):
     
     All cases must embody a certain category.
     
-    A category then is the bridge between the existence of a case in the database and how it is handled between the database
+    A category then is the handler between the existence of a case in the database and how it is handled between the database
     and other types within pythonland.
     
     So, in ashand, you define different cases as different classes of "case-able" information.
     So, a case can be an issue, question, or alerts from some therapeutic monitor or scheduling - the list goes on.
     
     To keep the purity of the casetracker app, other models that wish to add itself to the casetracker.
-    
-    Simple setups will be:
-    Question
-    Issue    
-    
-    Schedule Item    
-        Appointment
-        Order
-        Prescription    
     """
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    slug = models.SlugField(unique=True) #from category
-    display = models.CharField(max_length=64)
-    plural = models.CharField(max_length=32)    
-    default_status = models.ForeignKey("Status", blank=True, null=True, related_name="Default Status") #this circular is nullable in FB
-    
-    bridge_module = models.CharField(max_length=128, blank=True, null=True,
-                                      help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
-    
-    bridge_class = models.CharField(max_length=64, blank=True, null=True,
-                                     help_text=_('This is the actual class name of the subclass of CategoryBridge you want to handle this category of case.'))
-    
-    
+    slug = models.SlugField(unique=True, help_text = "The unique, internal represntation of the category, for the in memory registry") #Unique slug name of category for the in memory registry
+    display = models.CharField(max_length=64, help_text="The display name of the category - what will be printed")
+    description = models.CharField(max_length=255, help_text = "A longer description of the case category")
+
+
     @property
-    def bridge(self): #from handler
+    def read_template(self):
+        #get the template from the CategoryHandler registry
+        pass
+
+    @property
+    def read_context(self):
+        #get the context from the CategoryHandler registry
+        pass
+
+    @property
+    def handler(self): #from handler
         """
         Returns the class instance of the category category
         """
-        #nasty hack here, but due to prevent circular refernces, we need to make sure it's not referenced until necessary
-        from casetracker.registry import CategoryBridge, ActivityBridge
-        handler = None
-        if not hasattr(self, '_bridge'):            
-            if self.bridge_module == None or self.bridge_class == None:
-                raise Exception("Error, invalid configuration, this category has no bridge class defined")
-            else:                            
-                try:
-                    hmod = __import__(self.bridge_module, {}, {}, [''])                    
-                    if hasattr(hmod, self.bridge_class):
-                        hclass = getattr(hmod, self.bridge_class)
-                        if issubclass(hclass, CategoryBridge):
-                            handler = hclass()                                                                 
-                except Exception, e:
-                    logging.error("Unable to import the handler class for category %s: %s" % (self.category, e))
-                
-                if handler == None:
-                    raise Exception("Error, invalid configuration, this category has no bridge class defined")
-            self._bridge = handler        
-        return self._bridge
-        
-        
+        #pull from the in memory cache
+        pass
+
     
     def __unicode__(self):
         return "%s" % (self.slug)
     class Meta:
         verbose_name = "Category Type"
         verbose_name_plural = "Category Types"
-        ordering = ['display']
-
-
-
-
-class StatusActivities(models.Model):
-    """
-    ManyToMany linkage of Status and the activities that are allowable from that case state.
-    
-    Hopefully with this through model being here, more enforcement and/model define-able state information
-    can be recorded and be database  
-    """    
-    status = models.ForeignKey("Status", related_name='legal_activities_list')
-    legal_activity = models.ForeignKey("ActivityClass", related_name="legal_for_status")
-    
-    class Meta:
-        unique_together = ('status', 'legal_activity')
+        ordering = ['display']O
 
 class Status (models.Model):
     """
@@ -163,38 +113,7 @@ class Status (models.Model):
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     slug = models.SlugField(unique=True)
     display = models.CharField(max_length=64) #from description
-    
-    category = models.ForeignKey(Category, related_name='category_states')
     state_class = models.TextField(max_length=24, choices=CASE_STATES)
-    
-
-    ##this should have a limit choices to for self.category, but that's a nasty hack.
-    #allowable_actions = models.ManyToManyField("ActivityClass", through="StatusActivityLink", related_name='legal_action_for_states')
-    @property
-    def allowable_actions(self):
-        if not hasattr(self, '_allowable_actions'):            
-            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
-            self._allowable_actions = ActivityClass.objects.select_related().filter(id__in=legal_activities)
-        return self._allowable_actions
-    
-    @property
-    def transitional_actions(self):
-        """
-        These are a subset of the cases that actually are stateful changing actions
-        """
-        if not hasattr(self, '_transitional_actions'):            
-            legal_activities = StatusActivities.objects.select_related().filter(status=self).values_list('legal_activity', flat=True)
-            self._transitional_actions = ActivityClass.objects.select_related().filter(id__in=legal_activities).exclude(event_class=constants.CASE_EVENT_COMMENT)
-        return self._transitional_actions
-
-    
-    def set_activity(self, event_activity):
-        try:
-            slink = StatusActivities(status=self, legal_activity=event_activity)
-            slink.save()
-        except Exception, e:
-            raise Exception("Error, an event activity can only be registered once to a given state" + str(e))
-    
     
     #query filters can be implemented a la kwarg evaluation:
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419        
@@ -203,37 +122,13 @@ class Status (models.Model):
     #in other words they should still fall within the 4 main  classifiers of status:
     #resolved, duplicate, deleted, done?
     def __unicode__(self):
-        return "%s: %s" % (self.category.slug, self.display)
+        return "Status: %s" % (self.display)
 
     class Meta:
         verbose_name = "Case Status Type"
         verbose_name_plural = "Case Status Types"
-        ordering = ['category', 'display']
+        ordering = ['display']
     
-
-
-class CaseAction(models.Model):
-    """
-    A case action is a descriptor for capturing the types of actions you can actuate upon a case.
-    These are linked to a case to describe the desired NEXT action to take upon a case.
-    
-    In this case, we want to be able to capture the differing types of 'todo for next time' actions you 
-    can assign to a case.
-    
-    The main desired actions are
-    Follow up w/ subject: A date bound action that says I should follow up with the patient
-    To Resolve: A date bound action that says I should finish said case by the next_action_date - which effectively becomes a due date.
-    
-    These should be universal across all categories.
-    """
-    description = models.CharField(max_length=64)
-    def __unicode__(self):
-        return "%s" % (self.description)
-    
-    class Meta:
-        verbose_name = "Case Action Type"
-        verbose_name_plural = "Case Action Types"
-        ordering = ['description']
 
 
 class ActivityClass(models.Model):
@@ -253,11 +148,10 @@ class ActivityClass(models.Model):
     """
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
     slug = models.SlugField(unique=True) #from name
-    past_tense = models.CharField(max_length=64) #from phrasing
-    active_tense = models.CharField(max_length=64) #present as button on case view    
-    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES) # what class of event is it?
-    category = models.ForeignKey(Category, related_name='category_activities') # different categories have different event types    
-    summary = models.CharField(max_length=255)    
+    past_tense = models.CharField(max_length=64, help_text = "The past tense description of this activity") #from phrasing
+    active_tense = models.CharField(max_length=64, help_text = "The active tense of this activity - this text will be displayed as a button in the case view.") #present as button on case view
+    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES, help_text = "The primitive class of this event.") # what class of event is it?
+    summary = models.CharField(max_length=255)
 
     ######################
     #target_status is currently unused (3/17/2010), however there may come a time for events to be totally manage
@@ -265,48 +159,15 @@ class ActivityClass(models.Model):
     target_status = models.ForeignKey("Status", blank=True, null=True,
                                       help_text=_("This event activity may alter the case's status.  If it does, it must exist here.",
                                     related_name="set_by_activities"))
-    
 
     
-    bridge_module = models.CharField(max_length=128, blank=True, null=True,
-                                      help_text=_("This is the fully qualified name of the module that implements the MVC framework for case lifecycle management."))
-    
-    bridge_class = models.CharField(max_length=64, blank=True, null=True,
-                                     help_text=_('This is the actual class name of the subclass of the CategoryHandler you want to handle this category of case.'))
-  
-    
     def __unicode__(self):
-        return "(%s) [%s] Activity" % (self.category, self.slug)
+        return "[%s] Activity" % (self.slug)
 
     class Meta:
         verbose_name = "Case Event Activity Type"
         verbose_name_plural = "Case Event Activity Types"        
-        ordering=['category','event_class', 'slug']
-   
-    @property
-    def bridge(self): #from handler
-        """
-        Returns the class instance of the category CategoryHandler.  If none is defined, return the DefaultCategoryHandler
-        """
-        handler = None
-        from casetracker.caseregistry import ActivityBridge
-        if not hasattr(self, '_bridge'):
-            if self.bridge_module == None or self.bridge_class == None:
-                raise Exception("Error, invalid configuration, this category has no bridge class defined")
-            else:                            
-                try:
-                    hmod = __import__(self.bridge_module, {}, {}, [''])
-                    if hasattr(hmod, self.bridge_class):
-                        hclass = getattr(hmod, self.bridge_class)
-                        if issubclass(hclass, ActivityBridge):
-                            handler = hclass()                                                                 
-                except Exception, e:
-                    logging.error("Unable to import the handler class for category %s: %s" % (self.category, e))
-                
-                if handler == None:
-                    raise Exception("Error, invalid configuration, this category has no bridge class defined")
-            self._bridge = handler        
-        return self._bridge
+        ordering=['event_class', 'slug']
 
 
 class CaseEvent(models.Model):
@@ -390,7 +251,9 @@ class Case(models.Model):
     resolved_by = models.ForeignKey(Actor, related_name="case_resolved_by", null=True, blank=True)
         
     closed_date = models.DateTimeField(null=True, blank=True)
-    closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)    
+    closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
+
+    due_date = models.DateTimeField(null=True, blank=True)
     
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
@@ -769,12 +632,3 @@ class Filter(models.Model):
         if not hasattr(self, '_gridpreference'):
             self._gridpreference = self.gridpreference
         return self._gridpreference
-
-
-    
-
-
-
-
-
-

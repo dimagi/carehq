@@ -3,16 +3,11 @@
 from datetime import datetime, timedelta
 from django import forms
 from django.forms import widgets
-from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category
-from ashandapp.models import CareTeam
-from django.contrib.auth.models import User
-from django.forms.util import ErrorList, ValidationError
+from casetracker.models import Case, Priority, Status, Category
 from datetime import datetime
 
 from ashandapp.forms import CareTeamCaseFormBase
 from casetracker import constants
-
-from ashandapp.caseregistry.question import CATEGORY_SLUG
 
 class NewQuestionForm(CareTeamCaseFormBase):
     """Initial creation of an question case will be governed by this form"""

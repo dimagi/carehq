@@ -190,11 +190,9 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
             activity = ActivityClass.objects.get(slug=value)
     context['case'] = thecase
    
-    template_name = thecase.category.bridge.read_template(request, context)    
-    context = thecase.category.bridge.read_context(thecase,request, context)
+    template_name = thecase.category.handler.read_template(request, context)
+    context = thecase.category.handler.read_context(thecase,request, context)
 
-    if thecase.status.allowable_actions.filter(event_class=constants.CASE_EVENT_COMMENT).count() > 0:
-        context['can_comment'] = True
     ########################
     # Inline Form display
     if activity:                

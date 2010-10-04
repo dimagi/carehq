@@ -1,18 +1,12 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-import uuid
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
-from reversion.admin import VersionAdmin
+from datetime import datetime
 
 import settings
 import logging
+from clincore.utils import make_uuid, make_time
 
-def make_time():
-    return datetime.utcnow()
-
-def make_uuid():
-    return uuid.uuid1().hex
 
 if hasattr(settings, "PATIENT_DOCUMENT_MODEL"):
     #import said document model and make sure it works

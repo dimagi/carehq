@@ -5,27 +5,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from casetracker.models import Case, Filter
 from patient.models import Patient
-from provider.models import Provider
-import datetime
-import uuid
+
+
 from django.core.urlresolvers import reverse
 from casetracker import constants
-
-def make_uuid():
-    return uuid.uuid1().hex
+from clincore.utils import make_uuid
 
 
 GENDER_CHOICES = ( ('F', _('Female')), ('M', _('Male')),)
-# Create your models here.
-#class AshandProfile(BaseProfile):
-#    firstname = models.CharField(max_length=255, blank=True)
-#    middlename = models.CharField(max_length=255, blank=True)
-#    surname = models.CharField(max_length=255, blank=True)
-#    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
-#    birthdate = models.DateField(default=datetime.date.today(), blank=True)    
-#    about = models.TextField(blank=True)
 
-#providers are individual entities set as "profiles" from the django user
 
 class FilterProfile(models.Model):
     """Proof of concept case/filter view stuff for user profile
@@ -62,7 +50,6 @@ class ProviderRole(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.role)
-
 
 
 class ProviderLink(models.Model):
@@ -250,4 +237,3 @@ class CareTeam(models.Model):
     
 #We recognize this is a nasty practice to do an import, but we hate putting signal code
 #at the bottom of models.py even more.
-import signals

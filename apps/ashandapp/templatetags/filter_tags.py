@@ -2,10 +2,8 @@ from django import template
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
-from django.template import Context, Template
 
-from casetracker.models import Case
-from casetracker.models import ActivityClass, CaseEvent, Status, CaseAction, Category
+from casetracker.models import  CaseEvent, Status, Category
 from ashandapp.models import CareTeamCaseLink, CareTeam
 from datetime import datetime
 register = template.Library()
@@ -135,8 +133,6 @@ def render_case_column(case, gridorder, plain_text=True):
         elif isinstance(data, User):
             #print "is a freaking user: "  + str(data)
             datastring = '<a href="%s">%s</a>' % (reverse('ashandapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
-        elif isinstance (data, CaseAction):
-            return data.description
         elif isinstance(data, CaseEvent):
             return data.activity.get_event_class_display()
         elif isinstance(data, Status):

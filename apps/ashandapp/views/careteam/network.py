@@ -2,20 +2,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 import logging
-from django.contrib.auth.models import User
-from casetracker.models import Case, Filter
-from ashandapp.models import CareTeam,ProviderLink
-from provider.models import Provider
-from patient.models import Patient
-
-from django.db.models import Q
-from django.views.decorators.cache import cache_page
-from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
-from casetracker.queries.caseevents import get_latest_event, get_latest_for_cases
-
-from ashandapp.forms.question import NewQuestionForm
-from ashandapp.forms.issue import NewIssueForm
+from ashandapp.models import CareTeam
 
 from ashandapp.decorators import provider_only, caregiver_only, patient_only, is_careteam_member
 

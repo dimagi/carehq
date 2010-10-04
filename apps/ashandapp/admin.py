@@ -3,6 +3,7 @@ from reversion.admin import VersionAdmin
 
 from django.contrib.auth.models import User
 from models import *
+from casetracker.registry import CategoryHandler
 
 
 try:
@@ -60,8 +61,9 @@ class CareRelationshipAdmin(admin.ModelAdmin):
 admin.site.register(CareRelationship, CareRelationshipAdmin)
 
 
-#class AshandProfileAdmin(VersionAdmin):
-#    list_display = ('id','firstname','surname', 'user')
-#    list_filter = []    
 
-#admin.site.register(AshandProfile,AshandProfileAdmin)
+#Load CategoryHandler registry
+for cls in CategoryHandler.__subclasses__():
+    ctype = ContentType.objects.get_for_model(cls)
+    model = ctype.model_class()
+

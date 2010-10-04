@@ -25,14 +25,3 @@ class AshandBridgeTests(TestCase):
         bridge = IssueCategory()        
         catmodel = Category.objects.get(slug=bridge.slug)           
         self.assertEqual(5, Status.objects.filter(category=catmodel).count())        
-        
-    def testVerifyStatusActivity(self):     
-        bridge = IssueCategory()        
-        catmodel = Category.objects.get(slug=bridge.slug)           
-        states = Status.objects.filter(category=catmodel)
-        
-        for status in states:
-            print "verifying states for " + status.slug
-            self.assertNotEqual(0, status.allowable_actions.all().count())
-            for action in status.allowable_actions.all():
-                print "\t\t" + action.slug

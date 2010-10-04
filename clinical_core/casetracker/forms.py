@@ -3,14 +3,7 @@
 
 from django import forms
 from django.forms import widgets
-from casetracker.models import Case, CaseEvent, CaseAction, Priority, Status, Category, ActivityClass
-from ashandapp.models import CareTeam
-from django.contrib.auth.models import User
-from django.forms.util import ErrorList, ValidationError
-from datetime import datetime
-import settings
-from django.contrib.admin import widgets as admwidgets
-from django.utils.safestring import mark_safe
+from casetracker.models import Case, Status
 from casetracker import constants
 
 class CaseCommentForm(forms.Form):    
@@ -132,7 +125,7 @@ class CaseModelForm(forms.ModelForm):
         if self.instance:
             #set all the User FK's to use a different choice system as defined by the Category Bridge class
             #else, it'll default to ALL users in the system.    
-            user_list_choices = self.instance.category.bridge.get_user_list_choices(self.instance)
+            user_list_choices = self.instance.category.handler.get_user_list_choices(self.instance)
             if user_list_choices:
                 if self.fields.has_key('assigned_to'):                
                     self.fields['assigned_to'].choices = user_list_choices

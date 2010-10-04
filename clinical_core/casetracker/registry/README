@@ -1,4 +1,4 @@
-The classes in pybridge are bridge classes that link python to the customizable casetracker classes.
+The classes here are classes that link python to the customizable casetracker classes.
 
 In particular, Category, Status, and EventActivity.
 

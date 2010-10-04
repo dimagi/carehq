@@ -1,23 +1,8 @@
 from datetime import datetime, timedelta, date
 import hashlib
 from django.contrib.auth.models import User
-from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
-
-from provider.models import Provider
-from patient.models import Patient, IdentifierType, PatientIdentifier
-from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
-
-from staticdata.demo_issues import issues_arr
-from staticdata.demo_questions import question_arr
-from staticdata.demo_working import working_arr
-from staticdata.demo_resolve_close import resolve_arr
-
+from casetracker.models import Case, Status, Priority, Category
 import random
-import uuid
-from django.core.management import call_command
-from staticdata.demo_patients import patient_arr
-from staticdata.demo_providers import provider_arr
-
 from casetracker import constants
 
 MAX_DELTA=365
@@ -50,7 +35,6 @@ def create_homemonitoring_alert(num_alerts, careteam):
         newcase.opened_by = User.objects.get(id=2) # the hard coded ashand system messages
         newcase.last_edit_by = User.objects.get(id=2) # the hard coded ashand system messages
         newcase.assigned_to = careteam.primary_provider.user
-        newcase.next_action = CaseAction.objects.get(id=3) #follow up
         newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
         
         td = timedelta(hours=alerts[n][2])

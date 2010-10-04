@@ -7,7 +7,7 @@ from clinical_core.actors.models import Role, Actor, PatientActorLink, TriageNur
 from clinical_core.patient.models import Patient
 import random
 
-from clinical_core.clinical_shared import test_bootstrap as bootstrap
+from clinical_core.clincore import test_bootstrap as bootstrap
     
 MAX_MULTI_PATIENTS = 10
 
@@ -80,10 +80,6 @@ class BasicPermissionsTest(TestCase):
             
             for cgs in cg_subset:
                 for cg in cgs:
-                    #print cg.patients.all()
-                    #print "looping through cg_subset"
-                    #print patient
-                    #print Patient.objects.all()
                     self.assertNotEqual(cg.patients.all()[0], patient)
                     self.assertFalse(Actor.patient_objects.can_view(patient, cg.user))
                 

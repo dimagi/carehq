@@ -1,7 +1,7 @@
 import random
 
 from datetime import datetime, timedelta
-from casetracker.models import Category, Case, CaseAction,Priority, Status, ActivityClass, CaseEvent
+from casetracker.models import Category, Case, Priority, Status, ActivityClass, CaseEvent
 from casetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
@@ -53,8 +53,6 @@ def load_interaction(careteam, interaction_arr):
     newcase.assigned_date = newcase.opened_date 
 
     newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-    #newcase.next_action = CaseAction.objects.all()[2]
-    #newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
     newcase.save(unsafe=True)
     careteam.add_case(newcase)
     

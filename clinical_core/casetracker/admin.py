@@ -1,14 +1,9 @@
 from django.contrib import admin
 from reversion.admin import VersionAdmin
-from django.contrib.auth.models import User
-
-from models import CaseAction, Category, Priority, Status, ActivityClass, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
+from models import Category, Priority, Status, ActivityClass, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
-class CaseActionAdmin(admin.ModelAdmin):
-    list_display=('id', 'description')
-    list_filter = []
-    
+
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -108,7 +103,6 @@ admin.site.register(GridOrder, GridOrderAdmin)
 
 admin.site.register(ActivityClass, EventActivityAdmin)
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(CaseAction, CaseActionAdmin)
 admin.site.register(Priority, PriorityAdmin)
 admin.site.register(Status, StatusAdmin)
 admin.site.register(CaseEvent, CaseEventAdmin)

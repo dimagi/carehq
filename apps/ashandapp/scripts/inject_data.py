@@ -1,26 +1,10 @@
-from datetime import datetime, timedelta, date
-import hashlib
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 import random
-import uuid
-
-
-from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category, CaseAction
-
-from provider.models import Provider
-from patient.models import Patient, IdentifierType, PatientIdentifier
-from ashandapp.models import CareTeam,ProviderRole,ProviderLink, CaregiverLink, CareRelationship
-
-from staticdata.example_interactions import interactions_arr, triage_arr
-
-from django.core.management import call_command
-from staticdata.demo_patients import patient_arr
-from staticdata.demo_providers import provider_arr
-
+from casetracker.models import Case, Status, Priority, Category
+from staticdata.example_interactions import triage_arr
 from casetracker import constants
-
-from factory import create_user, create_provider, create_or_get_provider_role, create_patient, set_random_identifiers
-from loader import load_interaction, assign_interactions, add_long_cases
+from loader import assign_interactions, add_long_cases
 
 def inject_casemonitor(careteam, event_arr):
     """
@@ -68,9 +52,7 @@ def inject_casemonitor(careteam, event_arr):
     if source.lower() == 'home monitor':
         newcase.priority = Priority.objects.all()[0]
     else:
-        newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]    
-    newcase.next_action = CaseAction.objects.all()[2]
-    newcase.next_action_date = newcase.opened_date + timedelta(hours=newcase.priority.id)        
+        newcase.priority = Priority.objects.all()[random.randint(0, Priority.objects.all().count() -1)]
     newcase.save(unsafe=True)
     careteam.add_case(newcase)
 

@@ -7,13 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from casetracker.models import Case, Filter
-from ashandapp.models import CareTeam,ProviderLink
-from provider.models import Provider
-from patient.models import Patient
-from django.db.models import Q
-from django.views.decorators.cache import cache_page
+from ashandapp.models import CareTeam
 
 from ashandapp.decorators import is_careteam_member
 

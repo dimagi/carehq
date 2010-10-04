@@ -9,7 +9,6 @@ from casetracker.models import Filter, Case, CaseEvent, Status, Category, Priori
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from provider.models import Provider
 from patient.models import Patient
 from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship, FilterProfile
 from django.db.models import Q

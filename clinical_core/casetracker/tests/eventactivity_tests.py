@@ -2,8 +2,7 @@ from django.test import TestCase
 from casetracker.models import Category, ActivityClass
 from casetracker.models import CASE_EVENT_CHOICES
 class EventActivityVerificationTest(TestCase):
-    fixtures = ['0-caseaction.json',
-                '1-category.json',
+    fixtures = ['1-category.json',
                 '2-eventactivity.json',
                 '3-priority.json',
                 '4-status.json',
