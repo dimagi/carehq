@@ -1,4 +1,4 @@
-zfrom django import template
+from django import template
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
