@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime
 
 class CaseManager(models.Manager):
-    def new_case(self, category, creator_actor, description, body, priority, status=None, other_data=None, *args, **kwargs):
+    def new_case(self, category, creator_actor, description, body, priority, status=None, activity=None, other_data=None, *args, **kwargs):
         """
         Create a new case of an arbitrary type, with the basic requirements for creating a case.
         Other arguments: commit=True - save the created case to the db immediately.
@@ -15,7 +15,7 @@ class CaseManager(models.Manager):
         
         if status != None:
             newcase.status = status
-        #newcase.status = Status.objects.filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
+        #newcase.status = Status.objects.filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = description
         newcase.body = body
         
@@ -26,8 +26,11 @@ class CaseManager(models.Manager):
         newcase.last_edit_date = newcase.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
         newcase.last_edit_by = newcase.opened_by
         newcase.orig_description = newcase.description        
-        
-        newcase.save()        
+
+#        if activity == None:
+            #activity=ActivityClass.objects.filter()
+
+        newcase.save(activity=activity)
         return newcase
         
     

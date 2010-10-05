@@ -1,6 +1,5 @@
-from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse,Http404
+from django.http import  Http404
 from ashandapp.models import CareTeam
 import logging
 

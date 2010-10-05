@@ -1,10 +1,5 @@
-from django.contrib.auth import authenticate
-
-from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship
 from provider.models import Provider
 from patient.models import Patient
-
-from django.http import HttpResponse
 
 #http://www.djangosnippets.org/snippets/1661/
 #from django.contrib.sessions.middleware import SessionMiddleware 

@@ -20,12 +20,12 @@ MAX_PROVIDERS = 7
 def generate_patient(user=None):
     if IdentifierType.objects.all().count() == 0:
         af(IdentifierType).create(4)
-        
     
     pt = Patient()        
     pt.sex = Patient.GENDER_CHOICES[random.randint(0, 1)][0]    
     pt.dob = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
     pt.notes = "randomly generated"
+
     
     
     #pt = af(Patient, generate_m2m={'address': (1,3)}).create(1)[0]

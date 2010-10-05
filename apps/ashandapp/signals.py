@@ -1,15 +1,3 @@
-from datetime import datetime
-import logging
-
-from django.db.models.signals import post_save, pre_save
-from django.db.models import Q
-from django.contrib.auth.models import User
-
-from models import CareTeam, ProviderLink, CaregiverLink
-from casetracker.models import Case, Category, Priority, Status, ActivityClass
-from casetracker import constants
-
-from ashandapp.caseregistry.system import SystemCategory, SystemEventOpen, SystemEventView, SystemEventClose, SystemStateOpen, SystemStateClosed
 #
 #
 #def make_system_case(user, patient, role, link_object):

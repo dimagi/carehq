@@ -1,10 +1,9 @@
-from django import template
+zfrom django import template
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 
 from casetracker.models import  CaseEvent, Status, Category
-from ashandapp.models import CareTeamCaseLink, CareTeam
 from datetime import datetime
 register = template.Library()
 
@@ -85,9 +84,10 @@ register = template.Library()
 @register.simple_tag
 def render_filter_heading(heading_object):
     #return "Some heading: %s" % heading_object.get_absolute_url()
-    if isinstance(heading_object, CareTeam):
-        return render_to_string('ashandapp/partials/careteam_heading.html', { 'careteam': heading_object })        
-    elif isinstance(heading_object, Category):
+#    if isinstance(heading_object, CareTeam):
+#        return render_to_string('ashandapp/partials/careteam_heading.html', { 'careteam': heading_object })
+
+    if isinstance(heading_object, Category):
         return "<h3>Category: %s</h3>" % heading_object.display
     elif isinstance(heading_object, User):
         return "<h3>By: %s</h3>" % heading_object.get_full_name()
@@ -106,7 +106,7 @@ def render_case_column(case, gridorder, plain_text=True):
     column = gridorder.column.name
     try:
         if column == 'patient':
-            data = CareTeamCaseLink.objects.get(case=case).careteam 
+            data = case.patient
         else:        
             data = getattr(case, column)
                 

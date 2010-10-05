@@ -1,37 +1,14 @@
 import logging
-import hashlib
-import settings
-import traceback
-import sys
-import os
-import uuid
-import string
-from datetime import datetime, timedelta
-
-from django.http import HttpResponse,Http404, HttpResponseRedirect
+from datetime import datetime
+from django.http import  Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
-from django.db import transaction
-from django.db.models.query_utils import Q
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
-from django.contrib.auth.forms import AdminPasswordChangeForm
-from django.contrib.auth.models import User 
-from django.contrib.contenttypes.models import ContentType
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.views.decorators.cache import cache_page
-
 from auditor.decorators import log_access
-
-
-from casetracker.models import Case, CaseEvent, Filter, GridPreference, ActivityClass, Status, Priority, Category
+from casetracker.models import Case, CaseEvent, Filter, ActivityClass
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
-
-#use in sorting
-from casetracker.queries.caseevents import sort_by_person, sort_by_case, sort_by_activity, sort_by_category, get_latest_for_cases
 from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
@@ -290,7 +267,7 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
     
     context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
     context['case'] = thecase        
-    context['custom_activity'] = ActivityClass.objects.filter(category=thecase.category).filter(event_class='event-custom')
+    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
     context['formatting'] = False
     event_arr = context['events']
     event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)

@@ -1,13 +1,3 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
-
-
-from patient.models import Patient
-from django.db.models import Q
-from clincore.utils import make_time, make_uuid
-    
 from roles import *
 
 
@@ -37,7 +27,23 @@ class ActorManager(models.Manager):
         q_user = Q(user=user)                    
         return super(ActorManager, self).get_query_set().filter(q_user, q_caregiver_type)
 
-class ActorPatientManager(models.Manager):
+    def create_actor(self, user, role):
+        """
+        Helper function to create actors
+        """
+        #sanity check to see if it exists already
+        exists_qset = super(ActorManager, self).get_query_set().filter(user=user, role=role)
+        if exists_qset.count() > 0:
+            raise Exception("Error, attempting to create an actor that otherwise already exists")
+        else:
+            instance = self.model(user=user, role=role)
+            instance.save()
+            return instance
+
+
+
+
+class ActorPermissionManager(models.Manager):
     def get_roles(self, patient, user):
         """
         For a given patient, and a given login, this is a challenge to verify that the user has a role.
@@ -46,9 +52,7 @@ class ActorPatientManager(models.Manager):
         ptlinks = PatientActorLink.objects.filter(patient=patient, actor__user=user, active=True)
         #ok, so we have the PatientActorLinks
         roles = ptlinks.values_list('actor__role__id', flat=True)
-        print roles
         return Role.objects.all().filter(id__in=roles)
-
 
     def for_patient(self, patient):
         """
@@ -113,12 +117,25 @@ class Actor(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, related_name='actors') #nullable because the actor need not be a user, could be a background process
     
     objects = ActorManager()
-    patient_objects = ActorPatientManager()
+    permissions = ActorPermissionManager()
+
+    @property
+    def patients(self):
+        """
+        Property that retuns queryset of patients that this actor can view.
+        Was originally a many to many through, but it now needs to be explicitly defined.
+        """
+        link_patient_ids = PatientActorLink.objects.filter(actor=self).values_list('patient__id', flat=True)
+        return Patient.objects.filter(id__in=link_patient_ids)
     
     def __unicode__(self):
         return "Actor [%s] is a %s" % (self.user, self.role)
 
+    def get_full_name(self):
+        return self.user.get_full_name()
+
     class Meta:
+        app_label = 'actors'
         verbose_name = "Actor"
         verbose_name_plural = "Actors"        
         unique_together = ('user', 'role')
@@ -134,13 +151,14 @@ class PatientActorLink(models.Model):
     modified_date = models.DateTimeField(default=make_time)    
     
     class Meta:
+        app_label = 'actors'
         unique_together = ('patient','actor')
     
     def __unicode__(self):
         return "Patient(%s) :: %s" % (self.patient, self.actor)
-#    
-#    
-#    
+
+
+
 ##################
 ##bootstrap code to be run at startup
 #for cls in Role.__subclasses__():             

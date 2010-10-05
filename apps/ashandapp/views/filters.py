@@ -1,23 +1,15 @@
 from datetime import datetime
-import logging
 
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from django.http import HttpResponse
-from casetracker.models import Filter, Case, CaseEvent, Status, Category, Priority
+from casetracker.models import Filter, Status, Category, Priority
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from patient.models import Patient
-from ashandapp.models import CareTeam, ProviderRole, ProviderLink, CaregiverLink, CareRelationship, FilterProfile
+from ashandapp.models import FilterProfile
 from django.db.models import Q
+from patient.models.djangomodels import Patient
 
-
-from ashandapp.forms.question import NewQuestionForm
-from ashandapp.forms.issue import NewIssueForm
-from ashandapp.templatetags.filter_tags import case_column_plain
-from ashandapp.views.cases import queries
 
 def process_filter_change(request):
     """
@@ -32,8 +24,9 @@ def filter_cases_for_user(qset, user):
         return qset
     providers = Provider.objects.filter(user=user)
     patient = user.patient_user.only()
-    careteams = CareTeam.objects.filter( Q(caregivers=user) | Q(providers=providers) | Q(patient=patient) )
-    return qset.filter(careteam=careteams)
+#    careteams = CareTeam.objects.filter( Q(caregivers=user) | Q(providers=providers) | Q(patient=patient) )
+#    return qset.filter(careteam=careteams)
+    raise Exception("filter_cases_for_user, not implementing new actor model yet")
 
 @login_required
 def list_cases(request, template_name="ashandapp/list_cases.html"):
@@ -91,7 +84,7 @@ def list_cases(request, template_name="ashandapp/list_cases.html"):
         model_class = User
         split_headings = True
     elif group_by_col == 'patient':        
-        model_class = CareTeam
+        model_class = Patient
         split_headings = True
     elif group_by_col == 'status':
         model_class = Status

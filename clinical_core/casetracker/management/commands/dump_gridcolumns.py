@@ -10,7 +10,7 @@ from casetracker.models import GridColumn
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (        
+    option_list = BaseCommand.option_list + (
     )
     help = 'Output the filter and preferences in json to STDOUT'
     args = "script [script ...]"
@@ -25,4 +25,4 @@ class Command(BaseCommand):
                 all_data.append(item)
         
         outstring = serializers.serialize(queryset = all_data, format='json',indent=2)
-        print outstring            
+        print outstring

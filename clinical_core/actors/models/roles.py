@@ -30,6 +30,12 @@ class Role(models.Model):
         self.role_uuid = self.id
         super(Role, self).save()
 
+
+    class Meta:
+        app_label = 'actors'
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+        unique_together = ('role_type', 'role_uuid')
     
     @classmethod
     def child_contenttype(cls):
@@ -42,21 +48,50 @@ class Role(models.Model):
 class CHW(Role):
     title = models.CharField(max_length=64)
     specialty = models.CharField(max_length=64)
-    
+
+    class Meta:
+        app_label = 'actors'
+        verbose_name = "Role (CHW)"
+        verbose_name_plural = "Roles (CHW)"
+
     def __unicode__(self):
         return "CHW: %s at %s" % (self.title, self.specialty)
     
 class TriageNurse(Role):
     title = models.CharField(max_length=64)
     department= models.CharField(max_length=64)
-    
+
+    class Meta:
+        app_label = 'actors'
+        verbose_name = "Role (Triage Nurse)"
+        verbose_name_plural = "Roles (Triage Nurse)"
+
     def __unicode__(self):
         return "TriageNurse: %s at %s" % (self.title, self.department)
-    
+
+
+PROVIDER_ROLE_CHOICES = (
+                  ('oncologist', 'Oncologist'),
+                  ('pcp', 'Primary Care Physician'),
+                  ('socialworker', 'Social Worker'),
+                  ('other-doctor', 'Other Doctor'),
+                  ('other-nurse', 'Other Nurse'),
+                  ('nurse', 'Nurse'),
+                  ('nurse-triage', 'Triage Nurse'),
+                  ('lab', 'Laboratory'),
+                  ('other', 'Other'),
+                  )
+
+
 class Doctor(Role):
     title = models.CharField(max_length=64)
     department = models.CharField(max_length=64)
     specialty = models.CharField(max_length=64)
+
+    class Meta:
+        app_label = 'actors'
+        verbose_name = "Role (Doctor)"
+        verbose_name_plural = "Roles (Doctor)"
     
     def __unicode__(self):
         return "Doctor: %s - %s at %s" % (self.title, self.specialty, self.department)
@@ -76,6 +111,11 @@ class Caregiver(Role):
     )
     relationship_type = models.CharField(choices=RELATIONSHIP_CHOICES,max_length=32)
     notes = models.CharField(max_length=512, null=True, blank=True)
+
+    class Meta:
+        app_label = 'actors'
+        verbose_name = "Role (Caregiver)"
+        verbose_name_plural = "Roles (Caregiver)"
 
     def __unicode__(self):
         return "Caregiver: %s" % (self.get_relationship_type_display())

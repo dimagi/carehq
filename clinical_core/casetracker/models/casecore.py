@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from casetracker import constants
-from clinical_core.patient.models import Patient
+from patient.models import Patient
 
 from casetracker.managers import CaseManager
 from clincore.utils import make_uuid
@@ -53,6 +53,7 @@ class Priority(models.Model):
         return "%d" % (self.magnitude)
 
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Priority Type"
         verbose_name_plural = "Priority Types"
         ordering = ['magnitude']
@@ -100,9 +101,10 @@ class Category(models.Model):
     def __unicode__(self):
         return "%s" % (self.slug)
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Category Type"
         verbose_name_plural = "Category Types"
-        ordering = ['display']O
+        ordering = ['display']
 
 class Status (models.Model):
     """
@@ -125,6 +127,7 @@ class Status (models.Model):
         return "Status: %s" % (self.display)
 
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Case Status Type"
         verbose_name_plural = "Case Status Types"
         ordering = ['display']
@@ -165,6 +168,7 @@ class ActivityClass(models.Model):
         return "[%s] Activity" % (self.slug)
 
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Case Event Activity Type"
         verbose_name_plural = "Case Event Activity Types"        
         ordering=['event_class', 'slug']
@@ -207,6 +211,7 @@ class CaseEvent(models.Model):
         return "Event (%s} by %s on %s" % (self.activity.slug, self.created_by.get_full_name(), self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Case Event"
         verbose_name_plural = "Case Events"
         ordering = ['-created_date']
@@ -233,7 +238,7 @@ class Case(models.Model):
     status = models.ForeignKey(Status, verbose_name=_('Status'))    
     
     patient = models.ForeignKey(Patient, blank=True, null=True)
-    
+
     body = models.TextField(blank=True, null=True)    
     
     priority = models.ForeignKey(Priority)    
@@ -409,19 +414,20 @@ class Case(models.Model):
         return '<a href="%s">%s</a>' % (reverse('manage-case', args=[self.id]), self.description)
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Case"
         verbose_name_plural = "Cases"
         ordering = ['-opened_date']
     
-
-class Follow(models.Model):
-    """
-    Simple model for a user to follow a particular case
-    """
-    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
-    is_public = models.BooleanField(default=False)    
-    author = models.ForeignKey(Actor, related_name='messages_authored')    
+#
+#class Follow(models.Model):
+#    """
+#    Simple model for a user to follow a particular case
+#    """
+#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
+#    is_public = models.BooleanField(default=False)
+#    author = models.ForeignKey(Actor, related_name='messages_authored')
     
 
     
@@ -624,6 +630,7 @@ class Filter(models.Model):
         return "Model Filter - %s" % (self.description)
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Model Filter"
         verbose_name_plural = "Model Filters"
         

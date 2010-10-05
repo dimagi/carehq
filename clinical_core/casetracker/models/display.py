@@ -25,6 +25,7 @@ class GridColumn(models.Model):
     attribute = models.CharField(max_length=160, null=True, blank=True)
     
     class Meta:
+        app_label = 'casetracker'
         ordering = ('name',)
         
     def __unicode__(self):
@@ -66,6 +67,7 @@ class GridSort(models.Model):
     
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Grid column sort ordering"
         verbose_name_plural = "Grid column sort order definitions"
         ordering = ['order']
@@ -87,6 +89,7 @@ class GridOrder (models.Model):
     order = models.PositiveIntegerField()
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Grid column display ordering"
         verbose_name_plural = "Grid column display order definitions"
         ordering = ['order']
@@ -108,6 +111,7 @@ class GridPreference(models.Model):
         return "Grid Display Preference: %s" % self.filter.description    
     
     class Meta:
+        app_label = 'casetracker'
         verbose_name = "Filter Grid Display Preference"
         verbose_name_plural = "Filter Grid Display Preferences"
         ordering = ['filter']

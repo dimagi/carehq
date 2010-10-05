@@ -78,7 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',    
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    'ashandapp.middleware.identity.AshandIdentityMiddleware',
+    #'ashandapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
 )
 
@@ -105,36 +105,38 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.admin',
     'couchdbkit.ext.django',
-    
-    #section ashand apps
-    'ashandapp',
-    'careplan',
-    #end ashand apps
-    
+
+    #'ashandapp',
+    #'careplan',
+
+    #####################
     #clinical_core
-    'casetracker',
+    'clinical_core.casetracker',
     'patient',
     'actors',    
     #end clinical_core
     
     
+    #########################
     #third party apps
     'autofixture',
-    'reversion',    
+    'reversion',
+    'django_extensions',
     #'django_digest',
-    #'tinymce',
-    #'debug_toolbar',
-    'django_extensions',    
-    #'johnny', 
-    #'tracking', 
-    #'tracking_ext',
     #end third party apps
     
             
-    'django.contrib.admin',
-    
+
+    ###########################
+    #Apps for production use
     'haystack',
+    #'johnny',
+
+    ####################
+    #Dev helper apps
+    #'debug_toolbar',
     #'gunicorn',
     'devserver',
 )
@@ -184,10 +186,9 @@ AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
                     'casetracker.models.Case',
                     'casetracker.models.CaseEvent',
-                    'ashandapp.models.CareTeam',
                     'provider.models.Provider',
-                    'patient.models.Patient',
-                    'patient.models.PatientIdentifier',                    
+                    #'patient.models.Patient',
+                    #'patient.models.PatientIdentifier',
                     ]
                     
 PATIENT_DOCUMENT_MODEL = 'clinical_core.models.couch.CCareHQPatient'                   

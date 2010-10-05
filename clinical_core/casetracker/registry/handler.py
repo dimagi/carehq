@@ -6,9 +6,10 @@ class CategoryHandler(object):
 
     If your database is empty, it'll populate a Category with the slug and other data below to create your custom category.
     """
+
     category_slug = None
     category_display = None
-    category_plural = None
+    category_description = None
 
     custom_create = False
     custom_read = False

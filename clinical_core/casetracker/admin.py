@@ -3,11 +3,8 @@ from reversion.admin import VersionAdmin
 from models import Category, Priority, Status, ActivityClass, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
-
-
-
 class CategoryAdmin(admin.ModelAdmin):
-    list_display=('slug','display','plural', 'bridge_module', 'bridge_class')
+    list_display=('slug','display','description', )
     list_filter = []
 
 class PriorityAdmin(admin.ModelAdmin):
@@ -15,18 +12,16 @@ class PriorityAdmin(admin.ModelAdmin):
     list_filter = []
     
 class StatusAdmin(admin.ModelAdmin):
-    list_display=('slug', 'display', 'state_class','category')
-    list_filter = ['category', 'state_class']
+    list_display=('slug', 'display', 'state_class')
+    list_filter = ['state_class']
     radio_fields = {
-        "category": admin.VERTICAL,
         'state_class': admin.HORIZONTAL,
     }
     
 class EventActivityAdmin(admin.ModelAdmin):
-    list_display=('slug','past_tense','summary','event_class', 'past_tense', 'active_tense', 'category','bridge_module','bridge_class')
-    list_filter = ['category','event_class']
+    list_display=('slug','past_tense','summary','event_class', 'past_tense', 'active_tense')
+    list_filter = ['event_class']
     radio_fields = {
-        "category": admin.HORIZONTAL,
         'event_class': admin.HORIZONTAL,
     }
 
@@ -108,3 +103,6 @@ admin.site.register(Status, StatusAdmin)
 admin.site.register(CaseEvent, CaseEventAdmin)
 admin.site.register(Case, CaseReversion)
 
+
+
+from registry import *

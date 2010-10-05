@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_save
 from django.db.models import Q
-from models import Case, CaseEvent, ActivityClass
+from casetracker.models import Case, CaseEvent, ActivityClass
 import logging
 from casetracker import constants
 
@@ -23,7 +23,7 @@ def case_saved(sender, instance, created, **kwargs):
         notes = "New case created by " + event_creator.get_full_name()
         
         try:
-            event_new.activity = ActivityClass.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_OPEN)
+            event_new.activity = ActivityClass.objects.get(event_class=constants.CASE_EVENT_OPEN)
         except Exception, ex:
             logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, constants.CASE_EVENT_OPEN, ex))
             
@@ -41,7 +41,7 @@ def case_saved(sender, instance, created, **kwargs):
             event_new.activity = instance.event_activity            
         else:    
             try:
-                event_new.activity = ActivityClass.objects.filter(category=instance.category).get(event_class=constants.CASE_EVENT_EDIT)
+                event_new.activity = ActivityClass.objects.get(event_class=constants.CASE_EVENT_EDIT)
             except Exception, ex:
                 logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
     

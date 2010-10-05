@@ -277,10 +277,8 @@ class CarePlan(models.Model):
         new_plan.title = base_plan.title
         for temp_item_link in base_plan.templatecareplanitemlink_set.all():            
             base_item = temp_item_link.item
-            new_item= CarePlanItem.create_from_template(base_item, parent_item=None)            
-            #new_plan.plan_items.add(new_item)
+            new_item= CarePlanItem.create_from_template(base_item, parent_item=None)
             links.append(CarePlanItemLink(plan=new_plan, item=new_item, order=temp_item_link.order))
-            #CareTeamCaseLink(case=case, careteam=self).save()
         
         if creator_user:
             new_plan.created_by = creator_user

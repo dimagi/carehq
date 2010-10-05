@@ -1,2 +1,3 @@
 from eventactivity_tests import *
-from cases import *
+from case_tests import *
+from category_tests import *

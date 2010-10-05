@@ -1,11 +1,7 @@
 from django.test import TestCase
-from datetime import datetime
-import hashlib
-import uuid
 from django.contrib.auth.models import User
 from clinical_core.actors.models import Role, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
 from clinical_core.patient.models import Patient
-import random
 
 from clinical_core.clincore import test_bootstrap as bootstrap
     
@@ -45,11 +41,11 @@ class BasicPermissionsTest(TestCase):
         pt, caregivers, providers = bootstrap.generate_patient_and_careteam()
         print "created careteam for one patient"
         for cg in caregivers:
-            self.assertEqual(cg.patients.all()[0], pt)
-            self.assertTrue(Actor.patient_objects.can_view(pt, cg.user))
+            self.assertEqual(cg.patients[0], pt)
+            self.assertTrue(Actor.permissions.can_view(pt, cg.user))
         for prov in providers:
-            self.assertEqual(prov.patients.all()[0], pt)
-            self.assertTrue(Actor.patient_objects.can_view(pt, prov.user))
+            self.assertEqual(prov.patients[0], pt)
+            self.assertTrue(Actor.permissions.can_view(pt, prov.user))
         
     def testCreateMultipleSingleCareTeams(self):
         print "===============\nCreating multiple singular patient careteams"
@@ -80,13 +76,13 @@ class BasicPermissionsTest(TestCase):
             
             for cgs in cg_subset:
                 for cg in cgs:
-                    self.assertNotEqual(cg.patients.all()[0], patient)
-                    self.assertFalse(Actor.patient_objects.can_view(patient, cg.user))
+                    self.assertNotEqual(cg.patients[0], patient)
+                    self.assertFalse(Actor.permissions.can_view(patient, cg.user))
                 
             for provs in prov_subset:
                 for prov in provs:
-                    self.assertNotEqual(prov.patients.all()[0], patient)
-                    self.assertFalse(Actor.patient_objects.can_view(patient, prov.user))
+                    self.assertNotEqual(prov.patients[0], patient)
+                    self.assertFalse(Actor.permissions.can_view(patient, prov.user))
 
 
     def testAdvancedPermissionsOnePatient(self):
@@ -104,11 +100,11 @@ class BasicPermissionsTest(TestCase):
             
 
             if r == 'caregiver':                
-                self.assertEqual(Actor.patient_objects.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
+                self.assertEqual(Actor.permissions.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
             elif r == 'provider':
-                self.assertNotEqual(Actor.patient_objects.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
+                self.assertNotEqual(Actor.permissions.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
             elif r == None:
-                self.assertEqual(Actor.patient_objects.get_roles(patient, user).count(), 0)
+                self.assertEqual(Actor.permissions.get_roles(patient, user).count(), 0)
 
     def testAdvancedPermissionsThreePatients(self):
         """
@@ -133,16 +129,16 @@ class BasicPermissionsTest(TestCase):
         for i in range(0,3):
             patient = patients[i]
             if i == 0: #caregiver
-                self.assertEqual(Actor.patient_objects.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
+                self.assertEqual(Actor.permissions.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
             elif i == 1: #provider:
-                self.assertNotEqual(Actor.patient_objects.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
-                role_type = Actor.patient_objects.get_roles(patient, user)[0].role_type.model_class() 
+                self.assertNotEqual(Actor.permissions.get_roles(patient, user)[0].role_type.model_class(), Caregiver)
+                role_type = Actor.permissions.get_roles(patient, user)[0].role_type.model_class()
                 if role_type == Doctor or role_type == TriageNurse:
                     pass
                 else:
                     self.fail("Not a known role type")
             if i == 2:
-                self.assertEqual(Actor.patient_objects.get_roles(patient, user).count(), 0)
+                self.assertEqual(Actor.permissions.get_roles(patient, user).count(), 0)
             
     
         

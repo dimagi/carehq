@@ -1,6 +1,5 @@
 from django import template
-
-from ashandapp.models import  CareTeam
+#from ashandapp.models import  CareTeam
 
 register = template.Library()
 
@@ -11,9 +10,9 @@ register = template.Library()
 def navigation_menu(context):
     
     newcontext = {}
-    req = context['request']
-    if req.is_provider:
-        newcontext['patient_careteams'] = CareTeam.objects.filter(providers=req.provider)
-    
-    newcontext['request'] = context['request']
+#    req = context['request']
+#    if req.is_provider:
+#        newcontext['patient_careteams'] = CareTeam.objects.filter(providers=req.provider)
+#
+#    newcontext['request'] = context['request']
     return newcontext

@@ -1,6 +1,6 @@
-from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.db import models
 from datetime import datetime
 
 import settings
@@ -25,6 +25,14 @@ class IdentifierType(models.Model):
     shortname = models.CharField(max_length=32)
     
     regex = models.CharField(max_length=128, blank=True, null=True)
+
+
+    class Meta:
+        app_label = 'patient'
+        verbose_name = "Identifier Type"
+        verbose_name_plural = "Identifier Types"
+        ordering = ['description']
+
     def save(self):
         super(IdentifierType, self).save()
 
@@ -40,6 +48,12 @@ class Address(models.Model):
     state = models.CharField(max_length=16, blank=True, null=True)
     postal_code = models.CharField(max_length=12, blank=True, null=True)
 
+    class Meta:
+        app_label = 'patient'
+        verbose_name = "Address"
+        verbose_name_plural = "Addresses"
+        ordering = ['type', 'city', 'state', 'street1', 'street2']
+
 class PatientIdentifier(models.Model):
     """
     The patient identifier is the actual instance of an identifier linked to a patient.
@@ -49,6 +63,10 @@ class PatientIdentifier(models.Model):
     id_value = models.CharField(max_length=128)
     
     class Meta:
+        app_label = 'patient'
+        verbose_name = "Patient Identifier"
+        verbose_name_plural = "Patient Identifiers"
+        ordering = ['id_type', 'id_value']
         unique_together = ('id_type','id_value')
 
     
@@ -88,8 +106,14 @@ class Patient(models.Model):
     
     added_date = models.DateTimeField(default=make_time)    
     notes = models.TextField()    
-    couch_document = models.CharField(max_length=32, unique=True, db_index=True)
-    
+    couch_document = models.CharField(max_length=32, unique=True, db_index=True, blank=True, null=True)
+
+    #objects = PatientManager()
+    class Meta:
+        app_label = 'patient'
+        verbose_name = "Patient"
+        verbose_name_plural = "Patients"
+        ordering = ['last_name', 'first_name', 'dob']
     
     @property
     def document(self):

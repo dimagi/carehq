@@ -10,7 +10,6 @@ from patient.models import Patient
 from careplan.models import CarePlan, CarePlanItem
 
 from ashandapp.templatetags.filter_tags import render_case_column
-from ashandapp.decorators import provider_only
 from ashandapp.models import CareTeam, ProviderLink, CaregiverLink, CareTeamCaseLink
 
 
