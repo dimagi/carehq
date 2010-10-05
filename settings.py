@@ -190,8 +190,7 @@ AUDITABLE_MODELS = [
                     #'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]
-                    
-PATIENT_DOCUMENT_MODEL = 'clinical_core.models.couch.CCareHQPatient'                   
+
 
 try:
     from settings_local import *
@@ -199,3 +198,21 @@ except:
     logging.error("Local settings not found, loading defaults")
     from settings_default import *
     
+####### Couch Forms & Couch DB Kit Settings #######
+def get_server_url(server_root, username, password):
+    if username and password:
+        return "http://%(user)s:%(pass)s@%(server)s" % \
+            {"user": username,
+             "pass": password,
+             "server": server_root }
+    else:
+        return "http://%(server)s" % {"server": server_root }
+COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
+COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
+
+
+XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
+COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
+        'patient',
+]]
+
