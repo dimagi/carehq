@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django_digest.decorators import httpdigest
 from couchforms.views import post as couchforms_post
 from django.views.decorators.http import require_POST
-
+from django.views.decorators.csrf import csrf_exempt
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -28,6 +28,7 @@ def get_ghetto_registration_block(user):
     return registration_block % (user.username, user.password, user.id, user.date_joined.strftime("%Y-%m-%dT%H:%M:%S.000"), uuid.uuid1().hex, user.id, user.username, "blah")
 
 @require_POST
+@csrf_exempt
 def post(request):
     """
     Post an xform instance here.
