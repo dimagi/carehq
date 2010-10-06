@@ -50,6 +50,7 @@ ghetto_patient_xml = """<case>
                        %(phones)s
                        %(addresses)s
                        %(dot_schedule)s
+                       %(regimens)s
                        <dob>%(dob)s</dob>
                        <initials>%(pt_initials)s</initials>
                        <hp>%(hp)s</hp>
@@ -91,6 +92,12 @@ class CPatient(Document):
                 counter += 1
         return ret
 
+    def get_ghetto_regimen_xml(self):
+        ret = ''
+        ret += "<artregimen>%s</artregimen>" % (self.art_regimen)
+        ret += "<nonartregimen>%s</nonartregimen>" % (self.non_art_regimen)
+        return ret
+
     def get_ghetto_address_xml(self):
         ret = ''
         counter = 1
@@ -130,8 +137,10 @@ class CPatient(Document):
 
         if self.arm.lower() == 'dot':
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
+            xml_dict['regimens'] = self.get_ghetto_regimen_xml()
         else:
             xml_dict['dot_schedule'] = ''
+            xml_dict['regimens'] = ''
         ret = ghetto_patient_xml % (xml_dict)
         return ret
 
