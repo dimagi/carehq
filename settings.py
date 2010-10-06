@@ -73,11 +73,11 @@ MIDDLEWARE_CLASSES = (
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-#    'django_digest.middleware.HttpDigestMiddleware',    
+    'django_digest.middleware.HttpDigestMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',    
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'ashandapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
 )
@@ -113,9 +113,11 @@ INSTALLED_APPS = (
 
     #####################
     #clinical_core
-    'clinical_core.casetracker',
+    #'casetracker',
     'patient',
-    'actors',    
+    'actors',
+    'pact-carehq',
+    'keymaster',
     #end clinical_core
     
     
@@ -124,7 +126,7 @@ INSTALLED_APPS = (
     'autofixture',
     'reversion',
     'django_extensions',
-    #'django_digest',
+    'django_digest',
     #end third party apps
     
             
@@ -184,9 +186,8 @@ CASE_CATEGORIES = (
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
-                    'casetracker.models.Case',
-                    'casetracker.models.CaseEvent',
-                    'provider.models.Provider',
+                    #'casetracker.models.Case',
+                    #'casetracker.models.CaseEvent',
                     #'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]
