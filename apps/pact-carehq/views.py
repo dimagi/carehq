@@ -1,9 +1,9 @@
-import logging
-
-from django_digest.decorators import *
-
 from patient.models.couchmodels import CPatient
 import uuid
+from django.http import HttpResponse
+from django_digest.decorators import httpdigest
+from couchforms.views import post as couchforms_post
+from django.views.decorators.http import require_POST
 
 
 def get_ghetto_registration_block(user):
@@ -27,11 +27,20 @@ def get_ghetto_registration_block(user):
     #prov = Provider.objects.filter(user=user)[0] #hacky nasty
     return registration_block % (user.username, user.password, user.id, user.date_joined.strftime("%Y-%m-%dT%H:%M:%S.000"), uuid.uuid1().hex, user.id, user.username, "blah")
 
-#    <phone1>asfddsf</phone1> (2 and 3)
-#   <address1>concated</address1> (and 2)
+@require_POST
+def post(request):
+    """
+    Post an xform instance here.
+    """
+    def callback(doc):
+        resp = HttpResponse()
+        resp.write("success")
+        resp.status_code = 201
+        return resp
+    return couchforms_post(request, callback=callback)
 
 
-@httpdigest
+@httpdigest()
 def get_caselist(request):
     regblock= get_ghetto_registration_block(request.user)
     patient_block = ""
@@ -44,4 +53,8 @@ def get_caselist(request):
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
     return response
+
+
+
+
 

@@ -38,6 +38,7 @@ ghetto_patient_xml = """<case>
                    <case_id>%(case_id)s</case_id>
                    <date_modified>%(date_modified)s</date_modified>
                    <create>
+                       <user_id></user_id>
                        <case_type_id>cc_path_client</case_type_id>
                        <case_name>%(patient_name)s</case_name>
                        <external_id>%(patient_id)s</external_id>
