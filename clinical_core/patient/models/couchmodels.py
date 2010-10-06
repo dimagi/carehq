@@ -3,6 +3,15 @@ from couchdbkit.ext.django.schema import *
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from datetime import datetime
 
+ghetto_regimen_map = {
+    "qd": '1',
+    "bid": '2',
+    "qd-am": '1',
+    "qd-pm": '1',
+    "tid": '3',
+    "qid": '4',
+    '': '' ,
+}
 
 class CPhone(Document):
     is_default = BooleanProperty()
@@ -94,8 +103,8 @@ class CPatient(Document):
 
     def get_ghetto_regimen_xml(self):
         ret = ''
-        ret += "<artregimen>%s</artregimen>" % (self.art_regimen)
-        ret += "<nonartregimen>%s</nonartregimen>" % (self.non_art_regimen)
+        ret += "<artregimen>%s</artregimen>" % (ghetto_regimen_map[self.art_regimen.lower()])
+        ret += "<nonartregimen>%s</nonartregimen>" % (ghetto_regimen_map[self.non_art_regimen.lower()])
         return ret
 
     def get_ghetto_address_xml(self):
