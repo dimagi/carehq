@@ -7,6 +7,7 @@ import logging
 from clincore.utils.modules import try_import
 
 urlpatterns =  []
+admin.autodiscover()
 
 urlpatterns += patterns('',
                         (r'^accounts/login/$', 'django.contrib.auth.views.login', 

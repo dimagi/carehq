@@ -7,6 +7,9 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from couchforms.util import post_xform_to_couch
 from django.contrib.auth.decorators import login_required
+from django.template.context import RequestContext
+from couchforms.models import XFormInstance
+from django.shortcuts import render_to_response
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -67,8 +70,35 @@ def get_caselist(request):
 
 
 #@login_required
-#def show_ghetto_patientlist(request):
-#    patients = CPatient.view("patient/by_last_name"/post
-#                             )
+#def show_ghetto_patientlist(request, template_name="pact-carehq/ghetto_patient_list.html":
+#    patients = CPatient.view("patient/by_last_name")
+#    context = RequestContext(request)
+
+
+@login_required
+def show_submits_by_me(request, template_name="pact-carehq/ghetto_progress_submits.html"):
+    context = RequestContext(request)
+#    notes = XFormInstance
+    notes_documents = XFormInstance.view("pact-carehq/all_progress_notes", key=request.user.username, include_docs=True).all()
+    notes = []
+    for note in notes_documents:
+        notes.append([note._id, note.received_on])
+    context['progress_notes'] = notes
+    return render_to_response(template_name, context_instance=context)
+
+@login_required
+def show_progress_note(request, doc_id, template_name="pact-carehq/view_progress_submit.html"):
+    context = RequestContext(request)
+    context['progress_note'] = XFormInstance.get(doc_id)
+    return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def edit_progress_note(request, template_name="pact-carehq/edit_progress_note.html"):
+    context = RequestContext(request)
+    context['progress_note'] = XFormInstance.get(doc_id)
+    return render_to_response(template_name, context_instance=context)
+
+
 
 
