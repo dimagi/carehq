@@ -5,6 +5,8 @@ from django_digest.decorators import httpdigest
 from couchforms.views import post as couchforms_post
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from couchforms.util import post_xform_to_couch
+from django.contrib.auth.decorators import login_required
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -33,12 +35,20 @@ def post(request):
     """
     Post an xform instance here.
     """
-    def callback(doc):
-        resp = HttpResponse()
-        resp.write("success")
-        resp.status_code = 201
-        return resp
-    return couchforms_post(request, callback=callback)
+    try:
+        print request.FILES.keys()
+        if request.FILES.has_key("xml_submission_file"):
+            instance = request.FILES["xml_submission_file"].read()
+            print instance
+            post_xform_to_couch(instance)
+            resp = HttpResponse()
+            resp.write("success")
+            resp.status_code = 201
+            return resp
+        else:
+            return HttpResponse("No form data")
+    except Exception, e:
+        return HttpResponse("fail")
 
 
 @httpdigest()
@@ -56,6 +66,9 @@ def get_caselist(request):
     return response
 
 
-
+#@login_required
+#def show_ghetto_patientlist(request):
+#    patients = CPatient.view("patient/by_last_name"/post
+#                             )
 
 
