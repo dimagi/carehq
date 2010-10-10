@@ -4,7 +4,7 @@
 <small>For user: {{ user.username }}</small>
 <ul>
 {% for note in progress_notes %}
-    <li><a href="{% url show_progress_note note.0 %}">{{ note.1|date }}</a></li>
+    <li><a href="{% url show_progress_note note.0 %}">{{ note.2 }} - {{ note.1|date }}</a></li>
 {% endfor %}
 </ul>
 

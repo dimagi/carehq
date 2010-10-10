@@ -116,7 +116,7 @@ INSTALLED_APPS = (
     #'casetracker',
     'patient',
     'actors',
-    'pact-carehq',
+    'pactcarehq',
     'keymaster',
     #end clinical_core
     
@@ -216,6 +216,6 @@ XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERV
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'patient',
         'couchforms',
-        'pact-carehq',
+        'pactcarehq',
 ]]
 

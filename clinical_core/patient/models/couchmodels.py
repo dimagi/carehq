@@ -18,7 +18,6 @@ class CPhone(Document):
     description = StringProperty()
     number = StringProperty()
     created = DateTimeProperty()
-
     class Meta:
         app_label = 'patient'
 

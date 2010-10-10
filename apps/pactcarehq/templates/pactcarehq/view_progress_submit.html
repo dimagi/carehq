@@ -1,0 +1,24 @@
+<html>
+<body>
+<h2>View progress note</h2>
+<h3>{{ patient_name }}</h3>
+<strong>Visit date:</strong> {{ visit_date|date }}
+{% for timetype, interval in times.items %}
+    {{ timetype }} :: {{ interval }}<br>
+{%  endfor %}
+
+
+<h4>Discussions</h4>
+{% for distype, value in discussions.items %}
+    {{ distype }} :: {{ value }} <br>
+{% endfor %}
+
+<h4>Memo</h4>
+{{ memo }}
+<br>
+<small>Edit memo</small>
+
+
+
+</body>
+</html>

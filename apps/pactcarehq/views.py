@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from couchforms.models import XFormInstance
 from django.shortcuts import render_to_response
+from pactcarehq.models import trial1mapping
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -39,10 +40,10 @@ def post(request):
     Post an xform instance here.
     """
     try:
-        print request.FILES.keys()
+        #print request.FILES.keys()
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
-            print instance
+            #print instance
             post_xform_to_couch(instance)
             resp = HttpResponse()
             resp.write("success")
@@ -70,31 +71,56 @@ def get_caselist(request):
 
 
 #@login_required
-#def show_ghetto_patientlist(request, template_name="pact-carehq/ghetto_patient_list.html":
+#def show_ghetto_patientlist(request, template_name="pactcarehq/ghetto_patient_list.html":
 #    patients = CPatient.view("patient/by_last_name")
 #    context = RequestContext(request)
 
 
 @login_required
-def show_submits_by_me(request, template_name="pact-carehq/ghetto_progress_submits.html"):
+def show_submits_by_me(request, template_name="pactcarehq/ghetto_progress_submits.html"):
     context = RequestContext(request)
 #    notes = XFormInstance
-    notes_documents = XFormInstance.view("pact-carehq/all_progress_notes", key=request.user.username, include_docs=True).all()
+    notes_documents = XFormInstance.view("pactcarehq/all_progress_notes", key=request.user.username, include_docs=True).all()
     notes = []
     for note in notes_documents:
-        notes.append([note._id, note.received_on])
+        case_id = note.form['case']['case_id']
+        ############################################
+        #hack to test the old ids
+        try:
+            oldpt = trial1mapping.objects.get(old_uuid=case_id)
+            case_id = oldpt.get_new_patient_doc_id()
+        except:
+            print "can't find that patient/case: %s" % (case_id)
+        #######################3
+
+        patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+        patient_name = patient.last_name
+        notes.append([note._id,  note.form['Meta']['TimeEnd'], patient_name])
+
     context['progress_notes'] = notes
     return render_to_response(template_name, context_instance=context)
 
 @login_required
-def show_progress_note(request, doc_id, template_name="pact-carehq/view_progress_submit.html"):
+def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_submit.html"):
     context = RequestContext(request)
-    context['progress_note'] = XFormInstance.get(doc_id)
+    progress_note = XFormInstance.get(doc_id)['form']['note']
+    context['times'] = progress_note['times']
+    context['referrals'] = progress_note['referrals']
+    context['bloodwork'] = progress_note['bwresults']
+    context['memo'] = progress_note['memo']
+
+    context['discussions'] =  {}
+    context['discussions']['appointments'] = progress_note['discussed_appointments']
+    context['discussions']['goals'] = progress_note['discussed_goals']
+    context['discussions']['followup'] = progress_note['discussed_followup']
+    context['discussions']['cd'] = progress_note['reviewed_cd']
+    context['discussions']['qsp'] = progress_note['discussed_qsp']
+
     return render_to_response(template_name, context_instance=context)
 
 
 @login_required
-def edit_progress_note(request, template_name="pact-carehq/edit_progress_note.html"):
+def edit_progress_note(request, template_name="pactcarehq/edit_progress_note.html"):
     context = RequestContext(request)
     context['progress_note'] = XFormInstance.get(doc_id)
     return render_to_response(template_name, context_instance=context)
