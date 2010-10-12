@@ -34,7 +34,7 @@ def create_user(username='mockuser', password='mockmock'):
 
 class EventActivityVerificationTest(TestCase):
     fixtures = [
-                'blah.json']
+                'samplesetup-fixture.json']
 
     def setUp(self):
         call_command('load_categories')

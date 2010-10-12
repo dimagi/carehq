@@ -152,3 +152,13 @@ class CPatient(Document):
         ret = ghetto_patient_xml % (xml_dict)
         return ret
 
+
+
+class SimpleComment(Document):
+    doc_id = StringProperty() #is there a fk in couchdbkit
+    deprecated = BooleanProperty(default=False)
+    comment = StringProperty()
+    created_by = StringProperty()
+    created = DateTimeProperty()
+    class Meta:
+        app_label = 'patient'

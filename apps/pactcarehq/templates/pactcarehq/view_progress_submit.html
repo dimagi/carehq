@@ -16,8 +16,16 @@
 <h4>Memo</h4>
 {{ memo }}
 <br>
-<small>Edit memo</small>
-
+{% if form %}
+    <form method="POST" action="{{request.path}}">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Write Memo"/>
+    <input type="hidden" name="next" value="{{ request.path }}" />
+    </form>
+{%  else %}
+<a href="{{ request.path }}?comment">Edit memo</a>
+{% endif %}
 
 
 </body>

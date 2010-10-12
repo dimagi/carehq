@@ -113,7 +113,7 @@ INSTALLED_APPS = (
 
     #####################
     #clinical_core
-    #'casetracker',
+    'casetracker',
     'patient',
     'actors',
     'pactcarehq',

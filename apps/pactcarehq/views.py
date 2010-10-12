@@ -1,6 +1,6 @@
 from patient.models.couchmodels import CPatient
 import uuid
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django_digest.decorators import httpdigest
 from couchforms.views import post as couchforms_post
 from django.views.decorators.http import require_POST
@@ -11,6 +11,10 @@ from django.template.context import RequestContext
 from couchforms.models import XFormInstance
 from django.shortcuts import render_to_response
 from pactcarehq.models import trial1mapping
+from pactcarehq.forms.progress_note_comment import ProgressNoteComment
+import logging
+from django.core.urlresolvers import reverse
+from datetime import datetime
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -104,6 +108,8 @@ def show_submits_by_me(request, template_name="pactcarehq/ghetto_progress_submit
 def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_submit.html"):
     context = RequestContext(request)
     progress_note = XFormInstance.get(doc_id)['form']['note']
+
+
     context['times'] = progress_note['times']
     context['referrals'] = progress_note['referrals']
     context['bloodwork'] = progress_note['bwresults']
@@ -116,13 +122,16 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     context['discussions']['cd'] = progress_note['reviewed_cd']
     context['discussions']['qsp'] = progress_note['discussed_qsp']
 
-    return render_to_response(template_name, context_instance=context)
-
-
-@login_required
-def edit_progress_note(request, template_name="pactcarehq/edit_progress_note.html"):
-    context = RequestContext(request)
-    context['progress_note'] = XFormInstance.get(doc_id)
+    if request.method == 'POST':
+            form = ProgressNoteComment(data=request.POST)
+            context['form'] = form
+            if form.is_valid():
+                edit_comment = form.cleaned_data["comment"]
+                return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))
+    else:
+        #it's a GET, get the default form
+        if request.GET.has_key('comment'):
+            context['form'] = ProgressNoteComment()
     return render_to_response(template_name, context_instance=context)
 
 
