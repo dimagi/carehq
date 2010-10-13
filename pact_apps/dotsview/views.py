@@ -1,8 +1,8 @@
 from django.shortcuts import render_to_response
-from corehq.apps.domain.decorators import login_and_domain_required
 from django.template import RequestContext
 
 from models import *
+from django.contrib.auth.decorators import login_required
 
 def _parse_date(string):
     if isinstance(string, basestring):
@@ -10,7 +10,8 @@ def _parse_date(string):
     else:
         return string
 
-@login_and_domain_required
+#@login_and_domain_required
+@login_required
 def index(request, template='dots/index.html'):
     end_date = _parse_date(request.GET.get('end', datetime.date.today()))
     start_date = _parse_date(request.GET.get('start', end_date-datetime.timedelta(14)))

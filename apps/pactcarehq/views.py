@@ -1,8 +1,7 @@
-from patient.models.couchmodels import CPatient
+from patient.models.couchmodels import CPatient, CSimpleComment
 import uuid
 from django.http import HttpResponse, HttpResponseRedirect
 from django_digest.decorators import httpdigest
-from couchforms.views import post as couchforms_post
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from couchforms.util import post_xform_to_couch
@@ -12,9 +11,46 @@ from couchforms.models import XFormInstance
 from django.shortcuts import render_to_response
 from pactcarehq.models import trial1mapping
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
-import logging
 from django.core.urlresolvers import reverse
-from datetime import datetime
+from couchforms.signals import xform_saved
+from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+
+
+@login_required
+def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
+    context = RequestContext(request)
+    users = User.objects.all()
+    enddate = datetime.utcnow() - timedelta(days=80)
+    timeval = timedelta(days=1)
+    eval_date = enddate
+
+    total_interval = 7
+
+    schemas = ['http://dev.commcarehq.org/pact/progress_note', "http://dev.commcarehq.org/pact/dots_form"]
+    submission_dict = {}
+    for schema in schemas:
+        submission_dict[schema] = {}
+        for user in users:
+            if user.username.count('_') > 0:
+                continue
+            submission_dict[schema][user.username] = {}
+            for offset in range(0,total_interval):
+                eval_date = enddate - timedelta(days=offset)
+                datestring = eval_date.strftime("%m/%d/%Y")
+
+                startkey = [str(user.username),  eval_date.year, eval_date.month, eval_date.day, schema]
+                #endkey = [str(user.username),  enddate.year, enddate.month, enddate.day, schema,{}]
+
+                reduction = XFormInstance.view('pactcarehq/submits_by_user', key=startkey).all()
+                if len(reduction) > 0:
+                    submission_dict[schema][user.username][datestring] = reduction[0]['value']
+                else:
+                    submission_dict[schema][user.username][datestring] = 0
+
+    context['user_submissions'] = submission_dict
+    return render_to_response(template_name, context_instance=context)
+
 
 def get_ghetto_registration_block(user):
     registration_block = """
@@ -48,7 +84,10 @@ def post(request):
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
             #print instance
-            post_xform_to_couch(instance)
+            doc = post_xform_to_couch(instance)
+            print "posted"
+            xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
+            print "post_signal: %s" % (doc)
             resp = HttpResponse()
             resp.write("success")
             resp.status_code = 201
@@ -80,13 +119,31 @@ def get_caselist(request):
 #    context = RequestContext(request)
 
 
+
 @login_required
-def show_submits_by_me(request, template_name="pactcarehq/ghetto_progress_submits.html"):
+def all_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"):
     context = RequestContext(request)
-#    notes = XFormInstance
-    notes_documents = XFormInstance.view("pactcarehq/all_progress_notes", key=request.user.username, include_docs=True).all()
-    notes = []
+    submit_dict = {}
+    for user in User.objects.all():
+        username = user.username
+        #hack to skip the _ names
+        if username.count("_") > 0:
+            continue
+        submit_dict[username] = _get_submissions_for_user(username)
+    context['submit_dict'] = submit_dict
+    return render_to_response(template_name, context_instance=context)
+
+
+
+def _sort_arr_by_date(a,b):
+    return cmp(a[1],b[1])
+
+def _get_submissions_for_user(username):
+    notes_documents = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
+    submissions = []
     for note in notes_documents:
+        if not note.form.has_key('case'):
+            continue
         case_id = note.form['case']['case_id']
         ############################################
         #hack to test the old ids
@@ -95,13 +152,35 @@ def show_submits_by_me(request, template_name="pactcarehq/ghetto_progress_submit
             case_id = oldpt.get_new_patient_doc_id()
         except:
             print "can't find that patient/case: %s" % (case_id)
-        #######################3
+        #######################
 
         patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
-        patient_name = patient.last_name
-        notes.append([note._id,  note.form['Meta']['TimeEnd'], patient_name])
+        if patient == None:
+            patient_name = "Unknown"
+        else:
+            patient_name = patient.last_name
 
-    context['progress_notes'] = notes
+        xmlns = note['xmlns']
+        if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+            formtype = "DOTS"
+        elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
+            formtype = "Progress Note"
+        else:
+            formtype = "Unknown"
+        submissions.append([note._id, note.form['Meta']['TimeEnd'], patient_name, formtype])
+    submissions.sort(_sort_arr_by_date)
+    return submissions
+
+@login_required
+def my_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"):
+    context = RequestContext(request)
+#    submissions = XFormInstance
+    username = request.user.username
+
+    submit_dict = {}
+    submissions = _get_submissions_for_user(username)
+    submit_dict[username] = submissions
+    context['submit_dict'] = submit_dict
     return render_to_response(template_name, context_instance=context)
 
 @login_required
@@ -113,6 +192,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     context['times'] = progress_note['times']
     context['referrals'] = progress_note['referrals']
     context['bloodwork'] = progress_note['bwresults']
+
     context['memo'] = progress_note['memo']
 
     context['discussions'] =  {}
@@ -127,7 +207,13 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
             context['form'] = form
             if form.is_valid():
                 edit_comment = form.cleaned_data["comment"]
-                return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))
+                ccomment = CSimpleComment()
+                ccomment.doc_fk_id = doc_id
+                ccomment.comment = edit_comment
+                ccomment.created_by = request.user.username
+                ccomment.created = datetime.utcnow()
+                ccomment.save()
+                return HttpResponseRedirect(reverse('show_progress_note', kwargs= {'doc_id': doc_id}))
     else:
         #it's a GET, get the default form
         if request.GET.has_key('comment'):

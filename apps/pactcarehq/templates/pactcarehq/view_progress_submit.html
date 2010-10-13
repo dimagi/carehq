@@ -1,5 +1,5 @@
-<html>
-<body>
+{% extends "base.html" %}
+{% block content %}
 <h2>View progress note</h2>
 <h3>{{ patient_name }}</h3>
 <strong>Visit date:</strong> {{ visit_date|date }}
@@ -26,7 +26,4 @@
 {%  else %}
 <a href="{{ request.path }}?comment">Edit memo</a>
 {% endif %}
-
-
-</body>
-</html>
+{%  endblock %}

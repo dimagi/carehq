@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('care_apps.dots.views',
+urlpatterns = patterns('dotsview.views',
     (r'^$', 'index'),
 )

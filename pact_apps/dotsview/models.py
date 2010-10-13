@@ -1,12 +1,13 @@
 from django.db.models import *
-from care_apps.pactpatient.models import Patient
-from care_apps.provider.models import Provider
-from corehq.apps.receiver.models import Submission
+from patient.models import Patient
+from django.db import models
 
 import simplejson
 import time, datetime
 
 # Create your models here.
+from django.contrib.auth.models import User
+
 ADHERENCE_CHOICES = (
     ("empty", "Empty"),
     ("partial", "Partial"),
@@ -27,9 +28,9 @@ TIME_LABEL_LOOKUP = (
 TIME_LABELS = ('Dose', 'Morning', 'Noon', 'Evening', 'Bedtime')
 
 class Observation(Model):
-    submission = ForeignKey(Submission, null=True)  # fix
+    doc_id = models.CharField(max_length=32, db_index=True)
     patient = ForeignKey(Patient)
-    provider = ForeignKey(Provider)
+    provider = ForeignKey(User) #should be actor but for short trial this is a user becauseonly chw's are users at the moment
     
     date = DateField(blank=False, null=False)
     is_art = BooleanField() # is Anti Retroviral Treatment
@@ -53,11 +54,9 @@ class Observation(Model):
     def get_time_labels(cls, total_doses):
         return TIME_LABEL_LOOKUP[total_doses]
     @classmethod
-    def from_json(cls, json, patient, provider, submission):
+    def from_json(cls, json, patient, user, xforminstance):
         if isinstance(patient, basestring):
             patient = Patient.objects.get(id=patient)  # lookup by uuid
-        if isinstance(provider, basestring):
-            provider = Provider.objects.get(user__username=provider)
         data = simplejson.loads(json)
         days = data['days']
         last_date = _date_from_string(data['anchor'])
@@ -70,12 +69,13 @@ class Observation(Model):
                     try:
                         adherence, method = observation
                         note = None
-                    except:
+                    except Exception, ex:
                         adherence, method, note = observation
+                        print "Observation exception: %s" % (ex.message)
                     if adherence != 'unchecked':
                         models.append(
                             Observation(
-                                submission=submission, patient=patient, provider=provider,
+                                doc_id=xforminstance._id, patient=patient, provider=user,
                                 date=date, is_art=is_art, adherence=adherence, method=method,
                                 note=note, dose_number=dose_number, total_doses=total_doses
                             )
@@ -91,4 +91,5 @@ def _date_from_string(s):
     """
     return datetime.date(*time.strptime(s, "%d %b %Y %H:%M:%S %Z")[:3])
     
-import signals
+
+from dotsview import signals

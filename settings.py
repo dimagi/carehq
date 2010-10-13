@@ -119,7 +119,10 @@ INSTALLED_APPS = (
     'pactcarehq',
     'keymaster',
     #end clinical_core
-    
+
+    ######################
+    #pact specific apps
+    'dotsview',
     
     #########################
     #third party apps
@@ -217,5 +220,6 @@ COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'patient',
         'couchforms',
         'pactcarehq',
+
 ]]
 

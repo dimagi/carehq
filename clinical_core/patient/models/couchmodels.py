@@ -154,8 +154,8 @@ class CPatient(Document):
 
 
 
-class SimpleComment(Document):
-    doc_id = StringProperty() #is there a fk in couchdbkit
+class CSimpleComment(Document):
+    doc_fk_id = StringProperty() #is there a fk in couchdbkit
     deprecated = BooleanProperty(default=False)
     comment = StringProperty()
     created_by = StringProperty()
