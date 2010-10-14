@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from couchforms.signals import xform_saved
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+import logging
 
 
 @login_required
@@ -257,9 +258,12 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     dots_note['visit_kept'] = raw['visit_kept']
     dots_note['contact_type'] = raw['contact_type']
     dots_note['observed_art'] = raw['observed_art']
-    dots_note['observed_art_dose'] = raw['observed_art_dose']
+    try:
+        dots_note['observed_art_dose'] = raw['observed_art_dose']
+        dots_note['observed_non_art_dose'] = raw['observed_non_art_dose']
+    except:
+        logging.error("Error, missing keys: observed_art_dose and observed_non_art_dose")
     dots_note['observed_non_art'] = raw['observed_non_art']
-    dots_note['observed_non_art_dose'] = raw['observed_non_art_dose']
     dots_note['notes'] = raw['notes']
 
 
