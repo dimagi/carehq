@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 @login_required
 def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
     context = RequestContext(request)
-    users = User.objects.all()
+    users = User.objects.all().filter(is_active=True)
     enddate = datetime.utcnow() - timedelta(days=80)
     timeval = timedelta(days=1)
     eval_date = enddate
