@@ -161,7 +161,7 @@ DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.headers.HeaderDebugPanel',
         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
         'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
+        #'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
         'debug_toolbar.panels.logger.LoggingPanel',
     )
@@ -177,8 +177,8 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 USE_DJANGO_STATIC_SERVER=True
-LOGIN_TEMPLATE='registration/login.html'
-LOGGEDOUT_TEMPLATE='registration/logged_out.html'
+LOGIN_TEMPLATE='pactregistration/login.html'
+LOGGEDOUT_TEMPLATE='pactregistration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
 CASE_CATEGORIES = (
