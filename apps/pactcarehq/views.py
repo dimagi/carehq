@@ -134,9 +134,22 @@ def all_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"
     return render_to_response(template_name, context_instance=context)
 
 
+def _hack_get_old_caseid(new_case_id):
+    #hack to test the old ids
+    try:
+        oldpt = trial1mapping.objects.get(old_uuid=new_case_id)
+        old_case_id = oldpt.get_new_patient_doc_id()
+    except:
+        old_case_id=None
+        print "can't find that patient/case: %s" % (new_case_id)
+    return old_case_id
+
 
 def _sort_arr_by_date(a,b):
     return cmp(a[1],b[1])
+
+def _sort_arr_by_date_desc(a,b):
+    return cmp(b[1],a[1])
 
 def _get_submissions_for_user(username):
     notes_documents = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
@@ -145,14 +158,9 @@ def _get_submissions_for_user(username):
         if not note.form.has_key('case'):
             continue
         case_id = note.form['case']['case_id']
-        ############################################
-        #hack to test the old ids
-        try:
-            oldpt = trial1mapping.objects.get(old_uuid=case_id)
-            case_id = oldpt.get_new_patient_doc_id()
-        except:
-            print "can't find that patient/case: %s" % (case_id)
-        #######################
+
+        #for dev purposes this needs to be done for testing
+        case_id = _hack_get_old_caseid(case_id)
 
         patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
         if patient == None:
@@ -186,21 +194,37 @@ def my_submits(request, template_name="pactcarehq/ghetto_progress_submits.html")
 @login_required
 def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_submit.html"):
     context = RequestContext(request)
-    progress_note = XFormInstance.get(doc_id)['form']['note']
+    xform = XFormInstance.get(doc_id)
+    progress_note = xform['form']['note']
+    context['progress_note'] = progress_note
+
+    case_id = xform['form']['case']['case_id']
 
 
-    context['times'] = progress_note['times']
-    context['referrals'] = progress_note['referrals']
-    context['bloodwork'] = progress_note['bwresults']
 
-    context['memo'] = progress_note['memo']
+    ###########################################################
+    #for dev purposes this needs to be done for testing
+    #but this is important still tog et the patient info for display
+    case_id = _hack_get_old_caseid(case_id)
+    patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+    if patient == None:
+        patient_name = "Unknown"
+    else:
+        patient_name = patient.first_name + " " + patient.last_name
+    context['patient_name'] = patient_name
+    ##############################################################
 
-    context['discussions'] =  {}
-    context['discussions']['appointments'] = progress_note['discussed_appointments']
-    context['discussions']['goals'] = progress_note['discussed_goals']
-    context['discussions']['followup'] = progress_note['discussed_followup']
-    context['discussions']['cd'] = progress_note['reviewed_cd']
-    context['discussions']['qsp'] = progress_note['discussed_qsp']
+
+
+    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id).all()
+    comment_arr = []
+    for cdoc in comment_docs:
+        if cdoc.deprecated:
+            continue
+        comment_arr.append([cdoc, cdoc.created])
+
+    comment_arr.sort(_sort_arr_by_date_desc)
+    context['comments'] = comment_arr
 
     if request.method == 'POST':
             form = ProgressNoteComment(data=request.POST)
@@ -219,6 +243,73 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
         if request.GET.has_key('comment'):
             context['form'] = ProgressNoteComment()
     return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.html"):
+    context = RequestContext(request)
+    xform = XFormInstance.get(doc_id)
+    dots_note = {}
+    raw = xform['form']
+    dots_note['encounter_date'] = raw['encounter_date']
+    dots_note['schedued'] = raw['scheduled']
+    dots_note['visit_type'] = raw['visit_type']
+    dots_note['visit_kept'] = raw['visit_kept']
+    dots_note['contact_type'] = raw['contact_type']
+    dots_note['observed_art'] = raw['observed_art']
+    dots_note['observed_art_dose'] = raw['observed_art_dose']
+    dots_note['observed_non_art'] = raw['observed_non_art']
+    dots_note['observed_non_art_dose'] = raw['observed_non_art_dose']
+    dots_note['notes'] = raw['notes']
+
+
+
+    context['dots_note'] = dots_note
+    case_id = xform['form']['case']['case_id']
+
+    ###########################################################
+    #for dev purposes this needs to be done for testing
+    #but this is important still tog et the patient info for display
+    case_id = _hack_get_old_caseid(case_id)
+    patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+    if patient == None:
+        patient_name = "Unknown"
+    else:
+        patient_name = patient.first_name + " " + patient.last_name
+    context['patient_name'] = patient_name
+    ##############################################################
+
+
+
+    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id).all()
+    comment_arr = []
+    for cdoc in comment_docs:
+        if cdoc.deprecated:
+            continue
+        comment_arr.append([cdoc, cdoc.created])
+
+    comment_arr.sort(_sort_arr_by_date_desc)
+    context['comments'] = comment_arr
+
+    if request.method == 'POST':
+            form = ProgressNoteComment(data=request.POST)
+            context['form'] = form
+            if form.is_valid():
+                edit_comment = form.cleaned_data["comment"]
+                ccomment = CSimpleComment()
+                ccomment.doc_fk_id = doc_id
+                ccomment.comment = edit_comment
+                ccomment.created_by = request.user.username
+                ccomment.created = datetime.utcnow()
+                ccomment.save()
+                return HttpResponseRedirect(request.path)
+    else:
+        #it's a GET, get the default form
+        if request.GET.has_key('comment'):
+            context['form'] = ProgressNoteComment()
+    return render_to_response(template_name, context_instance=context)
+
+
 
 
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load render_json_tags %}
+{% block content %}
+<div class="span-14">
+<h2>View DOT note subset</h2>
+<h3>{{ patient_name }}</h3>
+{% get_table_from_json dots_note %}
+</div>
+<div class="span-10 last">
+<h3>Supplemental Memos</h3>
+{% if comments %}
+{% for comment in comments %}
+    {{ comment.0.comment }} <br>
+    <small> &nbsp; {{ comment.0.created_by }} <em>{{ comment.0.created|date }} {{ comment.0.created|time }}</em></small>
+    <hr>
+{% endfor %}
+{% endif %}
+{% if form %}
+    <form method="POST" action="{{request.path}}">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Write Memo"/>
+    <input type="hidden" name="next" value="{{ request.path }}" />
+    </form>
+{%  else %}
+<a href="{{ request.path }}?comment">Add Memo</a>
+{% endif %}
+</div>
+{%  endblock content %}

@@ -27,3 +27,7 @@ class Patient(models.Model):
             return CPatient.view('patient/ids', key=self.doc_id).first()
         except:
             return None
+
+    def get_full_name(self):
+        if self.couchdoc:
+            return "%s %s" % (self.couchdoc.first_name, self.couchdoc.last_name)

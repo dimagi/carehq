@@ -3,6 +3,7 @@ from django.template import RequestContext
 
 from models import *
 from django.contrib.auth.decorators import login_required
+from patient.models.couchmodels import CPatient
 
 def _parse_date(string):
     if isinstance(string, basestring):
@@ -70,7 +71,19 @@ def index(request, template='dots/index.html'):
     dates = [(date, group_by_is_art_and_time(date)) for date in dates]
     weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
     
-    patients = Patient.objects.filter(observation__in=Observation.objects.all()).distinct()
+#    patients = Patient.objects.filter(observation__in=Observation.objects.all()).distinct()
+    dots_pts = CPatient.view('patient/all_dots').all()
+    dots_ids = []
+    for dotpt in dots_pts:
+        dots_ids.append(dotpt._id)
+    patients = Patient.objects.filter(doc_id__in=dots_ids)
+
+    #sanity check if we're running with old data:
+    if patients.count() == 0:
+        print "*** no patients"
+        patients = Patient.objects.all()
+    else:
+        print "** found patients!"
     
     context = RequestContext(request, locals())
     {

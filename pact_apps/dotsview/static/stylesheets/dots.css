@@ -63,22 +63,22 @@ div.observation div {
     min-width: 20px;
 }
 .ob-empty {
-    background: url('/static/dots/icons/check.jpg') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/check.jpg') no-repeat scroll top left;
 }
 .ob-partial {
-    background: url('/static/dots/icons/exclamation-point.jpg') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/exclamation-point.jpg') no-repeat scroll top left;
 }
 .ob-full {
-    background: url('/static/dots/icons/x-mark.png') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/x-mark.png') no-repeat scroll top left;
 }
 
 .ob-direct {
-    background: url('/static/dots/icons/plus.png') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/plus.png') no-repeat scroll top left;
 }
 .ob-self {
-    background: url('/static/dots/icons/minus.png') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/minus.png') no-repeat scroll top left;
 }
 .date-range-warning {
-    background: url('/static/dots/icons/warning.png') no-repeat scroll top left;
+    background: url('/media/dotsview/icons/warning.png') no-repeat scroll top left;
     text-indent: 24px;
 }

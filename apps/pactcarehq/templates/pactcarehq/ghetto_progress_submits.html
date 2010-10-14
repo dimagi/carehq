@@ -1,23 +1,33 @@
 {% extends "base.html" %}
+{% include render_json_tags %}
 {% block content %}
 <h1>Submission Timeline</h1>
 {%  for username, submit_arr in submit_dict.items %}
-<h2>{{ username }}'s Submissions</h2>
-<table>
-<thead>
-    <tr>
-        <td>Date</td>
-        <td>Patient</td>
-        <td>Form</td>
-    </tr>
-</thead>
-{% for submission in submit_arr %}
-    <tr>
-        <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date }}</a> </td>
-        <td> {{ submission.2 }}</td>
-        <td> {{ submission.3 }}</td>
-    </tr>
-{% endfor %}
-</table>
+    <h2>{{ username }}'s Submissions</h2>
+    {% if submit_arr %}
+    <table>
+    <thead>
+        <tr>
+            <td>Date</td>
+            <td>Patient</td>
+            <td>Form</td>
+        </tr>
+    </thead>
+    {% for submission in submit_arr %}
+        <tr>
+            {% if submission.3 == "DOTS" %}
+                {#ghetto hacky way to differentiate between the submission types#}
+                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1|date }}</a> </td>
+            {% else %}
+                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date }}</a> </td>
+            {% endif %}
+            <td> {{ submission.2 }}</td>
+            <td> {{ submission.3 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+        <h3>No Submissions</h3>
+    {% endif %} {#if there are any submits at all #}
 {% endfor %}
 {% endblock %}

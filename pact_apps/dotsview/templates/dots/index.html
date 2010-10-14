@@ -6,10 +6,11 @@
 {% endblock %}
 
 {% block page_stylesheets %}
-    <link type="text/css" rel="stylesheet" href="/static/dotsview/stylesheets/dots.css" />
+    <link type="text/css" rel="stylesheet" href="/media/dotsview/stylesheets/dots.css" />
 {% endblock %}
 
 {% block javascripts %}
+    {{ block.super }}
 	<script type="text/javascript">
 	var date_helper = "yyyy-dd-mm";
 	function get_url(){
@@ -18,7 +19,7 @@
 		var end_date = $('#end-date').attr('value');
 		if(start_date==date_helper) start_date = '';
 		if(end_date==date_helper) end_date = '';
-		return "dots?patient="+patient_id+"&start="+start_date+"&end="+end_date;
+		return "{{ request.path }}?patient="+patient_id+"&start="+start_date+"&end="+end_date;
 	}
 	$(document).ready(function(){
 		$('#patients').change(function(){
@@ -51,7 +52,7 @@
 		{% for p in patients %}
 			<option value="{{p.id}}"
 				{% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
-				{{p.user.get_full_name}}
+				{{p.get_full_name}}
 			</option>
 		{% endfor %}
 	</select>
@@ -64,7 +65,7 @@
 		<p class='date-range-warning'>
 			Just so you know, the date range you're looking at is
 			<strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
-			We only have data for <strong>{{patient.user.get_full_name}}</strong> between
+			We only have data for <strong>{{patient.get_full_name}}</strong> between
 			<strong>{{first_observation}}</strong>
 			and <strong>{{last_observation}}</strong>.
 		</p>
