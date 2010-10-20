@@ -22,7 +22,7 @@ import logging
 def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
     context = RequestContext(request)
     users = User.objects.all().filter(is_active=True)
-    enddate = datetime.utcnow() - timedelta(days=80)
+    enddate = datetime.utcnow() - timedelta(days=0)
     timeval = timedelta(days=1)
     eval_date = enddate
 
@@ -40,7 +40,8 @@ def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
                 eval_date = enddate - timedelta(days=offset)
                 datestring = eval_date.strftime("%m/%d/%Y")
 
-                startkey = [str(user.username),  eval_date.year, eval_date.month, eval_date.day, schema]
+                #hack the view is doing zero indexed months
+                startkey = [str(user.username),  eval_date.year, eval_date.month-1, eval_date.day, schema]
                 #endkey = [str(user.username),  enddate.year, enddate.month, enddate.day, schema,{}]
 
                 reduction = XFormInstance.view('pactcarehq/submits_by_user', key=startkey).all()
@@ -161,8 +162,7 @@ def _get_submissions_for_user(username):
         case_id = note.form['case']['case_id']
 
         #for dev purposes this needs to be done for testing
-        case_id = _hack_get_old_caseid(case_id)
-
+        #case_id = _hack_get_old_caseid(case_id)
         patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
         if patient == None:
             patient_name = "Unknown"
