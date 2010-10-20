@@ -5,9 +5,9 @@
 			headClass: "head_menu",
 			subClass: "sub_menu",
 			arrowClass: "arrow",
-			arrowPic: "/media/ashandapp/img/arrow.png",
-			arrowPicA: "/media/ashandapp/img/arrow_select.png",
-			arrowPicH: "/media/ashandapp/img/arrow_hover.png",
+			arrowPic: "/media/pactcarehq/img/arrow.png",
+			arrowPicA: "/media/pactcarehq/img/arrow_select.png",
+			arrowPicH: "/media/pactcarehq/img/arrow_hover.png",
 		};
 		
 		var options = $.extend(defaults, options); 
