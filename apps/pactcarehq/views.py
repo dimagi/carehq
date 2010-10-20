@@ -126,7 +126,7 @@ def get_caselist(request):
 def all_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"):
     context = RequestContext(request)
     submit_dict = {}
-    for user in User.objects.all():
+    for user in User.objects.all().filter(is_active=True):
         username = user.username
         #hack to skip the _ names
         if username.count("_") > 0:
@@ -206,7 +206,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     ###########################################################
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
-    case_id = _hack_get_old_caseid(case_id)
+    #case_id = _hack_get_old_caseid(case_id)
     patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
     if patient == None:
         patient_name = "Unknown"
@@ -274,7 +274,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     ###########################################################
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
-    case_id = _hack_get_old_caseid(case_id)
+    #case_id = _hack_get_old_caseid(case_id)
     patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
     if patient == None:
         patient_name = "Unknown"
