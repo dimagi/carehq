@@ -15,7 +15,13 @@
         <tr>
             <td>{{ username }}</td>
             {% for datestring, val in date_dict.items %}
-                <td>{{ val }}</td>
+                <td>{% if val > 0 %}
+                        <span style="background: #e6efc2; color: #264409; border-color: #c6d880;"><strong>{{ val }}</strong></span>
+                    {%  else %}
+                        <small>{{ val }}</small>
+                    {% endif %}
+
+                </td>
             {% endfor %}
         </tr>
     {% endfor %}
