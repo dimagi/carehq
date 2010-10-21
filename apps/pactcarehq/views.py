@@ -25,8 +25,13 @@ def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
     enddate = datetime.utcnow() - timedelta(days=0)
     timeval = timedelta(days=1)
     eval_date = enddate
-
     total_interval = 7
+    if request.GET.has_key('interval'):
+        try:
+            total_interval = int(request.GET['interval'])
+        except:
+            pass
+
 
     schemas = ['http://dev.commcarehq.org/pact/progress_note', "http://dev.commcarehq.org/pact/dots_form"]
     submission_dict = {}
@@ -51,6 +56,7 @@ def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
                     submission_dict[schema][user.username][datestring] = 0
 
     context['user_submissions'] = submission_dict
+    context['interval'] = total_interval
     return render_to_response(template_name, context_instance=context)
 
 
