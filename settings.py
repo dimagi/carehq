@@ -73,11 +73,10 @@ MIDDLEWARE_CLASSES = (
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-#    'django_digest.middleware.HttpDigestMiddleware',    
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',    
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'ashandapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
 )
@@ -107,24 +106,30 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
+    'couchforms',
 
     #'ashandapp',
     #'careplan',
 
     #####################
     #clinical_core
-    'clinical_core.casetracker',
+    'casetracker',
     'patient',
-    'actors',    
+    'actors',
+    'pactcarehq',
+    'keymaster',
     #end clinical_core
-    
+
+    ######################
+    #pact specific apps
+    'dotsview',
     
     #########################
     #third party apps
     'autofixture',
     'reversion',
     'django_extensions',
-    #'django_digest',
+    'django_digest',
     #end third party apps
     
             
@@ -156,7 +161,7 @@ DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.headers.HeaderDebugPanel',
         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
         'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
+        #'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
         'debug_toolbar.panels.logger.LoggingPanel',
     )
@@ -172,8 +177,8 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 USE_DJANGO_STATIC_SERVER=True
-LOGIN_TEMPLATE='registration/login.html'
-LOGGEDOUT_TEMPLATE='registration/logged_out.html'
+LOGIN_TEMPLATE='pactregistration/login.html'
+LOGGEDOUT_TEMPLATE='pactregistration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
 CASE_CATEGORIES = (
@@ -184,14 +189,12 @@ CASE_CATEGORIES = (
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
-                    'casetracker.models.Case',
-                    'casetracker.models.CaseEvent',
-                    'provider.models.Provider',
+                    #'casetracker.models.Case',
+                    #'casetracker.models.CaseEvent',
                     #'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]
-                    
-PATIENT_DOCUMENT_MODEL = 'clinical_core.models.couch.CCareHQPatient'                   
+
 
 try:
     from settings_local import *
@@ -199,3 +202,24 @@ except:
     logging.error("Local settings not found, loading defaults")
     from settings_default import *
     
+####### Couch Forms & Couch DB Kit Settings #######
+def get_server_url(server_root, username, password):
+    if username and password:
+        return "http://%(user)s:%(pass)s@%(server)s" % \
+            {"user": username,
+             "pass": password,
+             "server": server_root }
+    else:
+        return "http://%(server)s" % {"server": server_root }
+COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
+COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
+
+
+XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
+COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
+        'patient',
+        'couchforms',
+        'pactcarehq',
+
+]]
+

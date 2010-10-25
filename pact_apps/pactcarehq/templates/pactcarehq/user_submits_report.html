@@ -1,0 +1,33 @@
+{%  extends "base.html" %}
+{% block content %}
+<h2>User Submits Tally past {{interval}} days</h2>
+{% for namespace, user_dict in user_submissions.items %}
+    <h3>{{ namespace }}</h3>
+    <table>
+    {%  for username, date_dict in user_dict.items %}
+        {% if forloop.first %}
+            <td>Username</td>
+            {% for datestring, val in date_dict.items %}
+                <td>{{ datestring }}</td>
+            {% endfor %}
+        {% endif %}
+        <tr>
+        <tr>
+            <td>{{ username }}</td>
+            {% for datestring, val in date_dict.items %}
+                <td>{% if val > 0 %}
+                        <span style="background: #e6efc2; color: #264409; border-color: #c6d880;"><strong>{{ val }}</strong></span>
+                    {%  else %}
+                        <small>{{ val }}</small>
+                    {% endif %}
+
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+
+{% endfor %}
+
+
+{% endblock content %}

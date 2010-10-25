@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
 
-from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.views.decorators.cache import cache_page
 from django.contrib.auth.views import login as django_login
 from django.contrib.auth.views import logout as django_logout
-from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 
 import settings

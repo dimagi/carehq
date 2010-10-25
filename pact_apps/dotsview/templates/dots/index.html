@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "DOTS" %}
+{% endblock %}
+
+{% block page_stylesheets %}
+    <link type="text/css" rel="stylesheet" href="/media/dotsview/stylesheets/dots.css" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ block.super }}
+	<script type="text/javascript">
+	var date_helper = "yyyy-dd-mm";
+	function get_url(){
+		var patient_id = $('#patients option:selected').attr('value');
+		var start_date = $('#start-date').attr('value');
+		var end_date = $('#end-date').attr('value');
+		if(start_date==date_helper) start_date = '';
+		if(end_date==date_helper) end_date = '';
+		return "{{ request.path }}?patient="+patient_id+"&start="+start_date+"&end="+end_date;
+	}
+	$(document).ready(function(){
+		$('#patients').change(function(){
+			$(document).attr('location', get_url());
+		});
+		$('input.date').each(function(){
+			if(! $(this).attr('value')) {
+				$(this).attr('value', date_helper);
+			}
+		}).focus(function(){
+			$(this).select();
+		});
+		$('#start-date').change(function(){
+			$(document).attr('location', get_url());
+		});
+		$('#end-date').change(function(){
+			$(document).attr('location', get_url());
+		});
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+	<h1>DOTS Patient Data</h1>
+	<h2>Adherence Data for 
+	<select id="patients">
+		<option value="dots" {% if not patient %} selected="selected" {% endif %}>
+			No patient selected
+		</option>
+		{% for p in patients %}
+			<option value="{{p.id}}"
+				{% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
+				{{p.get_full_name}}
+			</option>
+		{% endfor %}
+	</select>
+	from
+	<input id="start-date" class="date" type="text" value="{{start_date}}"></input>
+	until
+	<input id="end-date" class="date" type="text" value="{{end_date}}"></input>
+	</h2>
+	{% if patient and bad_date_range %}
+		<p class='date-range-warning'>
+			Just so you know, the date range you're looking at is
+			<strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
+			We only have data for <strong>{{patient.get_full_name}}</strong> between
+			<strong>{{first_observation}}</strong>
+			and <strong>{{last_observation}}</strong>.
+		</p>
+	{% endif %}
+	{% if patient %}
+		<table class="calendar">
+			<tr>
+				<th>{% trans "Monday" %}</th>
+				<th>{% trans "Tuesday" %}</th>
+				<th>{% trans "Wednesday" %}</th>
+				<th>{% trans "Thursday" %}</th>
+				<th>{% trans "Friday" %}</th>
+				<th>{% trans "Saturday" %}</th>
+				<th>{% trans "Sunday" %}</th>
+			</tr>
+		{% for week in weeks %}
+			<tr>
+				{% for date, entries in week %}
+					{% if date %}
+						<td>
+    <div class="date-label"> {{date}}</div>
+							<div class="calendar-cell">
+								{% for drug_type, times_of_day in entries %}
+								<div class="drug-cell">
+									<div class="drug-label">{% trans drug_type %}</div>
+									{% for time_of_day, obs in times_of_day %}
+										<div class="time-label">{% trans time_of_day %}</div>
+										<div class="time-cell">
+											{% if obs %}
+												{% for ob in obs %}
+													<div class="observation">
+														<div class="ob-{{ob.adherence}}">
+															{{ob.adherence}}
+														</div>
+														<div class="ob-{{ob.method}}">
+															{{ob.method}}
+														</div>
+													</div>
+												{% endfor %}
+											{% endif %}
+										</div>
+									{% endfor %}
+								</div>
+								{% endfor %}
+							</div>
+						</td>
+					{% else %}
+						<td class="empty"></td>
+					{% endif %}
+				{% endfor %}
+			</tr>
+		{% endfor %}
+		</table>
+	{% endif %}
+    <div class="span-6">
+    <fieldset>
+    <h4>Legend</h4>
+        <div class="span-6">
+        <strong>Observation Method</strong>
+        <hr>
+            <img src="/media/dotsview/icons/plus.png"> Direct Observation<br>
+            <img src="/media/dotsview/icons/minus.png"> Self Reported<br>
+        </div>
+
+        <div class="span-6 last prepend-top">
+        <strong>Pillbox Adherence</strong><br>
+        <hr>
+            <img src="/media/dotsview/icons/check.jpg"> Empty<br>
+            <img src="/media/dotsview/icons/exclamation-point.jpg"> Partial<br>
+            <img src="/media/dotsview/icons/x-mark.png"> Full<br>
+        </div>
+
+    </fieldset>
+
+
+    </div>
+{% endblock %}

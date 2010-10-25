@@ -4,92 +4,75 @@ from django.contrib import admin
 import settings
 import os
 import logging
+from clincore.utils.modules import try_import
 
 urlpatterns =  []
+admin.autodiscover()
 
 urlpatterns += patterns('',
                         (r'^accounts/login/$', 'django.contrib.auth.views.login', 
                                                 {"template_name": settings.LOGIN_TEMPLATE }),
                         (r'^accounts/logout/$', 'views.logout', 
                                                 {"template_name": settings.LOGGEDOUT_TEMPLATE }),
-                        #todo, other auth related urls (password_X, reset)
+
+
+                        (r'^admin/', include(admin.site.urls)),
+
+                        # This is a bit kloogey - but since most of these urls don't span
+                        # a single namespace (e.g. domain/ and accounts/ for domain app)
+                        # we just include the urls at the root.
+                        # The correct solution is likely to break apart urls or harmonize
+                        # apps so they all have proper prefixing.
+
+#                        (r'', include('corehq.apps.hqwebapp.urls')),
+#                        (r'', include('corehq.apps.domain.urls')),
+#                        (r'', include('corehq.apps.receiver.urls')),
+#                        (r'', include('corehq.apps.xforms.urls')),
+#                        (r'', include('corehq.apps.program.urls')),
+#                        (r'', include('care_apps.provider.urls')),
+                        (r'', include('keymaster.urls')),
+                        (r'', include('pactcarehq.urls')),
+                        #(r'user_registration', include("django_user_registration.urls")),
+                        #(r'couchpost', 'couchforms.views.post'),
                         )
 
-def setmedia(appname, upats):
-    if hasattr(settings,'USE_DJANGO_STATIC_SERVER') and \
-    settings.USE_DJANGO_STATIC_SERVER:
-    # does urls.py have a sibling "static" dir?
-        mod_dir = os.path.dirname(module.__file__)
-        static_dir = "%s/static" % mod_dir
-        media_dir = '%s/media' % mod_dir        
-        
-        if os.path.exists(static_dir):                   
-            upats += patterns("", url("^media/%s/(?P<path>.*)$" % appname,
-                "django.views.static.serve", {"document_root": static_dir }
-            ))
-        if os.path.exists(media_dir):                   
-            upats += patterns("", url("^media/%s/(?P<path>.*)$" % appname,
-                "django.views.static.serve", {"document_root": media_dir }
-            ))
-    return upats
 
 
-for appname in settings.INSTALLED_APPS:
-    try:    
-        # import the single "urlpatterns" attribute        
-        module = __import__(appname, {}, {}, ['urls'])
-        
-        
-        if appname == 'django.contrib.admin':            
-            urlpatterns += patterns('',
-                                    url(r'^admin/(.*)', admin.site.root),)
-            
-            urlpatterns = setmedia('admin', urlpatterns)
-            admin.autodiscover()            
-            
-            continue
-        elif appname == 'django.contrib.auth':
-            #All auth stuff will be done by hand.
-            continue
-        elif appname == 'debug_toolbar':
-            #another nasty hack due to the recursion explosion with the url resolver
-            continue
-        
-        if hasattr(module,'urls'):                        
-            
-            #subdir all the apps?
-            #urls_module = "%s.urls" % (appname)            
-            #urlpatterns += patterns('',(r'^%s/' % appname, include(urls_module)))                        
-            
-            #or just put them all to root
-            urls_module = "%s.urls" % (appname)            
-            module = __import__(urls_module, {}, {}, ["urlpatterns"])
-            urlpatterns += module.urlpatterns       
-            urlpatterns = setmedia(appname, urlpatterns)
-            #ok, so it has urls, now for debug purposes
-            
-    except Exception, e:
-        logging.error("Url load (%s): %s" % (appname, str(e)))
+# magic static media server (idea + implementation lifted from rapidsms)
+for module_name in settings.INSTALLED_APPS:
+
+    # leave django contrib apps alone. (many of them include urlpatterns
+    # which shouldn't be auto-mapped.) this is a hack, but i like the
+    # automatic per-app mapping enough to keep it. (for now.)
+    if module_name.startswith("django."):
+        continue
+
+    # attempt to import this app's urls
+    module = try_import("%s.urls" % (module_name))
+    if not hasattr(module, "urlpatterns"): continue
 
 
+    # if the MEDIA_URL does not contain a hostname (ie, it's just an
+    # http path), and we are running in DEBUG mode, we will also serve
+    # the media for this app via this development server. in production,
+    # these files should be served directly
+    if settings.DEBUG:
+        if not settings.MEDIA_URL.startswith("http://"):
+            media_prefix = settings.MEDIA_URL.strip("/")
+            module_suffix = module_name.split(".")[-1]
 
-#additional media locations pointing for the static server
-if hasattr(settings,'AUX_MEDIA_DIRS'):
-    if hasattr(settings,'USE_DJANGO_STATIC_SERVER') and settings.USE_DJANGO_STATIC_SERVER:
-        for dirname, path in settings.AUX_MEDIA_DIRS.items():
-            if os.path.exists(path):
-                urlpatterns += patterns("", url("^media/%s/(?P<path>.*)$" % dirname,
-                            "django.views.static.serve", {"document_root": path }
-                        ))
+            # does urls.py have a sibling "static" dir? (media is always
+            # served from "static", regardless of what MEDIA_URL says)
+            module_path = os.path.dirname(module.__file__)
+            static_dir = "%s/static" % (module_path)
+            if os.path.exists(static_dir):
 
+                # map to {{ MEDIA_URL }}/appname
+                urlpatterns += patterns("", url(
+                    "^%s/%s/(?P<path>.*)$" % (
+                        media_prefix,
+                        module_suffix),
+                    "django.views.static.serve",
+                    {"document_root": static_dir}
+                ))
 
-    
-
-
-#from django.conf.urls.defaults import *
-
-#urlpatterns = patterns('',
-#    (r'^weblog/',        include('django_website.apps.blog.urls.blog')),
-#    (r'^documentation/', include('django_website.apps.docs.urls.docs')),
-#    (r'^comments/',      include('django.contrib.comments.urls')),
-#)

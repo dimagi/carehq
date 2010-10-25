@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% load i18n %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        {% block stylesheets %}
+			<!-- stylesheets -->
+	        <link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/blueprint/screen.css" type="text/css" media="screen, projection">
+	        <link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/blueprint/print.css" type="text/css" media="print">
+	        <!--[if lt IE 8]>
+	        <link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/blueprint/ie.css" type="text/css" media="screen, projection">
+	        <![endif]-->
+	        <link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/pactcarehq.css" type="text/css">
+            <link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/jquery-ui-1.8.custom.css" type="text/css">
+			<link rel="stylesheet" href="{{MEDIA_URL}}pactcarehq/css/flickr-menu-style.css" type="text/css">
+	        {% block page_stylesheets %}{% endblock %}
+        {% endblock %} {# stylesheets #}
+
+        {% block javascripts %}
+        <!-- javascripts (global, app, page) -->
+        <script type="text/javascript" src="{{MEDIA_URL}}pactcarehq/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{MEDIA_URL}}pactcarehq/js/jquery-ui-1.8.custom.min.js"></script>
+
+		<script type="text/javascript" src="{{MEDIA_URL}}pactcarehq/js/jquery.flickrmenu.js"></script>
+		<script type="text/javascript" src="{{MEDIA_URL}}pactcarehq/js/jquery.cookie.yc.js"></script>
+		<script type="text/javascript" src="{{MEDIA_URL}}pactcarehq/js/jquery.timeago.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+            $().ready(function(){
+                $("#menu").flickrmenu();
+            });
+        </script>
+        {% endblock javascripts %}
+        {% block extrahead %}{% endblock %}
+    </head>
+    <body>
+		{% block tophat %}
+  		<div id="tophat">
+			{% block searchbar %}
+			{% comment %}
+			<div id="searchbar">
+			<form method="POST" action="{{request.path}}?activity=issue-event-comment" >
+				<textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>
+				<input type="hidden" name="next" value="{{ request.path }}" />
+				</form>
+			</div>
+			{% endcomment %}
+			{% endblock searchbar %}
+			{% block auth %}
+			<div id="identityblock">
+				{% if user.is_superuser %}
+				<a href="/admin">Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
+				{% endif %}
+
+		        {% if user.is_authenticated %}
+		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp;  <a href="#">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
+		        {% else %}
+		            {#<a href="/accounts/login/">{% trans "Log in" %}</a>#}
+		        {% endif %}
+        	</div>
+        	{% endblock auth %}
+    	</div>
+	    {% endblock tophat %}
+
+		<div class="container">
+      		<div class="span-24"> <!-- Header div -->
+				{% block branding %}
+				<div class="span-2">
+					<a title="Return to the Dashboard" href="/">
+					<img src="{{MEDIA_URL}}pactcarehq/img/dimagilogo.png">
+					</a>
+				</div>
+				{% endblock branding %}
+
+				{% block navigation_menu %}
+				<div class="span-22 last">
+					{% if user.is_authenticated %}
+                    <div id="menu" style="z-index:-1;">
+                     <ul>
+                         <li>
+                             <span class="head_menu">
+                             <a href="{% url pactcarehq.views.dashboard %}">Dashboard</a>
+                             </span>
+                         </li>
+                         <li>
+                             <span class="head_menu">
+                             <a href="{% url pactcarehq.views.my_submits %}">My Submissions</a>
+                             </span>
+                         </li>
+
+                         <li>
+                             <span class="head_menu">
+                             <a href="/dots">DOT Adherence</a>
+                             </span>
+                         </li>
+                         {% if user.is_superuser %}
+                         <li>
+                             <span class="head_menu">
+                                 <a href="#">Admin</a>
+                                 <img src="/media/pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+                             </span>
+                             <div class="sub_menu">
+                                 <ul>
+                                 <li><a href="{% url pactcarehq.views.all_submits %}">All Submissions</a> </li>
+                                 <li><a href="https://pactd.dimagi.com/_utils/database.html?carehq/_design/patient/_view/by_last_name">Patient Editor</a></li>
+                                 </ul>
+                             </div>
+                        </li>
+                        {% endif %}      {# end superuser if #}
+                     </ul>
+					{% endif %} {# end autenticated if#}
+                    </div> {# div id=menu #}
+				</div>
+				{% endblock navigation_menu %}
+			</div> <!-- end header class -->
+
+            <div class="span-24">
+            {% block content %}
+			{% endblock %}
+            </div>
+
+            {% block footer %}
+            <div id="footer span-24">
+                <p class="rights prepend-19">
+                    Copyright &copy; {% now "Y" %} <a href="http://dimagi.com">Dimagi Inc.</a><br />
+                </p>
+            </div>
+            {% endblock %}
+        </div>
+      </div>
+    </body>
+</html>

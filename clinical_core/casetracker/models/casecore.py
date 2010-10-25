@@ -16,6 +16,7 @@ from patient.models import Patient
 
 from casetracker.managers import CaseManager
 from clincore.utils import make_uuid
+import uuid
 
 
 CASE_EVENT_CHOICES = (
@@ -78,6 +79,7 @@ class Category(models.Model):
     display = models.CharField(max_length=64, help_text="The display name of the category - what will be printed")
     description = models.CharField(max_length=255, help_text = "A longer description of the case category")
 
+    category_class = models.CharField(max_length=32, db_index=True, editable=False, null=True, blank=True, help_text = 'Subclass name of the instance.')
 
     @property
     def read_template(self):
