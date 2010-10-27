@@ -1,4 +1,7 @@
 from patient.models.couchmodels import CPatient, CSimpleComment
+from couchexport.export import export_excel
+from django.http import HttpResponse
+from StringIO import StringIO
 import uuid
 from django.http import HttpResponse, HttpResponseRedirect
 from django_digest.decorators import httpdigest
@@ -16,6 +19,25 @@ from couchforms.signals import xform_saved
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 import logging
+
+
+@login_required
+def export_excel_file(request):
+    """
+    Download all data for a couchdbkit model
+    """
+    export_tag = request.GET.get("export_tag", "")
+    if not export_tag:
+        return HttpResponse("You must specify a model to download")
+    tmp = StringIO()
+    if export_excel(export_tag, tmp):
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=%s.xls' % export_tag
+        response.write(tmp.getvalue())
+        tmp.close()
+        return response
+    else:
+        return HttpResponse("Sorry, there was no data found for the tag '%s'." % export_tag)
 
 
 @login_required
