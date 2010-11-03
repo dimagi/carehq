@@ -10,14 +10,14 @@ def run():
     for obs in observations:
         output = []
         output.append(str(obs.doc_id))
-        doc = XFormInstance.view('pactcarehq/all_dots_forms', key=obs.doc_id).first()
+        doc = XFormInstance.view('pactcarehq/all_submits_raw', key=obs.doc_id).first()
         if (doc):
             output.append(doc['form']['encounter_date'].strftime('%Y-%m-%d'))
         else:
             output.append("no-encounter")
             print "WTF"
 
-        output.append(obs.patient.couchdoc['pact_id'])
+        output.append(obs.patient.couchdoc()['pact_id'])
         output.append(obs.date.strftime("%Y-%m-%d"))
         if obs.is_art:
             output.append('1')
@@ -33,7 +33,7 @@ def run():
         output.append(repr(obs.total_doses))
 
         if doc:
-            anchor = doc['case']['update']['dots']['anchor']
+            anchor = doc['form']['case']['update']['dots']['anchor']
             anchor_date = datetime.strptime(anchor, "%d %b %Y %H:%M:%S %Z")
             output.append(anchor_date.strftime('%Y-%m-%d'))
         else:
