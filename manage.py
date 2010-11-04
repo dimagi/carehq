@@ -11,6 +11,10 @@ sys.path.insert(0, os.path.join(filedir,'contrib_apps'))
 sys.path.insert(0, os.path.join(filedir,'lib'))
 sys.path.insert(0, os.path.join(filedir,'pact_apps'))
 
+sys.path.insert(0, os.path.join(filedir,'submodules','couchforms'))
+sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
+sys.path.insert(0, os.path.join(filedir,'submodules','dimagi-utils'))
+
 from django.core.management import execute_manager
 try:
     import settings # Assumed to be in the same directory.

@@ -13,11 +13,13 @@ ghetto_regimen_map = {
     '': '' ,
 }
 
+
+
 class CPhone(Document):
     is_default = BooleanProperty()
     description = StringProperty()
     number = StringProperty()
-    created = DateTimeProperty()
+    created = DateTimeProperty(default=datetime.utcnow)
     class Meta:
         app_label = 'patient'
 
@@ -66,6 +68,13 @@ ghetto_patient_xml = """<case>
            </case>"""
 
 class CPatient(Document):
+
+    GENDER_CHOICES = (
+        ('m','Male'),
+        ('f','Female'),
+        ('u','Undefined'),
+    )
+
     django_uuid = StringProperty() #the django uuid of the patient object
     pact_id = StringProperty(required=True)
     first_name = StringProperty(required=True)
@@ -159,6 +168,6 @@ class CSimpleComment(Document):
     deprecated = BooleanProperty(default=False)
     comment = StringProperty()
     created_by = StringProperty()
-    created = DateTimeProperty()
+    created = DateTimeProperty(default=datetime.utcnow)
     class Meta:
         app_label = 'patient'

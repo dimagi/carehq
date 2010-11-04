@@ -12,6 +12,7 @@ urlpatterns = patterns ('',
 
     (r'^progress_notes/$', 'pactcarehq.views.my_submits'),
     (r'^progress_notes/all$', 'pactcarehq.views.all_submits'),
+    (r'^export/$', 'pactcarehq.views.export_excel_file'),
 
     #(r'^patients/mine$', 'pactcarehq.views.my_patients'),
     #(r'^patients/all$', 'pactcarehq.views.my_patients'),
