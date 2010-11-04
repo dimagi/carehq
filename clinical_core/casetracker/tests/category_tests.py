@@ -4,11 +4,9 @@ from casetracker.registry.handler import CategoryHandler
 from django.core.management import call_command
 
 class CategoryVerificationTest(TestCase):
+    fixtures = ['samplesetup-fixture.json']
     def setUp(self):
-        call_command('load_categories', '--clean')
-        call_command('load_states', '--clean')
-        call_command('load_activities', '--clean')
-        call_command('loaddata', 'default-priority.json')
+        pass
 
     def testVerifyHandlerProperties(self):
         """

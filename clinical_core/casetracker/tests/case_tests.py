@@ -5,7 +5,7 @@ import hashlib
 import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
-from clinical_core.clincore import test_bootstrap as bootstrap
+from clinical_core.clincore import generator as bootstrap
 from casetracker import constants
 from patient.models.djangomodels import Patient
 from actors.models.actors import PatientActorLink, Actor
@@ -33,8 +33,7 @@ def create_user(username='mockuser', password='mockmock'):
 
 
 class EventActivityVerificationTest(TestCase):
-    fixtures = [
-                'samplesetup-fixture.json']
+    fixtures = ['samplesetup-fixture.json']
 
     def setUp(self):
         call_command('load_categories')

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from clinical_core.actors.models import Role, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
 from clinical_core.patient.models import Patient
 
-from clinical_core.clincore import test_bootstrap as bootstrap
+from clinical_core.clincore import generator as bootstrap
     
 MAX_MULTI_PATIENTS = 10
 
