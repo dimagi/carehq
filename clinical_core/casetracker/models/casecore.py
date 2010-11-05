@@ -15,7 +15,7 @@ from casetracker import constants
 from patient.models import Patient
 
 from casetracker.managers import CaseManager
-from clincore.utils import make_uuid
+from dimagi.utils import make_uuid
 import uuid
 
 
@@ -78,8 +78,6 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, help_text = "The unique, internal represntation of the category, for the in memory registry") #Unique slug name of category for the in memory registry
     display = models.CharField(max_length=64, help_text="The display name of the category - what will be printed")
     description = models.CharField(max_length=255, help_text = "A longer description of the case category")
-
-    category_class = models.CharField(max_length=32, db_index=True, editable=False, null=True, blank=True, help_text = 'Subclass name of the instance.')
 
     @property
     def read_template(self):

@@ -4,7 +4,7 @@ from django.contrib import admin
 import settings
 import os
 import logging
-from clincore.utils.modules import try_import
+from dimagi.utils.modules import try_import
 
 urlpatterns =  []
 admin.autodiscover()

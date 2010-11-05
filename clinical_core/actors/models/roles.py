@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 from clinical_core.patient.models import Patient
 from django.db.models import Q
 
-from clincore.utils import make_uuid, make_time
+from dimagi.utils import make_uuid, make_time
 
 class Role(models.Model):
     """

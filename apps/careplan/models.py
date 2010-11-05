@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 
 # Create your models here.
-from clincore.utils import make_uuid, make_time
+from dimagi.utils import make_uuid, make_time
 
 class PlanCategory(models.Model):
     """

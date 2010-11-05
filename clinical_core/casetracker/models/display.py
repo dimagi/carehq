@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from casecore import Filter
-from clincore.utils import make_uuid
+from dimagi.utils import make_uuid
 
 
 class GridColumn(models.Model):

@@ -5,7 +5,7 @@ from datetime import datetime
 
 import settings
 import logging
-from clincore.utils import make_uuid, make_time
+from dimagi.utils import make_uuid, make_time
 from patient.models.couchmodels import CPatient
 
 

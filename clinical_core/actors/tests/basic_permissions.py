@@ -13,8 +13,6 @@ class BasicPermissionsTest(TestCase):
         pass
     def _createPatient(self):
         pt = Patient()
-        
-        
         pass
     
     def _createUser(self):

@@ -23,7 +23,3 @@ patient
 The app to manage the patient itself.  It is fully featured in django.  To extend it, you may use couchdbkit to append more metadata.
 
 
-clincore
-========
-
-A wrapper module to centrally integrate these apps. 
