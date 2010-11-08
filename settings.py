@@ -77,7 +77,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    #'ashandapp.middleware.identity.AshandIdentityMiddleware',
+    #'carehqapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
 )
 
@@ -108,8 +108,9 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
     'couchforms',
     'couchexport',
+    'clincore',
 
-    #'ashandapp',
+    'carehqapp',
     #'careplan',
 
     #####################
@@ -117,7 +118,7 @@ INSTALLED_APPS = (
     'casetracker',
     'patient',
     'actors',
-    'pactcarehq',
+    #'pactcarehq',
     'keymaster',
     #end clinical_core
 
@@ -183,9 +184,9 @@ LOGGEDOUT_TEMPLATE='pactregistration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
 CASE_CATEGORIES = (
-                   'ashandapp.caseregistry.issue',
-                   'ashandapp.caseregistry.system',
-                   'ashandapp.caseregistry.question',
+                   'carehqapp.caseregistry.issue',
+                   'carehqapp.caseregistry.system',
+                   'carehqapp.caseregistry.question',
                    )
 
 AUDITABLE_MODELS = [
@@ -224,4 +225,7 @@ COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'couchexport',
 
 ]]
+
+
+TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
