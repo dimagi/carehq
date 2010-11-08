@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Care Network" %} {% endblock %}
+{% block content %}	
+<h2>Care Network</h2>
+
+<h2>My Care Team</h2>
+{%with my_careteam as careteam %}
+	{% include "carehqapp/partials/inline_careteam.html" %}
+{% endwith %}
+{% endblock %}
+
+

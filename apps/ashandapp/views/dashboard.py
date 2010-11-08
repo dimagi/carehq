@@ -74,7 +74,7 @@ def get_json_for_paging(request):
     for case in display_filter:
         careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
         json_string += "["
-        json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
+        json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.title())
         for col in filter.gridpreference.get_display_columns:
             table_entry = case_column_plain(case, col.name)
             if len(table_entry) > 45:

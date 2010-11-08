@@ -1,0 +1,61 @@
+{% extends "carehqapp/careteam/view_careteam_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Team" %} {% endblock %}
+{% block active_careteam_tab %} {# span 17#}
+		{% comment %}
+		<div class="span-8">			
+			<div class="span-7 prepend-1">
+			<a href="{%url carehqapp.views.cases.create.new_question careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Question</a>
+			&nbsp;
+			<a href="{%url carehqapp.views.cases.create.new_issue careteam.id %}" class="fg-button ui-state-default ui-corner-all">New Issue</a><br><br>
+			</div>
+		</div>
+		{% endcomment %}
+        <div class="span-8 prepend-top prepend-1"><!--provider block -->				
+                <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Providers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite provider</a>
+					</div>
+				</div>
+                <div class="span-7">
+				<ul>
+                {% for prov in careteam.providers.all %}
+                    <li>            
+                        <a href="{%url ashandapp.views.users.single prov.user.id %}">
+                        {{prov.user.first_name }}  {{prov.user.last_name }}</a><br>
+                        <em>{{prov.job_title }} - {{prov.affiliation }}</em> <br>
+                    </li>
+                {% endfor %}
+                </ul>
+				</div>
+        </div> <!-- end provider block -->
+        
+        <div class="span-8 prepend-top last"> <!-- caregiver block -->
+            <div class="span-7">
+					<div class="span-4">
+						<h3>{%trans "Caregivers" %}</h3>
+					</div>
+					<div class="span-3 last">
+						<a href="">Invite caregiver</a>
+					</div>
+				</div>
+			<div class="span-7">
+            {% if careteam.caregiver_data %}
+                <ul>
+                {% for cglink in careteam.caregiver_data %}
+                    <li>
+                        <a href="{%url ashandapp.views.users.single cglink.user.id %}">
+                        {{cglink.user.first_name }}  {{cglink.user.last_name }}</a><br>
+                        <em>{{cglink.relationship }}</em> 
+                    </li>
+                {% endfor %}
+                </ul>
+            {%else %}
+                <em>{%trans "No Caregivers"%}</em>
+            {%endif %}
+			</div>    
+        </div> <!-- end caregiver block -->       
+{% endblock active_careteam_tab %}

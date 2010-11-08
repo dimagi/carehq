@@ -6,7 +6,7 @@ from patient.models import Patient
 
 
 @login_required
-def my_profile(request, template_name = 'ashandapp/my_profile.html'):
+def my_profile(request, template_name = 'carehqapp/my_profile.html'):
     user = request.user
     context = {}        
     return render_to_response(template_name, context, context_instance=RequestContext(request))
@@ -37,12 +37,12 @@ def single(request, user_id=None):
     #=======================================
     #Section to determine request.user's relationship with selected user beinga patient        
     try:
-        template_name = "ashandapp/view_patient.html"
+        template_name = "carehqapp/view_patient.html"
         patient = Patient.objects.all().get(user=user)
         context['selected_is_patient'] = True
         context['selected_patient'] = patient
     except:
-        template_name = "ashandapp/view_user.html"
+        template_name = "carehqapp/view_user.html"
         context['selected_is_patient'] = False
     
 #    if context['selected_is_patient']:
@@ -92,7 +92,7 @@ def single(request, user_id=None):
 #    context['selected_is_provider'] = selected_is_provider
 #    if selected_is_provider:
 #        #ok, so they are a provider, now let's see if we are on the same care team anywhere
-#        template_name = "ashandapp/view_provider.html"
+#        template_name = "carehqapp/view_provider.html"
 #
 #        #careteams that the provider is a part of
 #        plink_selected = ProviderLink.objects.all().filter(provider=selected_provider)

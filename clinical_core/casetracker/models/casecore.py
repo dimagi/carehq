@@ -208,7 +208,7 @@ class CaseEvent(models.Model):
         super(CaseEvent, self).save()  
     
     def __unicode__(self):
-        return "Event (%s} by %s on %s" % (self.activity.slug, self.created_by.get_full_name(), self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
+        return "Event (%s} by %s on %s" % (self.activity.slug, self.created_by.title(), self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
     
     class Meta:
         app_label = 'casetracker'

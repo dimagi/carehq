@@ -20,7 +20,7 @@ def case_saved(sender, instance, created, **kwargs):
     if created:        
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
-        notes = "New case created by " + event_creator.get_full_name()
+        notes = "New case created by " + event_creator.title
         
         try:
             event_new.activity = ActivityClass.objects.get(event_class=constants.CASE_EVENT_OPEN)
@@ -35,7 +35,7 @@ def case_saved(sender, instance, created, **kwargs):
         if hasattr(instance, 'save_comment'):
             notes = instance.save_comment
         else:
-            notes = "Case edited by " + event_creator.get_full_name()
+            notes = "Case edited by " + event_creator.title
             
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity            

@@ -10,7 +10,7 @@ def inject_casemonitor(careteam, event_arr):
     """
     Pull data from the triage_arr and randomly assign them to patients as if they were new inbound triage cases
     """    
-    print "Adding monitoring event to patient %s" % (careteam.patient.user.get_full_name()) 
+    print "Adding monitoring event to patient %s" % (careteam.patient.user.title())
     startdelta = timedelta(minutes=random.randint(1,200)) #sometime in the past 3
     main_info = event_arr[0:4]            
     category_txt = main_info[0].strip()            
@@ -68,7 +68,7 @@ def generate_triage():
     for careteam in careteams:
         max_encounters = random.randint(1,2)    
         random.shuffle(triage_arr)
-        print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.get_full_name()) 
+        print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.title())
         for enc in range(0,max_encounters):    
             inject_casemonitor(careteam, triage_arr[enc])
 

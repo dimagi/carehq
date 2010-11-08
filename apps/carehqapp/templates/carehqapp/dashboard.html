@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block extrahead %}
+<script>
+    var refreshNotification =
+        function()
+        {
+            location.reload();
+            fadeIn("slow");
+        };
+
+    $(document).ready(
+        function()
+        {
+			//placeholder for autorefresh, but turning off for now
+            //var autoRefresh = setInterval(refreshNotification, 30000);
+            jQuery("abbr.timeago").timeago();
+        }
+    );
+</script>
+{% endblock %}
+{% block content %}
+    <h2>My Dashboard</h2>
+    <div class="span-24 notice">
+        <h3>In the past 24 hours</h3>
+        <p>Lots of stuff</p>
+        <p>happened</p>
+    </div>
+
+{% endblock %}

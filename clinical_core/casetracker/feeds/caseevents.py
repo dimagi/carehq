@@ -9,16 +9,16 @@ def get_sorted_caseevent_dictionary(sort, arr):
         for event in arr:
             if (obj == None):
                 obj = event
-                if not sorted_dic.has_key(obj.created_by.get_full_name()):
-                    sorted_dic[obj.created_by.get_full_name()] = []
-                sorted_dic[obj.created_by.get_full_name()].append(obj)
-            elif obj.created_by.get_full_name() == event.created_by.get_full_name():
-                sorted_dic[obj.created_by.get_full_name()].append(event)
+                if not sorted_dic.has_key(obj.created_by.title()):
+                    sorted_dic[obj.created_by.title()] = []
+                sorted_dic[obj.created_by.title()].append(obj)
+            elif obj.created_by.title() == event.created_by.title():
+                sorted_dic[obj.created_by.title()].append(event)
             else :
                 obj = event
-                if not sorted_dic.has_key(obj.created_by.get_full_name()): 
-                    sorted_dic[obj.created_by.get_full_name()] = []
-                sorted_dic[obj.created_by.get_full_name()].append(obj)
+                if not sorted_dic.has_key(obj.created_by.title()):
+                    sorted_dic[obj.created_by.title()] = []
+                sorted_dic[obj.created_by.title()].append(obj)
     elif (sort == "category"): 
         for event in arr:
             if (obj == None):

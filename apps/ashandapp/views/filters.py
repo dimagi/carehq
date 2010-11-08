@@ -29,7 +29,7 @@ def filter_cases_for_user(qset, user):
     raise Exception("filter_cases_for_user, not implementing new actor model yet")
 
 @login_required
-def list_cases(request, template_name="ashandapp/list_cases.html"):
+def list_cases(request, template_name="carehqapp/list_cases.html"):
     context = {}
     user = request.user    
     

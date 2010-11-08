@@ -1,17 +1,11 @@
-
 from django.test import TestCase
-from datetime import datetime
 import hashlib
 import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
-from clinical_core.clincore import generator as bootstrap
+from clinical_core.clincore.utils import generator
 from casetracker import constants
-from patient.models.djangomodels import Patient
-from actors.models.actors import PatientActorLink, Actor
-from actors.models.roles import Role, Role
 from django.core.management import call_command
-from django.db import transaction
 
 
 INITIAL_DESCRIPTION = "this is a case made by the test case"
@@ -58,11 +52,11 @@ class EventActivityVerificationTest(TestCase):
     def testCreateCaseApi(self, description=INITIAL_DESCRIPTION):
         ###########################
         #get the basic counts
-        user1 = bootstrap.generate_user()
-        user2 = bootstrap.generate_user()
+        user1 = generator.generate_user()
+        user2 = generator.generate_user()
 
-        actor1 = bootstrap.generate_actor(user1, 'caregiver')
-        actor2 = bootstrap.generate_actor(user2, 'provider')
+        actor1 = generator.generate_actor(user1, 'caregiver')
+        actor2 = generator.generate_actor(user2, 'provider')
 
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
@@ -108,8 +102,8 @@ class EventActivityVerificationTest(TestCase):
         desc= uuid.uuid1().hex
         self.testCreateCaseApi(description=desc)
 
-        user1 = bootstrap.generate_user()
-        actor1 = bootstrap.generate_actor(user1, 'provider')
+        user1 = generator.generate_user()
+        actor1 = generator.generate_actor(user1, 'provider')
 
         
         case = Case.objects.all().get(description=desc)
@@ -136,8 +130,8 @@ class EventActivityVerificationTest(TestCase):
 
     def testCaseCreateChildCases(self):
         self.testCreateCaseApi()
-        user1 = bootstrap.generate_user()
-        actor1 = bootstrap.generate_actor(user1, 'provider')
+        user1 = generator.generate_user()
+        actor1 = generator.generate_actor(user1, 'provider')
 
         case = Case.objects.all().get(description =INITIAL_DESCRIPTION)
         CHILD_CASES=10

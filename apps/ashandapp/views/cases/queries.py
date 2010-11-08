@@ -39,7 +39,7 @@ def do_get_patient_case_json(cases_qset, columns, request):
 #        #todo, this is pretty inefficient on db lookups since we're pulling the reverse of the careteam on each case
 #        careteam_url = reverse('view-careteam', kwargs={"careteam_id": case.careteam_set.get().id})
 #        json_string += "["
-#        #json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.get_full_name())
+#        #json_string += "\"<a href = '%s'>%s</a>\"," % (careteam_url, case.careteam_set.get().patient.user.title())
 #        for col in columns:
 #            table_entry = case_column(case, col)
 #            if len(table_entry) > 80:
@@ -60,15 +60,15 @@ def do_get_patient_case_json(cases_qset, columns, request):
     
     #context['json_string'] = json_string
     if request.GET.has_key('debug'):
-        template = 'ashandapp/json_debug.html'
+        template = 'carehqapp/json_debug.html'
     else:
-        template = 'ashandapp/json.html'
+        template = 'carehqapp/json.html'
     return render_to_response(template, context, context_instance=RequestContext(request))
     #return HttpResponse(json_string)
     
 
 @login_required
-def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html"):
+def grid_recent_activity(request, template_name="carehqapp/cases/bare_query.html"):
     """
     Return a case queryset of all the patients that this caregiver is working on.        
     """
@@ -98,7 +98,7 @@ def grid_recent_activity(request, template_name="ashandapp/cases/bare_query.html
 
 @login_required
 #@provider_only
-def grid_caregiver_cases(request, template_name="ashandapp/cases/bare_query.html"):
+def grid_caregiver_cases(request, template_name="carehqapp/cases/bare_query.html"):
     """
     Return a case queryset of all the patients that this caregiver is working on.        
     """
@@ -148,7 +148,7 @@ def _get_careteam_triage_qset(careteam):
 
 @login_required
 @provider_only
-def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
+def grid_triage_cases(request, template_name="carehqapp/cases/bare_query.html"):
     """
     For a given provider, return all the cases merged for whom they triage
     """
@@ -182,7 +182,7 @@ def grid_triage_cases(request, template_name="ashandapp/cases/bare_query.html"):
 
 @login_required
 @provider_only
-def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_query.html"):
+def grid_provider_patient_cases(request, template_name="carehqapp/cases/bare_query.html"):
     """
     For a given doctor, this is a huge query to get all the cases for all their patients    
     """      
@@ -222,7 +222,7 @@ def grid_provider_patient_cases(request, template_name="ashandapp/cases/bare_que
 
 
 @login_required
-def grid_careteam_cases(request, careteam_id, template_name="ashandapp/cases/bare_query.html"):
+def grid_careteam_cases(request, careteam_id, template_name="carehqapp/cases/bare_query.html"):
     """
     Return a case queryset of all the patients that this caregiver is working on.        
     """
@@ -273,7 +273,7 @@ def grid_careteam_cases(request, careteam_id, template_name="ashandapp/cases/bar
 
 
 @login_required
-def grid_cases_for_object(request, content_type_name=None, content_uuid=None, template_name="ashandapp/cases/query_test.html"):
+def grid_cases_for_object(request, content_type_name=None, content_uuid=None, template_name="carehqapp/cases/query_test.html"):
     context = {} 
     ctype = ContentType.objects.all().get(model=content_type_name)
     obj = ctype.model_class().objects.get(id=content_uuid)     

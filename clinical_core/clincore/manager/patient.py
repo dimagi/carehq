@@ -1,0 +1,1 @@
+#Patient API access can be goverened by the CPatient/Patient models themselves.

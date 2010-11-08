@@ -189,7 +189,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
                     if activity.event_class == constants.CASE_EVENT_ASSIGN:
                         case.assigned_date = datetime.utcnow()
                         case.assigned_by = request.user            
-                        edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), case.assigned_to.get_full_name(), request.user.get_full_name())
+                        edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), case.assigned_to.title(), request.user.title())
                         
                     case.save(activity=activity, save_comment = edit_comment)                                        
                     return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))            

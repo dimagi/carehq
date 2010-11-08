@@ -1,0 +1,41 @@
+{% block extrahead %}
+{{block.super}}
+{%endblock extrahead %}
+<div class="span-5 box">
+<strong>For: {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}</strong><br>
+<a href="{% url view-careteam careteam.id %}">Care History</a><br>
+{#<a href="{%url carehqapp.views.users.single careteam.patient.user.id %}">View Profile</a><br>#}
+<script type="text/javascript"> 
+$(function() {
+		$("#careplan-dialog").dialog({
+			bgiframe: true,
+			modal: false,
+			height: 600,
+			width:800,
+			autoOpen: false,
+			buttons: {
+				Ok: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+		$('#view-careplan-link').click(function() {
+			$('#careplan-dialog').dialog('open');
+		});
+	});
+</script>
+
+<a id="view-careplan-link">Care Plan</a>
+</div>
+
+<div id="careplan-dialog" title="Patient Care Plan"> 
+	<h3>Care Plan: {{careplan.title}}</h3>
+	<ul class="null">
+    {% for itemlink in plan_items %}
+        {% with itemlink.item as plan_item %}    
+            {% include "careplan/partials/compact_careplan_item_li.html" %}    
+        {%endwith%}
+    {%endfor%}
+    </ul> 
+ 
+</div> 

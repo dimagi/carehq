@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Care Network" %} {% endblock %}
+{% block content %}	
+<h2>Care Network</h2>
+{% if is_patient %}
+<h2>My Care Team</h2>
+	{%with my_careteam as careteam %}
+		{% include "carehqapp/partials/inline_careteam.html" %}
+	{% endwith %}
+{%endif %}
+
+{%if is_provider %}
+<h2>My patients</h2>
+	<div class="span-22 prepend-2">
+	{% for careteam in my_patients_careteams %}	
+	{% include "carehqapp/partials/inline_careteam.html" %}
+	{%endfor %}
+	</div>
+{%endif %}
+{% endblock %}
+
+

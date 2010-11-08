@@ -35,8 +35,8 @@ def do_create_case(request, careteam_id, form_class=None, template_name="casetra
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
-#def new_issue(request, careteam_id, template_name="ashandapp/activities/issue/new_issue.html"):
+#def new_issue(request, careteam_id, template_name="carehqapp/activities/issue/new_issue.html"):
 #    return do_create_case(request, careteam_id, form_class=NewIssueForm, template_name=template_name)
 #
-#def new_question(request, careteam_id, template_name="ashandapp/activities/question/new_question.html"):
+#def new_question(request, careteam_id, template_name="carehqapp/activities/question/new_question.html"):
 #    return do_create_case(request, careteam_id, form_class=NewQuestionForm, template_name=template_name)

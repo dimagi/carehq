@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
 @login_required
-def my_network(request, template_name='ashandapp/care_network.html'):
+def my_network(request, template_name='carehqapp/care_network.html'):
     """
     If current user is a patient, get all providers surrounding my care.
     """
@@ -33,7 +33,7 @@ def my_network(request, template_name='ashandapp/care_network.html'):
 
 @login_required
 #@provider_only
-def my_patients(request, template_name='ashandapp/my_patients.html'):
+def my_patients(request, template_name='carehqapp/my_patients.html'):
     """
     View for providers caring for multiple patients.
     """
@@ -46,7 +46,7 @@ def my_patients(request, template_name='ashandapp/my_patients.html'):
 
 @login_required
 #@caregiver_only
-def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html'):
+def my_care_recipients(request, template_name='carehqapp/my_care_recipients.html'):
     """
     View for caregivers caring for multiple patients.  effectively this should be similar to the providers "my patients" view
     """
@@ -58,7 +58,7 @@ def my_care_recipients(request, template_name='ashandapp/my_care_recipients.html
 
 @login_required
 #@patient_only
-def my_careteam(request, template_name='ashandapp/careteam/view_careteam.html'):
+def my_careteam(request, template_name='carehqapp/careteam/view_careteam.html'):
 #    #i'm a patient, get my careteam and show providers
 #    context = {}
 #    try:

@@ -1,6 +1,6 @@
 #def get_careteam_assignment_choices(case):
 #    """
-#    Provides a centralized way to get the careteam list to show on an ashandapp case view.
+#    Provides a centralized way to get the careteam list to show on an carehqapp case view.
 #    """
 #    careteams = case.careteam_set.all()
 #    providers_set = Provider.objects.none()
@@ -18,8 +18,8 @@
 #
 #    #make the optgroup tuples
 #    #source: http://dealingit.wordpress.com/2009/10/26/django-tip-showing-optgroup-in-a-modelform/
-#    prov_tuple = [[prov.user.id, "%s - %s" % (prov.user.get_full_name(), prov.job_title)] for prov in providers_set.order_by('user__last_name')]
-#    cg_tuple = [[cglink.user.id, "%s - %s" % (cglink.user.get_full_name(), cglink.relationship)] for cglink in caregivers_set.order_by('user__last_name')]
+#    prov_tuple = [[prov.user.id, "%s - %s" % (prov.user.title(), prov.job_title)] for prov in providers_set.order_by('user__last_name')]
+#    cg_tuple = [[cglink.user.id, "%s - %s" % (cglink.user.title(), cglink.relationship)] for cglink in caregivers_set.order_by('user__last_name')]
 #
 #    list_choices = [['Providers', prov_tuple],
 #                    ['Caregivers',cg_tuple]]

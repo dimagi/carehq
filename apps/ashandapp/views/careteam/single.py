@@ -5,7 +5,7 @@ from django.template import RequestContext
 
 @login_required
 #@is_careteam_member
-def single(request, careteam_id, template_name="ashandapp/careteam/view_careteam.html"):    
+def single(request, careteam_id, template_name="carehqapp/careteam/view_careteam.html"):
     context = RequestContext(request)
 #    careteam = CareTeam.objects.get(id=careteam_id)
 #
@@ -29,7 +29,7 @@ def single(request, careteam_id, template_name="ashandapp/careteam/view_careteam
 
 @login_required
 #@is_careteam_member
-def single_history(request, careteam_id, template_name="ashandapp/careteam/view_careteam_history.html"):    
+def single_history(request, careteam_id, template_name="carehqapp/careteam/view_careteam_history.html"):
     context = {}
 #    careteam = CareTeam.objects.get(id=careteam_id)
 #
@@ -54,7 +54,7 @@ def single_history(request, careteam_id, template_name="ashandapp/careteam/view_
 
 @login_required
 #@is_careteam_member
-def single_careplan(request, careteam_id, template_name="ashandapp/careteam/view_careteam_careplan.html"):    
+def single_careplan(request, careteam_id, template_name="carehqapp/careteam/view_careteam_careplan.html"):
     context = {}
 #    careteam = CareTeam.objects.get(id=careteam_id)
 #

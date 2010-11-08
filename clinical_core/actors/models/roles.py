@@ -7,6 +7,21 @@ from django.db.models import Q
 
 from dimagi.utils import make_uuid, make_time
 
+
+class RoleManager(models.Manager):
+    """Simple manager to help differentiate role types in the system.
+    Ideally this should be managed as some sort of setting, but for now these will be managed in the manager itself.
+    """
+    def ProviderRoles(self):
+        provider_models = [TriageNurse, CHW, Doctor]
+        provider_ctypes = [ContentType.objects.get_for_model(x) for x in provider_models]
+        return provider_ctypes
+    def CaregiverRoles(self):
+        caregiver_models = [Caregiver]
+        caregiver_ctypes = [ContentType.objects.get_for_model(x) for x in caregiver_models]
+        return caregiver_ctypes
+
+
 class Role(models.Model):
     """
     A role is a base class for defining some type of affiliation/description of an individual in the system.
@@ -21,15 +36,21 @@ class Role(models.Model):
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     
     role_type = models.ForeignKey(ContentType, verbose_name='Role Subclass Content Type', blank=True, null=True)
-    role_uuid = models.CharField('role_uuid', max_length=32, db_index=True, blank=True, null=True)
-    role_object = generic.GenericForeignKey('role_type', 'role_uuid')    
-    
+    role_uuid = models.CharField('role_uuid', max_length=32, db_index=True, blank=True, null=True, help_text='The ID of the subclassed object')
+    role_object = generic.GenericForeignKey('role_type', 'role_uuid')
+    user = models.ForeignKey(User, blank=True, null=True)
+
+    objects=RoleManager()
+
+    @property
+    def description(self):
+        return unicode(self)
+
     def save(self):
         #self.id = uuid.uuid1().hex
         self.role_type = self.child_contenttype()        
         self.role_uuid = self.id
         super(Role, self).save()
-
 
     class Meta:
         app_label = 'actors'
@@ -119,3 +140,9 @@ class Caregiver(Role):
 
     def __unicode__(self):
         return "Caregiver: %s" % (self.get_relationship_type_display())
+
+class PatientRole(Role):
+    """A Patient can be a role too"""
+    patient = models.ForeignKey(Patient, unique=True)
+
+

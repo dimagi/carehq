@@ -167,7 +167,7 @@ def case_list(request):
     return response
     
 @login_required    
-def new_provider(request, template_name="ashandapp/edit_provider.html"):    
+def new_provider(request, template_name="carehqapp/edit_provider.html"):
     context = {}    
     context['form'] = NewProviderForm()
     if request.method == 'POST':

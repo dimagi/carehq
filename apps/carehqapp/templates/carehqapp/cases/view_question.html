@@ -1,0 +1,44 @@
+{% extends "casetracker/manage_case.html" %}
+{% load i18n %}
+{% block title %}{% trans "View Question" %}{% endblock %}
+{% block extrahead %}
+{{block.super}}
+{% endblock extrahead %} 
+	{% comment %}
+	{% block case_actions %}
+			<a href="{% url manage-case case.id %}?action=comment" class="fg-button ui-state-default ui-corner-all">Comment</a>
+			{% if case.is_active %}			
+			{% if can_assign %}				
+	        <a href="{% url manage-case case.id %}?action=assign" class="fg-button ui-state-default ui-corner-all">Assign</a>
+	        {% endif%}
+	        
+	        {% if can_edit %}
+	        <a href="{% url manage-case case.id %}?action=edit" class="fg-button ui-state-default ui-corner-all">Edit</a>        
+	        {%endif%}
+	        
+	        <a href="{% url manage-case case.id %}?action=state-resolved" class="fg-button ui-state-default ui-corner-all">Answer</a>
+	        
+	        
+	        {% endif %}
+	        
+	        {% if case.is_resolved %}        
+	        {% if can_close and not case.is_closed %}
+	        <a href="{% url manage-case case.id %}?action=state-closed" class="fg-button ui-state-default ui-corner-all">Close</a>
+	        {% endif %}
+	        {% endif %}
+	        
+	        {% if case.is_closed %}
+	        {% if can_close %}
+	        <a href="#" class="fg-button ui-state-default ui-corner-all">Reopen</a>
+	        {%endif%}
+	        {% endif %} 
+	{% endblock case_actions %}
+	{% endcomment %}
+
+	{% block caselink_area %}
+		<h3>This Question</h3>
+		{% for careteam in case_careteams %}
+		{% include "carehqapp/partials/patient_careteam_info_6.html" %}
+		{% endfor %}
+	{% endblock %}
+	

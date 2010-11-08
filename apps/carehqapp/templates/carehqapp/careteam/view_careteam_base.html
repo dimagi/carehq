@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Team View" %} {% endblock %}
+{% block extrahead %}
+{% endblock extrahead %}
+{% block content %}				
+	<div class="span-6 box">		
+		<div class="span-2">
+			<img src="{{MEDIA_URL}}ashandapp/img/noprofile_photo.png">
+		</div>
+		<div class="span-4 last">		
+			<h3>				
+				<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
+				{{careteam.patient.user.get_full_name}}</a>
+			</h3>
+		</div>
+		
+		<div class="span-6 last">
+		<table>				    
+						<tr>
+					        <td><strong>Age</strong></td>
+							<td>{{careteam.patient.age}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Sex</strong></td>
+							<td>{{careteam.patient.get_sex_display}}</td>
+						</tr>
+						<tr>
+					        <td><strong>Primary Provider</strong></td>
+							<td>
+					            {% if careteam.primary_provider %}
+					                <a href="{%url ashandapp.views.users.single careteam.primary_provider.user.id %}">{{careteam.primary_provider.user.first_name}} {{careteam.primary_provider.user.last_name}}</a>
+					            {% else %}
+					                Not Set
+					            {% endif %}
+					        </td> 
+						<tr>      
+		</table>			
+		</div>
+	</div>	
+<div  class="span-17 last">			
+	<div id="menu">
+	    <ul> 
+	        <li>
+		        <span class="head_menu">
+		        <a href="{% url view-careteam careteam.id %}">Care Team Info</a>
+		        </span>
+	        </li>		
+	        <li>
+		        <span class="head_menu">
+		        <a href="{% url view-careteam-careplan careteam.id %}">Care Plan</a>
+		        </span>
+	        </li>
+	        <li>
+		        <span class="head_menu">
+		        <a href="{% url view-careteam-history careteam.id %}">Case History</a>
+		        </span>
+	        </li>
+	    </ul> 
+	</div>
+
+	<div class="span-17 last">
+	{% block active_careteam_tab %}
+	 
+	{% endblock active_careteam_tab %}
+	</div>
+<div>
+{% comment %}
+    <div id="tabs-info" class="span-24">
+    	{%with current_careteam as careteam %}			
+		
+    {% endcomment %}
+    {% comment %}
+    <div id="tabs-2">
+        {# {{careplan}}#}         
+         <h2>{{careplan.title}}</h2>
+            <dl>
+                <dt>Created by:</dt> <dd>{{careplan.created_by.title}}</dd>
+                <dt>Created date:</dt> <dd>{{careplan.created_date|date}}</dd>    
+            </dl>
+            <ul>
+            {% for itemlink in plan_items %}
+                {% with itemlink.item  as plan_item %}    
+                    {% include "careplan/partials/compact_careplan_item_li.html" %}    
+                {%endwith%}
+            {%endfor%}
+            </ul> 
+    </div>
+    {% endcomment %}
+    
+</div> <!-- end tabs -->
+</div> <!-- end container -->
+{% endblock %}

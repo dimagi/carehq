@@ -3,7 +3,7 @@
 
 from django import forms
 from casetracker.models import Priority
-#from ashandapp.models import CaregiverLink
+#from carehqapp.models import CaregiverLink
 from django.forms.util import ValidationError
 from django.forms import widgets
 
@@ -53,13 +53,13 @@ class CareTeamCaseFormBase(forms.Form):
         providers_qset = careteam.providers.all().order_by('user__last_name')
         provs = []
         for prov in providers_qset:
-            provs.append(("prov-" + prov.id, prov.user.get_full_name() + " - " + prov.job_title))
+            provs.append(("prov-" + prov.id, prov.user.title() + " - " + prov.job_title))
         
         
         cgives = []
         caregivers_qset = careteam.caregivers.all().order_by('last_name')
 #        for cgive in caregivers_qset:
-#            cgives.append(("cg-" + str(cgive.id), "%s - %s" % (cgive.get_full_name(), CaregiverLink.objects.get(careteam=careteam, user=cgive).relationship)))
+#            cgives.append(("cg-" + str(cgive.id), "%s - %s" % (cgive.title(), CaregiverLink.objects.get(careteam=careteam, user=cgive).relationship)))
         
 
         assignment_choices = [ ('primary','Care Team Primary or Triage Nurse'), 
