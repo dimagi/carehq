@@ -22,6 +22,8 @@ class Patient(models.Model):
     class Meta:
         app_label = 'patient'
 
+
+    @property
     def couchdoc(self):
         try:
             return CPatient.view('patient/ids', key=self.doc_id).first()
@@ -36,19 +38,24 @@ class Patient(models.Model):
         """
         Return a generic top level property of a patient couch object.
         """
-        if self.couchdoc() != None:
-            return self.couchdoc()[propertyname]
+        if self.couchdoc != None:
+            return self.couchdoc[propertyname]
 
     def _set_COUCHDATA(self, propertyname, setvalue):
         """
         Generic setter for top level property of a patient couch object
         """
-        if self.couchdoc() != None:
-            doc = self.couchdoc()
+        if self.couchdoc != None:
+            doc = self.couchdoc
             doc[propertyname] = setvalue
             doc.save()
 
-    def get_full_name(self):
+
+    def __unicode__(self):
+        return self.full_name
+
+    @property
+    def full_name(self):
         if self.couchdoc:
             return "%s %s" % (self.couchdoc.first_name, self.couchdoc.last_name)
 

@@ -33,6 +33,7 @@ urlpatterns += patterns('',
                         (r'', include('keymaster.urls')),
                         #(r'', include('pactcarehq.urls')),
                         (r'', include('carehqapp.urls')),
+                        (r'c/', include('casetracker.urls')),
                         #(r'user_registration', include("django_user_registration.urls")),
                         #(r'couchpost', 'couchforms.views.post'),
                         )

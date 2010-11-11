@@ -1,6 +1,6 @@
 
 issues_arr = [
-              u'Patient has fever higher than 101F', 
+'Patient has fever higher than 101F',
 "Patient is complaining of shaking chills",
 "Patient has been vomiting more than 48 hours after treatment",
 "Patient is experiencing bleeding or bruising",

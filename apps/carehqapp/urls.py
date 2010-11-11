@@ -5,6 +5,7 @@ urlpatterns = patterns('',
         url(r'^$', 'carehqapp.views.home.home_view', name='home'),
         url(r'^dashboard$', 'carehqapp.views.dashboard.dashboard_view', name='dashboard'),
         url(r'^profile$', 'carehqapp.views.account.my_profile', name='my_profile'),
+        url(r'^cases$', 'carehqapp.views.cases.case_list', name='case_list'),
 
 
 #

@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 
 from casetracker.models import  CaseEvent, Status, Category
 from datetime import datetime
+from patient.models.djangomodels import Patient
+from actors.models.actors import Actor
+
 register = template.Library()
 
  
@@ -84,13 +87,13 @@ register = template.Library()
 @register.simple_tag
 def render_filter_heading(heading_object):
     #return "Some heading: %s" % heading_object.get_absolute_url()
-#    if isinstance(heading_object, CareTeam):
-#        return render_to_string('carehqapp/partials/careteam_heading.html', { 'careteam': heading_object })
 
     if isinstance(heading_object, Category):
         return "<h3>Category: %s</h3>" % heading_object.display
-    elif isinstance(heading_object, User):
-        return "<h3>By: %s</h3>" % heading_object.title()
+    elif isinstance(heading_object,Patient):
+        return "<h3>%s</h3>" % heading_object.full_name
+    elif isinstance(heading_object, Actor):
+        return "<h3>By: %s</h3>" % heading_object.title
     elif isinstance(heading_object, Status):
         return "some status"
     else:
@@ -126,13 +129,14 @@ def render_case_column(case, gridorder, plain_text=True):
 ##            datastring = str(data)
             datastring = '<abbr class="timeago" title="%s"></abbr>' % data.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        elif isinstance(data, CareTeam):
-            datastring = "%s" % (data.patient.user.title())
+        elif isinstance(data, Patient):
+            datastring = data.full_name
         elif isinstance(data, Category):
             datastring = data.display
-        elif isinstance(data, User):
+        elif isinstance(data, Actor):
             #print "is a freaking user: "  + str(data)
-            datastring = '<a href="%s">%s</a>' % (reverse('carehqapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
+            #datastring = '<a href="%s">%s</a>' % (reverse('carehqapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
+            datastring = data.title
         elif isinstance(data, CaseEvent):
             return data.activity.get_event_class_display()
         elif isinstance(data, Status):

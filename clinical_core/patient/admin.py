@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from models import *
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display=('id', 'doc_id',)
+    list_display=('id', 'doc_id', 'full_name',)
     list_filter = []
 admin.site.register(Patient, PatientAdmin)
 

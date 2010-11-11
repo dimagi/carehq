@@ -75,7 +75,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'reversion',
     'django_extensions',
     'django_digest',
+    'django-model-utils',
     #end third party apps
     
             
@@ -143,9 +144,9 @@ INSTALLED_APPS = (
 
     ####################
     #Dev helper apps
-    #'debug_toolbar',
+    'debug_toolbar',
     #'gunicorn',
-    'devserver',
+    #'devserver',
 )
 
 #haystack
@@ -163,7 +164,7 @@ DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.headers.HeaderDebugPanel',
         'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
         'debug_toolbar.panels.template.TemplateDebugPanel',
-        #'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
         'debug_toolbar.panels.logger.LoggingPanel',
     )
@@ -179,8 +180,8 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 USE_DJANGO_STATIC_SERVER=True
-LOGIN_TEMPLATE='pactregistration/login.html'
-LOGGEDOUT_TEMPLATE='pactregistration/logged_out.html'
+LOGIN_TEMPLATE='registration/login.html'
+LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
 CASE_CATEGORIES = (
@@ -223,6 +224,7 @@ COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'couchforms',
         'pactcarehq',
         'couchexport',
+        'casetracker',
 
 ]]
 

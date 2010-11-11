@@ -49,7 +49,7 @@ class CaseManager(models.Manager):
             qset = qset.filter(category=category)
         return qset
 
-    def new_case(self, category, creator_actor, description, body, priority, status=None, activity=None, other_data=None, *args, **kwargs):
+    def new_case(self, category, creator_actor, description, body, priority, patient=None, status=None, activity=None, other_data=None, *args, **kwargs):
         """
         Create a new case of an arbitrary type, with the basic requirements for creating a case.
         Other arguments: commit=True - save the created case to the db immediately.
@@ -71,7 +71,9 @@ class CaseManager(models.Manager):
         newcase.opened_by = creator_actor
         newcase.last_edit_date = newcase.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
         newcase.last_edit_by = newcase.opened_by
-        newcase.orig_description = newcase.description        
+        newcase.orig_description = newcase.description
+        if patient != None:
+            newcase.patient=patient
 
 #        if activity == None:
             #activity=ActivityClass.objects.filter()

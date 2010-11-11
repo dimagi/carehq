@@ -61,7 +61,7 @@
 		        {% if user.is_authenticated %}
 		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
 		        {% else %}
-		            {#<a href="/accounts/login/">{% trans "Log in" %}</a>#}
+		            <a href="/accounts/login/">{% trans "Log in" %}</a>
 		        {% endif %}		        
         	</div>
         	{% endblock auth %}

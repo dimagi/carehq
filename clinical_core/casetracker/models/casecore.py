@@ -17,6 +17,8 @@ from patient.models import Patient
 from casetracker.managers import CaseManager
 from dimagi.utils import make_uuid
 import uuid
+from django.contrib.contenttypes.models import ContentType
+from model_utils.models import InheritanceCastModel
 
 
 CASE_EVENT_CHOICES = (
@@ -60,7 +62,7 @@ class Priority(models.Model):
         ordering = ['magnitude']
 
 
-class Category(models.Model):
+class Category(InheritanceCastModel):
     """
     The Category is the central piece of the casetracker model tree.
     
@@ -79,7 +81,10 @@ class Category(models.Model):
     display = models.CharField(max_length=64, help_text="The display name of the category - what will be printed")
     description = models.CharField(max_length=255, help_text = "A longer description of the case category")
 
-    @property
+    category_type = models.ForeignKey(ContentType, verbose_name='Role Object Type', blank=True, null=True)
+    category_uuid = models.CharField('role_uuid', max_length=32, db_index=True, blank=True, null=True, help_text='The ID of the subclassed object')
+    category_object = generic.GenericForeignKey('category_type', 'category_uuid')
+
     def read_template(self):
         #get the template from the CategoryHandler registry
         pass
@@ -95,6 +100,7 @@ class Category(models.Model):
         Returns the class instance of the category category
         """
         #pull from the in memory cache
+
         pass
 
     
@@ -477,7 +483,7 @@ class Filter(models.Model):
     
     #metadata about the query
     description = models.CharField(max_length=64)
-    creator = models.ForeignKey(Actor, related_name="filter_creator")
+    creator = models.ForeignKey(Actor, related_name="filter_creator", null=True, blank=True)
     shared = models.BooleanField(default=False)
     
     

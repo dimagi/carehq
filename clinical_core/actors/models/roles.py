@@ -144,5 +144,9 @@ class Caregiver(Role):
 class PatientRole(Role):
     """A Patient can be a role too"""
     patient = models.ForeignKey(Patient, unique=True)
+    class Meta:
+        app_label='actors'
+        verbose_name = "Patient Role"
+        verbose_name_plural = "Patient Roles"
 
 
