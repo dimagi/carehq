@@ -15,11 +15,14 @@ from casetracker import constants
 from patient.models import Patient
 
 from casetracker.managers import CaseManager
-from dimagi.utils import make_uuid
+from dimagi.utils import make_uuid, make_time
 import uuid
 from django.contrib.contenttypes.models import ContentType
 from model_utils.models import InheritanceCastModel
-
+from couchdbkit.ext.django.schema import Document
+from couchdbkit.schema.properties import StringProperty, StringProperty, DateTimeProperty, DateTimeProperty, IntegerProperty
+from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
+from dimagi.utils.couch import database
 
 CASE_EVENT_CHOICES = (
         (constants.CASE_EVENT_OPEN, 'Open/Create'), #case state
@@ -44,84 +47,86 @@ CASE_STATES = (
 )
 
 
-class Priority(models.Model):
+class Priority(Document):
     """
     Priorities are assigned on a case basis, and are universally assigned.
     Sorting would presumably need to be defined first by case category, then by priority    
     """    
-    magnitude = models.IntegerField()
-    description = models.CharField(max_length=32)
-    default = models.BooleanField()    
+    magnitude = IntegerProperty()
+    description = StringProperty()
     def __unicode__(self):
         return "%d" % (self.magnitude)
 
+    @staticmethod
+    def High():
+        return Priority(magnitude=1, description="High")
+    #etc etc
+
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Priority Type"
-        verbose_name_plural = "Priority Types"
-        ordering = ['magnitude']
+        #verbose_name = "Priority Type"
+        #verbose_name_plural = "Priority Types"
+        #ordering = ['magnitude']
 
 
-class Category(InheritanceCastModel):
-    """
-    The Category is the central piece of the casetracker model tree.
-    
-    All cases must embody a certain category.
-    
-    A category then is the handler between the existence of a case in the database and how it is handled between the database
-    and other types within pythonland.
-    
-    So, in ashand, you define different cases as different classes of "case-able" information.
-    So, a case can be an issue, question, or alerts from some therapeutic monitor or scheduling - the list goes on.
-    
-    To keep the purity of the casetracker app, other models that wish to add itself to the casetracker.
-    """
-    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    slug = models.SlugField(unique=True, help_text = "The unique, internal represntation of the category, for the in memory registry") #Unique slug name of category for the in memory registry
-    display = models.CharField(max_length=64, help_text="The display name of the category - what will be printed")
-    description = models.CharField(max_length=255, help_text = "A longer description of the case category")
+#class Category(models.Model):
+#    """
+#    The Category is the central piece of the casetracker model tree.
+#
+#    All cases must embody a certain category.
+#
+#    A category then is the handler between the existence of a case in the database and how it is handled between the database
+#    and other types within pythonland.
+#
+#    So, in ashand, you define different cases as different classes of "case-able" information.
+#    So, a case can be an issue, question, or alerts from some therapeutic monitor or scheduling - the list goes on.
+#
+#    To keep the purity of the casetracker app, other models that wish to add itself to the casetracker.
+#    """
+#    id = StringProperty(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+#    slug = StringProperty(unique=True, help_text = "The unique, internal represntation of the category, for the in memory registry") #Unique slug name of category for the in memory registry
+#    display = StringProperty(max_length=64, help_text="The display name of the category - what will be printed")
+#    description = StringProperty(max_length=255, help_text = "A longer description of the case category")
+#
+#    category_type = models.ForeignKey(ContentType, verbose_name='Role Object Type', blank=True, null=True)
+#    category_uuid = StringProperty('role_uuid', max_length=32, db_index=True, blank=True, null=True, help_text='The ID of the subclassed object')
+#    category_object = generic.GenericForeignKey('category_type', 'category_uuid')
+#
+#    def read_template(self):
+#        #get the template from the CategoryHandler registry
+#        pass
+#
+#    @property
+#    def read_context(self):
+#        #get the context from the CategoryHandler registry
+#        pass
+#
+#    @property
+#    def handler(self): #from handler
+#        """
+#        Returns the class instance of the category category
+#        """
+#        #pull from the in memory cache
+#
+#        pass
+#
+#
+#    def __unicode__(self):
+#        return "%s" % (self.slug)
+#    class Meta:
+#        app_label = 'casetracker'
+#        verbose_name = "Category Type"
+#        verbose_name_plural = "Category Types"
+#        ordering = ['display']
 
-    category_type = models.ForeignKey(ContentType, verbose_name='Role Object Type', blank=True, null=True)
-    category_uuid = models.CharField('role_uuid', max_length=32, db_index=True, blank=True, null=True, help_text='The ID of the subclassed object')
-    category_object = generic.GenericForeignKey('category_type', 'category_uuid')
-
-    def read_template(self):
-        #get the template from the CategoryHandler registry
-        pass
-
-    @property
-    def read_context(self):
-        #get the context from the CategoryHandler registry
-        pass
-
-    @property
-    def handler(self): #from handler
-        """
-        Returns the class instance of the category category
-        """
-        #pull from the in memory cache
-
-        pass
-
-    
-    def __unicode__(self):
-        return "%s" % (self.slug)
-    class Meta:
-        app_label = 'casetracker'
-        verbose_name = "Category Type"
-        verbose_name_plural = "Category Types"
-        ordering = ['display']
-
-class Status (models.Model):
+class Status (Document):
     """
     Status is the model to capture the different states of a case.
     In Fogbugz, these are also classified within the category of the original bug.
     ie, a bug's status states will be fundamentally different from a Feature or Question.
     """    
-    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    slug = models.SlugField(unique=True)
-    display = models.CharField(max_length=64) #from description
-    state_class = models.TextField(max_length=24, choices=CASE_STATES)
+    display = StringProperty(required=True) #from description
+    state_class = StringProperty(required=True)
     
     #query filters can be implemented a la kwarg evaluation:
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups/659419#659419        
@@ -132,15 +137,31 @@ class Status (models.Model):
     def __unicode__(self):
         return "Status: %s" % (self.display)
 
+
+    @staticmethod
+    def Open():
+        return Status(display='Open', state_class='OPEN')
+
+    @staticmethod
+    def Closed():
+        return Status(display='Closed', state_class='CLOSED')
+    
+    @staticmethod
+    def Resolved():
+        return Status(display='Resolved', state_class='RESOLVED')
+    
+
+    #etc, etc.
+
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Case Status Type"
-        verbose_name_plural = "Case Status Types"
-        ordering = ['display']
+        #verbose_name = "Case Status Type"
+        #verbose_name_plural = "Case Status Types"
+        #ordering = ['display']
     
 
 
-class ActivityClass(models.Model):
+class ActivityClass(Document):
     """
     An ActivityClass describes sanction-able actions that can be done revolving around a case.
     The hope for this as these are models, are that distinct functional actions can be modeled around these
@@ -155,32 +176,47 @@ class ActivityClass(models.Model):
     make a phone call
     sms         
     """
-    id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    slug = models.SlugField(unique=True) #from name
-    past_tense = models.CharField(max_length=64, help_text = "The past tense description of this activity") #from phrasing
-    active_tense = models.CharField(max_length=64, help_text = "The active tense of this activity - this text will be displayed as a button in the case view.") #present as button on case view
-    event_class = models.TextField(max_length=32, choices=CASE_EVENT_CHOICES, help_text = "The primitive class of this event.") # what class of event is it?
-    summary = models.CharField(max_length=255)
+    slug = StringProperty(required=True) #from name
+    #past_tense = StringProperty(max_length=64, help_text = "The past tense description of this activity") #from phrasing
+    #active_tense = StringProperty(max_length=64, help_text = "The active tense of this activity - this text will be displayed as a button in the case view.") #present as button on case view
+    event_class = StringProperty(required=True) # what class of event is it?
 
     ######################
     #target_status is currently unused (3/17/2010), however there may come a time for events to be totally manage
     #via the DB, so this field is being kept live in the model even though it has no use at the moment.
-    target_status = models.ForeignKey("Status", blank=True, null=True,
-                                      help_text=_("This event activity may alter the case's status.  If it does, it must exist here.",
-                                    related_name="set_by_activities"))
+    #target_status = models.ForeignKey("Status", blank=True, null=True,
+                                      #help_text=_("This event activity may alter the case's status.  If it does, it must exist here.",
+                                    #related_name="set_by_activities"))
+#    CASE_EVENT_CHOICES = (
+#        (constants.CASE_EVENT_OPEN, 'Open/Create'), #case state
+#        (constants.CASE_EVENT_VIEW, 'View'),
+#        (constants.CASE_EVENT_EDIT, 'Edit'),
+#        (constants.CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous
+#        (constants.CASE_EVENT_REOPEN, 'Reopen'), #case state
+#        (constants.CASE_EVENT_COMMENT, 'Comment'),
+#        (constants.CASE_EVENT_CUSTOM, 'Custom'), #custom are activities that don't resolve around the basic open/edit/view/resolve/close
+#        (constants.CASE_EVENT_RESOLVE, 'Resolve'), #case status state
+#        (constants.CASE_EVENT_CLOSE, 'Close'), #case status state
+#    )
+    @staticmethod
+    def Open():
+        return ActivityClass(slug='open', event_class=CASE_EVENT_CHOICES[0][0])
 
+    @staticmethod
+    def Edit():
+        return ActivityClass(slug='edit', event_class=CASE_EVENT_CHOICES[2][0])
     
     def __unicode__(self):
         return "[%s] Activity" % (self.slug)
 
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Case Event Activity Type"
-        verbose_name_plural = "Case Event Activity Types"        
-        ordering=['event_class', 'slug']
+        #verbose_name = "Case Event Activity Type"
+        #verbose_name_plural = "Case Event Activity Types"        
+        #ordering=['event_class', 'slug']
 
 
-class CaseEvent(models.Model):
+class CaseEvent(Document):
     """
     A CaseEvent is any action done revolving around a case.
     A Interaction in our book is an actual medical document that happens for a particular medical document/domain.
@@ -190,26 +226,19 @@ class CaseEvent(models.Model):
     It is meant to capture outside the scope of the case table itself, the actions and their accompanying
     examples of what happened to a case.
     """
-    id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    case = models.ForeignKey("Case", related_name='case_events')    
-    notes = models.TextField(blank=True)
-    
-    activity = models.ForeignKey(ActivityClass)
-    
-    created_date = models.DateTimeField()
-    created_by = models.ForeignKey(Actor)
-    parent_event = models.ForeignKey("self", blank=True, null=True, related_name="child_events")        
-    
-    def save(self, unsafe=False):
-        if self.id == None:
-            self.id = uuid.uuid1().hex
-        if unsafe:            
-            super(CaseEvent, self).save()
-            return
-            
+    event_id = StringProperty(default=make_uuid, required=True) #universal id even though this is embedded within
+    notes = StringProperty()
+    activity = SchemaProperty(ActivityClass)
+    created_date = DateTimeProperty(required=True)
+    created_by = StringProperty(required=True)
+    parent_event = StringProperty() #the parent event_id of this guy, say this is a reply to a thread within this.
+
+    def save(self):
+        if self.event_id == None:
+            self.event_id = uuid.uuid1().hex
+        if self.created_by == None:
+            raise Exception("Missing fields in Case creation - created by")           
         if self.created_date == None:     
-            if self.created_by == None:
-                raise Exception("Missing fields in Case creation - created by")           
             self.created_date = datetime.utcnow()            
         super(CaseEvent, self).save()  
     
@@ -218,12 +247,12 @@ class CaseEvent(models.Model):
     
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Case Event"
-        verbose_name_plural = "Case Events"
-        ordering = ['-created_date']
+        #verbose_name = "Case Event"
+        #verbose_name_plural = "Case Events"
+        #ordering = ['-created_date']
 
 
-class Case(models.Model):
+class Case(Document):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
     
@@ -235,43 +264,74 @@ class Case(models.Model):
     The uuid should be the primary key, but for the synchronization framework, having a uuid key do all the queries
     and potentially be the primary key should be a top priority.    
     """    
-    id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?    
-    
-    description = models.CharField(max_length=160)
-    orig_description = models.CharField(max_length=160, blank=True, null=True, editable=False)    
+    description = StringProperty(required=True)
+    orig_description = StringProperty()
+    base_type = StringProperty(default="Case") #for subclassing this needs to stay consistent
 
-    category = models.ForeignKey(Category, verbose_name=_('Category'))
-    status = models.ForeignKey(Status, verbose_name=_('Status'))    
-    
-    patient = models.ForeignKey(Patient, blank=True, null=True)
+    status=SchemaProperty(Status)
+    patient = StringProperty()
 
-    body = models.TextField(blank=True, null=True)    
+    body = StringProperty(required=True)
     
-    priority = models.ForeignKey(Priority)    
+    priority = SchemaProperty(Priority)
     
-    opened_date = models.DateTimeField()
-    opened_by = models.ForeignKey(Actor, related_name="case_opened_by") #cannot be null because this has to have originated from somewhere
+    opened_date = DateTimeProperty(required=True)
+    opened_by = StringProperty(required=True)
     
-    assigned_to = models.ForeignKey(Actor, related_name="case_assigned_to", null=True, blank=True)   
-    assigned_date = models.DateTimeField(null=True, blank=True)
+    assigned_to = StringProperty(required=True)
+    assigned_date = DateTimeProperty(required=True)
     
-    last_edit_date = models.DateTimeField(null=True, blank=True)
-    last_edit_by = models.ForeignKey(Actor, related_name="case_last_edit_by", null=True, blank=True) 
-                
-    resolved_date = models.DateTimeField(null=True, blank=True)
-    resolved_by = models.ForeignKey(Actor, related_name="case_resolved_by", null=True, blank=True)
-        
-    closed_date = models.DateTimeField(null=True, blank=True)
-    closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
+    last_edit_date = DateTimeProperty(required = True)
+    last_edit_by = StringProperty(required=True)
 
-    due_date = models.DateTimeField(null=True, blank=True)
+    resolved_date = DateTimeProperty()
+    resolved_by = StringProperty()
+
+    closed_date = DateTimeProperty()
+    closed_by = StringProperty()
+
+    due_date = DateTimeProperty()
     
-    parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
     
+    events = SchemaListProperty(CaseEvent)
     
-    default_objects = models.Manager() # The default manager.
-    objects = CaseManager() 
-    
+    parent_case = StringProperty()
+
+
+    @classmethod
+    def create(cls, actor_creator, description, body, created_date=None, priority=None, assigned_to=None, status=None):
+        instance = cls()
+        instance.opened_by = actor_creator.id
+        if created_date == None:
+            instance.opened_date = datetime.utcnow()
+        else:
+            instance.opened_date = created_date
+
+        instance.description = description
+        instance.orig_description = description
+        instance.body = body
+        if priority == None:
+            instance.priority = Priority.High()
+        else:
+            instance.priority = priority
+        if assigned_to == None:
+            instance.assigned_to = actor_creator.id
+        else:
+            instance.assigned_to = assigned_to.id
+
+        if status==None:
+            instance.status=Status.Open()
+        else:
+            instance.status = status
+
+        instance.last_edit_by = instance.opened_by
+        instance.last_edit_date = instance.opened_date
+
+        instance.assigned_date = datetime.utcnow()
+        instance.save()
+        return instance
+
+
     def get_absolute_url(self):
         return "/case/%s" % self.id
         return reverse('manage_case', kwargs={'case_id': self.i})
@@ -359,55 +419,77 @@ class Case(models.Model):
         if not hasattr(self, '_related_objects'):
             self._related_objects = self._get_related_objects()
         return self._related_objects
-                
-    def save(self, activity=None):
-        """
-        Save a case.        
-        Note, this needs to be profoundly updated to be more thread safe using update()
-        http://www.slideshare.net/zeeg/db-tips-tricks-django-meetup - look for mccurdy   
-        """
-#        if unsafe:
-#            if self.opened_date == None:
-#                logging.warning("Case save unsafe: no opened date set")            
-#            if self.opened_by == None:
-#                logging.warning("Case save unsafe: no opened by set")
-#            if self.last_edit_date == None:
-#                logging.warning("Case save unsafe: no last edit date set")
-#            if self.last_edit_by == None:
-#                logging.warning("Case save unsafe: no last edit by set")    
-#            super(Case, self).save()
-#            return
-#        
-        
-        if activity == None:
-            raise Exception("Error, you must set an ActivityClass for this Case Save")
-        else:
-            self.event_activity = activity        
-       
-        if self.last_edit_by == None:
-            raise Exception("Missing fields in edited Case: last_edit_by")
-                    
-        #now, we need to check the status change being done to this.            
-        state_class = self.status.state_class
-        if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
-            if self.resolved_by == None:
-                raise Exception("Case state is now resolved, you must set a resolved_by")
-            else:
-                self.resolved_date = datetime.utcnow()
-        elif state_class == constants.CASE_STATE_CLOSED:
-            if self.closed_by == None:
-                raise Exception("Case state is now closed, you must set a closed_by")
-            else:
-                #ok, closed by is set, let's double check that it's been resolved
-                if self.resolved_by == None:
-                    #raise Exception("Error, this case must be resolved before it can be closed")
-                    self.resolved_by = self.closed_by
-                    self.resolved_date = datetime.utcnow()
-                self.closed_date = datetime.utcnow()
-
-        self.last_edit_date = datetime.utcnow()                    
-        super(Case, self).save()        
     
+    @property
+    def child_cases(self):
+        sub_ids = Case.view('casetracker/subcases', key=self._id).all()
+        return sub_ids
+                
+    
+    def add_event(self, event):
+        """Append a case event to a case's history of things        
+        """
+        #do some error checking?
+        self.events.append(event)
+        pass
+    
+    
+    def save(self, edit_date=None):
+        """
+        Save a case.  Apply additional post save signaling here.       
+        """
+        if self._id == None:
+            #it's a brand new case, we can set the activity here.
+            if self.opened_by  == None:
+                raise Exception("Error, you must set a creator for this case to save")
+            if self.opened_date == None:
+                self.opened_date = datetime.utcnow()
+            self.status = Status.Open()
+        else:
+            if self.last_edit_by == None:
+                raise Exception("Missing fields in edited Case: last_edit_by")
+            
+            #create a case event to indicate a save/edit happened.
+            if edit_date == None:
+                event_created_date = datetime.utcnow()
+            else:
+                event_created_date = edit_date
+ 
+            edit_event = CaseEvent(notes = "Case edited",
+                                   activity = ActivityClass.Edit(),
+                                   created_by = self.last_edit_by,
+                                   created_date=event_created_date)
+                                   
+            print edit_event.event_id
+            self.add_event(edit_event)
+            
+            
+        if edit_date == None:
+            self.last_edit_date = datetime.utcnow()
+        else:
+            self.last_edit_date = edit_date 
+
+#        #now, we need to check the status change being done to this.
+#        state_class = self.status.state_class
+#        if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+#            if self.resolved_by == None:
+#                raise Exception("Case state is now resolved, you must set a resolved_by")
+#            else:
+#                self.resolved_date = datetime.utcnow()
+#        elif state_class == constants.CASE_STATE_CLOSED:
+#            if self.closed_by == None:
+#                raise Exception("Case state is now closed, you must set a closed_by")
+#            else:
+#                #ok, closed by is set, let's double check that it's been resolved
+#                if self.resolved_by == None:
+#                    #raise Exception("Error, this case must be resolved before it can be closed")
+#                    self.resolved_by = self.closed_by
+#                    self.resolved_date = datetime.utcnow()
+#                self.closed_date = datetime.utcnow()
+#
+#        self.last_edit_date = datetime.utcnow()
+        super(Case, self).save()
+       
     def __unicode__(self):
         return "(Case %s) %s" % (self.id, self.description)
     def case_name(self):
@@ -421,25 +503,26 @@ class Case(models.Model):
     
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Case"
-        verbose_name_plural = "Cases"
-        ordering = ['-opened_date']
+        #verbose_name = "Case"
+        #verbose_name_plural = "Cases"
+        #ordering = ['-opened_date']
     
 #
 #class Follow(models.Model):
 #    """
 #    Simple model for a user to follow a particular case
 #    """
-#    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    id = StringProperty(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
 #    case = models.ForeignKey(Case, null=True, blank=True, related_name="messages")   #is this message related to a particular case?
 #    is_public = models.BooleanField(default=False)
 #    author = models.ForeignKey(Actor, related_name='messages_authored')
     
+class HomeMonitoringCase(Case):
+    device_id = StringProperty()
 
-    
 class Filter(models.Model):
     """
-    
+
     """
     #below are the enumerated integer choices because integer fields don't like choices that aren't ints.
     #for more information see here:
@@ -454,7 +537,7 @@ class Filter(models.Model):
     THREE_MONTHS = 90
     SIX_MONTHS = 180
     ONE_YEAR = 365
-    
+
     TIME_DURATION_FUTURE_CHOICES = (
         (-ONE_DAY, 'In the past day'),
         (TODAY, 'Today'),
@@ -468,7 +551,7 @@ class Filter(models.Model):
         (SIX_MONTHS, 'In the next six months'),
         (ONE_YEAR, 'In the next year'),
     )
-    
+
     TIME_DURATION_PAST_CHOICES = (
         (TODAY, 'Today'),
         (-ONE_DAY, 'Yesterday or today'),
@@ -478,85 +561,85 @@ class Filter(models.Model):
         (-THREE_MONTHS, 'In the past three months'),
         (-SIX_MONTHS, 'In the past six months'),
         (-ONE_YEAR, 'In the past year'),
-    )    
+    )
     id = models.CharField(_('Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    
+
     #metadata about the query
     description = models.CharField(max_length=64)
     creator = models.ForeignKey(Actor, related_name="filter_creator", null=True, blank=True)
     shared = models.BooleanField(default=False)
-    
-    
+
+
     custom_function=models.BooleanField(default=False)
-    #Code based filter functions    
+    #Code based filter functions
     filter_module = models.CharField(max_length=128, blank=True, null=True,
                                       help_text=_("This is the fully qualified name of the module that implements the filter function."))
-    
+
     filter_class = models.CharField(max_length=64, blank=True, null=True,
                                      help_text=_('This is the actual method name of the model filter you wish to run.'))
-    
+
     #case related properties
-    category = models.ForeignKey(Category, null=True, blank=True)
-    status = models.ForeignKey(Status, null=True, blank=True)
-    priority = models.ForeignKey(Priority, null=True, blank=True)
-    
+    #category = models.ForeignKey(Category, null=True, blank=True)
+    #status = models.ForeignKey(Status, null=True, blank=True)
+    #priority = models.ForeignKey(Priority, null=True, blank=True)
+
     opened_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_opened_by")
     assigned_to = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_assigned_to")
-    last_edit_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_last_edit_by")    
+    last_edit_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_last_edit_by")
     resolved_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_resolved_by")
     closed_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_closed_by")
-        
+
     opened_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    assigned_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)    
+    assigned_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_edit_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     resolved_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     closed_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    
+
     #case Event information
-    last_event_type = models.ForeignKey(ActivityClass, null=True, blank=True)
+    #last_event_type = models.ForeignKey(ActivityClass, null=True, blank=True)
     last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(Actor, null=True, blank=True)
-    
 
-    def get_absolute_url(self):        
+
+    def get_absolute_url(self):
         return '/filter/%s' % self.id
 
-    #this should come in as a dictionary of key-value pairs that are compatible with a 
+    #this should come in as a dictionary of key-value pairs that are compatible with a
     #django query when resolved as a kwargs.
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
     #http://stackoverflow.com/questions/353489/cleaner-way-to-query-on-a-dynamic-number-of-columns-in-django
-       
+
     def get_filter_queryset(self):
         """
         On a given filter instance, we will generate a query set by applying all the FKs as query objects
-        
-        The return value is a queryset after applying all the query filters and doing a filter with 
+
+        The return value is a queryset after applying all the query filters and doing a filter with
         the case events as well.
-        """        
+        """
         utcnow = datetime.utcnow()
-                
-        case_query_arr = []        
+
+        case_query_arr = []
         case_event_query_arr = []
-        
+
         if self.category:
-            case_query_arr.append(Q(category=self.category))        
+            case_query_arr.append(Q(category=self.category))
         if self.status:
             case_query_arr.append(Q(status=self.status))
         if self.priority:
             case_query_arr.append(Q(priority=self.priority))
-        if self.assigned_to:            
+        if self.assigned_to:
             if self.assigned_to.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user                
+                #run the query with the threadlocals current user
                 case_query_arr.append(Q(assigned_to=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(assigned_to=self.assigned_to))       
-         
+                case_query_arr.append(Q(assigned_to=self.assigned_to))
+
         if self.opened_by:
             if self.opened_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
                 case_query_arr.append(Q(opened_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(opened_by=self.opened_by))            
+                case_query_arr.append(Q(opened_by=self.opened_by))
         if self.last_edit_by:
             if self.last_edit_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
@@ -568,14 +651,14 @@ class Filter(models.Model):
                 #run the query with the threadlocals current user
                 case_query_arr.append(Q(resolved_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(resolved_by=self.resolved_by))            
+                case_query_arr.append(Q(resolved_by=self.resolved_by))
         if self.closed_by:
             if self.closed_by.id == 1: #this is a hackish way of saying it's the reflexive user
                 #run the query with the threadlocals current user
                 case_query_arr.append(Q(closed_by=threadlocals.get_current_user()))
             else:
-                case_query_arr.append(Q(closed_by=self.closed_by))                
-                
+                case_query_arr.append(Q(closed_by=self.closed_by))
+
         if self.opened_date:
             compare_date = utcnow + timedelta(days=self.opened_date)
             case_query_arr.append(Q(opened_date__gte=compare_date))
@@ -591,7 +674,7 @@ class Filter(models.Model):
         if self.closed_date:
             compare_date = utcnow + timedelta(days=self.closed_date)
             case_query_arr.append(Q(closed_date__gte=compare_date))
-        
+
         #ok, this is getting a little tricky.
         #query CaseEvent and we will get the actual cases.  we will get the id's of the cases and apply
         #those back as a filter
@@ -602,44 +685,44 @@ class Filter(models.Model):
                 #run the query with the threadlocals current user
                 case_event_query_arr.append(Q(created_by=threadlocals.get_current_user()))
             else:
-                case_event_query_arr.append(Q(created_by=self.last_event_by))            
-            
-        if self.last_event_date:        
-            compare_date = utcnow + timedelta(days=self.last_event_date)
-            case_event_query_arr.append(Q(created_date__gte=self.last_event_date))            
+                case_event_query_arr.append(Q(created_by=self.last_event_by))
 
-        #now, we got the queries built up, let's run the queries                
-        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'status', 'category', 'priority', 'carteam_set').all()        
+        if self.last_event_date:
+            compare_date = utcnow + timedelta(days=self.last_event_date)
+            case_event_query_arr.append(Q(created_date__gte=self.last_event_date))
+
+        #now, we got the queries built up, let's run the queries
+        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'status', 'category', 'priority', 'carteam_set').all()
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
             #them all in an evaluation to the filter() call a-la the kwargs or something.  since these
             # are ANDED, we want them to be done sequentially (ie, filter(q1,q2,q3...)
-            #negations should be handled by the custom search            
+            #negations should be handled by the custom search
             cases = cases.filter(qu)
-        
-        if len(case_event_query_arr) > 0:            
+
+        if len(case_event_query_arr) > 0:
             #print "case event subquery"
-            case_events = CaseEvent.objects.select_related().all()                  
+            case_events = CaseEvent.objects.select_related().all()
             for qe in case_event_query_arr:
                 case_events = case_events.filter(qe)
-            
+
             #get all the case ids from the case event filters
-            case_events_cases_ids = case_events.values_list('case', flat=True)        
-            
+            case_events_cases_ids = case_events.values_list('case', flat=True)
+
             if len(case_events_cases_ids) > 0:
                 cases = cases.filter(pk__in=case_events_cases_ids)
-                            
+
         return cases
-        
+
     def __unicode__(self):
         return "Model Filter - %s" % (self.description)
-    
+
     class Meta:
         app_label = 'casetracker'
-        verbose_name = "Model Filter"
-        verbose_name_plural = "Model Filters"
-        
+        #verbose_name = "Model Filter"
+        #verbose_name_plural = "Model Filters"
+
     @property
     def get_gridpreference(self):
         if not hasattr(self, '_gridpreference'):

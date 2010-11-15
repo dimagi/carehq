@@ -13,8 +13,6 @@ ghetto_regimen_map = {
     '': '' ,
 }
 
-
-
 class CPhone(Document):
     is_default = BooleanProperty()
     description = StringProperty()
