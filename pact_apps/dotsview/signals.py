@@ -1,6 +1,5 @@
 from couchforms.signals import xform_saved
 import logging
-from dotsview.formprocess import process_dots_json
 import simplejson
 
 def process_dots_submission(sender, form, **kwarsg):
@@ -10,7 +9,12 @@ def process_dots_submission(sender, form, **kwarsg):
     try:
         print "process_dots_submission triggered"
         dots_json = form['form']['case']['update']['dots']
-        observations = process_dots_json(form, dots_json)
+        #observations = process_dots_json(form, dots_json) # deprecating this, we no longer store in django model, but use a view
+        
+        
+        
+        
+        
         #update dots submission and parse the json data to be actually stored
         json_data = simplejson.loads(dots_json)
         form['form']['case']['update']['dots'] = json_data
