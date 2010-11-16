@@ -17,7 +17,7 @@ def run():
             output.append("no-encounter")
             print "WTF"
 
-        output.append(obs.patient.couchdoc()['pact_id'])
+        output.append(obs.patient.couchdoc['pact_id'])
         output.append(obs.date.strftime("%Y-%m-%d"))
         if obs.is_art:
             output.append('1')
