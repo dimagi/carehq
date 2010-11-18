@@ -12,7 +12,7 @@
 {% block javascripts %}
     {{ block.super }}
 	<script type="text/javascript">
-	var date_helper = "yyyy-dd-mm";
+	var date_helper = "yyyy-mm-dd";
 	function get_url(){
 		var patient_id = $('#patients option:selected').attr('value');
 		var start_date = $('#start-date').attr('value');
@@ -43,8 +43,7 @@
 {% endblock %}
 
 {% block content %}
-	<h1>DOTS Patient Data</h1>
-	<h2>Adherence Data for 
+	<h3>DOT Adherence Data for 
 	<select id="patients">
 		<option value="dots" {% if not patient %} selected="selected" {% endif %}>
 			No patient selected
@@ -56,11 +55,10 @@
 			</option>
 		{% endfor %}
 	</select>
-	from
-	<input id="start-date" class="date" type="text" value="{{start_date}}"></input>
+	From
+	<input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
 	until
-	<input id="end-date" class="date" type="text" value="{{end_date}}"></input>
-	</h2>
+	<input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
 	{% if patient and bad_date_range %}
 		<p class='date-range-warning'>
 			Just so you know, the date range you're looking at is
@@ -70,6 +68,9 @@
 			and <strong>{{last_observation}}</strong>.
 		</p>
 	{% endif %}
+	</h3>
+	<strong>Download CSV:</strong> <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=range&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">This Date Range</a>
+	 | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
 	{% if patient %}
 		<table class="calendar">
 			<tr>
@@ -120,19 +121,18 @@
 		{% endfor %}
 		</table>
 	{% endif %}
-	<div class="container">
+	<div class="container span-24">
 	    <div class="span-6">
 	    <fieldset>
 	    <h4>Legend</h4>
-	        <div class="span-6">
+	        <div class="span-5 last">
 	        <strong>Observation Method</strong>
 	        <hr>
 	            <img src="/media/dotsview/icons/plus.png"> Direct Observation<br>
 	            <img src="/media/dotsview/icons/minus.png"> Self Reported<br>
 				<img src="/media/dotsview/icons/warning.png"> Conflict<br>
-	        </div>
-	
-	        <div class="span-6 last prepend-top">
+	        </div>	
+	        <div class="span-5 last prepend-top">
 	        <strong>Pillbox Adherence</strong><br>
 	        <hr>
 	            <img src="/media/dotsview/icons/check.jpg"> Empty<br>
@@ -141,12 +141,18 @@
 	        </div>
 	
 	    </fieldset>
-	    </div>
-		<div class="span-18">
-			<h4>Visits during this date range</h4>
-			
-			
-			
+		</div>
+		<div class="span-18 last">
+			{% if sorted_visits %}
+			<h4>Visits in this report</h4>		
+			<ul>				
+			{% for vdoc in sorted_visits %}						
+			<li><a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
+				{{vdoc.get_form.encounter_date}}</a> by {{vdoc.get_form.Meta.username}}
+				</li>			
+			{% endfor %}
+			</ul>
+			{%endif%}
 		</div>
 	</div>
 {% endblock %}

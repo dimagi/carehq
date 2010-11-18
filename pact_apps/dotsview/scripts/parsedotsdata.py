@@ -1,6 +1,7 @@
 from couchforms.models import XFormInstance
 from dotsview.formprocess import process_dots_json
 import simplejson
+import hashlib
 
 def run():
     docs = XFormInstance.view('pactcarehq/all_dots_forms').all()
@@ -16,6 +17,7 @@ def run():
                 continue
             elif isinstance(dots_json, str):
                 json_data = simplejson.loads(dots_json)
+                print "parsing string json"
                 doc['form']['case']['update']['dots'] = json_data
                 doc.save()
         except Exception, ex:

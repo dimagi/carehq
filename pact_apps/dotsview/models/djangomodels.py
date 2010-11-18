@@ -40,6 +40,10 @@ class Observation(Model):
     dose_number = IntegerField()
     total_doses = IntegerField()
     
+    
+    class Meta:
+        app_label = 'dotsview'
+    
     def __repr__(self):
         return u"dots.models.Observation(%s)" % (', '.join(
             ["%s=%r" % (field, getattr(self, field)) for field in self._meta.get_all_field_names()]))

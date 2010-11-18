@@ -25,7 +25,7 @@ TIME_LABEL_LOOKUP = (
 )
 TIME_LABELS = ('Dose', 'Morning', 'Noon', 'Evening', 'Bedtime')
 
-class Observation(Document):
+class CObservation(Document):
     doc_id = StringProperty()
     patient = StringProperty() #case id
     
@@ -43,6 +43,8 @@ class Observation(Document):
     total_doses = IntegerProperty()
     adherence=StringProperty()
     method=StringProperty()
+    
+    day_index = IntegerProperty()
     
     note = StringProperty()
     
