@@ -48,6 +48,11 @@ class CObservation(Document):
     
     note = StringProperty()
     
+    @property
+    def adinfo(self):
+        """helper function to concatenate adherence and method to check for conflicts"""
+        return ((self.is_art, self.dose_number, self.total_doses), "%s-%s" % (self.adherence, self.method))
+    
     
     def save(self):
         #override save as this is not a document but just a view

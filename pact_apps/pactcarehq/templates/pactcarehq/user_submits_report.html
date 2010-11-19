@@ -1,17 +1,29 @@
 {%  extends "base.html" %}
 {% block content %}
-<h2>User Submits Tally past {{interval}} days</h2>
+<h3>User Submits Tally past {{interval}} days</h3>
 {% for namespace, user_dict in user_submissions.items %}
-    <h3>{{ namespace }}</h3>
+    <h4>
+    {% if namespace == "http://dev.commcarehq.org/pact/dots_form" %}
+    DOTS
+    {% endif %}
+    
+    {% if namespace == "http://dev.commcarehq.org/pact/progress_note" %}
+    Progress Notes
+    {% endif %}
+    
+    </h4>
     <table>
     {%  for username, date_dict in user_dict.items %}
         {% if forloop.first %}
-            <td>Username</td>
-            {% for datestring, val in date_dict.items %}
-                <td>{{ datestring }}</td>
-            {% endfor %}
-        {% endif %}
         <tr>
+        <thead>
+            <th>Username</th>
+            {% for datestring, val in date_dict.items %}
+                <th>{{ datestring }}</th>
+            {% endfor %}
+        </thead>
+        {% endif %}
+        </tr>
         <tr>
             <td>{{ username }}</td>
             {% for datestring, val in date_dict.items %}

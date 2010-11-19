@@ -10,12 +10,15 @@ urlpatterns = patterns ('',
     (r'^receiver/submit/.*$', 'pactcarehq.views.post'),
     (r'^receiver/submit$', 'pactcarehq.views.post'),
 
-    (r'^progress_notes/$', 'pactcarehq.views.my_submits'),
-    (r'^progress_notes/all$', 'pactcarehq.views.all_submits'),
+    (r'^submits/mine$', 'pactcarehq.views.my_submits'),
+    (r'^submits/all$', 'pactcarehq.views.all_submits_by_user'),
+    (r'^submits/patient$', 'pactcarehq.views.all_submits_by_patient'),
     (r'^export/$', 'pactcarehq.views.export_excel_file'),
 
     #(r'^patients/mine$', 'pactcarehq.views.my_patients'),
-    #(r'^patients/all$', 'pactcarehq.views.my_patients'),
+    (r'^patients/all$', 'pactcarehq.views.patient_list'),
+    (r'^patients/(?P<patient_id>[0-9a-f]{32})$', 'pactcarehq.views.patient_view'),
+    #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
     url(r'^progress_notes/(?P<doc_id>[0-9a-f]{32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     url(r'^dots_note/(?P<doc_id>[0-9a-f]{32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),

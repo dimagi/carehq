@@ -92,7 +92,7 @@
 
                          <li>
                              <span class="head_menu">
-                             <a href="/dots">DOT Adherence</a>
+                             <a href="{% url dots_view %}">DOT Adherence</a>
                              </span>
                          </li>
                          {% if user.is_superuser %}
@@ -100,13 +100,15 @@
                              <span class="head_menu">
                                  <a href="#">Admin</a>
                                  <img src="/media/pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
-                             </span>
                              <div class="sub_menu">
                                  <ul>
-                                 <li><a href="{% url pactcarehq.views.all_submits %}">All Submissions</a> </li>
-                                 <li><a href="https://pactd.dimagi.com/_utils/database.html?carehq/_design/patient/_view/by_last_name">Patient Editor</a></li>
+                                 <li><a href="{% url pactcarehq.views.all_submits_by_user %}">Submissions By CHW</a> </li>
+                                 <li><a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a> </li>
+                                 {#<li><a href="https://pactd.dimagi.com/_utils/database.html?carehq/_design/patient/_view/by_last_name">Patient Editor</a></li>#}
+                                 <li><a href="{% url pactcarehq.views.patient_list%}">Patient List</a></li>
                                  </ul>
                              </div>
+                             </span>
                         </li>
                         {% endif %}      {# end superuser if #}
                      </ul>

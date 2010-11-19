@@ -43,7 +43,8 @@
 {% endblock %}
 
 {% block content %}
-	<h3>DOT Adherence Data for 
+	<div class="span-17">
+	<h4>DOT Adherence Data for 
 	<select id="patients">
 		<option value="dots" {% if not patient %} selected="selected" {% endif %}>
 			No patient selected
@@ -51,7 +52,7 @@
 		{% for p in patients %}
 			<option value="{{p.id}}"
 				{% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
-				{{p.get_full_name}}
+				{{p.couchdoc.last_name}}, {{p.couchdoc.first_name}}
 			</option>
 		{% endfor %}
 	</select>
@@ -68,9 +69,31 @@
 			and <strong>{{last_observation}}</strong>.
 		</p>
 	{% endif %}
-	</h3>
+	</h4>
 	<strong>Download CSV:</strong> <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=range&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">This Date Range</a>
 	 | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
+	 </div>
+	 <div class="span-7 last">
+	<span style="font-size:75%">
+		<fieldset>
+	    <legend>Legend</legend>
+	        <div class="span-3">
+	        <strong>Obs. Method</strong><br>
+	            <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
+	            <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
+				<img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
+	        </div>	
+	        <div class="span-3 last">
+	        <strong>Pillbox</strong><br>
+	            <img src="/media/dotsview/icons/check.jpg">&nbsp; Empty<br>
+	            <img src="/media/dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
+	            <img src="/media/dotsview/icons/x-mark.png">&nbsp; Full<br>
+	        </div>
+	    </fieldset> 
+	</span>
+	 
+	 </div>
+	 
 	{% if patient %}
 		<table class="calendar">
 			<tr>
@@ -84,10 +107,10 @@
 			</tr>
 		{% for week in weeks %}
 			<tr>
-				{% for date, entries in week %}
+				{% for date, entries, conflicts in week %}
 					{% if date %}
 						<td>
-    <div class="date-label"> {{date}}</div>
+    					<div class="date-label">{{date}}</div>
 							<div class="calendar-cell">
 								{% for drug_type, times_of_day in entries %}
 								<div class="drug-cell">
@@ -105,54 +128,88 @@
 															{{ob.method}}
 														</div>
 													</div>
-												{% endfor %}
+												{% endfor %} {#observations #}
 											{% endif %}
 										</div>
-									{% endfor %}
+									{% endfor %} {# times of day#}
 								</div>
+								{% endfor %} {#drug type in entries #}
+							</div>
+							{% if conflicts %}
+							<div class="date-notes-block">
+								<img src="/media/dotsview/icons/warning.png">
+								{% for conflict in conflicts %}
+								<small>
+								<a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}"> 
+								{{conflict.anchor_date|date:"Y-m-d"}}</a> 
+								</small><br>
 								{% endfor %}
 							</div>
+							{% endif %}
 						</td>
-					{% else %}
+					{% else %} 
 						<td class="empty"></td>
-					{% endif %}
-				{% endfor %}
+					{% endif %} {# no date #}
+				{% endfor %} {# date in week #}
 			</tr>
-		{% endfor %}
+		{% endfor %} {#week in weeks #}
 		</table>
 	{% endif %}
 	<div class="container span-24">
-	    <div class="span-6">
-	    <fieldset>
-	    <h4>Legend</h4>
-	        <div class="span-5 last">
-	        <strong>Observation Method</strong>
-	        <hr>
-	            <img src="/media/dotsview/icons/plus.png"> Direct Observation<br>
-	            <img src="/media/dotsview/icons/minus.png"> Self Reported<br>
-				{#<img src="/media/dotsview/icons/warning.png"> Conflict<br>#}
-	        </div>	
-	        <div class="span-5 last prepend-top">
-	        <strong>Pillbox Adherence</strong><br>
-	        <hr>
-	            <img src="/media/dotsview/icons/check.jpg"> Empty<br>
-	            <img src="/media/dotsview/icons/exclamation-point.jpg"> Partial<br>
-	            <img src="/media/dotsview/icons/x-mark.png"> Full<br>
-	        </div>
-	
-	    </fieldset>
-		</div>
-		<div class="span-18 last">
-			{% if sorted_visits %}
-			<h4>Visits in this report</h4>		
-			<ul>				
-			{% for vdoc in sorted_visits %}						
-			<li><a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
-				{{vdoc.get_form.encounter_date}}</a> by {{vdoc.get_form.Meta.username}}
-				</li>			
-			{% endfor %}
-			</ul>
-			{%endif%}
-		</div>
+		{% if sorted_visits %}
+		<h4>Visits in this report</h4>		
+		<table>
+		<thead>
+			<tr>
+				<th>Visit Date</th>
+				<th>CHW</th>
+				<th>Visit Type</th>
+				<th>Visit Kept</th>
+				<th>Scheduled</th>
+				<th>Contact</th>
+				<th class="span-6">Observed ART</th>
+				<th class="span-6">Observed Non ART</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for vdoc in sorted_visits %}						
+		<tr>
+			<td>
+				<a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}"> 
+					{{vdoc.get_form.encounter_date}}</a> 
+			</td>
+			<td>{{vdoc.get_form.Meta.username}}</td>
+			<td>{{vdoc.get_form.visit_type|title}}</td>
+			<td>{{vdoc.get_form.visit_kept|title}}</td>
+			<td>{{vdoc.get_form.scheduled|title}}</td>
+			<td>{{vdoc.get_form.contact_type|title}}</td>
+			<td>{{vdoc.get_form.observed_art|title}}
+			{% if vdoc.get_form.observed_art == "no" %}
+				<br><small>
+				{{vdoc.get_form.art_no_details}}
+				</small>
+			{% endif %}
+			</td>
+			<td>{{vdoc.get_form.observed_non_art|title}}
+			{% if vdoc.get_form.observed_non_art == "no" %}
+				<br><small>
+				{{vdoc.get_form.non_art_no_details}}
+				</small>
+			{% endif %}
+			</td>
+			
+			{% if vdoc.get_form.notes|length_is:"0"%}	
+			</tr>
+			{% else %}
+			<tr>
+			<td>&nbsp;</td>
+			<td><small><strong>Notes:</strong></small></td>
+			<td colspan="6"><em><small>{{vdoc.get_form.notes}}</small></em></td>
+			</tr>
+			{% endif %}
+		{% endfor %}
+		</tbody>
+		</table>
+		{%endif%}
 	</div>
 {% endblock %}

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
 {% block content %}
-<h2>Submission Timeline</h2>
-{%  for username, submit_arr in submit_dict.items %}
-    <h2>{{ username }}'s Submissions</h2>
+<h2>Patient Submissions</h2>
+{%  for patient, submit_arr in patient_dict.items %}
+    <strong>{{ patient.get_full_name}}</strong>
     {% if submit_arr %}
     <table>
     <thead>
         <tr>
             <th class="span-4">Date</th>
-            <th class="span-4">Patient</th>
+            <th class="span-4">CHW</th>
             <th class="span-4">Form</th>
         </tr>
     </thead>

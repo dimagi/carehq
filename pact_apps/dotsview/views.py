@@ -127,10 +127,11 @@ def index(request, template='dots/index.html'):
 
     #sanity check if we're running with old data:
     if patients.count() == 0:
-        print "*** no patients"
+        #print "*** no patients"
         patients = Patient.objects.all()
     else:
-        print "** found patients!"
+        #print "** found patients!"
+        pass
     
     context = RequestContext(request, locals())
     {
@@ -189,8 +190,8 @@ def index_couch(request, template='dots/index_couch.html'):
         visits_set = set([view_doc_id])
     else:
         visits_set = set([obs.doc_id for obs in observations])
-        for v in visits_set:
-            print v
+        #for v in visits_set:
+            #print v
 
     try:
         timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
@@ -202,15 +203,38 @@ def index_couch(request, template='dots/index_couch.html'):
     
     def group_by_is_art_and_time(date):
         grouping = {}
+        conflict_dict = {}
+        conflict_check={}
         for artkey in artkeys:
             by_time = {}
             for timekey in timekeys:
                 by_time[timekey] = []
             grouping[artkey] = by_time
+            
+        
+            
         if date:
             datekey = [pact_id, date.year, date.month, date.day]
             obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
             for ob in obs:
+                #base case if it's never been seen before, add it as the key
+                if not conflict_check.has_key(ob.adinfo[0]):
+                    conflict_check[ob.adinfo[0]]= ob
+                    
+                #main check.  for the given key adinfo[0], check to see if the value is identical
+                prior_ob = conflict_check[ob.adinfo[0]]
+                if prior_ob.adinfo[1] != ob.adinfo[1]:
+                    #they don't match, add the current ob to the conflict dictionary
+                    if not conflict_dict.has_key(ob.doc_id):
+                        conflict_dict[ob.doc_id] = ob
+                        
+                    #next, add the one existing in the lookup checker as well because they differed.
+                    if not conflict_dict.has_key(prior_ob.doc_id):
+                        conflict_dict[prior_ob.doc_id] = prior_ob
+                        
+                 
+                conflict_check[ob.adinfo[0]]= ob
+                
                 if view_doc_id != None and ob.doc_id != view_doc_id:
                     #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                     continue
@@ -218,15 +242,25 @@ def index_couch(request, template='dots/index_couch.html'):
                     #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                     pass
                 grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
-        
-        return [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.observed_date)[-1:]) for tk in timekeys]) for ak in artkeys]
+        return ([(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.observed_date)[-1:]) for tk in timekeys]) for ak in artkeys], conflict_dict.values())
     
     start_padding = dates[0].weekday()
     end_padding = 7-dates[-1].weekday() + 1
     dates = [None]*start_padding + dates + [None]*end_padding
+    #week = [[date, entry]...]
+    #entry = [('non_art', [(time1: [obs1, obs2, obs3]), (time2,[obs4, obs5]), (time3,[obs7]),...]), ('art', [(time1:[obs1,obs2...]), (time2, [obs3]), ...])... '
+    #time = [ 
 
-    dates = [(date, group_by_is_art_and_time(date)) for date in dates]
-    weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
+    #dates = [(date, group_by_is_art_and_time(date)) for date in dates] #week = [[date, entries],...], where entry = [{art:
+    #weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
+    
+    
+    
+    new_dates = [] 
+    for date in dates:
+        observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
+        new_dates.append((date, observation_tuple[0], observation_tuple[1]))
+    weeks = [new_dates[7*n:7*(n+1)] for n in range(len(new_dates)/7)]
     
     dots_pts = CPatient.view('patient/all_dots').all()
     dots_ids = [pt._id for pt in dots_pts]
@@ -235,7 +269,6 @@ def index_couch(request, template='dots/index_couch.html'):
     visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id).first() for visit_id in visits_set]
     sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
     
-    print "sorted"
     #sanity check if we're running with old data:
     if patients.count() == 0:
         print "*** no patients"
@@ -243,6 +276,7 @@ def index_couch(request, template='dots/index_couch.html'):
     else:
         print "** found patients!"
     
+    patients = sorted(patients, key=lambda p: p.couchdoc.last_name+p.couchdoc.first_name)
     
     context = RequestContext(request, locals())
     {

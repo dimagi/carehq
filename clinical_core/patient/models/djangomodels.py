@@ -24,11 +24,14 @@ class Patient(models.Model):
 
     @property
     def couchdoc(self):
-        try:
-            return CPatient.view('patient/ids', key=self.doc_id).first()
-        except:
-            return None
-
+        if hasattr(self, '_couchdoc'):
+            return self._couchdoc
+        else:
+            try:
+                self._couchdoc =  CPatient.view('patient/ids', key=self.doc_id).first()
+            except:
+                self._couchdoc = None
+            return self._couchdoc
 
     def _get_COUCHDATA(self, propertyname):
         """

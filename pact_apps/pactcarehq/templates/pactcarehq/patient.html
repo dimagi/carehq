@@ -1,0 +1,65 @@
+{%  extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container">
+	<h2>Patient Information</h2>
+	<div class="span-24">
+		{#user profile info #}
+		<fieldset>
+			<div class="span-2 border">
+			   <img src="{{MEDIA_URL}}pactcarehq/img/noprofile_photo.png">
+			</div>
+			<div class="span-18 prepend-1">
+			<h2>{{pdoc.first_name}} {{pdoc.last_name}}</h2>
+				<table>
+				<tr>
+					<td><strong>Age</strong></td><td>{{pdoc.birthdate|timesince }}</td>
+					<td><strong>PACT ID</strong></td><td>{{pdoc.pact_id }}</td> 
+				</tr>
+				<tr>
+					<td><strong>Sex</strong></td><td>{{pdoc.gender }}</td> 
+					<td><strong>ARM</strong></td><td>{{pdoc.arm }}</td>
+				</tr>
+				</table>
+			</div>
+		</fieldset>
+	{# patient info #}
+	</div>
+	<div class="span-24">
+		<div class="span-16">
+			<div class="container">
+			<strong>{% trans "Address Information" %}:</strong><br>
+						{% for addr in pdoc.address %}
+							<div class="span-6">{{addr.street}}<br>{{addr.city}}, {{addr.state}} {{addr.post_code}}</div>
+						{%endfor %}
+			</div>
+				
+			{% if pdoc.arm == "DOT" %}
+			<strong>{% trans "ART Regimen" %}:</strong> <em>{{pdoc.art_regimen}}</em><br>
+			<strong>{% trans "Non ART Regimen" %}:</strong> <em>{{pdoc.non_art_regimen}}</em><br>
+			{% endif %}
+			<strong>{% trans "Last Modified" %}:</strong> <em>{{pdoc.date_modified|date }}</em><br>
+		
+		</div>
+		<div class="span-8 last">
+			{% if schedule_edit %}
+			<strong><span style="font-size: 125%;"> Set Visit Schedule</span></strong>
+			{% if form.errors %}
+        	{% endif %}
+			<form action="{{request.path}}?edit_schedule=True" method="POST">			
+			{% csrf_token %}
+			<table>
+			{{ schedule_form.as_table}}
+			</table>
+			<input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+			<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+			</form>
+			{% else %}
+			{% with pdoc.latest_schedule as week_schedule %}
+			{% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+			{% endwith %}
+			{% endif %}
+		</div>
+	</div>
+</div> {# container #}
+{% endblock content %}

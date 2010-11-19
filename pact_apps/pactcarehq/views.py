@@ -1,4 +1,5 @@
-from patient.models.couchmodels import CPatient, CSimpleComment
+from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule
+from patient.models.djangomodels import Patient
 from couchexport.export import export_excel
 from django.http import HttpResponse
 from StringIO import StringIO
@@ -19,6 +20,7 @@ from couchforms.signals import xform_saved
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 import logging
+from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 
 
 @login_required
@@ -39,6 +41,52 @@ def export_excel_file(request):
     else:
         return HttpResponse("Sorry, there was no data found for the tag '%s'." % export_tag)
 
+@login_required
+def patient_list(request, template_name="pactcarehq/patient_list.html"):
+    """Return a list of all the patients in the system"""
+    patients = Patient.objects.all()
+    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+    context= RequestContext(request)
+    context['patients'] = sorted_pts
+    return render_to_response(template_name, context_instance=context)
+
+
+days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
+@login_required
+def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
+    schedule_show = request.GET.get("schedule", "active")
+    schedule_edit = request.GET.get("edit_schedule", False)
+    
+    patient = Patient.objects.get(id=patient_id)
+    context = RequestContext(request)
+    context['patient']=patient
+    context['pdoc']=patient.couchdoc
+    context['schedule_show'] = schedule_show
+    context['schedule_edit'] = schedule_edit
+    if schedule_edit:
+        context['schedule_form'] = ScheduleForm()
+        
+    if request.method == 'POST':
+        if schedule_edit:
+            form = ScheduleForm(data=request.POST)
+            if form.is_valid():
+                sched = CDotWeeklySchedule()
+                #print form.cleaned_data
+                for day in days:
+                    if form.cleaned_data[day] != None:
+                        setattr(sched, day, form.cleaned_data[day].username)
+                sched.started=datetime.utcnow()
+                sched.comment=form.cleaned_data['comment']
+                sched.created_by = request.user.username
+                sched.deprecated=False
+                patient = Patient.objects.get(id=patient_id)
+                patient.couchdoc.set_schedule(sched)
+                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+            else:
+                context['schedule_form'] = form
+    return render_to_response(template_name, context_instance=context)
+
+            
 
 @login_required
 def dashboard(request,template_name="pactcarehq/user_submits_report.html"):
@@ -151,7 +199,7 @@ def get_caselist(request):
 
 
 @login_required
-def all_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"):
+def all_submits_by_user(request, template_name="pactcarehq/ghetto_progress_submits.html"):
     context = RequestContext(request)
     submit_dict = {}
     for user in User.objects.all().filter(is_active=True):
@@ -163,6 +211,16 @@ def all_submits(request, template_name="pactcarehq/ghetto_progress_submits.html"
     context['submit_dict'] = submit_dict
     return render_to_response(template_name, context_instance=context)
 
+@login_required
+def all_submits_by_patient(request, template_name="pactcarehq/ghetto_progress_submits_patient.html"):
+    context = RequestContext(request)
+    patient_dict = {}
+    
+    patients = Patient.objects.all()
+    for pt in patients:
+        patient_dict[pt] = _get_submissions_for_patient(pt)
+    context['patient_dict'] = patient_dict
+    return render_to_response(template_name, context_instance=context)
 
 def _hack_get_old_caseid(new_case_id):
     #hack to test the old ids
@@ -175,19 +233,32 @@ def _hack_get_old_caseid(new_case_id):
     return old_case_id
 
 
-def _sort_arr_by_date(a,b):
-    return cmp(a[1],b[1])
-
-def _sort_arr_by_date_desc(a,b):
-    return cmp(b[1],a[1])
-
-def _get_submissions_for_user(username):
-    notes_documents = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
+def _get_submissions_for_patient(patient):
+    xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id)
     submissions = []
-    for note in notes_documents:
+    for note in xform_submissions:
         if not note.form.has_key('case'):
             continue
-        case_id = note.form['case']['case_id']
+        xmlns = note['xmlns']
+        if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+            formtype = "DOTS"
+        elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
+            formtype = "Progress Note"
+        else:
+            formtype = "Unknown"
+        submissions.append([note._id, note.form['Meta']['TimeEnd'], note.form['Meta']['username'] , formtype])
+    submissions=sorted(submissions, key=lambda x: x[1])
+    return submissions
+
+
+
+def _get_submissions_for_user(username):
+    xform_submissions = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
+    submissions = []
+    for xform in xform_submissions:
+        if not xform.form.has_key('case'):
+            continue
+        case_id = xform.form['case']['case_id']
 
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
@@ -197,15 +268,15 @@ def _get_submissions_for_user(username):
         else:
             patient_name = patient.last_name
 
-        xmlns = note['xmlns']
+        xmlns = xform['xmlns']
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
         else:
             formtype = "Unknown"
-        submissions.append([note._id, note.form['Meta']['TimeEnd'], patient_name, formtype])
-    submissions.sort(_sort_arr_by_date)
+        submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype])
+    submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
 @login_required
@@ -252,7 +323,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
             continue
         comment_arr.append([cdoc, cdoc.created])
 
-    comment_arr.sort(_sort_arr_by_date_desc)
+    comment_arr = sorted(comment_arr, key=lambda x: x[1], reverse=True)
     context['comments'] = comment_arr
 
     if request.method == 'POST':
@@ -320,7 +391,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
             continue
         comment_arr.append([cdoc, cdoc.created])
 
-    comment_arr.sort(_sort_arr_by_date_desc)
+    comment_arr = sorted(comment_arr, key=lambda x: x[1], reverse=True)
     context['comments'] = comment_arr
 
     if request.method == 'POST':

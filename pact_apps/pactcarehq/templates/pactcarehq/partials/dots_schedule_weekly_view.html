@@ -1,0 +1,49 @@
+{% if week_schedule %}
+<strong><span style="font-size: 125%;"> Latest Visit Schedule</span></strong> &nbsp; <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True"><small>Edit</small></a>
+			<table>
+			<tbody>
+			<tr>
+				<td><strong>Sunday</strong></td>
+				<td>{{week_schedule.sunday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Monday</strong></td>
+				<td> {{week_schedule.monday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Tuesday</strong></td>
+				<td> {{week_schedule.tuesday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Wednesday</strong></td>
+				<td> {{week_schedule.wednesday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Thursday</strong></td>
+				<td> {{week_schedule.thursday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Friday</strong></td>
+				<td> {{week_schedule.friday}}</td>
+			</tr>
+			<tr>
+				<td><strong>Saturday</strong></td>
+				<td> {{week_schedule.saturday}}</td>
+			</tr>
+			</body>
+			<tfoot>
+			<tr>
+				<td colspan="2">
+					{% if not week_schedule.deprecated %}
+					Active {{week_schedule.started|timesince}}, created by {{week_schedule.created_by}}
+					{% else %}
+					Inactive {{week_schedule.ended|date}}					
+					{%endif %}
+				</td>
+			</tr>	
+			</tfoot>
+</table
+{% else %}
+<strong><span style="font-size: 125%;"> No Visit Schedule Set</span></strong> <br>
+<a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Create Schedule</a>
+{%endif %}
