@@ -17,7 +17,7 @@ urlpatterns = patterns ('',
 
     #(r'^patients/mine$', 'pactcarehq.views.my_patients'),
     (r'^patients/all$', 'pactcarehq.views.patient_list'),
-    (r'^patients/(?P<patient_id>[0-9a-f]{32})$', 'pactcarehq.views.patient_view'),
+    url(r'^patients/(?P<patient_id>[0-9a-f]{32})$', 'pactcarehq.views.patient_view', name='view_patient'),
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
     url(r'^progress_notes/(?P<doc_id>[0-9a-f]{32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
