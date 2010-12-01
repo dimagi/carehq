@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% include render_json_tags %}
+{% block content %}
+<h2>Submissions by Patient</h2>
+{%  for patient, submit_arr in patient_dict.items %}
+    <div class="span-24">
+        <div class="span-6">
+            <strong>{{ patient.get_full_name}}</strong>
+        </div>
+        <div class="span-2">
+            <a href="{% url view_patient patient.id %}">Info</a>
+        </div>
+        {% if patient.couchdoc.arm == "DOT" %}
+        <div class="span-4">
+            <a href="{% url dots_view %}?patient={{patient.id}}">DOT Adherence</a>	
+        </div>
+        <div class="span-4">
+            <a href="{% url pactcarehq.views.patient_schedule_report patient.id%}">Visit Schedule</a>
+        </div>
+        {% endif %}
+    </div>
+    <hr>
+
+    {% if submit_arr %}
+    <table>
+    <thead>
+        <tr>
+            <th class="span-4">Date</th>
+            <th class="span-4">CHW</th>
+            <th class="span-4">Form</th>
+        </tr>
+    </thead>
+    {% for submission in submit_arr %}
+        <tr>
+            {% if submission.3 == "DOTS" %}
+                {#ghetto hacky way to differentiate between the submission types#}
+                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1|date }}</a> </td>
+            {% else %}
+                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date }}</a> </td>
+            {% endif %}
+            <td> {{ submission.2 }}</td>
+            <td> {{ submission.3 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+        <div class="notice span-24">No Submissions</div>
+    {% endif %} {#if there are any submits at all #}
+{% endfor %}
+{% endblock %}

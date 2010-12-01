@@ -205,6 +205,19 @@ except:
     logging.error("Local settings not found, loading defaults")
     from settings_default import *
     
+    
+###devserver settings ###
+DEVSERVER_MODULES = (
+    #'devserver.modules.sql.SQLRealTimeModule',
+    'devserver.modules.sql.SQLSummaryModule',
+    'devserver.modules.profile.ProfileSummaryModule',
+
+    # Modules not enabled by default
+    'devserver.modules.ajax.AjaxDumpModule',
+    'devserver.modules.profile.MemoryUseModule',
+    'devserver.modules.cache.CacheSummaryModule',
+)
+    
 ####### Couch Forms & Couch DB Kit Settings #######
 def get_server_url(server_root, username, password):
     if username and password:
@@ -224,8 +237,7 @@ COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'couchforms',
         'pactcarehq',
         'couchexport',
-        'casetracker',
-
+        'dotsview',
 ]]
 
 

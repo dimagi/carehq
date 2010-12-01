@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
 {% block content %}
-<h1>Submission Timeline</h1>
+<h2>Submissions by CHW</h2>
 {%  for username, submit_arr in submit_dict.items %}
-    <h2>{{ username }}'s Submissions</h2>
+    <h3>{{ username }}'s Submissions</h3>
+    <a href="{% url pactcarehq.views.chw_submit_report username %}">Submission Schedule</a>
     {% if submit_arr %}
     <table>
     <thead>
         <tr>
-            <td>Date</td>
-            <td>Patient</td>
-            <td>Form</td>
+            <th class="span-4">Date</th>
+            <th class="span-4">Patient</th>
+            <th class="span-4">Form</th>
         </tr>
     </thead>
     {% for submission in submit_arr %}
@@ -27,7 +28,7 @@
     {% endfor %}
     </table>
     {% else %}
-        <h3>No Submissions</h3>
+        <div class="notice">No Submissions</div>
     {% endif %} {#if there are any submits at all #}
 {% endfor %}
 {% endblock %}

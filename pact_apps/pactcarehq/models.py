@@ -1,5 +1,8 @@
 from django.db import models
 from patient.models.couchmodels import CPatient
+from couchdbkit.ext.django.schema import *
+from couchdbkit.schema.properties_proxy import SchemaListProperty
+from datetime import datetime
 
 
 class trial1mapping(models.Model):
@@ -25,3 +28,5 @@ class trial1mapping(models.Model):
         return None
 
 
+
+    

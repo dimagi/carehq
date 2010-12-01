@@ -1,7 +1,8 @@
 #TODO:
-from couchdbkit.ext.django.schema import *
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from datetime import datetime
+from dimagi.utils import make_uuid
+from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
 
 ghetto_regimen_map = {
     "qd": '1',
@@ -18,6 +19,13 @@ class CPhone(Document):
     description = StringProperty()
     number = StringProperty()
     created = DateTimeProperty(default=datetime.utcnow)
+    
+    deprecated = BooleanProperty(default=False)
+    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    ended = DateTimeProperty()
+    created_by = StringProperty() #userid
+    edited_by = StringProperty() #userid
+
     class Meta:
         app_label = 'patient'
 
@@ -25,14 +33,54 @@ class CAddress(Document):
     """
     An address.
     """
-    description = StringProperty()
+    description = StringProperty() #the title so to speak
+    address_id = StringProperty(default=make_uuid)
     street = StringProperty()
     city = StringProperty()
     state = StringProperty()
     postal_code = StringProperty()
+    
+    deprecated = BooleanProperty(default=False)
+
+    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    ended = DateTimeProperty()
+
+    created_by = StringProperty() #userid
+    edited_by = StringProperty() #userid
+
 
     class Meta:
         app_label = 'patient'
+        
+        
+class CDotWeeklySchedule(Document):
+    """Weekly schedule where each day has a username"""
+    schedule_id = StringProperty(default=make_uuid)
+    
+    sunday = StringProperty() 
+    monday = StringProperty() 
+    tuesday = StringProperty() 
+    wednesday = StringProperty() 
+    thursday = StringProperty() 
+    friday = StringProperty() 
+    saturday = StringProperty() 
+    
+    
+    comment = StringProperty()
+    
+    deprecated = BooleanProperty(default=False)
+    
+    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    ended = DateTimeProperty()
+    
+    created_by = StringProperty() #userid
+    edited_by = StringProperty() #userid
+    
+    class Meta:
+        app_label = 'patient'
+    
+
+    
 
 class CDotSchedule(Document):
     day_of_week = StringProperty()
@@ -90,11 +138,36 @@ class CPatient(Document):
     non_art_regimen = StringProperty()
     date_modified = DateTimeProperty(default=datetime.utcnow)
 
-    dots_schedule = SchemaListProperty(CDotSchedule)
+    dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
+    weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
     #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
     notes = StringProperty()
     class Meta:
         app_label = 'patient'
+
+    @property
+    def latest_schedule(self):
+        #return sorted(self.weekly_schedule, key=lambda x:x.started)[-1]
+        if len(self.weekly_schedule) > 0:
+            return self.weekly_schedule[-1]
+        else:
+            return None 
+       
+       
+       
+    def set_schedule(self, new_schedule):
+        """set the schedule as head of the schedule by accepting a cdotweeklychedule"""
+        #first, set all the others to inactive
+        for sched in self.weekly_schedule:
+            if not sched.deprecated:
+                sched.deprecated=True
+                sched.ended=datetime.utcnow()
+                sched.save()
+        new_schedule.deprecated=False
+        new_schedule.started=datetime.utcnow()
+        self.weekly_schedule.append(new_schedule)
+        self.save()
+
 
     def get_ghetto_phone_xml(self):
         ret = ''
@@ -126,13 +199,21 @@ class CPatient(Document):
         ret = ''
         counter = 1
         days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
-        for sched in self.dots_schedule:
-            day_of_week = sched.day_of_week
-            hp_username = sched.hp_username
-            if hp_username == '':
-                hp_username = self.primary_hp
-            ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day_of_week,hp_username, day_of_week)
-            counter += 1
+        if self.latest_schedule != None:
+            for day in days_of_week:
+                if getattr(self.latest_schedule, day) != None:
+                    hp_username = getattr(self.latest_schedule,day)
+                else:
+                    hp_username=self.primary_hp
+                ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day,hp_username, day)
+        else:
+            for sched in self.dots_schedule:
+                day_of_week = sched.day_of_week
+                hp_username = sched.hp_username
+                if hp_username == '':
+                    hp_username = self.primary_hp
+                ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day_of_week,hp_username, day_of_week)
+                counter += 1
         return ret
 
     def ghetto_xml(self):

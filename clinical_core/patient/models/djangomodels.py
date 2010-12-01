@@ -22,17 +22,16 @@ class Patient(models.Model):
     class Meta:
         app_label = 'patient'
 
-
     @property
     def couchdoc(self):
-        try:
-            return CPatient.view('patient/ids', key=self.doc_id).first()
-        except:
-            return None
-
-    @property
-    def cases(self):
-        return self.case_set.all()
+        if hasattr(self, '_couchdoc'):
+            return self._couchdoc
+        else:
+            try:
+                self._couchdoc =  CPatient.view('patient/ids', key=self.doc_id).first()
+            except:
+                self._couchdoc = None
+            return self._couchdoc
 
     def _get_COUCHDATA(self, propertyname):
         """
