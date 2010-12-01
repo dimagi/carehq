@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
-{% include pt_lookup_tags %}
+{% load patient_lookup %}
 {% block content %}
 <h2>Submission Readout for
     {% if patient %}
@@ -37,11 +37,17 @@
     <td>
             {% for form_item in item_arr.2 %}
                 <div class="span-15 last notice">
-                    Scheduled: {{ form_item.form.scheduled }} by {{ form_item.form.visit_type }} by {{ form_item.metadata.username }} <a href="">{{ form_item.get_id }}</a>
-                    {{ form_item.form.pact_id}}
-                    {% if not patient %}
-                        foo
+                    <strong>
+                    {% if form_item.form.scheduled == "yes" %}
+                        Scheduled
+                    {% else %}
+                        Unscheduled
                     {% endif %}
+                    </strong>
+                    ({{ form_item.form.visit_type|title }})
+                    by {{ form_item.form.Meta.username }}
+                    <a href="{% url show_dots_note form_item.get_id %}">View</a>
+
                 </div>
             {% endfor %}
 
