@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+<h2>Enroll New Patient</h2>
+   <form action="">
+       {% csrf_token %}
+       <table>
+       {{ patient_form.as_table }}
+       </table>
+       <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+       <input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+   </form>
+</div>
+{% endblock content %}

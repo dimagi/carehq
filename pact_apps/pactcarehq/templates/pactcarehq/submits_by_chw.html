@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
 {% block content %}
-<h2>Submission Timeline</h2>
+<h2>Submissions by CHW</h2>
 {%  for username, submit_arr in submit_dict.items %}
-    <h2>{{ username }}'s Submissions</h2>
+    <h3>{{ username }}'s Submissions</h3>
+    <a href="{% url pactcarehq.views.chw_submit_report username %}">Submission Schedule</a>
     {% if submit_arr %}
     <table>
     <thead>

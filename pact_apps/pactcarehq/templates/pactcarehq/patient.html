@@ -43,21 +43,19 @@
 		</div>
 		<div class="span-8 last">
 			{% if schedule_edit %}
-			<strong><span style="font-size: 125%;"> Set Visit Schedule</span></strong>
-			{% if form.errors %}
-        	{% endif %}
-			<form action="{{request.path}}?edit_schedule=True" method="POST">			
-			{% csrf_token %}
-			<table>
-			{{ schedule_form.as_table}}
-			</table>
-			<input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
-			<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
-			</form>
-			{% else %}
-			{% with pdoc.latest_schedule as week_schedule %}
-			{% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
-			{% endwith %}
+                <strong><span style="font-size: 125%;"> Set Visit Schedule</span></strong>
+                <form action="{{request.path}}?edit_schedule=True" method="POST">			
+                    {% csrf_token %}
+                    <table>
+                    {{ schedule_form.as_table}}
+                    </table>
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+            {% else %}
+                {% with pdoc.latest_schedule as week_schedule %}
+                {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+                {% endwith %}
 			{% endif %}
 		</div>
 	</div>

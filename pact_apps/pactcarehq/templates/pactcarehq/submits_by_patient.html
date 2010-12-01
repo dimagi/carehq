@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
 {% block content %}
-<h2>Patient Submissions</h2>
+<h2>Submissions by Patient</h2>
 {%  for patient, submit_arr in patient_dict.items %}
     <div class="span-24">
         <div class="span-6">
@@ -13,6 +13,9 @@
         {% if patient.couchdoc.arm == "DOT" %}
         <div class="span-4">
             <a href="{% url dots_view %}?patient={{patient.id}}">DOT Adherence</a>	
+        </div>
+        <div class="span-4">
+            <a href="{% url pactcarehq.views.patient_schedule_report patient.id%}">Visit Schedule</a>
         </div>
         {% endif %}
     </div>

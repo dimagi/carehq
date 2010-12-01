@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load patient_lookup %}
+{% block content %}
+<h3>CHW Submission Schedule for {{ username }}</h3>
+<table>
+<thead>
+    <tr>
+        <th class="span-4">Date</th>
+        <th class="span-5">Patient Scheduled</th>
+        <th class="span-15">Visits</th>
+    </tr>
+</thead>
+<tbody>
+{%  for item_arr in date_arr %}
+    <tr>
+    {# array of [date, schedule_chw, submissions] #}
+    <td>
+        <strong>{{ item_arr.0|date:"D N j, Y" }}</strong>
+    </td>
+    <td>
+        {% if item_arr.1 %}
+            {% for scheduled_patient in item_arr.1 %}
+                <a href="{% url view_patient scheduled_patient.id %}">{{ scheduled_patient.get_full_name }}</a><br>
+            {% endfor %}
+        {% else %}
+            <small><div class="quiet">-- None scheduled --</div></small>
+        {% endif %}
+    </td>
+    <td>
+            {% for form_item in item_arr.2 %}
+                <div class="span-15 last notice">
+                    <div class="span-5">
+                    <strong>
+                    <a href="{% patient_url_from_form form_item %}">{%  name_from_pactid form_item %}</a> 
+                    </strong>
+                    </div>
+
+                    <div class="span-4">
+                    {% if form_item.form.scheduled == "yes" %}
+                        Scheduled
+                    {% else %}
+                        Unscheduled
+                    {% endif %}
+                    ({{ form_item.form.visit_type|title }})
+                    </div>
+                    <div class="span-3">
+                    by
+                        {% if form_item.form.Meta.username == username %}
+                            <strong>{{ form_item.form.Meta.username }}</strong>
+                        {% else %}
+                            <em>{{ form_item.form.Meta.username }}</em>
+                        {% endif %}
+                    </div>
+                    <div class="span-2 last">
+                    <a href="{% url show_dots_note form_item.get_id %}">View</a>
+                        </div>
+                </div>
+            {% endfor %}
+
+    </td>
+    </div>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endblock content %}

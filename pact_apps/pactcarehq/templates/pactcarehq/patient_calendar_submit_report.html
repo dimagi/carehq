@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% include render_json_tags %}
+{% include pt_lookup_tags %}
+{% block content %}
+<h2>Submission Readout for
+    {% if patient %}
+    <a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h2>
+    {% endif %}
+<table>
+<thead>
+    <tr>
+        <th class="span-4">Date</th>
+        <th class="span-5">CHW Scheduled</th>
+        <th class="span-15">Visits</th>
+    </tr>
+</thead>
+<tbody>
+{%  for item_arr in date_arr %}
+    <tr>
+    {# array of [date, schedule_chw, submissions] #}
+    <td>
+        <strong>{{ item_arr.0|date:"D N j, Y" }}</strong>
+    </td>
+    <td>
+        {% if item_arr.1 %}
+            {% for scheduled_item in item_arr.1 %}
+                {% if patient %}
+                    {{ scheduled_item }}<br>
+                {% else %}
+                    {{ scheduled_item.get_full_name }}<br>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <small><div class="quiet">-- Not scheduled --</div></small>
+        {% endif %}
+    </td>
+    <td>
+            {% for form_item in item_arr.2 %}
+                <div class="span-15 last notice">
+                    Scheduled: {{ form_item.form.scheduled }} by {{ form_item.form.visit_type }} by {{ form_item.metadata.username }} <a href="">{{ form_item.get_id }}</a>
+                    {{ form_item.form.pact_id}}
+                    {% if not patient %}
+                        foo
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+    </td>
+    </div>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endblock content %}

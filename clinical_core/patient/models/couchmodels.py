@@ -21,6 +21,13 @@ class CPhone(Document):
     description = StringProperty()
     number = StringProperty()
     created = DateTimeProperty(default=datetime.utcnow)
+    
+    deprecated = BooleanProperty(default=False)
+    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    ended = DateTimeProperty()
+    created_by = StringProperty() #userid
+    edited_by = StringProperty() #userid
+
     class Meta:
         app_label = 'patient'
 
@@ -28,11 +35,21 @@ class CAddress(Document):
     """
     An address.
     """
-    description = StringProperty()
+    description = StringProperty() #the title so to speak
+    address_id = StringProperty(default=make_uuid)
     street = StringProperty()
     city = StringProperty()
     state = StringProperty()
     postal_code = StringProperty()
+    
+    deprecated = BooleanProperty(default=False)
+
+    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    ended = DateTimeProperty()
+
+    created_by = StringProperty() #userid
+    edited_by = StringProperty() #userid
+
 
     class Meta:
         app_label = 'patient'
@@ -132,8 +149,9 @@ class CPatient(Document):
 
     @property
     def latest_schedule(self):
+        #return sorted(self.weekly_schedule, key=lambda x:x.started)[-1]
         if len(self.weekly_schedule) > 0:
-            return self.weekly_schedule[-1] 
+            return self.weekly_schedule[-1]
         else:
             return None 
        
