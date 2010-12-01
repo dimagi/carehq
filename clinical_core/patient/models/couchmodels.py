@@ -140,7 +140,7 @@ class CPatient(Document):
     non_art_regimen = StringProperty()
     date_modified = DateTimeProperty(default=datetime.utcnow)
 
-    dots_schedule = SchemaListProperty(CDotSchedule)
+    dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
     #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
     notes = StringProperty()
