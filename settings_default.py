@@ -53,6 +53,6 @@ COUCH_DB_APPS = [
     'couchforms',
     'couchexport',]
 
-LOCAL_APP_URLS = patterns(
+LOCAL_APP_URLS = patterns('',
                 (r'', include('patient.urls')),
 )
