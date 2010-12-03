@@ -2,17 +2,13 @@ from django.test import TestCase
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority
+from casetracker.models import Case
 from clinical_core.clincore.utils import generator
-from casetracker import constants
-from django.core.management import call_command
-from dimagi.utils.couch import database
-
 
 INITIAL_DESCRIPTION = "this is a case made by the test case"
 CHANGED_DESCRIPTION = 'i just changed it, foo'
 
-
+###helper functions
 def create_user(username='mockuser', password='mockmock'):    
     user = User()    
     user.username = username
@@ -27,7 +23,7 @@ def create_user(username='mockuser', password='mockmock'):
     return user
 
 
-class EventActivityVerificationTest(TestCase):
+class BasicCaseTests(TestCase):
     #fixtures = ['samplesetup-fixture.json']
 
     def setUp(self):
@@ -44,48 +40,49 @@ class EventActivityVerificationTest(TestCase):
 #        User.objects.all().delete()
 #        transaction.commit()
 
-
-    def testCreateCaseView(self, description = INITIAL_DESCRIPTION):
-        #self.assertFalse(True)
-        pass
-
-
     def testCreateCaseApi(self, description=INITIAL_DESCRIPTION):
-        ###########################
+        """Simple test:  Create a case and verify that it exists in the database via the API"""
         #get the basic counts
+
         user1 = generator.generate_user()
         user2 = generator.generate_user()
 
-        actor1 = generator.generate_actor(user1, 'caregiver')
-        actor2 = generator.generate_actor(user2, 'provider')
+        caregiver_creator = generator.generate_actor(user1, 'caregiver')
+        provider_assigned = generator.generate_actor(user2, 'provider')
 
-        #oldcasecount = Case.objects.all().count()
-        #oldevents = CaseEvent.objects.all().count()
-
-#        newcase = Case()
-#        newcase.description = description
-#        newcase.opened_by = actor1
-#        newcase.last_edit_by = actor1
-#
-#        newcase.assigned_date = datetime.utcnow()
-#        newcase.assigned_to = actor2
-#        newcase.category = Category.objects.all()[0]
-#        newcase.status = Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0]
-#        newcase.priority = Priority.objects.all()[0]
-#        activity = ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
-#        newcase.save(activity=activity)
-
-        newcase = Case.create(actor1, description, "mock body %s" % (uuid.uuid1().hex))
+        old_case_count = Case.view('casetracker/all_cases').count()
+        old_event_count = Case.view('casetracker/all_case_events').count()
+        newcase = Case.create(caregiver_creator, description, "mock body %s" % (uuid.uuid1().hex), assigned_to=provider_assigned)
 
         #is the thing created?
-        #self.assertEqual(Case.objects.all().count(), oldcasecount + 1)
-        #self.assertEqual(CaseEvent.objects.all().count(), oldevents + 1)
-        #verify that the case count created has created a new caseevent
-        #events = CaseEvent.objects.filter(case=newcase)
-        #self.assertEqual(1,events.count())
+        new_case_count = Case.view('casetracker/all_cases').count()
+        new_event_count = Case.view('casetracker/all_case_events').count()
+        self.assertEqual(new_case_count, old_case_count + 1)
+        self.assertEqual(new_event_count, old_event_count + 1)
+
+        events = newcase.events
+        self.assertEqual(1,len(events))
         #verify that said case count is a new case event of type "open"
-        #self.assertEqual(constants.CASE_EVENT_OPEN, events[0].activity.event_class)
+        self.assertEqual('open', events[0].activity.slug)
         return newcase
+
+    def testModifyCase(self):
+        case = self.testCreateCaseApi()
+        old_event_count = Case.view('casetracker/all_case_events').count()
+        case.description = "changing description " + uuid.uuid1().hex
+        case.save()
+
+
+        new_event_count = Case.view('casetracker/all_case_events').count()
+        self.assertEqual(new_event_count, old_event_count + 1)
+
+        self.assertNotEqual(case.description, case.orig_description)
+
+
+        events = case.events
+        self.assertEqual('edit', events[-1].activity.slug)
+        self.assertEqual(2, len(events))
+
     
     def testCaseModifyClient(self, description = "A test case that modifies a case via the webUI using the web client."):
         #self.assertFalse(True)

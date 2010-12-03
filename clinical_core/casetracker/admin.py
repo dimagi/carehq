@@ -1,6 +1,4 @@
 from django.contrib import admin
-from reversion.admin import VersionAdmin
-from models import Category, Priority, Status, ActivityClass, CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 #class CategoryAdmin(admin.ModelAdmin):

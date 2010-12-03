@@ -1,4 +1,4 @@
 function(doc) { 
-    if (doc.doc_type == "Case") 
-        emit(doc._id, doc); 
+    if (doc.base_type == "Case") 
+        emit(doc.patient, doc); 
 }

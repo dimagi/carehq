@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from casecore import Filter
+from filters import Filter
 from dimagi.utils import make_uuid
 
 
