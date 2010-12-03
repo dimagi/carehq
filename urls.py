@@ -23,20 +23,10 @@ urlpatterns += patterns('',
                         # we just include the urls at the root.
                         # The correct solution is likely to break apart urls or harmonize
                         # apps so they all have proper prefixing.
-
-#                        (r'', include('corehq.apps.hqwebapp.urls')),
-#                        (r'', include('corehq.apps.domain.urls')),
-#                        (r'', include('corehq.apps.receiver.urls')),
-#                        (r'', include('corehq.apps.xforms.urls')),
-#                        (r'', include('corehq.apps.program.urls')),
-#                        (r'', include('care_apps.provider.urls')),
-                        #(r'', include('keymaster.urls')),
-                        #(r'', include('pactcarehq.urls')),
-                        #(r'', include('patient.urls')),
-                        #(r'user_registration', include("django_user_registration.urls")),
-                        #(r'couchpost', 'couchforms.views.post'),
+                        (r'', include('patient.urls')), #patient's always here.  carehq cares for patients!
                         )
 if hasattr(settings, 'LOCAL_APP_URLS' ):
+    #specify for your particular installationwhich local application urls you want to map
     urlpatterns += settings.LOCAL_APP_URLS
 
 
