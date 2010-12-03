@@ -3,6 +3,8 @@
 # http://docs.djangoproject.com/en/dev/ref/settings/
 
 # Database configuration
+from django.conf.urls.defaults import patterns, include
+
 DATABASE_ENGINE = 'mysql'
 DATABASE_NAME = 'ashand'
 DATABASE_USER = 'root'
@@ -36,3 +38,21 @@ EMAIL_PORT=587
 #       filename='/tmp/review.log',
 #       filemode='w+'
 #)
+
+#tuple of apps you want to add to this carehq instance
+LOCAL_APPS = ()
+
+COUCH_SERVER_ROOT = 'hostname:5984'
+COUCH_USERNAME = ''
+COUCH_PASSWORD = ''
+COUCH_DATABASE_NAME = ''
+
+#array of appnames you need for your couch setup
+COUCH_DB_APPS = [
+    'patient',
+    'couchforms',
+    'couchexport',]
+
+LOCAL_APP_URLS = patterns(
+                (r'', include('patient.urls')),
+)

@@ -30,13 +30,14 @@ urlpatterns += patterns('',
 #                        (r'', include('corehq.apps.xforms.urls')),
 #                        (r'', include('corehq.apps.program.urls')),
 #                        (r'', include('care_apps.provider.urls')),
-                        (r'', include('keymaster.urls')),
-                        (r'', include('pactcarehq.urls')),
-                        (r'', include('patient.urls')),
+                        #(r'', include('keymaster.urls')),
+                        #(r'', include('pactcarehq.urls')),
+                        #(r'', include('patient.urls')),
                         #(r'user_registration', include("django_user_registration.urls")),
                         #(r'couchpost', 'couchforms.views.post'),
                         )
-
+if hasattr(settings, 'LOCAL_APP_URLS' ):
+    urlpatterns += settings.LOCAL_APP_URLS
 
 
 # magic static media server (idea + implementation lifted from rapidsms)
@@ -51,7 +52,6 @@ for module_name in settings.INSTALLED_APPS:
     # attempt to import this app's urls
     module = try_import("%s.urls" % (module_name))
     if not hasattr(module, "urlpatterns"): continue
-
 
     # if the MEDIA_URL does not contain a hostname (ie, it's just an
     # http path), and we are running in DEBUG mode, we will also serve

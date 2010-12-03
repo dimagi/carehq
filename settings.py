@@ -99,7 +99,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.request',                               
                                )
 
-INSTALLED_APPS = (    
+INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -108,38 +108,28 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
     'couchforms',
     'couchexport',
-    'clincore',
-
-    'carehqapp',
-    #'careplan',
 
     #####################
-    #clinical_core
-    'casetracker',
+    #'casetracker',
     'patient',
     'actors',
-    #'pactcarehq',
-    'keymaster',
+    'clincore', #just a library, no app
     #end clinical_core
 
     ######################
     #pact specific apps
-    'dotsview',
-    
+
     #########################
     #third party apps
     'autofixture',
     'reversion',
     'django_extensions',
     'django_digest',
-    'django-model-utils',
     #end third party apps
-    
-            
 
     ###########################
     #Apps for production use
-    'haystack',
+    #'haystack',
     #'johnny',
 
     ####################
@@ -201,9 +191,12 @@ AUDITABLE_MODELS = [
 
 try:
     from settings_local import *
-except:
-    logging.error("Local settings not found, loading defaults")
+except Exception, e:
+    logging.error("Local settings not found, loading defaults: %s" % (e))
     from settings_default import *
+
+#### Add local apps where specified
+INSTALLED_APPS += LOCAL_APPS
     
     
 ###devserver settings ###
@@ -217,7 +210,11 @@ DEVSERVER_MODULES = (
     'devserver.modules.profile.MemoryUseModule',
     'devserver.modules.cache.CacheSummaryModule',
 )
-    
+
+
+
+
+
 ####### Couch Forms & Couch DB Kit Settings #######
 def get_server_url(server_root, username, password):
     if username and password:
@@ -227,19 +224,12 @@ def get_server_url(server_root, username, password):
              "server": server_root }
     else:
         return "http://%(server)s" % {"server": server_root }
+
 COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
 COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
 
 
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
-COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
-        'patient',
-        'couchforms',
-        'pactcarehq',
-        'couchexport',
-        'dotsview',
-]]
-
+COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]
 
 TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
-
