@@ -29,6 +29,7 @@ from django.views.decorators.cache import cache_page
 from pactcarehq.forms.address_form import AddressForm
 from pactcarehq.forms.phone_form import PhoneForm
 from pactcarehq.forms.pactpatient_form import CPatientForm
+from threading import Thread
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -221,10 +222,13 @@ def post(request):
         #print request.FILES.keys()
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
+            print "read file"
             #print instance
             doc = post_xform_to_couch(instance)
             print "posted"
-            xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
+            #xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
+            t = Thread(target=xform_saved.send, kwargs = {'sender':'post', 'form':doc})
+            t.start()
             print "post_signal: %s" % (doc)
             resp = HttpResponse()
             resp.write("success")
