@@ -61,7 +61,8 @@ def remove_phone(request):
                     p.edited_by = request.user.username
                     patient.couchdoc.phones[i] = p
                     patient.couchdoc.save()
-                    return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+                    break
+            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
         except Exception, e:
             logging.error("Error getting args:" + str(e))
             #return HttpResponse("Error: %s" % (e))
