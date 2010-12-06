@@ -11,5 +11,5 @@ def run():
         for phone in pt.couchdoc.phones:
             phone.phone_id = uuid.uuid1().hex
             phone.save()
-            print "Set patient phone
+            print "Set patient phone %s" % (pt.id)
 
