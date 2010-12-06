@@ -223,13 +223,8 @@ def post(request):
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
             print "read file"
-            #print instance
-            doc = post_xform_to_couch(instance)
-            print "posted"
-            #xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
-            t = Thread(target=xform_saved.send, kwargs = {'sender':'post', 'form':doc})
+            t = Thread(target=threaded_submission, args=(instance,))
             t.start()
-            print "post_signal: %s" % (doc)
             resp = HttpResponse()
             resp.write("success")
             resp.status_code = 201
@@ -237,8 +232,15 @@ def post(request):
         else:
             return HttpResponse("No form data")
     except Exception, e:
+        print "Error: %s" % (e)
         return HttpResponse("fail")
 
+
+def threaded_submission(instance):
+    doc = post_xform_to_couch(instance)
+    print "posted"
+    xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
+    print "post_signal: %s" % (doc)
 
 @httpdigest()
 def get_caselist(request):
