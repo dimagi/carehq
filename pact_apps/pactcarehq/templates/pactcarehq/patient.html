@@ -162,7 +162,7 @@ function post_phone_delete(patient_id, phone_id) {
                     </div>
                     <div class="span-12 last">
                         <em>{{ phone.number }}</em>
-                        <small>(<a href="javascript:post_phone_delete('{{patient.id }}', '{{ phone.get_id }}')">Remove</a>)</small>
+                        <small>(<a href="javascript:post_phone_delete('{{patient.id }}', '{{ phone.phone_id }}')">Remove</a>)</small>
                     </div>
                 </div>
             {% endfor %}
