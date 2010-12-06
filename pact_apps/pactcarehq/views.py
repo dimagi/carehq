@@ -399,12 +399,13 @@ def all_submits_by_user(request, template_name="pactcarehq/submits_by_chw.html")
 @login_required
 def all_submits_by_patient(request, template_name="pactcarehq/submits_by_patient.html"):
     context = RequestContext(request)
-    patient_dict = {}
+    patient_list = []
     
     patients = Patient.objects.all()
+    patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
     for pt in patients:
-        patient_dict[pt] = _get_submissions_for_patient(pt)
-    context['patient_dict'] = patient_dict
+        patient_list.append((pt,_get_submissions_for_patient(pt)))
+    context['patient_list'] = patient_list
     return render_to_response(template_name, context_instance=context)
 
 def _hack_get_old_caseid(new_case_id):
