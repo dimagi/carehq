@@ -6,7 +6,6 @@ from models import *
 from django.contrib.auth.decorators import login_required
 from patient.models.couchmodels import CPatient
 from couchforms.models import XFormInstance
-from operator import itemgetter, attrgetter
 
 import csv
 

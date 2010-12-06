@@ -1,5 +1,5 @@
 function(doc) {
-    //key = doc id
+    //key = pact_id
     if (doc.doc_type == "CPatient") 
-        emit(doc._id, doc); 
+        emit(doc.pact_id, doc);
 }

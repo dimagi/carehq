@@ -1,5 +1,7 @@
 from django import forms
 from django.forms import widgets
+from patient.models.djangomodels import Patient
+from django.core.exceptions import ValidationError
 
 class BasicPatientForm(forms.Form):
     GENDER_CHOICES =(
@@ -37,6 +39,13 @@ class PactPatientForm(BasicPatientForm):
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
 
+    def clean_pact_id(self):
+        if Patient.is_pact_id_unique(self.cleaned_data['pact_id']) == False:
+            raise ValidationError("Error, pact id must be unique")
+        else:
+            return self.cleaned_data['pact_id']
+        
 
-    primary_hp = forms.CharField() #this is the sketchy, hacky way in which we link patients to providers for pact pilot
+
+    primary_hp = forms.CharField(required=True) #this is the sketchy, hacky way in which we link patients to providers for pact pilot
 

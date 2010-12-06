@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container">
 <h2>Enroll New Patient</h2>
-   <form action="">
+      <form action="" method="POST"> 
        {% csrf_token %}
        <table>
        {{ patient_form.as_table }}

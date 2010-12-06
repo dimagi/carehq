@@ -3,6 +3,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 from datetime import datetime
 from dimagi.utils import make_uuid
 from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
+from dimagi.utils.make_time import make_time
 
 ghetto_regimen_map = {
     "qd": '1',
@@ -24,7 +25,8 @@ class CPhone(Document):
     started = DateTimeProperty(default=datetime.utcnow, required=True)
     ended = DateTimeProperty()
     created_by = StringProperty() #userid
-    edited_by = StringProperty() #userid
+    edited_by = StringProperty() #useridp
+    notes = StringProperty()
 
     class Meta:
         app_label = 'patient'
@@ -42,7 +44,7 @@ class CAddress(Document):
     
     deprecated = BooleanProperty(default=False)
 
-    started = DateTimeProperty(default=datetime.utcnow, required=True)
+    started = DateTimeProperty(default=make_time, required=True)
     ended = DateTimeProperty()
 
     created_by = StringProperty() #userid
@@ -114,7 +116,6 @@ ghetto_patient_xml = """<case>
            </case>"""
 
 class CPatient(Document):
-
     GENDER_CHOICES = (
         ('m','Male'),
         ('f','Female'),
@@ -142,6 +143,7 @@ class CPatient(Document):
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
     #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
     notes = StringProperty()
+
     class Meta:
         app_label = 'patient'
 
@@ -151,10 +153,16 @@ class CPatient(Document):
         if len(self.weekly_schedule) > 0:
             return self.weekly_schedule[-1]
         else:
-            return None 
-       
-       
-       
+            return None
+        
+    @property
+    def latest_address(self):
+        #return sorted(self.weekly_schedule, key=lambda x:x.started)[-1]
+        if len(self.address) > 0:
+            return self.address[-1]
+        else:
+            return None
+
     def set_schedule(self, new_schedule):
         """set the schedule as head of the schedule by accepting a cdotweeklychedule"""
         #first, set all the others to inactive
@@ -168,11 +176,41 @@ class CPatient(Document):
         self.weekly_schedule.append(new_schedule)
         self.save()
 
+    def set_address(self, new_address):
+        """set the schedule as head of the schedule by accepting a cdotweeklychedule"""
+        #first, set all the others to inactive
+        for addr in self.address:
+            if not addr.deprecated:
+                addr.deprecated=True
+                addr.ended=datetime.utcnow()
+                addr.save()
+        new_address.deprecated=False
+        self.address.append(new_address)
+        self.save()
+
+    @property
+    def active_phones(self):
+        ret = []
+        for phone in self.phones:
+            if phone.deprecated:
+                continue
+            else:
+                ret.append(phone)
+        return ret
+    @property
+    def active_addresses(self):
+        ret = []
+        for addr in self.address:
+            if addr.deprecated:
+                continue
+            else:
+                ret.append(addr)
+        return ret
 
     def get_ghetto_phone_xml(self):
         ret = ''
         counter = 1
-        for phone in self.phones:
+        for phone in self.active_phones:
             if phone.number == '':
                 continue
             else:
@@ -189,7 +227,7 @@ class CPatient(Document):
     def get_ghetto_address_xml(self):
         ret = ''
         counter = 1
-        for addr in self.address:
+        for addr in self.active_addresses:
             addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
             ret += "<address%d>%s</address%d>" % (counter,addconcat, counter)
             counter += 1

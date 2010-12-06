@@ -7,6 +7,9 @@ import settings
 import logging
 from dimagi.utils import make_uuid, make_time
 from patient.models.couchmodels import CPatient
+class DuplicateIdentifierException(Exception):
+    pass
+
 
 
 class Patient(models.Model):
@@ -28,7 +31,7 @@ class Patient(models.Model):
             return self._couchdoc
         else:
             try:
-                self._couchdoc =  CPatient.view('patient/ids', key=self.doc_id).first()
+                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id).first()
             except:
                 self._couchdoc = None
             return self._couchdoc
@@ -40,24 +43,56 @@ class Patient(models.Model):
         if self.couchdoc != None:
             return self.couchdoc[propertyname]
 
-    def _set_COUCHDATA(self, propertyname, setvalue):
+    def _set_COUCHDATA(self, propertyname, setvalue, do_save=False):
         """
-        Generic setter for top level property of a patient couch object
+        Generic setter for top level property of a patient couch object.  By default does not save unless you override.
         """
         if self.couchdoc != None:
             doc = self.couchdoc
             doc[propertyname] = setvalue
-            doc.save()
+            if do_save:
+                doc.save()
 
+    def __init__(self, *args, **kwargs):
+        super(Patient, self).__init__(*args, **kwargs)
+        if self.doc_id == None:
+            self._couchdoc = CPatient()
+            self._couchdoc.django_uuid = self.id #the id is set at init
+            self.isnew = True
+
+    @staticmethod
+    def is_pact_id_unique(pact_id):
+        print "checking pact_id: " + str(pact_id)
+        if CPatient.view('patient/pact_ids', key=pact_id).count() > 0:
+            return False
+        else:
+            return True
+
+    def save(self, *args, **kwargs):
+        #time to do some error checking
+        if not Patient.is_pact_id_unique(self.couchdoc.pact_id):
+            raise DuplicateIdentifierException()
+
+        if self.doc_id == None and self.isnew:
+            self._couchdoc.save()
+            self.doc_id = self._couchdoc._id
+
+
+        super(Patient, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        super(Patient, self).delete(*args, **kwargs)
 
     def __unicode__(self):
-        return self.full_name
+        if self.couchdoc:
+            return self.full_name
+        else:
+            return "Patient [%s]" % (self.id)
 
     @property
     def full_name(self):
         if self.couchdoc:
             return "%s %s" % (self.couchdoc.first_name, self.couchdoc.last_name)
-
 
     def grant_care_access(self, actor):
         pass

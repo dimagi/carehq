@@ -26,7 +26,5 @@ urlpatterns = patterns ('',
     url(r'^progress_notes/(?P<doc_id>[0-9a-f]{32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     url(r'^dots_note/(?P<doc_id>[0-9a-f]{32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
     #url(r'^progress_notes/(?P<doc_id>[0-9a-f]{32})/edit$', 'pactcarehq.views.show_progress_note', name='edit_progress_note'),
-    (r'^dots/', include('dotsview.urls')),
-
-
+    #(r'^dots/', include('dotsview.urls')),
 )

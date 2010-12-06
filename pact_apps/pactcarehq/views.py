@@ -1,7 +1,7 @@
-from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule
+from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone
 from patient.models.djangomodels import Patient
 from couchexport.export import export_excel
-from django.http import HttpResponse, Http404, Http404
+from django.http import   Http404
 from StringIO import StringIO
 import uuid
 from django.http import HttpResponse, HttpResponseRedirect
@@ -26,6 +26,9 @@ from django.core.cache import cache
 import hashlib
 import simplejson
 from django.views.decorators.cache import cache_page
+from pactcarehq.forms.address_form import AddressForm
+from pactcarehq.forms.phone_form import PhoneForm
+from pactcarehq.forms.pactpatient_form import CPatientForm
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -59,17 +62,32 @@ def patient_list(request, template_name="pactcarehq/patient_list.html"):
 
 @login_required
 def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
+
     schedule_show = request.GET.get("schedule", "active")
+
     schedule_edit = request.GET.get("edit_schedule", False)
-    
+    address_edit = request.GET.get("edit_address", False)
+    phone_edit = request.GET.get("edit_phone", False)
+    patient_edit = request.GET.get('edit_patient', None)
+
     patient = Patient.objects.get(id=patient_id)
     context = RequestContext(request)
     context['patient']=patient
     context['pdoc']=patient.couchdoc
     context['schedule_show'] = schedule_show
     context['schedule_edit'] = schedule_edit
+    context['phone_edit'] = phone_edit
+    context['address_edit'] = address_edit
+    context['patient_edit'] = patient_edit
+
+    if address_edit:
+        context['address_form'] = AddressForm()
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
+    if phone_edit:
+        context['phone_form'] = PhoneForm()
+    if patient_edit:
+        context['patient_form'] = CPatientForm(patient_edit, instance=patient.couchdoc)
         
     if request.method == 'POST':
         if schedule_edit:
@@ -84,11 +102,38 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                 sched.comment=form.cleaned_data['comment']
                 sched.created_by = request.user.username
                 sched.deprecated=False
-                patient = Patient.objects.get(id=patient_id)
                 patient.couchdoc.set_schedule(sched)
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
             else:
                 context['schedule_form'] = form
+        elif address_edit:
+            form = AddressForm(data=request.POST)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.created_by = request.user.username
+                patient.couchdoc.set_address(instance)
+                patient.couchdoc.save()
+                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+            else:
+                context['address_form'] = form
+        elif phone_edit:
+            form = PhoneForm(data=request.POST)
+            if form.is_valid():
+                new_phone = CPhone()
+                new_phone.description = form.cleaned_data['description']
+                new_phone.number = form.cleaned_data['number']
+                new_phone.notes = form.cleaned_data['notes']
+                new_phone.created_by = request.user.username
+                patient.couchdoc.phones.append(new_phone)
+                patient.couchdoc.save()
+                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+        elif patient_edit:
+            form = CPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
+            if form.is_valid():
+                instance = form.save(commit=True)
+                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+
+
     return render_to_response(template_name, context_instance=context)
 
 

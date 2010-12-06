@@ -1,5 +1,41 @@
 {%  extends "base.html" %}
 {% load i18n %}
+{% block extrahead %}
+<script type="text/javascript">
+//adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
+function post_phone_delete(patient_id, phone_id) {
+    //method = method || "post"; // Set method to post by default, if not specified.
+    method="post";
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", '{% url remove_phone %}');
+
+    var csrf = document.createElement("input");
+    csrf.setAttribute("type", "hidden");
+    csrf.setAttribute("name", "csrfmiddlewaretoken");
+    csrf.setAttribute("value", "{{ csrf_token }}");
+    form.appendChild(csrf);
+
+    var patientIDField = document.createElement("input");
+    patientIDField.setAttribute("type", "hidden");
+    patientIDField.setAttribute("name", "patient_id");
+    patientIDField.setAttribute("value", patient_id);
+    form.appendChild(patientIDField);
+
+    var phoneIDField = document.createElement("input");
+    phoneIDField.setAttribute("type", "hidden");
+    phoneIDField.setAttribute("name", "phone_id");
+    phoneIDField.setAttribute("value", phone_id);
+    form.appendChild(phoneIDField);
+
+    document.body.appendChild(form);    // Not entirely sure if this is necessary
+    form.submit();
+}
+</script>
+{% endblock extrahead %}
 {% block content %}
 <div class="container">
 	<h2>Patient Information</h2>
@@ -11,6 +47,17 @@
 			</div>
 			<div class="span-18 prepend-1">
 			<h2>{{pdoc.first_name}} {{pdoc.last_name}}</h2>
+                {% if patient_edit %}
+                    <h4>Edit Field</h4>
+                    <form action="{{request.path}}?edit_patient={{ patient_edit }}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                    {{ patient_form.as_table}}
+                    </table>
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+                {% else %}
 				<table>
 				<tr>
 					<td><strong>Age</strong></td><td>{{pdoc.birthdate|timesince }}</td>
@@ -18,28 +65,139 @@
 				</tr>
 				<tr>
 					<td><strong>Sex</strong></td><td>{{pdoc.gender }}</td> 
-					<td><strong>ARM</strong></td><td>{{pdoc.arm }}</td>
+					<td><strong>ARM</strong></td><td>{{pdoc.arm }} <a href="{{ request.path }}?edit_patient=arm">Edit</a></td>
 				</tr>
-				</table>
+                <tr>
+                    <td>
+                        <strong>Primary HP</strong>
+                    </td>
+                    <td>
+                        {{pdoc.primary_hp }} <a href="{{ request.path }}?edit_patient=primaryhp">Edit</a>
+                    </td>
+                    {% if pdoc.arm == "DOT" %}
+                        <td><strong>ART Regimen </strong></td><td>{{pdoc.art_regimen }} <a href="{{ request.path }}?edit_patient=regimen">Edit</a></td>
+                    {% else %}
+                        <td></td><td></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td></td><td></td>
+                    {% if pdoc.arm == "DOT" %}
+                        <td><strong>Non ART Regimen </strong></td><td>{{pdoc.non_art_regimen }} <a href="{{ request.path }}?edit_patient=regimen">Edit</a></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+                </table>
+                 <div class="span-17">
+                     <h4>Notes</h4>
+                     <small>{{ pdoc.notes }}</small>
+                     <hr>
+                      <a href="{{ request.path }}?edit_patient=notes">Edit</a>
+                 </div>
+                {% endif %}
 			</div>
 		</fieldset>
 	{# patient info #}
 	</div>
 	<div class="span-24">
 		<div class="span-16">
-			<div class="container">
-			<strong>{% trans "Address Information" %}:</strong><br>
-						{% for addr in pdoc.address %}
-							<div class="span-6">{{addr.street}}<br>{{addr.city}}, {{addr.state}} {{addr.post_code}}</div>
-						{%endfor %}
-			</div>
-				
-			{% if pdoc.arm == "DOT" %}
-			<strong>{% trans "ART Regimen" %}:</strong> <em>{{pdoc.art_regimen}}</em><br>
-			<strong>{% trans "Non ART Regimen" %}:</strong> <em>{{pdoc.non_art_regimen}}</em><br>
-			{% endif %}
-			<strong>{% trans "Last Modified" %}:</strong> <em>{{pdoc.date_modified|date }}</em><br>
-		
+            {# #################### Address view/edit ################### #}
+            {% if address_edit %}
+                <fieldset>
+                    <legend>Change Address</legend>
+                <form action="{{request.path}}?edit_address=True" method="POST">
+                    {% csrf_token %}
+                    <table>
+                    {{ address_form.as_table}}
+                    </table>
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel"  onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+                </fieldset>
+            {% else %}
+                <div class="span-16 last">
+                <strong><span style="font-size:125%">Primary Address</span></strong> <small>(<a href="{{ request.path }}?edit_address=True">Edit</a>)</small>
+                </div>
+                <div class="span-15 prepend-1 last">
+                    {% with pdoc.latest_address as patient_address %}
+                        {% if patient_address %}
+                            <div class="span-6">
+                                {{ patient_address.description|title }}<br>
+                                {{patient_address.street}} <br>{{patient_address.city}}, {{patient_address.state}} {{patient_address.post_code}}<br>
+{#                                <small><a href="{{ request.path }}?edit_address=True">Change</a></small>#}
+                            </div>
+                        {% else %}
+                            <a href="{{ request.path }}?edit_address=True">Change Address</a></small>
+                        {% endif %}
+                    {% endwith %}
+                    </div>
+            {% endif %}
+            <hr>
+            {# ######################## End address editing #################### #}
+
+            {# ######################## Phone editing #################### #}
+            <strong><span style="font-size:125%">Phone Contact</span></strong> <small>(<a href="{{ request.path }}?edit_phone=True">Add new</a>)</small>
+        
+            {% if phone_edit %}
+            <div class="span-16">
+                <fieldset>
+                <legend>Add New Phone</legend>    
+                <form action="{{request.path}}?edit_phone=True" method="POST">
+                    {% csrf_token %}
+                    <table>
+                    {{ phone_form.as_table}}
+                    </table>
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+                </fieldset>
+            </div>
+            {% endif %}
+
+            {% for phone in pdoc.active_phones %}
+                <div class="span-16">
+                    <div class="span-4" align="right">
+                        <strong>{{ phone.description|title }}</strong>
+                    </div>
+                    <div class="span-12 last">
+                        <em>{{ phone.number }}</em>
+                        <small>(<a href="javascript:post_phone_delete('{{patient.id }}', '{{ phone.get_id }}')">Remove</a>)</small>
+                    </div>
+                </div>
+            {% endfor %}
+           {# ######################## End Phone editing #################### #}
+{##}
+            {# ######################## Static DOTS Info #################### #}
+{#			{% if pdoc.arm == "DOT" %}#}
+{#            <hr>#}
+{#            <h4>DOT Regimen Information</h4>#}
+{#            <div class="span-16">#}
+{#                <div class="span-4">#}
+{#                    <strong>{% trans "ART Regimen" %}:</strong>#}
+{#                </div>#}
+{#                <div class="span-12 last">#}
+{#                    <em>{{pdoc.art_regimen}}</em>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="span-16">#}
+{#                <div class="span-4">#}
+{#                    <strong>{% trans "Non ART Regimen" %}:</strong>#}
+{#                </div>#}
+{#                <div class="span-12 last">#}
+{#                    <em>{{pdoc.non_art_regimen}}</em>#}
+{#                </div>#}
+{#            </div>#}
+{#			{% endif %}#}
+            {# ######################## End Static DOTS Info #################### #}
+
+
+        <div class="span-16">
+            <small>
+                <em>{% trans "Last Modified" %}: {{pdoc.date_modified|date }}</em>
+            </small>
+        </div>
+
 		</div>
 		<div class="span-8 last">
 			{% if schedule_edit %}
