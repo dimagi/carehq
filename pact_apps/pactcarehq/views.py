@@ -225,9 +225,10 @@ def post(request):
             print "read file"
             t = Thread(target=threaded_submission, args=(instance,))
             t.start()
-            resp = HttpResponse()
-            resp.write("success")
-            resp.status_code = 201
+            resp = HttpResponse(status=201)
+            resp['Content-Length'] = 0
+            #resp.write("success")
+            #resp.status_code = 203
             return resp
         else:
             return HttpResponse("No form data")
