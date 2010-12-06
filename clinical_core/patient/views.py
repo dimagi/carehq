@@ -54,7 +54,7 @@ def remove_phone(request):
 
             for i in range(0, len(patient.couchdoc.phones)):
                 p = patient.couchdoc.phones[i]
-                if p.get_id == phone_id:
+                if p.phone_id == phone_id:
                     print "matching phone_id"
                     p.deprecated=True
                     p.ended=datetime.utcnow()
