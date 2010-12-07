@@ -64,7 +64,7 @@
 		<p class='date-range-warning'>
 			Just so you know, the date range you're looking at is
 			<strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
-			We only have data for <strong>{{patient.get_full_name}}</strong> between
+			We only have data for <strong>{{patient.full_name}}</strong> between
 			<strong>{{first_observation}}</strong>
 			and <strong>{{last_observation}}</strong>.
 		</p>

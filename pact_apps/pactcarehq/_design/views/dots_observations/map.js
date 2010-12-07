@@ -36,7 +36,7 @@ function(doc) {
 	    // hat tip: http://stackoverflow.com/questions/2587345/javascript-date-parse    
 	    var parts = date_string.match(/(\d+)/g);
 	    // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
-	    return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
+	    return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based, subtract fromour encoutner date
 	}
 	
 	

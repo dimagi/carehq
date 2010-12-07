@@ -27,7 +27,7 @@
                 {% if patient %}
                     {{ scheduled_item }}<br>
                 {% else %}
-                    {{ scheduled_item.get_full_name }}<br>
+                    {{ scheduled_item.full_name }}<br>
                 {% endif %}
             {% endfor %}
         {% else %}
