@@ -371,6 +371,7 @@ def chw_submit_report(request, username, template_name="pactcarehq/chw_calendar_
                     submits = []
                 submits_for_day.extend(submits)
             scheduled_patients = sorted(scheduled_patients, key=lambda x:x.couchdoc.last_name)
+            #submits_for_day = sorted(submits_for_day, key=lambda x: ) #this will be pretty slow to dereference the submit's pact_id to do a sort by last_name
             ret.append([visit_date, scheduled_patients, submits_for_day])
 
         context['date_arr'] = ret
@@ -635,14 +636,29 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     dots_note['visit_type'] = raw['visit_type']
     dots_note['visit_kept'] = raw['visit_kept']
     dots_note['contact_type'] = raw['contact_type']
-    dots_note['observed_art'] = raw['observed_art']
-    try:
+    
+    if raw.has_key('observed_art'):
+        dots_note['observed_art'] = raw['observed_art']
+    else:
+        dots_note['observed_art'] = 'No'
+
+    if raw.has_key('observed_art_dose'):
         dots_note['observed_art_dose'] = raw['observed_art_dose']
+    else:
+        dots_note['observed_art_dose'] = 'No'
+    if raw.has_key('observed_non_art_dose'):
         dots_note['observed_non_art_dose'] = raw['observed_non_art_dose']
+    else:
+        dots_note['observed_non_art_dose'] = 'No'
+
+    if raw.has_key('observed_non_art'):
+        dots_note['observed_non_art'] = raw['observed_non_art']
+    else:
+        dots_note['observed_non_art'] = 'No'
+    try:
+        dots_note['notes'] = raw['notes']
     except:
-        logging.error("Error, missing keys: observed_art_dose and observed_non_art_dose")
-    dots_note['observed_non_art'] = raw['observed_non_art']
-    dots_note['notes'] = raw['notes']
+        dots_note['notes'] = ''
 
 
 
