@@ -226,9 +226,7 @@ def post(request):
             t = Thread(target=threaded_submission, args=(instance,))
             t.start()
             resp = HttpResponse(status=201)
-            resp['Content-Length'] = 0
-            #resp.write("success")
-            #resp.status_code = 203
+            #resp['Content-Length'] = 0 #required for nginx
             return resp
         else:
             return HttpResponse("No form data")
