@@ -22,9 +22,12 @@ function(doc) {
 //	}
 	
 	function do_observation(doc, observe_date, drug_arr, obs_dict) {
-		if (drug_arr.length == 2 && drug_arr[0] != 'unchecked') {
+        if (drug_arr.length >= 2 && drug_arr[0] != 'unchecked') {
 			obs_dict['adherence'] = drug_arr[0];
 			obs_dict['method'] = drug_arr[1];
+            if (drug_arr.length == 3) {
+				obs_dict['day_note'] = drug_arr[2];
+			}
 			//emit([doc._id, i.toString()], drug_obs);
 			//var use_date = new Date(doc.form['case']['update']['dots']['anchor']);
 			emit([doc.form['pact_id'], observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], obs_dict);

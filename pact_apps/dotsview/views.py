@@ -203,6 +203,7 @@ def index_couch(request, template='dots/index_couch.html'):
     def group_by_is_art_and_time(date):
         grouping = {}
         conflict_dict = {}
+        day_notes = []
         conflict_check={}
         for artkey in artkeys:
             by_time = {}
@@ -230,8 +231,16 @@ def index_couch(request, template='dots/index_couch.html'):
                     #next, add the one existing in the lookup checker as well because they differed.
                     if not conflict_dict.has_key(prior_ob.doc_id):
                         conflict_dict[prior_ob.doc_id] = prior_ob
-                        
-                 
+                #if any observation on this date has a notes for that particular check, record it.
+                if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
+#                    print "\n\nSaving a note"
+#                    print ob.doc_id
+#                    print date
+#                    print ob.adinfo[0]
+#                    print ob.adinfo[1]
+#                    print ob.day_note
+                    day_notes.append(ob.day_note)
+
                 conflict_check[ob.adinfo[0]]= ob
                 
                 if view_doc_id != None and ob.doc_id != view_doc_id:
@@ -241,7 +250,13 @@ def index_couch(request, template='dots/index_couch.html'):
                     #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                     pass
                 grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
-        return ([(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.observed_date)[-1:]) for tk in timekeys]) for ak in artkeys], conflict_dict.values())
+
+        #for each class of drug (art, non art) in artkeys
+        #for each time in the timeslots (morning, afternoon, etc)
+        #get the most recent observation for that time slot observed_date[-1:] - make it a list because we iterate through them
+
+        return ([(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.observed_date)[-1:]) for tk in timekeys]) for ak in artkeys], conflict_dict.values(), day_notes)
+
     
     start_padding = dates[0].weekday()
     end_padding = 7-dates[-1].weekday() + 1
@@ -258,7 +273,7 @@ def index_couch(request, template='dots/index_couch.html'):
     new_dates = [] 
     for date in dates:
         observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
-        new_dates.append((date, observation_tuple[0], observation_tuple[1]))
+        new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2]))
     weeks = [new_dates[7*n:7*(n+1)] for n in range(len(new_dates)/7)]
     
     dots_pts = CPatient.view('patient/all_dots').all()

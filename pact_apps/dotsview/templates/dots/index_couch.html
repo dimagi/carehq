@@ -82,7 +82,8 @@
 	            <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
 	            <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
 				<img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
-	        </div>	
+                <img src="/media/dotsview/icons/info.png">&nbsp;Notes<br>
+	        </div>
 	        <div class="span-3 last">
 	        <strong>Pillbox</strong><br>
 	            <img src="/media/dotsview/icons/check.jpg">&nbsp; Empty<br>
@@ -107,7 +108,7 @@
 			</tr>
 		{% for week in weeks %}
 			<tr>
-				{% for date, entries, conflicts in week %}
+				{% for date, entries, conflicts, day_notes in week %}
 					{% if date %}
 						<td>
     					<div class="date-label">{{date}}</div>
@@ -140,10 +141,20 @@
 								<img src="/media/dotsview/icons/warning.png">
 								{% for conflict in conflicts %}
 								<small>
-								<a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}"> 
-								{{conflict.anchor_date|date:"Y-m-d"}}</a> 
+								<a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
+								{{conflict.anchor_date|date:"Y-m-d"}}</a>
 								</small><br>
 								{% endfor %}
+							</div>
+							{% endif %}
+                        	{% if day_notes %}
+							<div class="date-notes-block">
+                                <img src="/media/dotsview/icons/info.png">
+                                {% for note in day_notes %}
+								<small>
+                                    {{ note }}  <br>
+                                </small>
+                                {% endfor %}
 							</div>
 							{% endif %}
 						</td>

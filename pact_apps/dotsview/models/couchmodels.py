@@ -45,8 +45,9 @@ class CObservation(Document):
     method=StringProperty()
     
     day_index = IntegerProperty()
-    
-    note = StringProperty()
+
+    day_note = StringProperty() #if there's something for that particular day, then it'll be here
+    note = StringProperty() #this is for the overall note for that submission, will exist on the anchor date
     
     @property
     def adinfo(self):
