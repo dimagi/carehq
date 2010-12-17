@@ -30,6 +30,7 @@ from pactcarehq.forms.address_form import AddressForm
 from pactcarehq.forms.phone_form import PhoneForm
 from pactcarehq.forms.pactpatient_form import CPatientForm
 from threading import Thread
+from pactcarehq import schedule
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -147,7 +148,7 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
     enddate = datetime.utcnow() - timedelta(days=0)
     timeval = timedelta(days=1)
     eval_date = enddate
-    total_interval = 14
+    total_interval = 7
     if request.GET.has_key('interval'):
         try:
             total_interval = int(request.GET['interval'])
@@ -168,22 +169,37 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
         for user in users:
             if user.username.count('_') > 0:
                 continue
-            submission_dict[schema][user.username] = []
+            submission_dict[schema][user.username] = [0 for x in range(total_interval)]
+            keys = []
             for offset in range(0,total_interval):
                 eval_date = enddate - timedelta(days=offset)
                 datestring = eval_date.strftime("%m/%d/%Y")
 
                 #hack the view is doing zero indexed months
-                startkey = [str(user.username),  eval_date.year, eval_date.month-1, eval_date.day, schema]
+                startkey = [str(user.username),  eval_date.year, eval_date.month, eval_date.day, schema]
+                keys.append(startkey)
                 #endkey = [str(user.username),  enddate.year, enddate.month, enddate.day, schema,{}]
 
-                reduction = XFormInstance.view('pactcarehq/submits_by_user', key=startkey).all()
+            reductions = XFormInstance.view('pactcarehq/submit_counts_by_user_date', keys=keys, group=True).all()
+            for reduction in reductions:
+                print reduction['key']
                 if len(reduction) > 0:
-                    submission_dict[schema][user.username].append(reduction[0]['value'])
-                else:
-                    submission_dict[schema][user.username].append(0)
+                    monthstring = str(reduction['key'][2])
+                    if len(monthstring) == 1:
+                        monthstring = "0" + monthstring
+                    daystring = str(reduction['key'][3])
+                    if len(daystring) == 1:
+                        daystring = "0" + daystring
+                    yearstring = str(reduction['key'][1])
+                    datestring = "%s/%s/%s" % (monthstring, daystring, yearstring)
+                    date_index = datestrings.index(datestring)
+                    print datestrings
+                    print datestring
+                    print "Value: %d" % (reduction['value'])
+                    print "Index: %d" % (date_index)
+                    submission_dict[schema][user.username][date_index] = reduction['value']
             #when done let's reverse it so it goes from oldest to youngest left to right
-            submission_dict[schema][user.username].reverse()
+            submission_dict[schema][user.username]
 
     context['user_submissions'] = submission_dict
     context['interval'] = total_interval
@@ -270,14 +286,20 @@ def patient_schedule_report(request, patient_id, template_name="pactcarehq/patie
     context = RequestContext(request)
     pt = Patient.objects.get(id=patient_id)
 
-    date_range = 30
+    total_interval = 7
+    if request.GET.has_key('interval'):
+        try:
+            total_interval = int(request.GET['interval'])
+        except:
+            pass
+
 
     ret = []
     context['patient'] = pt
 
     visit_dates = []
     scheduled_by_date = {}
-    for n in range(0, date_range):
+    for n in range(0, total_interval):
         td = timedelta(days=n)
         visit_date = datetime.utcnow()-td
         visit_dates.append(visit_date)
@@ -295,89 +317,81 @@ def patient_schedule_report(request, patient_id, template_name="pactcarehq/patie
     return render_to_response(template_name, context_instance=context)
 
 
-
-
+patient_pactid_cache = {}
+def getpatient(pact_id):
+    if patient_pactid_cache.has_key(pact_id):
+        return patient_pactid_cache[pact_id]
+    else:
+        pt = CPatient.view('pactcarehq/patient_pactids', key=str(pact_id), include_docs=True).first()
+        patient_pactid_cache[pact_id] = pt
+        return pt
 
 @login_required
-def chw_submit_report(request, username, template_name="pactcarehq/chw_calendar_submit_report.html"):
+def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_calendar_submit_report.html"):
     """Calendar view of submissions by CHW, overlaid with their scheduled visits, and whether they made them or not."""
-    #note, as of this writing 11/29/2010 - it's a rather inefficient query doing it by patient by day - there ought to be a more efficient set of bulk queries that can do this
     context = RequestContext(request)
     all_patients = request.GET.get("all_patients", False)
-
     context['username'] = username
 
+    user = User.objects.get(username=username)
+    #got the chw schedule
+    chw_schedule = schedule.get_schedule(username)
+    #now let's walk through the date range, and get the scheduled CHWs per this date.visit_dates = []
+    ret = [] #where it's going to be an array of tuples:
+    #(date, scheduled[], submissions[] - that line up with the scheduled)
+    total_interval = 7
+    if request.GET.has_key('interval'):
+        try:
+            total_interval = int(request.GET['interval'])
+        except:
+            pass
 
-    try:
-        user = User.objects.get(username=username)
-        if all_patients == False:
-            #do a filter for only the patients this CHW knows about
-            condensed_schedules = CPatient.view('pactcarehq/chw_dot_scheduled_pact_ids', key=username).first()
-            if condensed_schedules != None and condensed_schedules['value'] != None:
-                known_pact_ids = condensed_schedules['value']
+    nowdate = datetime.utcnow()
+    total_scheduled = 0
+    total_visited=0
+
+    for n in range(0, total_interval):
+        td = timedelta(days=n)
+        visit_date = nowdate-td
+        scheduled_pactids = chw_schedule.get_scheduled(visit_date)
+        patients = []
+        visited = []
+        for pact_id in scheduled_pactids:
+            if pact_id == None:
+                continue
+            try:
+                cpatient = getpatient(pact_id)
+                patients.append(Patient.objects.get(id=cpatient.django_uuid))
+            except:
+                print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
+                continue
+            searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
+            #print searchkey
+            submissions = XFormInstance.view('pactcarehq/submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
+            #print len(submissions)
+            if len(submissions) > 0:
+                visited.append(submissions[0])
+                total_visited+= 1
             else:
-                known_pact_ids = []
-
-
-        if all_patients == False and known_pact_ids:
-            patients_temp = Patient.objects.all()
-            patients = []
-            for pt in patients_temp:
-                if known_pact_ids.count(pt.couchdoc.pact_id) > 0:
-                    patients.append(pt)
-        else:
-            patients = Patient.objects.all()
-        date_range = 10
-        ret = [] # date: (scheduled [patient, patient], submits[]) #match up by patient later
-
-        visit_dates = []
-        for n in range(0, date_range):
-            td = timedelta(days=n)
-            visit_date = datetime.utcnow()-td
-            visit_dates.append(visit_date)
-
-        pt_submission_map = {}
-        #t = datetime.now()
-
-
-
-        #load all the submissions for the given date range
-        for pt in patients:
-            #t2 = datetime.now()
-            submits_per_date = _get_submissions_for_patient_by_date(pt, visit_dates)
-            pt_submission_map[pt] = submits_per_date
-            #d2 = datetime.now()-t2
-            #print "\tSingle Patient data query: %d.%d" % (d2.seconds, d2.microseconds/1000)
-
-        #d = datetime.now()-t
-        #print "All Patient data query: %d.%d" % (d.seconds, d.microseconds/1000)
-
-        #now, iterate through all each dates, check the scheduled chw to see if it matches and add patient as chw's "todo"
-        for visit_date in visit_dates:
-            submits_for_day = []
-            scheduled_patients = []
-            for pt in patients:
-                #first, get the sheduled chw for this date
-                scheduled_chw = _get_scheduled_chw_for_patient_visit(pt, visit_date)
-                if scheduled_chw == username:
-                    scheduled_patients.append(pt)
-
-                #next get the submissions for that visit date and add it to the growing list
-                if pt_submission_map[pt].has_key(visit_date):
-                    submits = pt_submission_map[pt][visit_date]
+                #ok, so no submission from this chw, let's see if there's ANY from anyone on this day.
+                other_submissions = XFormInstance.view('pactcarehq/all_submits_by_patient_date', key=[str(pact_id), visit_date.year, visit_date.month, visit_date.day, 'http://dev.commcarehq.org/pact/dots_form' ], include_docs=True).all()
+                if len(other_submissions) > 0:
+                    visited.append(other_submissions[0])
+                    total_visited+= 1
                 else:
-                    submits = []
-                submits_for_day.extend(submits)
-            scheduled_patients = sorted(scheduled_patients, key=lambda x:x.couchdoc.last_name)
-            #submits_for_day = sorted(submits_for_day, key=lambda x: ) #this will be pretty slow to dereference the submit's pact_id to do a sort by last_name
-            ret.append([visit_date, scheduled_patients, submits_for_day])
+                    visited.append('-- No Visit --')
 
-        context['date_arr'] = ret
-        return render_to_response(template_name, context_instance=context)
+        #print (visit_date, patients, visited)
+        total_scheduled+= len(patients)
+        ret.append((visit_date, patients, visited))
+    context['date_arr'] = ret
+    context['total_scheduled'] = total_scheduled
+    context['total_visited'] = total_visited
+    #context['total_visited'] = total_visited
+    context['start_date'] = ret[0][0]
+    context['end_date'] = ret[-1][0]
+    return render_to_response(template_name, context_instance=context)
 
-    except ObjectDoesNotExist, e:
-        print e
-        raise Http404
 
 
 
@@ -486,7 +500,7 @@ def _get_submissions_for_patient_by_date(patient, visit_dates, schema='http://de
         keys.append(key)
         key_str = ''.join([str(x) for x in key])
         date_key_map[key_str] = visit_date
-    submit_reduction = XFormInstance.view('pactcarehq/all_submits_by_patient_date', keys=keys, group=True)
+    submit_reduction = XFormInstance.view('pactcarehq/all_submits_by_patient_date', keys=keys)
     #d2 = datetime.now()-t2
     #print "\tSingle Patient data query QUERY: %d.%d" % (d2.seconds, d2.microseconds/1000)
     #t3 = datetime.now()
@@ -511,7 +525,7 @@ def _get_submissions_for_patient_by_date(patient, visit_dates, schema='http://de
 def _get_submissions_for_patient(patient):
     """Returns a view of all the patients submissions by the patient's case_id (which is their CPatient doc_id, this probably should be altered)
     """
-    xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id)
+    xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id, include_docs=True)
     submissions = []
     for note in xform_submissions:
         if not note.form.has_key('case'):
@@ -528,7 +542,7 @@ def _get_submissions_for_patient(patient):
     return submissions
 
 
-
+patient_case_id_cache = {}
 def _get_submissions_for_user(username):
     """For a given username, return an array of submissions with an element [doc_id, date, patient_name, formtype]"""
     xform_submissions = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
@@ -540,7 +554,11 @@ def _get_submissions_for_user(username):
 
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
-        patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+        if not patient_case_id_cache.has_key(case_id):
+            patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
+            patient_case_id_cache[case_id]= patient
+        patient = patient_case_id_cache[case_id]
+        
         if patient == None:
             patient_name = "Unknown"
         else:
@@ -549,11 +567,13 @@ def _get_submissions_for_user(username):
         xmlns = xform['xmlns']
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
+            submissions.append([xform._id, xform.form['encounter_date'], patient_name, formtype])
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
+            submissions.append([xform._id, xform.form['note']['encounter_date'], patient_name, formtype])
         else:
             formtype = "Unknown"
-        submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype])
+            submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype])
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
@@ -584,7 +604,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
     #case_id = _hack_get_old_caseid(case_id)
-    patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+    patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
     if patient == None:
         patient_name = "Unknown"
     else:
@@ -594,7 +614,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
 
 
 
-    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id).all()
+    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
     comment_arr = []
     for cdoc in comment_docs:
         if cdoc.deprecated:
@@ -667,7 +687,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
     #case_id = _hack_get_old_caseid(case_id)
-    patient = CPatient.view('patient/all', key=case_id, include_document=True).first()
+    patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
     if patient == None:
         patient_name = "Unknown"
     else:
@@ -677,7 +697,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
 
 
 
-    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id).all()
+    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
     comment_arr = []
     for cdoc in comment_docs:
         if cdoc.deprecated:

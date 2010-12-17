@@ -31,7 +31,7 @@ class Patient(models.Model):
             return self._couchdoc
         else:
             try:
-                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id).first()
+                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
             except:
                 self._couchdoc = None
             return self._couchdoc
@@ -63,7 +63,7 @@ class Patient(models.Model):
     @staticmethod
     def is_pact_id_unique(pact_id):
         print "checking pact_id: " + str(pact_id)
-        if CPatient.view('patient/pact_ids', key=pact_id).count() > 0:
+        if CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).count() > 0:
             return False
         else:
             return True

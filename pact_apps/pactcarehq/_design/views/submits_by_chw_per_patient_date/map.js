@@ -9,15 +9,9 @@ function(doc) {
         return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
     }
 
-    if (doc.doc_type == "XFormInstance") {
-        if (doc.form.encounter_date) {
-            var edate = parse_date(doc.form.encounter_date);
-        } else if (doc.form.note && doc.form.note.encounter_date) {
-            var edate = parse_date(doc.form.note.encounter_date);
-        }
+    if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form" && doc.form.encounter_date !== undefined) {
+        var edate = parse_date(doc.form.encounter_date);
         //return it in regular months, not zero indexed.
-        emit([doc.form.pact_id, edate.getFullYear(), edate.getMonth()+1, edate.getDate(), doc.xmlns], null);
+        emit([doc.form.Meta.username, doc.form.pact_id, edate.getFullYear(), edate.getMonth()+1, edate.getDate()], null);
     }
 }
-
-

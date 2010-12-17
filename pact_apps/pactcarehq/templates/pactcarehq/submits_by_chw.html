@@ -4,7 +4,7 @@
 <h2>Submissions by CHW</h2>
 {%  for username, submit_arr in submit_dict.items %}
     <h3>{{ username }}'s Submissions</h3>
-    <a href="{% url pactcarehq.views.chw_submit_report username %}">Submission Schedule</a>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
     {% if submit_arr %}
     <table>
     <thead>
@@ -18,9 +18,9 @@
         <tr>
             {% if submission.3 == "DOTS" %}
                 {#ghetto hacky way to differentiate between the submission types#}
-                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1|date }}</a> </td>
+                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1}}</a> </td>
             {% else %}
-                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date }}</a> </td>
+                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1}}</a> </td>
             {% endif %}
             <td> {{ submission.2 }}</td>
             <td> {{ submission.3 }}</td>

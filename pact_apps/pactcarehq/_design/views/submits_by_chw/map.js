@@ -6,6 +6,6 @@ function(doc) {
     }
 
     if (doc.doc_type == "XFormInstance") {
-        emit(get_user_id(doc.form), doc);
+        emit(get_user_id(doc.form), null);
     }
 }

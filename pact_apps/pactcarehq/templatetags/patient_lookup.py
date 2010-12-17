@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.simple_tag
 def name_from_pactid(xforminstance):
-    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id']).all()
+    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id'], include_docs=True).all()
     if len(pt) == 0:
         return "[Unknown Patient]"
     else:
@@ -15,7 +15,7 @@ def name_from_pactid(xforminstance):
 
 @register.simple_tag
 def patient_url_from_form(xforminstance):
-    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id']).all()
+    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id'], include_docs=True).all()
     if len(pt) == 0:
         return "#"
 

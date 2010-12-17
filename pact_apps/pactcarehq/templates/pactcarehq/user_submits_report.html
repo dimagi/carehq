@@ -18,7 +18,7 @@
     
     </h4>
     <table>
-    {%  for username, date_dict in user_dict.items %}
+    {%  for username, date_arr in user_dict.items %}
         {% if forloop.first %}
         <tr>
         <thead>
@@ -30,8 +30,12 @@
         {% endif %}
         </tr>
         <tr>
+            {% if namespace == "http://dev.commcarehq.org/pact/dots_form" %}
+                <td>{{ username }} <small>(<a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Schedule</a>)</small></td>
+            {% else %}
             <td>{{ username }}</td>
-            {% for val in date_dict %}
+            {% endif %}
+            {% for val in date_arr %}
                 <td>{% if val > 0 %}
                         <span style="background: #e6efc2; color: #264409; border-color: #c6d880;"><strong>{{ val }}</strong></span>
                     {%  else %}

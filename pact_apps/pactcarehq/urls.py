@@ -15,7 +15,7 @@ urlpatterns = patterns ('',
     (r'^submits/patient/all$', 'pactcarehq.views.all_submits_by_patient'),
     (r'^export/$', 'pactcarehq.views.export_excel_file'),
 
-    (r'^schedules/chw/(?P<username>.*)$', 'pactcarehq.views.chw_submit_report'),
+    (r'^schedules/chw/(?P<username>.*)$', 'pactcarehq.views.chw_calendar_submit_report'),
     (r'^schedules/patient/(?P<patient_id>[0-9a-f]{32})$', 'pactcarehq.views.patient_schedule_report'),
 
     #(r'^patients/mine$', 'pactcarehq.views.my_patients'),

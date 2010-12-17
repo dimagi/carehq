@@ -118,7 +118,7 @@ def index(request, template='dots/index.html'):
     weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
     
 #    patients = Patient.objects.filter(observation__in=Observation.objects.all()).distinct()
-    dots_pts = CPatient.view('patient/all_dots').all()
+    dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
     dots_ids = []
     for dotpt in dots_pts:
         dots_ids.append(dotpt._id)
@@ -276,11 +276,11 @@ def index_couch(request, template='dots/index_couch.html'):
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2]))
     weeks = [new_dates[7*n:7*(n+1)] for n in range(len(new_dates)/7)]
     
-    dots_pts = CPatient.view('patient/all_dots').all()
+    dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
     dots_ids = [pt._id for pt in dots_pts]
     patients = Patient.objects.filter(doc_id__in=dots_ids)
     
-    visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id).first() for visit_id in visits_set]
+    visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id, include_docs=True).first() for visit_id in visits_set]
     sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
     
     #sanity check if we're running with old data:

@@ -12,6 +12,7 @@ function(doc) {
         function get_date_string(xform_doc) {
             // check some expected places for a date
             if (xform_doc.encounter_date) return xform_doc.encounter_date;
+            if (xform_doc.note && xform_doc.note.encounter_date) return xform_doc.note.encounter_date;
             if (xform_doc.Meta && xform_doc.Meta.TimeEnd) return xform_doc.Meta.TimeEnd;
             if (xform_doc.Meta && xform_doc.Meta.TimeStart) return xform_doc.Meta.TimeStart;
             return null;
@@ -27,6 +28,7 @@ function(doc) {
         if (!date) {
             date = Date();
         }
-        emit([get_user_id(doc.form), date.getFullYear(), date.getMonth(), date.getDate(), doc["xmlns"]], 1);
+        //when we do a Date, always from javascript set it to 1 indexed.
+        emit([get_user_id(doc.form), date.getFullYear(), date.getMonth()+1, date.getDate(), doc["xmlns"]], 1);
     }
 }

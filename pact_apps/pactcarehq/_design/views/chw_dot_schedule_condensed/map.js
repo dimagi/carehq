@@ -12,11 +12,11 @@ function(doc) {
                 else {
                     //username, day_of_week-> (pact_id, active_date)
                     var emission = {};
+                    emission['day_of_week'] = j;
                     emission['pact_id'] = doc.pact_id;
                     emission['active_date'] = schedule.started;
-                    emission['day_of_week'] = j;
-                    emission['schedule_index'] = i;
                     emission['ended_date'] = schedule.ended;
+                    emission['schedule_index'] = i;
                     emit (username, emission);
                 }
             }
