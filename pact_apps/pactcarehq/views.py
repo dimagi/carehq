@@ -365,6 +365,11 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
             except:
                 #print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
                 continue
+
+        #inefficient, but we need to get the patients in alpha order
+        patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
+        for patient in patients:
+            pact_id = patient.couchdoc.pact_id
             searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
             #print searchkey
             submissions = XFormInstance.view('pactcarehq/submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
