@@ -182,7 +182,7 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
 
             reductions = XFormInstance.view('pactcarehq/submit_counts_by_user_date', keys=keys, group=True).all()
             for reduction in reductions:
-                print reduction['key']
+                #print reduction['key']
                 if len(reduction) > 0:
                     monthstring = str(reduction['key'][2])
                     if len(monthstring) == 1:
@@ -193,10 +193,10 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
                     yearstring = str(reduction['key'][1])
                     datestring = "%s/%s/%s" % (monthstring, daystring, yearstring)
                     date_index = datestrings.index(datestring)
-                    print datestrings
-                    print datestring
-                    print "Value: %d" % (reduction['value'])
-                    print "Index: %d" % (date_index)
+                    #print datestrings
+                    #print datestring
+                    #print "Value: %d" % (reduction['value'])
+                    #print "Index: %d" % (date_index)
                     submission_dict[schema][user.username][date_index] = reduction['value']
             #when done let's reverse it so it goes from oldest to youngest left to right
             submission_dict[schema][user.username]
@@ -363,7 +363,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
                 cpatient = getpatient(pact_id)
                 patients.append(Patient.objects.get(id=cpatient.django_uuid))
             except:
-                print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
+                #print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
                 continue
             searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
             #print searchkey
@@ -428,7 +428,7 @@ def _hack_get_old_caseid(new_case_id):
         old_case_id = oldpt.get_new_patient_doc_id()
     except:
         old_case_id=None
-        print "can't find that patient/case: %s" % (new_case_id)
+        #print "can't find that patient/case: %s" % (new_case_id)
     return old_case_id
 
 
