@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
+{#{% block extrahead %}#}
+{#<script type="text/javascript" charset="utf-8">#}
+{#$(document).ready(#}
+{#        function()#}
+{#        {#}
+{#			//placeholder for autorefresh, but turning off for now#}
+{#            //var autoRefresh = setInterval(refreshNotification, 30000);#}
+{#            jQuery("abbr.timeago").timeago();#}
+{#        }#}
+{#    );#}
+{#</script>#}
+{#{% endblock extrahead %}#}
 {% block content %}
 <h2>Submissions by CHW</h2>
 {%  for username, submit_arr in submit_dict.items %}
@@ -9,9 +21,14 @@
     <table>
     <thead>
         <tr>
-            <th class="span-4">Date</th>
+            <th class="span-4">Encounter Date</th>
             <th class="span-4">Patient</th>
             <th class="span-4">Form</th>
+            
+            <th class="span-4">Started</th>
+            <th class="span-4">Time to Finish</th>
+            <th class="span-4">Time to Submit</th>
+            <th class="span-4">Submitted Date</th>
         </tr>
     </thead>
     {% for submission in submit_arr %}
@@ -24,6 +41,11 @@
             {% endif %}
             <td> {{ submission.2 }}</td>
             <td> {{ submission.3 }}</td>
+
+            <td> {{ submission.4|date:"Y-m-d" }}</td> {# started date #}
+            <td> {{ submission.5 }}</td> {# start-end interval #}
+            <td> {{ submission.6 }}</td> {# end-submit interval #}
+            <td> {{ submission.7|date:"Y-m-d H:i" }}</td> {# submitted date #}
         </tr>
     {% endfor %}
     </table>

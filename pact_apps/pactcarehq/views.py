@@ -570,15 +570,50 @@ def _get_submissions_for_user(username):
             patient_name = patient.last_name
 
         xmlns = xform['xmlns']
+
+        def stringify_delta(td):
+            #where it's 0:07:06 H:M:S
+            presplits = str(td).split(',')
+
+            splits = presplits[-1].split(':')
+            hours = int(splits[0])
+            mins = int(splits[1])
+            secs = int(splits[2])
+            if secs > 30:
+                mins+= 1
+                secs = 0
+            if mins > 30:
+                hours += 1
+                mins = 0
+            newsplit = []
+            days = False
+            if len(presplits) == 2 and presplits[0] != "-1 day":
+                #there's a day here
+                newsplit.append(presplits[0])
+                days=True
+
+            if hours > 0:
+                newsplit.append("%d hr" % (hours))
+            if mins > 0 and days == False:
+                newsplit.append("%d min" % (mins))
+            return ', '.join(newsplit)
+
+
+        started = xform.get_form['Meta']['TimeStart']
+        ended = xform.get_form['Meta']['TimeEnd']
+        start_end = stringify_delta(ended - started)
+        received = xform['received_on']
+        end_received = stringify_delta(received - ended)
+
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
-            submissions.append([xform._id, xform.form['encounter_date'], patient_name, formtype])
+            submissions.append([xform._id, xform.form['encounter_date'], patient_name, formtype, started, start_end, end_received, received])
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
-            submissions.append([xform._id, xform.form['note']['encounter_date'], patient_name, formtype])
+            submissions.append([xform._id, xform.form['note']['encounter_date'], patient_name, formtype,started, start_end, end_received, received])
         else:
             formtype = "Unknown"
-            submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype])
+            submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype, started, start_end, end_received, received])
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
