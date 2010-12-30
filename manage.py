@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.join(filedir,'pact_apps'))
 sys.path.insert(0, os.path.join(filedir,'submodules','couchforms'))
 sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
 sys.path.insert(0, os.path.join(filedir,'submodules','dimagi-utils'))
+sys.path.insert(0, os.path.join(filedir,'submodules','core-hq'))
 
 from django.core.management import execute_manager
 try:
