@@ -2,10 +2,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
+import simplejson
 
 import settings
 import logging
 from dimagi.utils import make_uuid, make_time
+from django.core.cache import cache
 from patient.models.couchmodels import CPatient
 class DuplicateIdentifierException(Exception):
     pass
@@ -27,14 +29,35 @@ class Patient(models.Model):
 
     @property
     def couchdoc(self):
+        #print "patient couchdoc lookup %s" % (self.id)
+        #in memory lookup
         if hasattr(self, '_couchdoc'):
             return self._couchdoc
-        else:
+
+
+        #next, do a memcached lookup
+        couchjson = cache.get('%s_couchdoc' % (self.id), None)
+        if couchjson == None:
             try:
-                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
-            except:
+                self._couchdoc = CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
+                couchjson = simplejson.dumps(self._couchdoc.to_json())
+                cache.set('%s_couchdoc' % (self.id), couchjson)
+            except Exception, ex:
                 self._couchdoc = None
-            return self._couchdoc
+        else:
+            self._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
+
+        return self._couchdoc
+
+
+#        if hasattr(self, '_couchdoc'):
+#            return self._couchdoc
+#        else:
+#            try:
+#                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
+#            except:
+#                self._couchdoc = None
+#            return self._couchdoc
 
     def _get_COUCHDATA(self, propertyname):
         """

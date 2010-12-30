@@ -11,8 +11,8 @@
 	<table>
 	<thead>
 		<tr>
+        <th class="span-2">PACT ID</th>
 		<th class="span-8">Name</th>
-		<th class="span-2">PACT ID</th>
 		<th class="span-2">ARM</th>
 		<th class="span-2">Primary HP</th>
 		<th class="span-4">Actions</th>
@@ -21,15 +21,21 @@
 	<tbody>
 	{% for patient in patients %}
 	<tr>
-			<td><h4><a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h4></td>	
-			<td>{{patient.couchdoc.pact_id}}</td>
+            <td><h4>{{patient.couchdoc.pact_id}}</h4></td>
+			<td><h4><a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h4></td>
 			<td>{{patient.couchdoc.arm}}</td>
 			<td>{{patient.couchdoc.primary_hp}}</td>
 			<td>{#Edit Patient | View Schedule#}
 				{% if patient.couchdoc.arm == "DOT"%}
 					<a href="{% url dots_view %}?patient={{patient.id}}">View DOT Adherence</a>	
-					
 				{% endif %}
+                {% if patient.couchdoc.last_bloodwork %}
+                    <br>
+                    <strong>Bloodwork</strong> {{ patient.couchdoc.last_bloodwork.get_date|date }} <small>({{ patient.couchdoc.last_bloodwork.get_date|timesince }} ago)</small>
+                    {% if patient.couchdoc.last_bloodwork.is_overdue %}
+                        <strong style="color:red;">Overdue!</strong>
+                    {% endif %}
+                {% endif %}
 			</td>
 	</tr>
 	{% endfor %}

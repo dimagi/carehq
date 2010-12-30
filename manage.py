@@ -7,7 +7,6 @@ sys.path.insert(0,'..')
 sys.path.insert(0, os.path.join(filedir))
 sys.path.insert(0, os.path.join(filedir,'clinical_core'))
 sys.path.insert(0, os.path.join(filedir,'apps'))
-sys.path.insert(0, os.path.join(filedir,'contrib_apps'))
 sys.path.insert(0, os.path.join(filedir,'lib'))
 sys.path.insert(0, os.path.join(filedir,'pact_apps'))
 

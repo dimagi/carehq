@@ -1,9 +1,12 @@
 #TODO:
-from couchdbkit.schema.properties_proxy import SchemaListProperty
+from couchdbkit.schema.properties import IntegerProperty
+from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
 from datetime import datetime
+import simplejson
 from dimagi.utils import make_uuid
 from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
 from dimagi.utils.make_time import make_time
+from django.core.cache import cache
 
 ghetto_regimen_map = {
     "qd": '1',
@@ -115,6 +118,67 @@ ghetto_patient_xml = """<case>
                    </update>
            </case>"""
 
+class CBloodworkCD(Document):
+    cdcnt = StringProperty()
+    cdper = StringProperty()
+
+    class Meta:
+        app_label = 'patient'
+    def save(self):
+        pass
+
+class CBloodwork(Document):
+
+    test_date = StringProperty()
+    tests = StringProperty()
+    vl = StringProperty()
+    cd = SchemaProperty(CBloodworkCD)
+
+    @property
+    def get_date(self):
+        try:
+            return datetime.strptime(self.test_date, "%Y-%m-%d")
+        except:
+            return None
+
+    @property
+    def is_overdue(self):
+        if self.get_date != None:
+            days = (datetime.utcnow() - self.get_date).days
+            if days > 90:
+                return True
+            else:
+                return False
+        else:
+            return True
+    class Meta:
+        app_label = 'patient'
+
+    def save(self):
+        pass
+
+class CActivityDashboard(Document):
+    count = IntegerProperty()
+    encounter_date = DateTimeProperty()
+    doc_id = StringProperty()
+    chw_id = StringProperty()
+    last_xmlns = StringProperty()
+    last_received = DateTimeProperty()
+    last_bloodwork = SchemaProperty(CBloodwork)
+
+    @property
+    def last_form_type(self):
+        if self.last_xmlns == 'http://dev.commcarehq.org/pact/progress_note':
+            return "Progress Note"
+        elif self.last_xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+            return "DOTS"
+
+    def save(self):
+        pass
+
+    class Meta:
+        app_label = 'patient'
+
 class CPatient(Document):
     GENDER_CHOICES = (
         ('m','Male'),
@@ -139,6 +203,8 @@ class CPatient(Document):
     non_art_regimen = StringProperty()
     date_modified = DateTimeProperty(default=datetime.utcnow)
 
+    prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
+
     dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
     #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
@@ -146,6 +212,77 @@ class CPatient(Document):
 
     class Meta:
         app_label = 'patient'
+
+    @property
+    def last_bloodwork(self):
+        """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """
+        print "getting last bloodwork"
+        if hasattr(self, '_prior_bloodwork'):
+            #in memory lookup
+            return self._prior_bloodwork
+
+        #mmcached lookup
+        last_bw = cache.get('%s_bloodwork' % (self._id), None)
+        if last_bw == '[##Null##]':
+            return None
+        else:
+            self._prior_bloodwork = CBloodwork.wrap(simplejson.loads(last_bw))
+            return self._prior_bloodwork
+
+
+        #requery
+        bw_docs = CBloodwork.view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
+        bw_docs = sorted(bw_docs, key=lambda x: x['test_date'])
+        if len(bw_docs) > 0:
+            self._prior_bloodwork = bw_docs[0]
+            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0]))
+            return bw_docs[0]
+        if self.prior_bloodwork.test_date == None:
+            #this is a bit hacky, it should really be null, but since this is an added on object, to CPatient, it doesn't show up as None
+            #so we need to do an explicit check for the
+            cache.set('%s_bloodwork' % (self._id), '')
+            pass
+        else:
+            self._prior_bloodwork = self.prior_bloodwork
+            return self.prior_bloodwork
+        return None
+
+
+    @property
+    def activity_dashboard(self):
+        #[count, encounter_date, doc_id, chw_id, xmlns, received_on]
+        print "\tActivity dashboard %s" % (self._id)
+
+        if hasattr(self, '_dashboard'):
+            print "\t\tIn memory"
+            return self._dashboard
+        else:
+            #Let's check memcached.
+            cached_dashboard_json = cache.get('%s_dashboard' % (self._id), None)
+            if cached_dashboard_json != None:
+                print "\t\tmemcached hit!"
+                if cached_dashboard_json == '[##Null##]':
+                    self._dashboard = None #nullstring, so we have no dashboard but we don't want to requery
+                else:
+                    self._dashboard = CActivityDashboard.wrap(simplejson.loads(cached_dashboard_json))
+            else:
+                print "\t\tRequery"
+                dashboard_data = CActivityDashboard.view('pactcarehq/patient_dashboard', key=self.pact_id).first()
+                if dashboard_data == None:
+                    #if it's null, set it to null in memcached using a nullstring
+                    cache.set("%s_dashboard" % (self._id), '[##Null##]')
+                    self._dashboard = None
+                else:
+                    cache.set('%s_dashboard' % (self._id), simplejson.dumps(dashboard_data['value']))
+                    self._dashboard = CActivityDashboard.wrap(dashboard_data['value'])
+
+            if self._dashboard != None and self._dashboard.last_bloodwork.test_date != None:
+                print "\t\t\tSetting prior bloodwork"
+                self._prior_bloodwork = self._dashboard.last_bloodwork
+
+            return self._dashboard
+
+
 
     @property
     def latest_schedule(self):
@@ -238,6 +375,8 @@ class CPatient(Document):
         counter = 1
         days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
         if self.latest_schedule != None:
+            #latest_schedule is the NEW format for scheduling.  If it is not null, use it and use it only.
+            #else, 
             for day in days_of_week:
                 if getattr(self.latest_schedule, day) != None:
                     hp_username = getattr(self.latest_schedule,day)

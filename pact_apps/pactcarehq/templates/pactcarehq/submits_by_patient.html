@@ -5,7 +5,7 @@
 {%  for patient, submit_arr in patient_list %}
     <div class="span-24">
         <div class="span-6">
-            <strong>{{ patient.couchdoc.first_name}} {{  patient.couchdoc.last_name }}</strong>
+            <strong>{{ patient.couchdoc.pact_id}} {{ patient.couchdoc.first_name}} {{  patient.couchdoc.last_name }} {{ submit_arr|length }}</strong>
         </div>
         <div class="span-2">
             <a href="{% url view_patient patient.id %}">Info</a>

@@ -3,7 +3,8 @@ from django.conf.urls.defaults import *
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('',
-    (r'^$', 'pactcarehq.views.user_submit_tallies'),
+    (r'^$', 'pactcarehq.views.my_patient_activity'),
+    #(r'^$', 'pactcarehq.views.user_submit_tallies'),
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
     (r'^submit$', 'pactcarehq.views.post'),
     (r'^submit/$', 'pactcarehq.views.post'),

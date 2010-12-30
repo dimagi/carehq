@@ -36,13 +36,13 @@ def get_csv(request):
     writer = csv.writer(response, dialect=csv.excel)
     if csv_mode == 'all':
         start_date = end_date - datetime.timedelta(1000)
-        startkey = [pact_id,  start_date.year, start_date.month, start_date.day]
-        endkey = [pact_id,  end_date.year, end_date.month, end_date.day]
+        startkey = [pact_id.encode('ascii'),  start_date.year, start_date.month, start_date.day]
+        endkey = [pact_id.encode('ascii'),  end_date.year, end_date.month, end_date.day]
         observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
         response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s.csv' % (pact_id)
     else:
-        startkey = [pact_id,  start_date.year, start_date.month, start_date.day]
-        endkey = [pact_id,  end_date.year, end_date.month, end_date.day]
+        startkey = [pact_id.encode('ascii'),  start_date.year, start_date.month, start_date.day]
+        endkey = [pact_id.encode('ascii'),  end_date.year, end_date.month, end_date.day]
         observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
         response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s-%s_to_%s.csv' % (pact_id, start_date.strftime("%Y-%m-%d"),  end_date.strftime("%Y-%m-%d"))
     

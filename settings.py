@@ -134,7 +134,6 @@ INSTALLED_APPS = (
 
     ####################
     #Dev helper apps
-    'debug_toolbar',
     #'gunicorn',
     #'devserver',
 )
@@ -156,7 +155,8 @@ DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.template.TemplateDebugPanel',
         'debug_toolbar.panels.sql.SQLDebugPanel',
         'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
+        'dimagi.utils.couch.couchdebugpanel.CouchDBLoggingPanel',
+        #'debug_toolbar.panels.logger.LoggingPanel',
     )
 
 #def custom_show_toolbar(request):

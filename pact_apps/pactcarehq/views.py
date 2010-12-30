@@ -81,6 +81,21 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     context['phone_edit'] = phone_edit
     context['address_edit'] = address_edit
     context['patient_edit'] = patient_edit
+    context['submit_arr'] = _get_submissions_for_patient(patient)
+
+    last_bw = patient.couchdoc.last_bloodwork
+    context['last_bloodwork'] = last_bw
+    if last_bw == None:
+        context['bloodwork_missing']  = True
+    else:
+        context['since_bw'] = (datetime.utcnow() - last_bw.get_date).days
+
+        if (datetime.utcnow() - last_bw.get_date).days > 90:
+            context['bloodwork_overdue'] = True
+        else:
+            context['bloodwork_overdue'] = False
+
+
 
     if address_edit:
         context['address_form'] = AddressForm()
@@ -176,7 +191,7 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
                 datestring = eval_date.strftime("%m/%d/%Y")
 
                 #hack the view is doing zero indexed months
-                startkey = [str(user.username),  eval_date.year, eval_date.month, eval_date.day, schema]
+                startkey = [user.username, eval_date.year, eval_date.month, eval_date.day, schema]
                 keys.append(startkey)
                 #endkey = [str(user.username),  enddate.year, enddate.month, enddate.day, schema,{}]
 
@@ -250,6 +265,15 @@ def post(request):
         print "Error: %s" % (e)
         return HttpResponse("fail")
 
+@login_required
+def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.html"):
+    """Return a list of all the patients in the system"""
+    patients = Patient.objects.all()
+    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+    keys = [p.couchdoc.pact_id for p in sorted_pts]
+    context= RequestContext(request)
+    context['patients'] = sorted_pts
+    return render_to_response(template_name, context_instance=context)
 
 def threaded_submission(instance):
     doc = post_xform_to_couch(instance)
@@ -529,6 +553,8 @@ def _get_submissions_for_patient_by_date(patient, visit_dates, schema='http://de
 
 def _get_submissions_for_patient(patient):
     """Returns a view of all the patients submissions by the patient's case_id (which is their CPatient doc_id, this probably should be altered)
+    params: patient=Patient (django) object
+    returns: array of XFormInstances for a given patient.
     """
     xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id, include_docs=True)
     submissions = []
@@ -543,7 +569,7 @@ def _get_submissions_for_patient(patient):
         else:
             formtype = "Unknown"
         submissions.append([note._id, note.form['Meta']['TimeEnd'], note.form['Meta']['username'] , formtype])
-    submissions=sorted(submissions, key=lambda x: x[1])
+    submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 
 
