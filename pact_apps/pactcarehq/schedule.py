@@ -11,7 +11,7 @@ from patient.models.couchmodels import CPatient
 #for that given day of the week, then check the interval
 from datetime import datetime, timedelta, timedelta
 import time
-from lib.quicksect import IntervalNode
+from quicksect import IntervalNode
 import simplejson
 
 cached_schedules = {}
