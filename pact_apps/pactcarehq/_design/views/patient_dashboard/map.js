@@ -43,8 +43,8 @@ function(doc) {
         // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
         return new Date(parts[0], parts[1] - 1, parts[2]); // months are 0-based
     }
-
     if (doc.doc_type == "XFormInstance" && doc.xmlns != "http://code.javarosa.org/devicereport") {
+        //map 1:  XForm Information regarding bloodwork and submission counts
         if (doc.form.encounter_date) {
             var edate = parse_date(doc.form.encounter_date);
         } else if (doc.form.note && doc.form.note.encounter_date) {
@@ -80,6 +80,22 @@ function(doc) {
             }
         }
         emit(pact_id, ret_dict);
+    }
+
+    else if (doc.doc_type == "CPatient") {
+        //map 2:  patient information to reduce lookup costs on the patient dashbaord
+        var ret_dict = {};
+        var pat_dict = {};
+        ret_dict['patient_doc'] = pat_dict //this kills the reduce limit
+        pat_dict['pact_id'] = doc.pact_id
+        pat_dict['django_uuid'] = doc.django_uuid
+        pat_dict['last_name'] = doc.last_name
+        pat_dict['first_name'] = doc.first_name
+        pat_dict['arm'] = doc.arm
+        pat_dict['primary_hp'] = doc.primary_hp
+        emit (doc.pact_id, ret_dict)
+
+
     }
 }
 

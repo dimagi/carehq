@@ -20,6 +20,10 @@ function (keys, values, rereduce) {
         if(ret['last_bloodwork'] == undefined || ret['last_bloodwork'] < values[i]['last_bloodwork']) {
             ret['last_bloodwork'] = values[i]['last_bloodwork'];
         }
+
+        if(ret['patient_doc'] == undefined && values[i]['patient_doc'] != undefined) {
+            ret['patient_doc'] = values[i]['patient_doc']
+        }
     }
     return ret;
 }

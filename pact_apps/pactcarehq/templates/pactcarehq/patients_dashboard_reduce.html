@@ -1,0 +1,46 @@
+{%  extends "base.html" %}
+{% block content %}
+<div class="container">
+	<div class="span-6">
+		<h2>My Patients Recent Activity</h2>
+	</div>
+
+	<table>
+	<thead>
+		<tr>
+        <th class="span-1">ID</th>
+		<th class="span-4">Name</th>
+		<th class="span-2">ARM</th>
+		<th class="span-2">Primary HP</th>
+		<th class="span-7">Last Activity</th>
+	</thead>
+	
+	<tbody>
+	{% for preduce in reduces %}
+	<tr>
+            <td><h4>{{preduce.patient_doc.pact_id}}</h4></td>
+			<td><h4><a href="{% url pactcarehq.views.patient_view preduce.patient_doc.django_uuid %}">{{preduce.patient_doc.last_name}}, {{preduce.patient_doc.first_name}}{#</a>#}</h4></td>
+			<td>{{preduce.patient_doc.arm}}</td>
+			<td>{{preduce.patient_doc.primary_hp}}</td>
+			<td>
+                <strong>Total Submissions:</strong> {{ preduce.count }}<br>
+                <strong>Last Encounter:</strong> {{ preduce.encounter_date|date }} by {{ preduce.chw_id }} {{ preduce.last_form_type }}<br>
+                <strong>Last Bloodwork:</strong>
+                {% if preduce.last_bloodwork %}
+                    {{ preduce.last_bloodwork.get_date|date }} <small>{{ preduce.last_bloodwork.get_date|timesince }}</small>
+                    {% if preduce.last_bloodwork.is_overdue %}
+                        <div class="error">
+                            Bloodwork Overdue
+                        </div>
+                    {% endif %}
+                {% else %}
+                    No bloodwork
+                {% endif %}
+
+			</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+</div>
+{% endblock content %}

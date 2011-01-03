@@ -1,9 +1,7 @@
 {%  extends "base.html" %}
 {% block content %}
 <div class="container">
-	<div class="span-6">
-		<h2>My Patients Recent Activity</h2>
-	</div>
+		<h2>Recent Activity</h2>
 
 	<table>
 	<thead>
@@ -16,29 +14,36 @@
 	</thead>
 	
 	<tbody>
-	{% for patient in patients %}
-	<tr>
-            <td><h4>{{patient.couchdoc.pact_id}}</h4></td>
-			<td><h4><a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h4></td>
-			<td>{{patient.couchdoc.arm}}</td>
-			<td>{{patient.couchdoc.primary_hp}}</td>
-			<td>
-                <strong>Total Submissions:</strong> {{ patient.couchdoc.activity_dashboard.count }}<br>
-                <strong>Last Encounter:</strong> {{ patient.couchdoc.activity_dashboard.encounter_date|date }} by {{ patient.couchdoc.activity_dashboard.chw_id }} {{ patient.couchdoc.activity_dashboard.last_form_type }}<br>
-                <strong>Last Bloodwork:</strong>
-                {% if patient.couchdoc.last_bloodwork %}
-                    {{ patient.couchdoc.last_bloodwork.get_date|date }} <small>{{ patient.couchdoc.last_bloodwork.get_date|timesince }}</small>
-                    {% if patient.couchdoc.last_bloodwork.is_overdue %}
-                        <div class="error">
-                            Bloodwork Overdue
-                        </div>
-                    {% endif %}
-                {% else %}
-                    No bloodwork
-                {% endif %}
+	{% for chw, patients in chw_patients_arr %}
+        <tr>
+            <td colspan="5"><div class="success">
+                <h4>{{ chw }}'s Patients</h4></div>
+            </td>
+        </tr>
 
-			</td>
-	</tr>
+        {% for cpatient in patients %}
+            <tr>
+                <td><h4>{{cpatient.pact_id}}</h4></td>
+                <td><h4><a href="{% url pactcarehq.views.patient_view cpatient.django_uuid %}">{{cpatient.last_name}}, {{cpatient.first_name}}</a></h4></td>
+                <td>{{cpatient.arm}}</td>
+                <td>{{cpatient.primary_hp}}</td>
+                <td>
+                    <strong>Total Submissions:</strong> {{ cpatient.activity_dashboard.count }}<br>
+                    <strong>Last Encounter:</strong> {{ cpatient.activity_dashboard.encounter_date|date }} by {{ cpatient.activity_dashboard.chw_id }} {{ cpatient.activity_dashboard.last_form_type }}<br>
+                    <strong>Last Bloodwork:</strong>
+                    {% if cpatient.last_bloodwork %}
+                        {{ cpatient.last_bloodwork.get_date|date }} <small>{{ cpatient.last_bloodwork.get_date|timesince }}</small>
+                        {% if cpatient.last_bloodwork.is_overdue %}
+                            <div class="error">
+                                Bloodwork Overdue
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        No bloodwork
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
 	{% endfor %}
 	</tbody>
 	</table>

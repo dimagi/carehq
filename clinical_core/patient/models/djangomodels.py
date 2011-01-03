@@ -32,6 +32,7 @@ class Patient(models.Model):
         #print "patient couchdoc lookup %s" % (self.id)
         #in memory lookup
         if hasattr(self, '_couchdoc'):
+            #print "patient couchdoc memory hit!"
             return self._couchdoc
 
 
@@ -39,12 +40,15 @@ class Patient(models.Model):
         couchjson = cache.get('%s_couchdoc' % (self.id), None)
         if couchjson == None:
             try:
+                #print "patient couchdoc couchdb requery!"
                 self._couchdoc = CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
                 couchjson = simplejson.dumps(self._couchdoc.to_json())
                 cache.set('%s_couchdoc' % (self.id), couchjson)
             except Exception, ex:
                 self._couchdoc = None
         else:
+            #print "patient couchdoc memcached hit!"
+            return self._couchdoc
             self._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
 
         return self._couchdoc
@@ -85,7 +89,7 @@ class Patient(models.Model):
 
     @staticmethod
     def is_pact_id_unique(pact_id):
-        print "checking pact_id: " + str(pact_id)
+        #print "checking pact_id: " + str(pact_id)
         if CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).count() > 0:
             return False
         else:

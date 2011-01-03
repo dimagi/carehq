@@ -158,7 +158,7 @@ function post_phone_delete(patient_id, phone_id) {
                         {% if patient_address %}
                             <div class="span-6">
                                 {{ patient_address.description|title }}<br>
-                                {{patient_address.street}} <br>{{patient_address.city}}, {{patient_address.state}} {{patient_address.post_code}}<br>
+                                {{patient_address.street}} <br>{{patient_address.city}}, {{patient_address.state}} {{patient_address.postal_code}}<br>
 {#                                <small><a href="{{ request.path }}?edit_address=True">Change</a></small>#}
                             </div>
                         {% else %}

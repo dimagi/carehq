@@ -1,5 +1,5 @@
 #TODO:
-from couchdbkit.schema.properties import IntegerProperty
+from couchdbkit.schema.properties import IntegerProperty, DictProperty, DictProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
 from datetime import datetime
 import simplejson
@@ -166,6 +166,8 @@ class CActivityDashboard(Document):
     last_received = DateTimeProperty()
     last_bloodwork = SchemaProperty(CBloodwork)
 
+    patient_doc = DictProperty()
+
     @property
     def last_form_type(self):
         if self.last_xmlns == 'http://dev.commcarehq.org/pact/progress_note':
@@ -216,14 +218,18 @@ class CPatient(Document):
     @property
     def last_bloodwork(self):
         """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """
-        print "getting last bloodwork"
+        #print "getting last bloodwork"
         if hasattr(self, '_prior_bloodwork'):
             #in memory lookup
             return self._prior_bloodwork
 
-        #mmcached lookup
+        #memcached lookup
         last_bw = cache.get('%s_bloodwork' % (self._id), None)
-        if last_bw == '[##Null##]':
+        if last_bw == None:
+            #it's null, so it's a cache miss.
+            #do a requery
+            pass
+        elif last_bw == '[##Null##]':
             return None
         else:
             self._prior_bloodwork = CBloodwork.wrap(simplejson.loads(last_bw))
@@ -240,7 +246,7 @@ class CPatient(Document):
         if self.prior_bloodwork.test_date == None:
             #this is a bit hacky, it should really be null, but since this is an added on object, to CPatient, it doesn't show up as None
             #so we need to do an explicit check for the
-            cache.set('%s_bloodwork' % (self._id), '')
+            cache.set('%s_bloodwork' % (self._id), '[##Null##]')
             pass
         else:
             self._prior_bloodwork = self.prior_bloodwork
@@ -251,22 +257,22 @@ class CPatient(Document):
     @property
     def activity_dashboard(self):
         #[count, encounter_date, doc_id, chw_id, xmlns, received_on]
-        print "\tActivity dashboard %s" % (self._id)
+        #print "\tActivity dashboard %s" % (self._id)
 
         if hasattr(self, '_dashboard'):
-            print "\t\tIn memory"
+            #print "\t\tIn memory"
             return self._dashboard
         else:
             #Let's check memcached.
             cached_dashboard_json = cache.get('%s_dashboard' % (self._id), None)
             if cached_dashboard_json != None:
-                print "\t\tmemcached hit!"
+                #print "\t\tmemcached hit!"
                 if cached_dashboard_json == '[##Null##]':
                     self._dashboard = None #nullstring, so we have no dashboard but we don't want to requery
                 else:
                     self._dashboard = CActivityDashboard.wrap(simplejson.loads(cached_dashboard_json))
             else:
-                print "\t\tRequery"
+                #print "\t\tRequery"
                 dashboard_data = CActivityDashboard.view('pactcarehq/patient_dashboard', key=self.pact_id).first()
                 if dashboard_data == None:
                     #if it's null, set it to null in memcached using a nullstring
@@ -277,7 +283,7 @@ class CPatient(Document):
                     self._dashboard = CActivityDashboard.wrap(dashboard_data['value'])
 
             if self._dashboard != None and self._dashboard.last_bloodwork.test_date != None:
-                print "\t\t\tSetting prior bloodwork"
+                #print "\t\t\tSetting prior bloodwork"
                 self._prior_bloodwork = self._dashboard.last_bloodwork
 
             return self._dashboard

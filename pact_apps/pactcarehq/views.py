@@ -1,4 +1,5 @@
-from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone
+from dimagi.utils.couch.database import get_db
+from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
 from patient.models.djangomodels import Patient
 from couchexport.export import export_excel
 from django.http import   Http404
@@ -266,13 +267,81 @@ def post(request):
         return HttpResponse("fail")
 
 @login_required
+def my_patient_activity_grouped(request, template_name="pactcarehq/patients_dashboard.html"):
+    """Return a list of all the patients in the system"""
+    #using per patient instance lookup...slow, but reuasable
+    context= RequestContext(request)
+
+    if request.user.is_superuser == True:
+        #patients = Patient.objects.all()
+        assignments = get_db().view('pactcarehq/chw_assigned_patients').all()
+    else:
+        assignments = get_db().view('pactcarehq/chw_assigned_patients', key=request.user.username).all()
+
+    chw_patient_assignments = {}
+    for res in assignments:
+        chw = res['key']
+        pact_id = res['value'].encode('ascii')
+        if not chw_patient_assignments.has_key(chw):
+            chw_patient_assignments[chw] = []
+        chw_patient_assignments[chw].append(pact_id)
+
+    chw_patient_dict = {}
+    for chw in chw_patient_assignments.keys():
+        chw_patient_dict[chw] = CPatient.view('patient/pact_ids', keys=chw_patient_assignments[chw], include_docs=True).all()
+
+    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+    #keys = [p.couchdoc.pact_id for p in sorted_pts]
+    #context= RequestContext(request)
+    context['chw_patients'] = chw_patient_dict
+    return render_to_response(template_name, context_instance=context)
+
+
+@login_required
 def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.html"):
     """Return a list of all the patients in the system"""
-    patients = Patient.objects.all()
-    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
-    keys = [p.couchdoc.pact_id for p in sorted_pts]
+    #using per patient instance lookup...slow, but reuasable
     context= RequestContext(request)
-    context['patients'] = sorted_pts
+
+    if request.user.is_superuser == True:
+        #patients = Patient.objects.all()
+        assignments = get_db().view('pactcarehq/chw_assigned_patients').all()
+    else:
+        assignments = get_db().view('pactcarehq/chw_assigned_patients', key=request.user.username).all()
+
+    chw_patient_dict = {}
+    for res in assignments:
+        chw = res['key']
+        pact_id = res['value'].encode('ascii')
+        if not chw_patient_dict.has_key(chw):
+            chw_patient_dict[chw] = []
+        chw_patient_dict[chw].append(CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first())
+
+    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+    #keys = [p.couchdoc.pact_id for p in sorted_pts]
+    #context= RequestContext(request)
+
+    chws = sorted(chw_patient_dict.keys())
+    #patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
+    context['chw_patients_arr'] = [(x, chw_patient_dict[x]) for x in chws]
+
+    #context['chw_patients'] = chw_patient_dict
+    return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def my_patient_activity_reduce(request, template_name = "pactcarehq/patients_dashboard_reduce.html"):
+    #using customized reduce view for the patient dashboard
+    context= RequestContext(request)
+    dashboards = CActivityDashboard.view('pactcarehq/patient_dashboard', group=True).all()
+
+    context['reduces'] = []
+    for reductions in dashboards:
+        pact_id = reductions['key']
+        dashboard = reductions['value']
+        if not dashboard.has_key('patient_doc'):
+            continue
+        context['reduces'].append(dashboard)
     return render_to_response(template_name, context_instance=context)
 
 def threaded_submission(instance):
