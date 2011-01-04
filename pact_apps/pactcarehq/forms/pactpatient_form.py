@@ -65,7 +65,7 @@ class CPatientForm(DocumentForm):
                 try:
                     del self.fields[field]
                 except Exception, e:
-                    print "can't delete %s: %s" % (field, e)
+                    #print "can't delete %s: %s" % (field, e)
                     pass
 
     class Meta:
