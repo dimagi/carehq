@@ -241,7 +241,7 @@ class CPatient(Document):
         bw_docs = sorted(bw_docs, key=lambda x: x['test_date'])
         if len(bw_docs) > 0:
             self._prior_bloodwork = bw_docs[0]
-            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0]))
+            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
             return bw_docs[0]
         if self.prior_bloodwork.test_date == None:
             #this is a bit hacky, it should really be null, but since this is an added on object, to CPatient, it doesn't show up as None
