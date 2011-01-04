@@ -215,6 +215,19 @@ class CPatient(Document):
     class Meta:
         app_label = 'patient'
 
+
+    def save(self):
+        super(CPatient, self).save()
+        #next, we need to invalidate the cache
+        cache.delete('%s_couchdoc' % (self.django_uuid))
+        try:
+            couchjson = simplejson.dumps(self.to_json())
+            cache.set('%s_couchdoc' % (self.django_uuid), couchjson)
+            #print "invalidated and updated cache for patient"
+        except Exception, ex:
+            #print "unable to invalidate cache: %s" % (ex)
+            pass
+
     @property
     def last_bloodwork(self):
         """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """

@@ -30,14 +30,9 @@ class Patient(models.Model):
     @property
     def couchdoc(self):
         #print "patient couchdoc lookup %s" % (self.id)
-        #in memory lookup
-        if hasattr(self, '_couchdoc'):
-            #print "patient couchdoc memory hit!"
-            return self._couchdoc
-
-
         #next, do a memcached lookup
         couchjson = cache.get('%s_couchdoc' % (self.id), None)
+#        couchjson = None
         if couchjson == None:
             try:
                 #print "patient couchdoc couchdb requery!"
