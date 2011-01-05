@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from reversion.admin import VersionAdmin
 from django.contrib.auth.models import User
 from models import TemplateCarePlan, PlanCategory, PlanTag, TemplateCarePlanItem, PlanRule, TemplateCarePlanItemLink
 from models import CarePlanItem, CarePlan, CarePlanCaseLink, CarePlanItemLink

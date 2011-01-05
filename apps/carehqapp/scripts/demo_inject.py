@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import random_inject
-from casetracker.models.casecore import Case, Category, Status, Priority, Priority, ActivityClass
+from casetracker.models import Case, Category, Status, Priority, Priority, ActivityClass
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
 from clincore.utils import generator

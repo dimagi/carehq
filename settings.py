@@ -76,10 +76,22 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
 )
+
+AUDIT_VIEWS = [
+    'pactcarehq.views.my_patient_activity',
+    'pactcarehq.views.get_caselist',
+    'pactcarehq.views.patient_list',
+    'pactcarehq.views.patient_view',
+    'dotsview.views.index_couch',
+    'pactcarehq.views.chw_calendar_submit_report',
+    'dotsview.views.get_csv',
+]
+
 
 DIGEST_ENFORCE_NONCE_COUNT = False
 
@@ -114,6 +126,7 @@ INSTALLED_APPS = (
     'patient',
     'actors',
     'clincore', #just a library, no app
+    'auditcare',
     #end clinical_core
 
     ######################
@@ -121,8 +134,8 @@ INSTALLED_APPS = (
 
     #########################
     #third party apps
-    'autofixture',
-    'reversion',
+    #'autofixture',
+    #'reversion',
     'django_extensions',
     'django_digest',
     #end third party apps
@@ -207,7 +220,7 @@ DEVSERVER_MODULES = (
 
     # Modules not enabled by default
     'devserver.modules.ajax.AjaxDumpModule',
-    'devserver.modules.profile.MemoryUseModule',
+    #'devserver.modules.profile.MemoryUseModule',
     'devserver.modules.cache.CacheSummaryModule',
 )
 

@@ -1,9 +1,7 @@
 from django.shortcuts import render_to_response
-from django.template.context import RequestContext, RequestContext
+from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from casetracker.models.casecore import Filter, Filter, Status, Priority, Category
-from datetime import datetime
+from casetracker.models import Filter, Status, Priority, Category
 from django.contrib.auth.models import User
 from patient.models.djangomodels import Patient
 

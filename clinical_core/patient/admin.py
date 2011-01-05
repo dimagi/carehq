@@ -1,6 +1,4 @@
 from django.contrib import admin
-from reversion.admin import VersionAdmin
-from django.contrib.auth.models import User
 from models import *
 
 class PatientAdmin(admin.ModelAdmin):
