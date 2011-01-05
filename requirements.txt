@@ -1,0 +1,9 @@
+django-devserver
+django-reversion
+django-extensions
+
+#autofixture
+
+python-digest
+python-memcached
+guppy
