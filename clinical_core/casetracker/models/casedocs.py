@@ -1,7 +1,7 @@
 #from couchdbkit.ext.django.schema import Document
 #from couchdbkit.schema.properties import *
 #from datetime import datetime
-#from casetracker.models.casecore import Case
+#from casetracker.models import Case
 #
 #class CaseDocument(Document):
 #    case_uuid = StringProperty() #the django uuid of the patient object

@@ -1,5 +1,5 @@
 #from django.test import TestCase
-#from casetracker.models.casecore import Category
+#from casetracker.models import Category
 #from casetracker.registry.handler import CategoryHandler
 #from django.core.management import call_command
 #

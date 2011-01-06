@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from casetracker.registry.handler import CategoryHandler
-from casetracker.models.casecore import Category
+from casetracker.models import Category
 
 
 def RegisterHandler(handler_class, update=False, except_on_collision=False):

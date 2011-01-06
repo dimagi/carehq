@@ -20,7 +20,7 @@ import uuid
 from django.contrib.contenttypes.models import ContentType
 from model_utils.models import InheritanceCastModel
 from couchdbkit.ext.django.schema import Document
-from couchdbkit.schema.properties import StringProperty, StringProperty, DateTimeProperty, DateTimeProperty, IntegerProperty
+from couchdbkit.schema.properties import StringProperty, StringProperty, DateTimeProperty, DateTimeProperty, IntegerProperty, BooleanProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
 from dimagi.utils.couch import database
 
@@ -447,4 +447,22 @@ class Case(Document):
     
 class HomeMonitoringCase(Case):
     device_id = StringProperty()
+
+    class Meta:
+        app_label='casetracker'
+
+
+class XFormCase(Case):
+    class Meta:
+        app_label='casetracker'
+
+class ScheduleCase(Case):
+    recurring = BooleanProperty()
+    start_date = DateTimeProperty()
+    end_date = DateTimeProperty()
+    frequency = StringProperty()
+
+    class Meta:
+        app_label='casetracker'
+
 

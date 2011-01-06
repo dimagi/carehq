@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
+from couchdbkit.ext.django.forms import DocumentForm
 
 from django import forms
 from django.forms import widgets
@@ -13,39 +14,39 @@ class CaseCommentForm(forms.Form):
                           )
     
 
-class CaseResolveCloseForm(forms.Form):    
-    state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True,
-                                   widget=widgets.RadioSelect())
+class CaseResolveCloseForm(forms.Form):
+    #state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True, widget=widgets.RadioSelect())
+    state = forms.CharField(required=True)
     comment = forms.CharField(required=True,
-                            label="Note", 
+                            label="Note",
                            error_messages = {'required': 'You must enter a comment'},
-                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),                            
+                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),
                           )
-    
+
     def __init__(self, case=None, activity=None, *args, **kwargs):
         super(CaseResolveCloseForm, self).__init__(*args, **kwargs)
-        event_class = activity.event_class        
-        
+        event_class = activity.event_class
+
         if event_class == constants.CASE_EVENT_RESOLVE:
             state_class = constants.CASE_STATE_RESOLVED
             self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
         if event_class == constants.CASE_EVENT_CLOSE:
             self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
             state_class = constants.CASE_STATE_CLOSED
-        
+
         if case is None:
-            raise Exception("Error, you must pass in a valid case to process this form") 
-        
+            raise Exception("Error, you must pass in a valid case to process this form")
+
         state_qset = Status.objects.filter(category=case.category).filter(state_class=state_class)
-        self.fields['state'].queryset = state_qset 
+        self.fields['state'].queryset = state_qset
         self.fields['state'].choices = [(x.id, x.display.title()) for x in state_qset]
-        
+
         #Thanks Django documentation to help set the initial value of the RadioSelect widget.
         #oh wait, yeah, THE DOC FOR THIS DOES NOT EXIST!!!
         self.fields['state'].initial = state_qset[0].id
         
 
-class CaseModelForm(forms.ModelForm):
+class CaseModelForm(DocumentForm):
     """
     A form to modify a case instance.
     The constants below try to establish a way to flip the active fields depending on the context of how to change it.  The idea here is that not all fields should be presentable to the user.

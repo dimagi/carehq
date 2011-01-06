@@ -1,12 +1,12 @@
 from clinical_core.actors.models import *
 from clinical_core.casetracker.models import *
-from autofixture import AutoFixture as af
 from clinical_core.patient.models import *
 import uuid
 from django.contrib.auth.models import User
 import random
 from datetime import timedelta, datetime
 import string
+from django.contrib.webdesign import lorem_ipsum as lorem
 
 PATIENT_IS_USER_PERCENTAGE = .25
 PROVIDER_IS_MULTIPLE_THRESHOLD=.33
@@ -14,6 +14,8 @@ PROVIDER_IS_CAREGIVER_THRESHOLD=.03
 PROVIDER_IS_PATIENT_THRESHOLD=.01
 PATIENT_HAS_MULTIPLE_CAREGIVERS=.33
 MAX_PROVIDERS = 7
+
+CREATE_NEW_PERCENTAGE = .1
 
 def generate_random_string(length=8, source=string.ascii_letters):
     return ''.join([random.choice(source) for i in range(length)])
@@ -51,10 +53,16 @@ def generate_phones(num):
         ret.append(phone)
     return ret
 
-def generate_patient(user=None, first_name=None, last_name=None, gender=None):
-    cpt = CPatient()
+def get_or_create_patient(user=None, first_name=None, last_name=None, gender=None, always_create=True):
+    if not always_create:
+        print "Getting existing patient"
+        return Patient.objects.all()[random.randrange(0,Patient.objects.all().count())]
+
+
+    pt = Patient()
+    cpt = pt.couchdoc
     cpt.birthdate = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
-    cpt.pact_id = random_word(length=10)
+    cpt.pact_id = uuid.uuid1().hex
     cpt.primary_hp = random_word(length=10)
 
     if first_name == None:
@@ -75,6 +83,9 @@ def generate_patient(user=None, first_name=None, last_name=None, gender=None):
     addrs = generate_addresses(4)
     phones = generate_phones(4)
 
+    cpt.address=addrs
+    cpt.phones=phones
+
 #    cpt.django_uuid = StringProperty() #the django uuid of the patient object
 #    cpt.pact_id = StringProperty(required=True)
 #    cpt.first_name = StringProperty(required=True)
@@ -90,13 +101,19 @@ def generate_patient(user=None, first_name=None, last_name=None, gender=None):
 #    cpt.non_art_regimen = StringProperty()
 #    cpt.date_modified = DateTimeProperty(default=datetime.utcnow)
 
-    cpt.save()
-    pt = Patient()
-    pt.doc_id = str(cpt._id.strip())
     pt.save()
     return pt
 
-def generate_user(first_name=None, last_name=None):
+def get_or_create_user(first_name=None, last_name=None, always_new=True):
+    if always_new == False:
+        #if it's false, we will randomly decide whether we want to make a new case or not.
+        if random.random() > CREATE_NEW_PERCENTAGE:
+            #let's do a 25/75 create/existing split
+            print "Returning existing user"
+            return User.objects.all()[random.randrange(0,User.objects.all().count())]
+        else:
+            print "Creating new user"
+
     user = User()
 
     if first_name == None:
@@ -111,7 +128,6 @@ def generate_user(first_name=None, last_name=None):
 
     username = "%s_%s" % (user.first_name.replace("'",""), user.last_name.replace("'",""))
     user.username=username[0:30].lower()
-
     try:
         exists = User.objects.get(username=user.username)
         return exists
@@ -119,30 +135,35 @@ def generate_user(first_name=None, last_name=None):
        user.save()
     return user
 
-def get_or_create_actor(user, role_type, title_string, department_string):
-    #first see if there are any roles for this user already
+def get_or_create_actor(user, role_type, title_string=None, department_string=None, always_create=True):
+    #next see if there are any roles for this user already
     existing_roles = Role.objects.all().filter(user=user)
     role = None
 
-    if role_type == 'caregiver':
-        if Caregiver.objects.all().filter(user=user).count() == 0:
-            role = Caregiver(user=user, notes=random_text(128), relationship_type= Caregiver.RELATIONSHIP_CHOICES[random.randint(0, len(Caregiver.RELATIONSHIP_CHOICES)-1)])
-            role.save()
-        else:
-            role = Caregiver.objects.all().filter(user=user)[0]
-    else:
-        ###it's a provider we're creating
-        for r in existing_roles:
-            if hasattr(r.role_object, 'title') and hasattr(r.role_object,'department'):
-                if r.role_object.title == title_string and r.role_object.department == department_string:
+    if always_create == False:
+        if random.random() > CREATE_NEW_PERCENTAGE:
+            for r in existing_roles:
+                #check existing roles and get a match on if the type is the same
+                if role_type == 'provider' and (isinstance(r.role_object, TriageNurse) or isinstance(r.role_object, CHW) or isinstance(r.role_object, Doctor)):
                     role = r
                     break
-        if role == None:
-            role = generate_role(user, role_type, title_string =  title_string, department_string=department_string)
+                elif role_type == 'caregiver' and isinstance(r.role_object, Caregiver):
+                    role = r
+                    break
+            print "\tLooped through %d existing roles" % (existing_roles.count())
+
+
+    if role == None:
+        print "\tGenerating new role"
+        role = generate_role(user, role_type, title_string=title_string, department_string=department_string)
+    else:
+        print "\tUsing existing role"
 
     if Actor.objects.filter(role=role).count() > 0:
+        print "\t\tFound existing actor"
         return Actor.objects.all().filter(role=role)[0]
     else:
+        print "\t\tCreating new actor"
         act = Actor.objects.create_actor(role)
         return act
 
@@ -176,8 +197,41 @@ def generate_role(user, role_type_string, title_string=None, department_string=N
         role = Caregiver(user=user, notes=random_text(128), relationship_type= Caregiver.RELATIONSHIP_CHOICES[random.randint(0, len(Caregiver.RELATIONSHIP_CHOICES)-1)])
         role.save()
     return role
-    
-def generate_actor(user, role_type, title_string=None, department_string=None):
+
+
+def mock_case():
+    """Simple test:  Create a case and verify that it exists in the database via the API"""
+    #get the basic counts
+    user1 = get_or_create_user(always_new=False)
+    user2 = get_or_create_user(always_new=False)
+
+    print "Got mock users"
+    caregiver_creator = get_or_create_actor(user1, 'caregiver', title_string="some caregiver " + random_word(length=12),  department_string="some department " + random_word(length=12), always_create=False)
+    provider_assigned = get_or_create_actor(user2, 'provider', title_string="some provider " + random_word(length=12),  always_create=False)
+
+    print "Got Actors"
+    print "Creating Patient..."
+    patient = get_or_create_patient(get_or_create_user(always_new=False))
+    print "Got Patient"
+
+    subs = Case.__subclasses__()
+
+    print "Generating Case"
+    newcase = generate_case(caregiver_creator, lorem.sentence(), lorem.paragraph(), provider_assigned, subtype=subs[random.randrange(0, len(subs))])
+    newcase.patient = patient.doc_id
+    newcase.save()
+    print "Created and saved Case"
+    return newcase
+
+def generate_case(creator, description, body, assigned_to, subtype=None):
+    if subtype:
+        casetype = subtype
+    else:
+        casetype=Case
+    newcase = casetype.create(creator, description, body, assigned_to=assigned_to)
+    return newcase
+
+def generate_actor(user, role_type, title_string=None, department_string=None, always_create=True):
     role = generate_role(user, role_type,title_string=title_string, department_string=department_string)
     act = Actor.objects.create_actor(role)
     return act
@@ -188,7 +242,7 @@ def generate_patient_and_careteam(team_dictionary=None):
 
     #first create the patient
     if random.random() <= PATIENT_IS_USER_PERCENTAGE:
-        ptuser = generate_user()
+        ptuser = get_or_create_user()
     else:
         ptuser = None
 
@@ -196,22 +250,22 @@ def generate_patient_and_careteam(team_dictionary=None):
     providers = []
     if team_dictionary != None:
         patient_arr = team_dictionary['patient']
-        patient = generate_patient(user=ptuser, first_name=patient_arr[0], last_name=patient_arr[2], gender=patient_arr[3])
+        patient = get_or_create_patient(user=ptuser, first_name=patient_arr[0], last_name=patient_arr[2], gender=patient_arr[3])
         cg_arr = team_dictionary['caregivers']
         for arr in cg_arr:
-            cguser = generate_user(first_name=arr[0], last_name=arr[1])
+            cguser = get_or_create_user(first_name=arr[0], last_name=arr[1])
             cgact = get_or_create_actor(cguser, 'caregiver', None, None)
             patient.add_caregiver(cgact)
             caregivers.append(cgact)
 
         prov_arr = team_dictionary['providers']
         for arr in prov_arr:
-            provuser = generate_user(first_name=arr[0], last_name=arr[1])
+            provuser = get_or_create_user(first_name=arr[0], last_name=arr[1])
             provact = get_or_create_actor(provuser, 'provider', arr[2], arr[3])
             patient.add_provider(provact)
             providers.append(provact)
     else:
-        patient = generate_patient(user=ptuser)
+        patient = get_or_create_patient(user=ptuser)
 
         #next, create caregivers
         if random.random() <= PATIENT_HAS_MULTIPLE_CAREGIVERS:
@@ -220,13 +274,13 @@ def generate_patient_and_careteam(team_dictionary=None):
             caregiver_count = 1
 
         for cg in range(caregiver_count):
-            cg_actor = generate_actor(generate_user(), 'caregiver')
+            cg_actor = generate_actor(get_or_create_user(), 'caregiver')
             patient.add_caregiver(cg_actor)
             caregivers.append(cg_actor)
 
         max_providers = random.randint(1, MAX_PROVIDERS)
         for cg in range(max_providers):
-            provactor = generate_actor(generate_user(), 'provider')
+            provactor = generate_actor(get_or_create_user(), 'provider')
             patient.add_provider(provactor)
             providers.append(provactor)
 

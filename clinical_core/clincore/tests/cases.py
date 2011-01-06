@@ -6,7 +6,7 @@ from clinical_core.clincore.utils import generator
 import random
 from casetracker import constants
 
-from casetracker.models.casecore import Category, Case, Priority, Status, ActivityClass
+from casetracker.models import Category, Case, Priority, Status, ActivityClass
 import uuid
 from django.core.management import  call_command
 
@@ -56,10 +56,10 @@ class CasePermissionsTest(TestCase):
     def testCaseManager(self):
         pt1, cgs1, prov1 = generator.generate_patient_and_careteam()
         pt2, cgs2, prov2 = generator.generate_patient_and_careteam()
-        actor_creator = generator.generate_actor(generator.generate_user(), "provider")
-        actor_editor1 = generator.generate_actor(generator.generate_user(), "provider")
-        actor_editor2 = generator.generate_actor(generator.generate_user(), "provider")
-        actor_closer = generator.generate_actor(generator.generate_user(), "provider")
+        actor_creator = generator.generate_actor(generator.get_or_create_user(), "provider")
+        actor_editor1 = generator.generate_actor(generator.get_or_create_user(), "provider")
+        actor_editor2 = generator.generate_actor(generator.get_or_create_user(), "provider")
+        actor_closer = generator.generate_actor(generator.get_or_create_user(), "provider")
 
         total_cases = 12
         for i in range(total_cases):

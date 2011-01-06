@@ -1,4 +1,4 @@
-from casetracker.models.casecore import Category
+from casetracker.models import Case
 
-class SystemCase(Category):
+class SystemCase(Case):
     pass

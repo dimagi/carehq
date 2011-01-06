@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from casetracker.models.casecore import ActivityClass
+from casetracker.models import ActivityClass
 from casetracker import constants
 from django.db import transaction
 

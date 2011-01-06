@@ -5,12 +5,14 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from casetracker.models import Case, CaseEvent, Filter, ActivityClass
+from casetracker.models import Case, CaseEvent, ActivityClass
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
 from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
+from casetracker.models.filters import Filter
+
 def _get_next(request):
     """
     The part that's the least straightforward about views in this module is how they 
@@ -41,7 +43,7 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
     thecase = Case.objects.select_related('opened_by','last_edit_by',\
                                           'resolved_by','closed_by','assigned_to',
                                           'priority','category','status').get(id=case_id)
-    
+
 
     do_edit = False    
     activity_slug = None
@@ -138,26 +140,26 @@ def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed
     This is called form tabbed_newsfeed.html via the jQuery UI Tab control.
     """
     context = {}
-    thecase = Case.objects.select_related('opened_by','last_edit_by',\
-                                          'resolved_by','closed_by','assigned_to',
-                                          'priority','category','status').get(id=case_id)
-    
-    sorting = None
-    do_edit=False    
-    edit_mode = None
-    for key, value in request.GET.items():            
-        if key == "sort":
-            sorting = value
-    
-    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
-    context['case'] = thecase        
-    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
-    context['formatting'] = False
-    event_arr = context['events']
-    event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)
-    if len(event_dic) > 0:
-        context['events'] = event_dic
-        context['formatting'] = True
+#    thecase = Case.objects.select_related('opened_by','last_edit_by',\
+#                                          'resolved_by','closed_by','assigned_to',
+#                                          'priority','category','status').get(id=case_id)
+#
+#    sorting = None
+#    do_edit=False
+#    edit_mode = None
+#    for key, value in request.GET.items():
+#        if key == "sort":
+#            sorting = value
+#
+#    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
+#    context['case'] = thecase
+#    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
+#    context['formatting'] = False
+#    event_arr = context['events']
+#    event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)
+#    if len(event_dic) > 0:
+#        context['events'] = event_dic
+#        context['formatting'] = True
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def view_filter(request, filter_id):

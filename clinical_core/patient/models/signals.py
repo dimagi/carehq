@@ -20,19 +20,21 @@ def load_couchpatient(sender, instance, *args, **kwargs):
     """
     #first, do a memcached lookup
     #print "doing signal to lookup couchdb doc %s: %s" % (instance.id, instance.doc_id)
-    couchjson = cache.get('%s_couchdoc' % (instance.id), None)
-    if couchjson == None:
-        #memcached lookup got nothing, query again
-        try:
-            instance._couchdoc = CPatient.view('patient/all', key=instance.doc_id, include_docs=True).first()
-            couchjson = simplejson.dumps(instance._couchdoc.to_json())
-            cache.set('%s_couchdoc' % (instance.id), couchjson)
-            #print "Setting something"
-        except Exception, ex:
-            #print "setting none, %s" % (ex)
-            instance._couchdoc = None
-    else:
-        instance._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
+
+    if instance.doc_id != None:
+        couchjson = cache.get('%s_couchdoc' % (instance.id), None)
+        if couchjson == None:
+            #memcached lookup got nothing, query again
+            try:
+                instance._couchdoc = CPatient.view('patient/all', key=instance.doc_id, include_docs=True).first()
+                couchjson = simplejson.dumps(instance._couchdoc.to_json())
+                cache.set('%s_couchdoc' % (instance.id), couchjson)
+                print "Setting something"
+            except Exception, ex:
+                print "setting none, %s" % (ex)
+                instance._couchdoc = None
+        else:
+            instance._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
 post_init.connect(load_couchpatient, sender=Patient)
 
 

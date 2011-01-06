@@ -31,14 +31,18 @@ class Patient(models.Model):
     def couchdoc(self):
         #print "patient couchdoc lookup %s" % (self.id)
         #next, do a memcached lookup
-        couchjson = cache.get('%s_couchdoc' % (self.id), None)
-#        couchjson = None
+        if self.isnew:
+            return self._couchdoc
+
+        #couchjson = cache.get('%s_couchdoc' % (self.id), None)
+        print "hitting couchdoc for no good reason"
+        couchjson = None
         if couchjson == None:
             try:
                 #print "patient couchdoc couchdb requery!"
                 self._couchdoc = CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
-                couchjson = simplejson.dumps(self._couchdoc.to_json())
-                cache.set('%s_couchdoc' % (self.id), couchjson)
+                #couchjson = simplejson.dumps(self._couchdoc.to_json())
+                #cache.set('%s_couchdoc' % (self.id), couchjson)
             except Exception, ex:
                 self._couchdoc = None
         else:
@@ -81,6 +85,8 @@ class Patient(models.Model):
             self._couchdoc = CPatient()
             self._couchdoc.django_uuid = self.id #the id is set at init
             self.isnew = True
+        else:
+            self.isnew=False
 
     @staticmethod
     def is_pact_id_unique(pact_id):

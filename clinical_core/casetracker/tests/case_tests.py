@@ -44,8 +44,8 @@ class BasicCaseTests(TestCase):
         """Simple test:  Create a case and verify that it exists in the database via the API"""
         #get the basic counts
 
-        user1 = generator.generate_user()
-        user2 = generator.generate_user()
+        user1 = generator.get_or_create_user()
+        user2 = generator.get_or_create_user()
 
         caregiver_creator = generator.generate_actor(user1, 'caregiver')
         provider_assigned = generator.generate_actor(user2, 'provider')
@@ -93,7 +93,7 @@ class BasicCaseTests(TestCase):
         desc= uuid.uuid1().hex
         case = self.testCreateCaseApi(description=desc)
 
-        user1 = generator.generate_user()
+        user1 = generator.get_or_create_user()
         actor1 = generator.generate_actor(user1, 'provider')
 
         
@@ -120,7 +120,7 @@ class BasicCaseTests(TestCase):
 
     def testCaseCreateChildCases(self):
         oldcase = self.testCreateCaseApi()
-        user1 = generator.generate_user()
+        user1 = generator.get_or_create_user()
         actor1 = generator.generate_actor(user1, 'provider')
         CHILD_CASES=10
         for num in range(0,CHILD_CASES):

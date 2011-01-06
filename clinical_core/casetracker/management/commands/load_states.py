@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from casetracker.models.casecore import  Status
-from casetracker.models.casecore import CASE_STATES
+from casetracker.models import  Status
+from casetracker.models import CASE_STATES
 from django.db import transaction
 
 

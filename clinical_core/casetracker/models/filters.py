@@ -1,4 +1,4 @@
-from casetracker.models.casecore import CaseEvent, Case
+from casetracker.models import CaseEvent, Case
 from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
