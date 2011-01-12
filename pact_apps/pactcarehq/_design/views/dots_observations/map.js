@@ -31,7 +31,8 @@ function(doc) {
 			//emit([doc._id, i.toString()], drug_obs);
 			//var use_date = new Date(doc.form['case']['update']['dots']['anchor']);
 			emit([doc.form['pact_id'], observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], obs_dict);
-		} 
+            emit([observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
+		}
 	}
 	
 	function parse_date(date_string) {

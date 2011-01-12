@@ -1,49 +1,133 @@
-{% if week_schedule %}
-<strong><span style="font-size: 125%;"> Latest Visit Schedule</span></strong> &nbsp; <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True"><small>Edit</small></a>
-			<table>
-			<tbody>
-			<tr>
-				<td><strong>Sunday</strong></td>
-				<td>{{week_schedule.sunday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Monday</strong></td>
-				<td> {{week_schedule.monday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Tuesday</strong></td>
-				<td> {{week_schedule.tuesday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Wednesday</strong></td>
-				<td> {{week_schedule.wednesday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Thursday</strong></td>
-				<td> {{week_schedule.thursday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Friday</strong></td>
-				<td> {{week_schedule.friday}}</td>
-			</tr>
-			<tr>
-				<td><strong>Saturday</strong></td>
-				<td> {{week_schedule.saturday}}</td>
-			</tr>
-			</body>
-			<tfoot>
-			<tr>
-				<td colspan="2">
-					{% if not week_schedule.deprecated %}
-					Active {{week_schedule.started|timesince}}, created by {{week_schedule.created_by}}
-					{% else %}
-					Inactive {{week_schedule.ended|date}}					
-					{%endif %}
-				</td>
-			</tr>	
-			</tfoot>
-</table
+<strong><span style="font-size: 125%;">Visit Schedules</span></strong> <small><a href="{{ request.path }}?allschedules">Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a></small>
+<hr>
+
+{% if past_schedules %}
+    <strong><span style="font-size: 125%;">Prior Schedules</span></strong>
+    <table>
+        <thead>
+        <tr>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+        </thead>
+
+        {% for pschedule in past_schedules %}
+
+            <tr>
+                <td> {{pschedule.sunday}}</td>
+                <td> {{pschedule.monday}}</td>
+                <td> {{pschedule.tuesday}}</td>
+                <td> {{pschedule.wednesday}}</td>
+                <td> {{pschedule.thursday}}</td>
+                <td> {{pschedule.friday}}</td>
+                <td> {{pschedule.saturday}}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="prepend-1">
+                    <small><em>
+                        Applied {{ pschedule.started|date }} -
+                        {% if pschedule.ended %}
+                            {{ pschedule.ended|date }}
+                        {% else %}
+                            and onward
+                        {% endif %}
+                        (<a href="javascript:post_schedule_delete('{{patient_doc.django_uuid }}', '{{ pschedule.schedule_id }}')">Remove</a>)
+                    </em></small>
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+    {% endif %} {# past_schedules #}
+
+
+{% if patient_doc.current_schedule %}
+{# Section current schedule #}
+<strong><span style="font-size: 125%;">Current Schedule</span></strong>
+<table>
+        <thead>
+        <tr>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+    </thead>
+    	<tr>
+            <td> {{patient_doc.current_schedule.sunday}}</td>
+            <td> {{patient_doc.current_schedule.monday}}</td>
+            <td> {{patient_doc.current_schedule.tuesday}}</td>
+            <td> {{patient_doc.current_schedule.wednesday}}</td>
+            <td> {{patient_doc.current_schedule.thursday}}</td>
+            <td> {{patient_doc.current_schedule.friday}}</td>
+            <td> {{patient_doc.current_schedule.saturday}}</td>
+        </tr>
+        <tr>
+            <td colspan="7" class="prepend-1">
+                <small><em>
+                    Active {{ patient_doc.current_schedule.started|date }}
+                    {% if patient_doc.current_schedule.ended %}
+                        - {{ patient_doc.current_schedule.ended|date }}
+                    {% endif %}
+                </em></small>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Add Future Schedule</a>
+            </td>
+        </tr>
+</table>
+    {% if patient_doc.future_schedules %}
+    <strong><span style="font-size: 125%;">Future Schedules</span></strong>
+    <table>
+        <thead>
+        <tr>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+    </thead>
+
+        {% for fschedule in patient_doc.future_schedules %}
+
+            <tr>
+                <td> {{fschedule.sunday}}</td>
+                <td> {{fschedule.monday}}</td>
+                <td> {{fschedule.tuesday}}</td>
+                <td> {{fschedule.wednesday}}</td>
+                <td> {{fschedule.thursday}}</td>
+                <td> {{fschedule.friday}}</td>
+                <td> {{fschedule.saturday}}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="prepend-1">
+                    <small><em>
+                        Applies {{ fschedule.started|date }}
+                        {% if fschedule.ended %}
+                            - {{ fschedule.ended|date }}
+                        {% endif %}
+                        (<a href="javascript:post_schedule_delete('{{patient_doc.django_uuid }}', '{{ fschedule.schedule_id }}')">Remove</a>)
+                    </em></small>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 {% else %}
-<strong><span style="font-size: 125%;"> No Visit Schedule Set</span></strong> <br>
+<br>
+<strong>No Current Schedule Set</strong> <br>
 <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Create Schedule</a>
 {%endif %}

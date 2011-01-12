@@ -29,24 +29,20 @@ class Patient(models.Model):
 
     @property
     def couchdoc(self):
-        #print "patient couchdoc lookup %s" % (self.id)
         #next, do a memcached lookup
         if self.isnew:
             return self._couchdoc
 
-        #couchjson = cache.get('%s_couchdoc' % (self.id), None)
-        print "hitting couchdoc for no good reason"
-        couchjson = None
+        couchjson = cache.get('%s_couchdoc' % (self.id), None)
+        #couchjson = None
         if couchjson == None:
             try:
-                #print "patient couchdoc couchdb requery!"
                 self._couchdoc = CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
-                #couchjson = simplejson.dumps(self._couchdoc.to_json())
-                #cache.set('%s_couchdoc' % (self.id), couchjson)
+                couchjson = simplejson.dumps(self._couchdoc.to_json())
+                cache.set('%s_couchdoc' % (self.id), couchjson)
             except Exception, ex:
                 self._couchdoc = None
         else:
-            #print "patient couchdoc memcached hit!"
             return self._couchdoc
             self._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
 

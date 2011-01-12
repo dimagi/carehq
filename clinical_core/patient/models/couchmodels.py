@@ -87,6 +87,7 @@ class CDotWeeklySchedule(Document):
 
     
 
+#this class ought not to be used for new data
 class CDotSchedule(Document):
     day_of_week = StringProperty()
     hp_username = StringProperty()
@@ -157,6 +158,7 @@ class CBloodwork(Document):
     def save(self):
         pass
 
+
 class CActivityDashboard(Document):
     count = IntegerProperty()
     encounter_date = DateTimeProperty()
@@ -216,7 +218,32 @@ class CPatient(Document):
         app_label = 'patient'
 
 
+    def _set_schedule_dates(self):
+        self.weekly_schedule = sorted(self.weekly_schedule, key=lambda x: x.started)
+
+        for i in range(len(self.weekly_schedule)):
+            cur = self.weekly_schedule[i]
+            print "%d: %s" % (i, cur.schedule_id)
+            print "\tStarted: %s" % (cur.started)
+            print "\tEnded: %s" % (cur.ended)
+            if i == len(self.weekly_schedule) - 1:
+                #if we're at the end, ensure that this is set to go on forever
+                cur.ended=None
+                break
+            #do a check and set to make sure
+            next = self.weekly_schedule[i+1]
+
+            cur.ended = next.started
+            cur.save()
+        #this introduces a circular dependency up top
+        from pactcarehq import schedule
+        schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO
+
+
+
     def save(self):
+        #reorder the schedules to sort by start date
+        self._set_schedule_dates()
         super(CPatient, self).save()
         #next, we need to invalidate the cache
         cache.delete('%s_couchdoc' % (self.django_uuid))
@@ -304,12 +331,59 @@ class CPatient(Document):
 
 
     @property
-    def latest_schedule(self):
+    def current_schedule(self):
         #return sorted(self.weekly_schedule, key=lambda x:x.started)[-1]
         if len(self.weekly_schedule) > 0:
-            return self.weekly_schedule[-1]
+            rsched = range(0, len(self.weekly_schedule))
+            rsched.reverse()
+
+            for i in rsched:
+                sched = self.weekly_schedule[i]
+                if sched.deprecated == True:
+                    continue
+                if sched.started > datetime.utcnow():
+                    #greedily check to see if the schedule will return
+                    continue
+                else:
+                    return sched
+            #return self.weekly_schedule[-1]
         else:
             return None
+
+    @property
+    def past_schedules(self):
+        ret = []
+        if len(self.weekly_schedule) > 0:
+            scheds = range(0, len(self.weekly_schedule))
+            for i in scheds:
+                sched = self.weekly_schedule[i]
+                if sched.started > datetime.utcnow():
+                    continue
+                elif sched.ended == None or sched.ended > datetime.now():
+                    continue
+                else:
+                    ret.append(sched)
+        else:
+            return []
+        return ret
+
+
+    @property
+    def future_schedules(self):
+        ret = []
+        if len(self.weekly_schedule) > 0:
+            rsched = range(0, len(self.weekly_schedule))
+            rsched.reverse()
+
+            for i in rsched:
+                sched = self.weekly_schedule[i]
+                if sched.deprecated == True:
+                    continue
+                if sched.started > datetime.utcnow():
+                    ret.insert(0,sched)
+        else:
+            return []
+        return ret
         
     @property
     def latest_address(self):
@@ -322,13 +396,18 @@ class CPatient(Document):
     def set_schedule(self, new_schedule):
         """set the schedule as head of the schedule by accepting a cdotweeklychedule"""
         #first, set all the others to inactive
-        for sched in self.weekly_schedule:
-            if not sched.deprecated:
-                sched.deprecated=True
-                sched.ended=datetime.utcnow()
-                sched.save()
+
         new_schedule.deprecated=False
-        new_schedule.started=datetime.utcnow()
+        if new_schedule.started == None or new_schedule.started <= datetime.utcnow():
+            new_schedule.started=datetime.utcnow()
+            for sched in self.weekly_schedule:
+                if not sched.deprecated:
+                    #sched.deprecated=True
+                    sched.ended=datetime.utcnow()
+                    sched.save()
+        elif new_schedule.started > datetime.utcnow():
+            #if it's in the future, then don't deprecate the future schedule, just procede along and let the system set the dates correctly
+            pass
         self.weekly_schedule.append(new_schedule)
         self.save()
 
@@ -393,12 +472,12 @@ class CPatient(Document):
         ret = ''
         counter = 1
         days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
-        if self.latest_schedule != None:
-            #latest_schedule is the NEW format for scheduling.  If it is not null, use it and use it only.
+        if self.current_schedule != None:
+            #current_schedule is the NEW format for scheduling.  If it is not null, use it and use it only.
             #else, 
             for day in days_of_week:
-                if getattr(self.latest_schedule, day) != None:
-                    hp_username = getattr(self.latest_schedule,day)
+                if getattr(self.current_schedule, day) != None:
+                    hp_username = getattr(self.current_schedule,day)
                 else:
                     hp_username=self.primary_hp
                 ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day,hp_username, day)

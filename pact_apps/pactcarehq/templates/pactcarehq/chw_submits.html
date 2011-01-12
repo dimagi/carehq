@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% include render_json_tags %}
+{#{% block extrahead %}#}
+{#<script type="text/javascript" charset="utf-8">#}
+{#$(document).ready(#}
+{#        function()#}
+{#        {#}
+{#			//placeholder for autorefresh, but turning off for now#}
+{#            //var autoRefresh = setInterval(refreshNotification, 30000);#}
+{#            jQuery("abbr.timeago").timeago();#}
+{#        }#}
+{#    );#}
+{#</script>#}
+{#{% endblock extrahead %}#}
+{% block content %}
+<h3>{{ username }}'s Submissions</h3>
+<a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+    {% if submit_arr %}
+    <table>
+    <thead>
+        <tr>
+            <th class="span-4">Encounter Date</th>
+            <th class="span-4">Patient</th>
+            <th class="span-4">Form</th>
+            
+            <th class="span-4">Started</th>
+            <th class="span-4">Time to Finish</th>
+            <th class="span-4">Time to Submit</th>
+            <th class="span-4">Submitted Date</th>
+        </tr>
+    </thead>
+    {% for submission in submit_arr %}
+        <tr>
+            {% if submission.3 == "DOTS" %}
+                {#ghetto hacky way to differentiate between the submission types#}
+                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1}}</a> </td>
+            {% else %}
+                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1}}</a> </td>
+            {% endif %}
+            <td> {{ submission.2 }}</td>
+            <td> {{ submission.3 }}</td>
+
+            <td> {{ submission.4|date:"Y-m-d H:i" }}</td> {# started date #}
+            <td> {{ submission.5 }}</td> {# start-end interval #}
+            <td> {{ submission.6 }}</td> {# end-submit interval #}
+            <td> {{ submission.7|date:"Y-m-d H:i" }}</td> {# submitted date #}
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+        <div class="notice">No Submissions</div>
+    {% endif %} {#if there are any submits at all #}
+{% endblock %}

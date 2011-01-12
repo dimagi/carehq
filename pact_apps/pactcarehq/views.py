@@ -1,3 +1,4 @@
+import urllib
 from dimagi.utils.couch.database import get_db
 from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
 from patient.models.djangomodels import Patient
@@ -19,7 +20,7 @@ from pactcarehq.forms.progress_note_comment import ProgressNoteComment
 from django.core.urlresolvers import reverse
 from couchforms.signals import xform_saved
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import logging
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from django.core.exceptions import ObjectDoesNotExist
@@ -64,6 +65,42 @@ def patient_list(request, template_name="pactcarehq/patient_list.html"):
 
 
 @login_required
+def remove_schedule(request):
+    if request.method == "POST":
+        try:
+            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            patient = Patient.objects.get(id=patient_id)
+            schedule_id = urllib.unquote(request.POST['schedule_id']).encode('ascii', 'ignore')
+            remove_id = -1
+            for i in range(0, len(patient.couchdoc.weekly_schedule)):
+                sched = patient.couchdoc.weekly_schedule[i]
+                if sched.schedule_id == schedule_id:
+                    remove_id = i
+                    print "matching schedule_id"
+                    break
+
+            new_schedules = []
+            couchdoc = patient.couchdoc
+            if remove_id != -1:
+                print "removing weekly schedule %d" % (remove_id)
+                #note the idiocy of me needing to iterate through the list in order to delete it.
+                #a simple remove() or a pop(i) could not work for some reason
+                for i in range(0, len(couchdoc.weekly_schedule)):
+                    if i == remove_id:
+                        continue
+                    new_schedules.append(couchdoc.weekly_schedule[i])
+
+                couchdoc.weekly_schedule = new_schedules
+                couchdoc.save()
+            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+        except Exception, e:
+            logging.error("Error getting args:" + str(e))
+            return HttpResponse("Error: %s" % (e))
+    else:
+        pass
+
+
+@login_required
 def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
     schedule_show = request.GET.get("schedule", "active")
@@ -72,6 +109,8 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     address_edit = request.GET.get("edit_address", False)
     phone_edit = request.GET.get("edit_phone", False)
     patient_edit = request.GET.get('edit_patient', None)
+    show_all_schedule = request.GET.get('allschedules', None)
+
 
     patient = Patient.objects.get(id=patient_id)
     context = RequestContext(request)
@@ -97,7 +136,6 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             context['bloodwork_overdue'] = False
 
 
-
     if address_edit:
         context['address_form'] = AddressForm()
     if schedule_edit:
@@ -106,17 +144,22 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
         context['phone_form'] = PhoneForm()
     if patient_edit:
         context['patient_form'] = CPatientForm(patient_edit, instance=patient.couchdoc)
+    if show_all_schedule != None:
+        context['past_schedules'] = patient.couchdoc.past_schedules
         
     if request.method == 'POST':
         if schedule_edit:
             form = ScheduleForm(data=request.POST)
             if form.is_valid():
                 sched = CDotWeeklySchedule()
-                #print form.cleaned_data
+                print form.cleaned_data
                 for day in DAYS_OF_WEEK:
                     if form.cleaned_data[day] != None:
                         setattr(sched, day, form.cleaned_data[day].username)
-                sched.started=datetime.utcnow()
+                if form.cleaned_data['active_date'] == None:
+                    sched.started=datetime.utcnow()
+                else:
+                    sched.started = datetime.combine(form.cleaned_data['active_date'], time.min)
                 sched.comment=form.cleaned_data['comment']
                 sched.created_by = request.user.username
                 sched.deprecated=False
@@ -495,7 +538,46 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
     context['end_date'] = ret[-1][0]
     return render_to_response(template_name, context_instance=context)
 
+@login_required
+def chw_list(request, template_name="pactcarehq/chw_list.html"):
+    """A list of all users"""
+    context = RequestContext(request)
+    q_users = list(User.objects.all().filter(is_active=True).values_list('username', flat=True))
 
+    users = []
+    for u in q_users:
+        if u.count("_") > 0:
+            continue
+        users.append(u.encode('ascii'))
+    users.sort()
+
+    chw_dashboards = CActivityDashboard.view('pactcarehq/chw_dashboard', keys=users, group=True).all()
+
+    username_dashboard_dict = {}
+    for reduction in chw_dashboards:
+        chw_username = reduction['key']
+        dashboard = CActivityDashboard.wrap(reduction['value'])
+        username_dashboard_dict[chw_username] = dashboard
+    context['chw_dashboards'] = []
+    for uname in users:
+        if username_dashboard_dict.has_key(uname):
+            context['chw_dashboards'].append((uname, username_dashboard_dict[uname]))
+    return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def chw_submits(request, chw_username, template_name="pactcarehq/chw_submits.html"):
+    context = RequestContext(request)
+
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    submits = _get_submissions_for_user(chw_username)
+    context['username'] = chw_username
+    context['submit_arr'] = submits
+    return render_to_response(template_name, context_instance=context)
 
 
 @login_required

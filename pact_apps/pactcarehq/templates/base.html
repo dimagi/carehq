@@ -102,24 +102,13 @@
                                 <img src="/media/pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
                             </span>
                             <div class="sub_menu">
-                                <a href="{% url pactcarehq.views.all_submits_by_user %}">Submissions By CHW</a>
-                                <a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a>
+                                <a href="{% url pactcarehq.views.chw_list %}">CHW List</a>
+                                <a href="{% url pactcarehq.views.patient_list%}">Patient List</a>
+                                <a href="#">Provider List</a>
+{#                                <a href="{% url pactcarehq.views.all_submits_by_user %}">Submissions By CHW</a>#}
+{#                                <a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a>#}
                             </div>
                         </li>
-                         {% if user.is_superuser %}
-                         <li>
-                             <span class="head_menu">
-                                 <a href="#">Admin</a>
-                                 <img src="/media/pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
-                             <div class="sub_menu">
-                                 {#<li><a href="https://pactd.dimagi.com/_utils/database.html?carehq/_design/patient/_view/by_last_name">Patient Editor</a></li>#}
-                                 <a href="{% url pactcarehq.views.patient_list%}">Patient List</a>
-                                 <a href="#">Provider List</a>
-
-                             </div>
-                             </span>
-                        </li>
-                        {% endif %}      {# end superuser if #}
                      </ul>
 					{% endif %} {# end autenticated if#}
                     </div> {# div id=menu #}

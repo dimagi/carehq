@@ -40,7 +40,8 @@ class CPatientForm(DocumentForm):
     arm = forms.ChoiceField(choices=ARM_CHOICES)
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
-    primary_hp = forms.ModelChoiceField(User.objects.filter(is_active=True, username__in=hack_pact_usernames), required=False)
+#    primary_hp = forms.ModelChoiceField(User.objects.filter(is_active=True, username__in=hack_pact_usernames), required=False)
+    primary_hp = forms.ChoiceField(choices=tuple([(x, x) for x in hack_pact_usernames]))
     notes = forms.CharField(widget = widgets.Textarea(attrs={'cols':80,'rows':5}))
 
     def __init__(self, mode, *args, **kwargs):

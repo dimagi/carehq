@@ -29,9 +29,7 @@ def load_couchpatient(sender, instance, *args, **kwargs):
                 instance._couchdoc = CPatient.view('patient/all', key=instance.doc_id, include_docs=True).first()
                 couchjson = simplejson.dumps(instance._couchdoc.to_json())
                 cache.set('%s_couchdoc' % (instance.id), couchjson)
-                print "Setting something"
             except Exception, ex:
-                print "setting none, %s" % (ex)
                 instance._couchdoc = None
         else:
             instance._couchdoc = CPatient.wrap(simplejson.loads(couchjson))

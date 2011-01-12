@@ -24,7 +24,7 @@ class CHWPatientSchedule(object):
         self.username=username
         self.intervals = intervaltrees
         self.raw_schedule = raw_schedule
-        print "create for username %s" % (username)
+        #print "create for username %s" % (username)
     def get_scheduled(self, date_val):
         """
         For a given date, return the array of pact_ids that are scheduled for visiting.  This will check the activate date by using the internal interval tree.
@@ -44,7 +44,7 @@ class CHWPatientSchedule(object):
         return results
 
 def get_schedule(chw_username):
-    print "doing schedule lookup for %s" % (chw_username)
+    #print "doing schedule lookup for %s" % (chw_username)
     if cached_schedules.has_key(chw_username):
         return cached_schedules[chw_username]
     db = CPatient.get_db()
@@ -53,7 +53,7 @@ def get_schedule(chw_username):
 
     for item in chw_schedules:
         single_sched = item['value']
-        print "Iterating single schedule %s" % (single_sched)
+        #print "Iterating single schedule %s" % (single_sched)
         day_of_week = int(single_sched['day_of_week'])
         if day_intervaltree.has_key(day_of_week):
             daytree = day_intervaltree[day_of_week]

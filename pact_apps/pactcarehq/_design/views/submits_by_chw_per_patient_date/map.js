@@ -9,6 +9,7 @@ function(doc) {
         return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
     }
 
+    //this is used for the calendar submits for per chw schedule DOTS visits whether or nto they're keeping with their schedule, hence, only dots forms.
     if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form" && doc.form.encounter_date !== undefined) {
         var edate = parse_date(doc.form.encounter_date);
         //return it in regular months, not zero indexed.
