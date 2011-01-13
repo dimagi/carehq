@@ -18,74 +18,81 @@
     <a href="{{ request.path }}?interval=7">7 days</a> &nbsp;
     <a href={{ request.path }}?interval={% now "j" %}>Month to date</a>
     <a href="{{ request.path }}?interval=30">30 days</a> &nbsp;
+    <br>
+    <a href="{{ request.path }}?getcsv&interval=7">CSV 7</a>
+    <a href="{{ request.path }}?getcsv&interval={% now "j" %}">CSV MTD</a>&nbsp;
+    <a href="{{ request.path }}?getcsv&interval=30">CSV 30</a>&nbsp;
 </div>
+<div class="container span-24">
+    <div class="span-4">
+        <strong>Date</strong>
+    </div>
+    <div class="span-5"><strong>Patient Scheduled</strong></div>
+    <div class="span-15 last"><strong>Visits</strong></div>
 
-<table>
-<thead>
-    <tr>
-        <th class="span-4">Date</th>
-        <th class="span-5">Patient Scheduled</th>
-        <th class="span-15">Visits</th>
-    </tr>
-</thead>
-<tbody>
-{%  for visit_date, patients, visits in date_arr %}
-    <tr>
-    {# array of [date, schedule_chw, submissions] #}
-    <td>
-        <strong>{{ visit_date|date:"D N j, Y" }}</strong>
-    </td>
-    <td>
-        {% if patients %}
-            {% for scheduled_patient in patients %}
-                <div class="success">
-                <a href="{% url view_patient scheduled_patient.id %}">{{ scheduled_patient.full_name }}</a>
+    {%  for visit_date, patient_visits in date_arr %}
+        {% if patient_visits %}
+            {% for cpatient, visit in patient_visits %}
+                {% if forloop.counter0 == 0 %}
+                     <div class="span-4">
+                        <strong>{{ visit_date|date:"D N j, Y" }}</strong>
+                     </div>
+                {% else %}
+                    <div class="span-4">&nbsp;</div>
+                {% endif %}
+
+                <div class="span-5">
+                    <div class="success">
+                    <a href="{% url view_patient cpatient.django_uuid %}">{{ cpatient.first_name }} {{ cpatient.last_name }}</a>
+                    </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <small><div class="quiet">-- None scheduled --</div></small>
-        {% endif %}
-    </td>
-    <td>
-            {% for form_item in visits %}
-                    {% if form_item == "-- No Visit --" %}
-                        <div class="span-15 last error">
-                        No Visit
-                        </div>
-                    {% else %}
-                    <div class="span-15 last notice">
+                <div class="span-15 last">
+                     {% if visit %}
+                        <div class="notice span-14">
                         <div class="span-5">
                             <strong>
-                            <a href="{% patient_url_from_form form_item %}">{%  name_from_pactid form_item %}</a>
+                            <a href="{% patient_url_from_form visit %}">{%  name_from_pactid visit %}</a>
                             </strong>
                         </div>
                         <div class="span-4">
-                            {% if form_item.form.scheduled == "yes" %}
+                            {% if visit.form.scheduled == "yes" %}
                                 Scheduled
                             {% else %}
                                 Unscheduled
                             {% endif %}
-                            ({{ form_item.form.visit_type|title }})
+                            ({{ visit.form.visit_type|title }})
                         </div>
                         <div class="span-3">
                             by
-                            {% if form_item.form.Meta.username == username %}
-                                <strong>{{ form_item.form.Meta.username }}</strong>
+                            {% if visit.form.Meta.username == username %}
+                                <strong>{{ visit.form.Meta.username }}</strong>
                             {% else %}
-                                <em>{{ form_item.form.Meta.username }}</em>
+                                <em>{{ visit.form.Meta.username }}</em>
                             {% endif %}
                         </div>
                         <div class="span-2 last">
-                            <a href="{% url show_dots_note form_item.get_id %}">View</a>
+                            <a href="{% url show_dots_note visit.get_id %}">View</a>
                         </div>
-                    </div>
-                    {% endif %}
-            {% endfor %}
-
-    </td>
-    </div>
-    </tr>
+                        </div>
+                     {% else %}
+                        <div class="error span-14">
+                            No Visit
+                        </div>
+                     {% endif %}
+                </div>
+                {% endfor %}
+        {% else %}
+            <div class="span-4">
+                <strong>{{ visit_date|date:"D N j, Y" }}</strong>
+            </div>
+            <div class="span-5">
+                -- No Patients --
+            </div>
+            <div class="span-15 last">
+                <div class="span-14" style="padding:.8em;margin-bottom:1em;border:2px solid #fff;">
+                </div>
+            </div>
+        {% endif %}
     {% endfor %}
-</tbody>
-</table>
+</div>
 {% endblock content %}

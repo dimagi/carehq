@@ -501,16 +501,17 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
             if pact_id == None:
                 continue
             try:
-                cpatient = getpatient(pact_id)
-                patients.append(Patient.objects.get(id=cpatient.django_uuid))
+                cpatient = getpatient(pact_id) #TODO: this is a total waste of queries, doubly getting the cpatient, then getting the django object again
+#                patients.append(Patient.objects.get(id=cpatient.django_uuid))
+                patients.append(cpatient)
             except:
                 #print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
                 continue
 
         #inefficient, but we need to get the patients in alpha order
-        patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
+        patients = sorted(patients, key=lambda x: x.last_name)
         for patient in patients:
-            pact_id = patient.couchdoc.pact_id
+            pact_id = patient.pact_id
             searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
             #print searchkey
             submissions = XFormInstance.view('pactcarehq/submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
@@ -525,18 +526,52 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
                     visited.append(other_submissions[0])
                     total_visited+= 1
                 else:
-                    visited.append('-- No Visit --')
+                    visited.append(None)
 
         #print (visit_date, patients, visited)
         total_scheduled+= len(patients)
-        ret.append((visit_date, patients, visited))
+        ret.append((visit_date, zip(patients, visited)))
     context['date_arr'] = ret
     context['total_scheduled'] = total_scheduled
     context['total_visited'] = total_visited
     #context['total_visited'] = total_visited
     context['start_date'] = ret[0][0]
     context['end_date'] = ret[-1][0]
-    return render_to_response(template_name, context_instance=context)
+
+    if request.GET.get('getcsv', None) != None:
+        csvdata = []
+        csvdata.append(','.join(['visit_date','assigned_chw','pact_id','is_scheduled','visit_type','submitted_by','visit_id']))
+        for date, pt_visit in ret:
+            if len(pt_visit) > 0:
+                for cpt, v in pt_visit:
+                    rowdata = [date.strftime('%Y-%m-%d'), username, cpt.pact_id]
+                    if v != None:
+                        if v.form['scheduled'] == 'yes':
+                            rowdata.append('scheduled')
+                        else:
+                            rowdata.append('unscheduled')
+                        rowdata.append(v.form['visit_type'])
+
+                        rowdata.append(v.form['Meta']['username'])
+                        if v.form['Meta']['username'] == username:
+                            rowdata.append('assigned')
+                        else:
+                            rowdata.append('covered')
+                        rowdata.append(v.get_id)
+                    else:
+                        rowdata.append('novisit')
+                    csvdata.append(','.join(rowdata))
+            else:
+                csvdata.append(','.join([date.strftime('%Y-%m-%d'),'nopatients']))
+
+        resp = HttpResponse()
+
+        resp['Content-Disposition'] = 'attachment; filename=chw_schedule_%s-%s_to_%s.csv' % (username, nowdate.utcnow().strftime("%Y-%m-%d"),  (nowdate - timedelta(days=total_interval)).strftime("%Y-%m-%d"))
+        resp.write('\n'.join(csvdata))
+        return resp
+
+    else:
+        return render_to_response(template_name, context_instance=context)
 
 @login_required
 def chw_list(request, template_name="pactcarehq/chw_list.html"):
