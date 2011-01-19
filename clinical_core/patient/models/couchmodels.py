@@ -116,6 +116,8 @@ ghetto_patient_xml = """<case>
                        <dob>%(dob)s</dob>
                        <initials>%(pt_initials)s</initials>
                        <hp>%(hp)s</hp>
+                       <last_note>%(last_note)s</last_note>
+                       <last_dot>%(last_dot)s</last_dot>
                    </update>
            </case>"""
 
@@ -208,6 +210,9 @@ class CPatient(Document):
     date_modified = DateTimeProperty(default=datetime.utcnow)
 
     prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
+
+    last_note = DateTimeProperty()
+    last_dot = DateTimeProperty()
 
     dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
@@ -505,6 +510,17 @@ class CPatient(Document):
         xml_dict['hp'] = self.primary_hp
         xml_dict['phones'] = self.get_ghetto_phone_xml()
         xml_dict['addresses'] = self.get_ghetto_address_xml()
+
+        #todo: this ought to also use a view to verify that the dots and progress notes are dynamically queried for last status.  This patient placeholder is for testing and legacy purposes
+        if self.last_dot != None:
+            xml_dict['last_dot'] = self.last_dot
+        else:
+            xml_dict['last_dot'] = ''
+
+        if self.last_note != None:
+            xml_dict['last_note'] = self.last_note
+        else:
+            xml_dict['last_note'] = ''
 
         if self.arm.lower() == 'dot':
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
