@@ -211,8 +211,8 @@ class CPatient(Document):
 
     prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
 
-    last_note = DateTimeProperty()
-    last_dot = DateTimeProperty()
+    last_note = StringProperty() #will be a timestamp
+    last_dot = StringProperty() #will be a timestamp
 
     dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
