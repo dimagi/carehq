@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Add Provider" %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="span-6">
+            <h2>Add Provider</h2>
+        </div>
+        <div>
+            <table>
+            <form method="POST" action="{% url clinical_core.actors.views.addProvider %}">
+                {% csrf_token %}
+                {{ form.as_table }}
+                <tr><td><input type="submit"/></td></tr>
+
+            </form>
+                </table>
+        </div>
+    </div>
+{% endblock %}
