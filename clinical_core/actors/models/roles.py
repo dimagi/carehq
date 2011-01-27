@@ -64,7 +64,7 @@ class Role(models.Model):
         return ct
     
     def __unicode__(self):
-        return "Role Base: %s: %s" % (self.role_type, self.role_object)    
+        return "Role Base: %s: %s" % (self.role_type, self.role_uuid)
 
 class CHW(Role):
     title = models.CharField(max_length=64)
