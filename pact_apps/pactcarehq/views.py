@@ -183,11 +183,15 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                 new_phone = CPhone()
                 new_phone.description = form.cleaned_data['description']
                 new_phone.number = form.cleaned_data['number']
+                print form.cleaned_data
+                print form.cleaned_data.has_key('notes')
                 new_phone.notes = form.cleaned_data['notes']
                 new_phone.created_by = request.user.username
                 patient.couchdoc.phones.append(new_phone)
                 patient.couchdoc.save()
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+            else:
+                print "invalid phone form"
         elif patient_edit:
             form = CPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
             if form.is_valid():

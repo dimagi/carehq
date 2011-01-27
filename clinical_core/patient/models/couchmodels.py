@@ -19,6 +19,7 @@ ghetto_regimen_map = {
 }
 
 class CPhone(Document):
+    phone_id=StringProperty(default=make_uuid)
     is_default = BooleanProperty()
     description = StringProperty()
     number = StringProperty()
@@ -228,9 +229,6 @@ class CPatient(Document):
 
         for i in range(len(self.weekly_schedule)):
             cur = self.weekly_schedule[i]
-            print "%d: %s" % (i, cur.schedule_id)
-            print "\tStarted: %s" % (cur.started)
-            print "\tEnded: %s" % (cur.ended)
             if i == len(self.weekly_schedule) - 1:
                 #if we're at the end, ensure that this is set to go on forever
                 cur.ended=None

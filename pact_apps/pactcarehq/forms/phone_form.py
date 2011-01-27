@@ -19,4 +19,4 @@ class PhoneForm(forms.Form):
     )
     description = forms.ChoiceField(choices=PHONE_CHOICES, required=True)
     number = forms.CharField(required=True)
-    notes = forms.CharField()
+    notes = forms.CharField(required=False)

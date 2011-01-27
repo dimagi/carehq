@@ -50,18 +50,14 @@ def remove_phone(request):
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
             patient = Patient.objects.get(id=patient_id)
             phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
-            print unicode(phone_id)
-
             for i in range(0, len(patient.couchdoc.phones)):
                 p = patient.couchdoc.phones[i]
                 if p.phone_id == phone_id:
-                    print "matching phone_id"
                     p.deprecated=True
                     p.ended=datetime.utcnow()
                     p.edited_by = request.user.username
                     patient.couchdoc.phones[i] = p
                     patient.couchdoc.save()
-                    break
             return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
         except Exception, e:
             logging.error("Error getting args:" + str(e))
