@@ -5,6 +5,7 @@ from datetime import datetime
 import simplejson
 from dimagi.utils import make_uuid
 from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
+from dimagi.utils.couch.database import get_db
 from dimagi.utils.make_time import make_time
 from django.core.cache import cache
 
@@ -119,6 +120,7 @@ ghetto_patient_xml = """<case>
                        <hp>%(hp)s</hp>
                        <last_note>%(last_note)s</last_note>
                        <last_dot>%(last_dot)s</last_dot>
+                       <last_bw>%(last_bw)s</last_bw>
                    </update>
            </case>"""
 
@@ -510,15 +512,35 @@ class CPatient(Document):
         xml_dict['addresses'] = self.get_ghetto_address_xml()
 
         #todo: this ought to also use a view to verify that the dots and progress notes are dynamically queried for last status.  This patient placeholder is for testing and legacy purposes
-        if self.last_dot != None:
-            xml_dict['last_dot'] = self.last_dot
-        else:
-            xml_dict['last_dot'] = ''
 
-        if self.last_note != None:
-            xml_dict['last_note'] = self.last_note
+        #check the view if any exist.  if it's empty, check this property.
+
+        xml_dict['last_dot'] = ''
+        last_dots = get_db().view('pactcarehq/last_dots_form', key=self.pact_id, group=True).all()
+        if len(last_dots) != 1:
+            if self.last_dot != None:
+                xml_dict['last_dot'] = self.last_dot
         else:
-            xml_dict['last_note'] = ''
+            last_dot = last_dots[0]['value']
+            if len(last_dot) > 0:
+                xml_dict['last_dot'] = last_dot[0][1] #array is [[doc_id, encounter_date_string], ...]
+
+
+        #for last_note, check the view if any exist.  if it's null, check self property.
+        xml_dict['last_note'] = ''
+        last_notes = get_db().view('pactcarehq/last_progress_note', key=self.pact_id, group=True).all()
+        if len(last_notes) != 1:
+            if self.last_note != None:
+                xml_dict['last_note'] = self.last_note
+        else:
+            last_note = last_notes[0]['value']
+            if len(last_note) > 0:
+                xml_dict['last_note'] = last_note[0][1] #array is [[doc_id, encounter_date_string], ...]
+
+        #todo: check bloodwork view
+        xml_dict['last_bw'] = self.get_bloodwork_xml()
+
+
 
         if self.arm.lower() == 'dot':
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
@@ -527,6 +549,45 @@ class CPatient(Document):
             xml_dict['dot_schedule'] = ''
             xml_dict['regimens'] = ''
         ret = ghetto_patient_xml % (xml_dict)
+        return ret
+
+
+    def single_bw_item(self, bw):
+
+        ret = ""
+        ret += "\n<bw>"
+        ret += "<test_date>%s</test_date>" % (bw['test_date'])
+        ret += "<tests>%s</tests>" % (bw['tests'])
+
+        if bw.has_key('vl'):
+            ret += "<vl>%s</vl>" % (bw['vl'])
+        if bw.has_key('cd'):
+            ret +="<cd><cdcnt>%s</cdcnt><cdper>%s</cdper></cd>" % (bw['cd']['cdcnt'], bw['cd']['cdper'])
+        ret += "</bw>"
+        return ret
+
+
+
+    def get_bloodwork_xml(self):
+        """Getn an xml block from the reduction view, patient_bloodwork
+        return xml
+        <bw><test_date>date</test_date>
+        """
+        bloodwork = get_db().view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
+        if len(bloodwork) == 0:
+            return ''
+        bloodwork = sorted(bloodwork, key=lambda x: x['value']['test_date'])
+
+        slice = []
+        ret = ''
+
+        if len(bloodwork) < 3:
+            slice = bloodwork
+            pass
+        else:
+            slice = bloodwork[-3:]
+        for bw in slice:
+            ret += self.single_bw_item(bw['value'])
         return ret
 
 

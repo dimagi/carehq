@@ -2,6 +2,7 @@ from django.db.models import *
 from patient.models import Patient
 from couchdbkit.ext.django.schema import *
 import simplejson
+from dimagi.utils import make_uuid
 import time, datetime
 
 # Create your models here.
@@ -55,9 +56,9 @@ class CObservation(Document):
         return ((self.is_art, self.dose_number, self.total_doses), "%s-%s" % (self.adherence, self.method))
     
     
-    def save(self):
-        #override save as this is not a document but just a view
-        pass
+#    def save(self):
+#        #override save as this is not a document but just a view
+#        pass
     
     def __unicode__(self):
         return "Dots Observation: %s on %s" % (self.observed_date, self.anchor_date) 
@@ -74,7 +75,21 @@ class CObservation(Document):
     
     class Meta:
         app_label = 'dotsview'
-    
+
+class CObservationAddendum(Document):
+#    sub_id = StringProperty(default=make_uuid)
+    observed_date = DateProperty()
+    art_observations = SchemaListProperty(CObservation)
+    nonart_observations = SchemaListProperty(CObservation)
+    created_by = StringProperty()
+    created_date = DateTimeProperty()
+    notes = StringProperty() #placeholder if need be
+    class Meta:
+        app_label = 'dotsview'
+
+
+
+
 def _date_from_string(s):
     """
     >>> _date_from_string("18 Aug 2010 04:00:00 GMT")

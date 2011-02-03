@@ -1,0 +1,55 @@
+{##}
+{#{% for drug_type in art_non_art %}#}
+{#    {% for dose_number in day %}#}
+{##}
+{#        {{ drug_type }} {# art/nonart #}
+{#        {{ dose_time }} {# morning/afternoon, etc #}
+{##}
+{#        radio:#}
+{#        Doses Taken#}
+{#        All, Some, None, Unknown#}
+{##}
+{#        Observation Type:#}
+{#        Direct, Pillbox Check, Self#}
+{##}
+{##}
+{#    {% endfor %}#}
+{#{% endfor %}#}
+{#<script>#}
+{#	$(function() {#}
+{#		$( "#div_id_observation_type" ).buttonset();#}
+{#        $( "#div_id_doses_taken" ).buttonset();#}
+{#	});#}
+{#	</script>#}
+
+
+<div class="span-20">
+<form method="post" action="" id="dot_addendum_form">
+{{ formset.management_form }}
+{% csrf_token %}
+<div class="span-10">
+<h3>ART</h3>
+{% for form in art_forms %}
+    <div class="span-10 last">
+    <h4>{{ form.get_dose_display }}</h4>
+    <table>
+    {{ form.as_table }}
+        </table>
+    </div>
+{% endfor %}
+</div>
+<div class="span-10 last">
+<h3>Non-ART</h3>
+{% for form in nonart_forms %}
+    <div class="span-10 last">
+    <h4>{{ form.get_dose_display }}</h4>
+    <table>
+    {{ form.as_table }}
+    </table>
+    </div>
+{% endfor %}
+</div>
+</div>
+</form>
+
+{#result, create 2 schemalists to append to CObservationAddendum #}

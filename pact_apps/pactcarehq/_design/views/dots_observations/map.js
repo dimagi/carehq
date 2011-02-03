@@ -21,7 +21,8 @@ function(doc) {
 //		alert(toISOString(now));
 //	}
 	
-	function do_observation(doc, observe_date, drug_arr, obs_dict) {
+	function do_observation(doc, observe_date, anchor_date, drug_arr, obs_dict) {
+        //previously from using anchor_date, used observed_date, but pact wanted the anchor date to drive the date bounds.
         if (drug_arr.length >= 2 && drug_arr[0] != 'unchecked') {
 			obs_dict['adherence'] = drug_arr[0];
 			obs_dict['method'] = drug_arr[1];
@@ -30,7 +31,8 @@ function(doc) {
 			}
 			//emit([doc._id, i.toString()], drug_obs);
 			//var use_date = new Date(doc.form['case']['update']['dots']['anchor']);
-			emit([doc.form['pact_id'], observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], obs_dict);
+            emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], obs_dict);
+            emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
             emit([observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
 		}
 	}
@@ -95,7 +97,7 @@ function(doc) {
                         drug_obs['total_doses'] = dispenses.length;
                         drug_obs['observed_date'] = toISOString(observed_date);
                         drug_obs['dose_number'] = drug_freq;
-                        do_observation(doc, observed_date, dispenses[drug_freq], drug_obs);
+                        do_observation(doc, observed_date, anchor_date, dispenses[drug_freq], drug_obs);
                     }
                 }
             }

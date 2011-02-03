@@ -1,12 +1,17 @@
+from StringIO import StringIO
+import os
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
+from django.template.context import Context, Context
+from dotsview.forms import AddendumForm
 
 from models import *
 from django.contrib.auth.decorators import login_required
 from patient.models.couchmodels import CPatient
 from couchforms.models import XFormInstance
-
+from patient.models.couchmodels import ghetto_regimen_map
+from django.forms.formsets import formset_factory
 import csv
 
 
@@ -37,13 +42,13 @@ def get_csv(request):
     if patient != None:
         if csv_mode == 'all':
             start_date = end_date - datetime.timedelta(1000)
-            startkey = [pact_id.encode('ascii'),  start_date.year, start_date.month, start_date.day]
-            endkey = [pact_id.encode('ascii'),  end_date.year, end_date.month, end_date.day]
+            startkey = [pact_id.encode('ascii'),  'anchor_date', start_date.year, start_date.month, start_date.day]
+            endkey = [pact_id.encode('ascii'),  'anchor_date', end_date.year, end_date.month, end_date.day]
             observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
             response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s.csv' % (pact_id)
         else:
-            startkey = [pact_id.encode('ascii'),  start_date.year, start_date.month, start_date.day]
-            endkey = [pact_id.encode('ascii'),  end_date.year, end_date.month, end_date.day]
+            startkey = [pact_id.encode('ascii'), 'anchor_date',  start_date.year, start_date.month, start_date.day]
+            endkey = [pact_id.encode('ascii'), 'anchor_date',  end_date.year, end_date.month, end_date.day]
             observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
             response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s-%s_to_%s.csv' % (pact_id, start_date.strftime("%Y-%m-%d"),  end_date.strftime("%Y-%m-%d"))
     elif patient == None:
@@ -69,140 +74,134 @@ def get_csv(request):
 
     return response
 
-#@login_and_domain_required
+
 @login_required
-def index(request, template='dots/index.html'):
-    end_date = _parse_date(request.GET.get('end', datetime.date.today()))
-    start_date = _parse_date(request.GET.get('start', end_date-datetime.timedelta(14)))
-    patient_id = request.GET.get('patient', None)
-    
-    if start_date > end_date:
-         end_date = start_date
-    elif end_date - start_date > datetime.timedelta(365):
-         end_date = start_date + datetime.timedelta(365) 
-    dates = []
-    date = start_date
-    while date <= end_date:
-        dates.append(date)
-        date += datetime.timedelta(1)
+def dot_addendum(request, template='dots/dot_addendum.html'):
+    #get stuff from the GET
+    context = RequestContext(request)
+    #todo: we need to make a checksum for these POSTs
 
-    try:
-        patient = Patient.objects.get(id=patient_id)
-    except:
-        patient = None
+    #step 1, basic prep
+    if request.method == "GET":
+        patient_id = request.GET.get('patient', None)
+    elif request.method == "POST":
+        patient_id = request.POST['patient_id']
 
-    observations = Observation.objects.filter(patient__id=patient_id)
-    if observations.count():
-        agg = observations.aggregate(Max('date'), Min('date'))
-        first_observation = agg['date__min']
-        last_observation = agg['date__max']
-        del agg
-        if end_date < first_observation or last_observation < start_date:
-            bad_date_range = True
-    total_doses_set = set(observations.values_list('total_doses', flat=True))
+    patient =Patient.objects.get(id=patient_id)
+    pact_id = patient.couchdoc.pact_id
+    art_regimen = patient.couchdoc.art_regimen
+    art_num = int(ghetto_regimen_map[art_regimen.lower()])
 
-    try:
-        timekeys = set.union(*map(set, map(Observation.get_time_labels, total_doses_set)))
-        timekeys = sorted(timekeys, key=TIME_LABELS.index)
-    except:
-        timekeys = []
+    nonart_regimen = patient.couchdoc.non_art_regimen
+    nonart_num = int(ghetto_regimen_map[nonart_regimen.lower()])
 
-    artkeys = ('ART', 'Non ART')
-    
-    def group_by_is_art_and_time(date):
-        grouping = {}
-        for artkey in artkeys:
-            by_time = {}
-            for timekey in timekeys:
-                by_time[timekey] = []
-            grouping[artkey] = by_time
-        obs = observations.filter(date=date)
-        for ob in obs:
-            grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
-        
-        return [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.date)[-1:]) for tk in timekeys]) for ak in artkeys]
-    
-    start_padding = dates[0].weekday()
-    end_padding = 7-dates[-1].weekday() + 1
-    dates = [None]*start_padding + dates + [None]*end_padding
-
-    dates = [(date, group_by_is_art_and_time(date)) for date in dates]
-    weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
-    
-#    patients = Patient.objects.filter(observation__in=Observation.objects.all()).distinct()
-    dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
-    dots_ids = []
-    for dotpt in dots_pts:
-        dots_ids.append(dotpt._id)
-    patients = Patient.objects.filter(doc_id__in=dots_ids)
-
-    #sanity check if we're running with old data:
-    if patients.count() == 0:
-        #print "*** no patients"
-        patients = Patient.objects.all()
+    context['art_forms'] = []
+    context['nonart_forms'] = []
+    AddendumFormSetFactory = formset_factory(AddendumForm, extra=nonart_num+art_num, max_num=nonart_num+art_num)
+    if request.method == "POST":
+        formset = AddendumFormSetFactory(request.POST, request.FILES)
+        if formset.is_valid():
+            addendum_date = datetime.datetime.strptime(request.POST['addendum_date'], "%Y-%m-%d")
+            #iterate through all the forms in the formset, create CObservation and put it into CObservationAddendum
+            addendum = CObservationAddendum()
+            addendum.observed_date = addendum_date.date()
+            addendum.created_date = datetime.datetime.utcnow()
+            addendum.created_by = request.user.username
+            for f in formset.forms:
+                obsa = CObservation()
+                obsa.doc_id = None
+                obsa.pact_id = pact_id
+                obsa.provider = request.user.username
+                obsa.observed_date = addendum_date
+                obsa.anchor_date = addendum_date
+                obsa.submited_date = datetime.datetime.utcnow()
+                obsa.created_date = datetime.datetime.utcnow()
+                if f.cleaned_data['drug_type'] == 'art':
+                    obsa.is_art = True
+                elif f.cleaned_data['drug_type'] == 'nonart':
+                    obsa.is_art = False
+                else:
+                    raise Exception ("Error, inbound form data invalid")
+                obsa.dose_number = f.cleaned_data['dose_number']
+                obsa.total_doses = f.cleaned_data['dose_total']
+                obsa.adherence = f.cleaned_data['doses_taken']
+                obsa.method = f.cleaned_data['observation_type']
+                obsa.day_index = -1
+                obsa.day_note = "Addendum entry"
+                if obsa.is_art:
+                    addendum.art_observations.append(obsa)
+                else:
+                    addendum.nonart_observations.append(obsa)
+            addendum.save()
+        else:
+            raise Exception("error")
     else:
-        #print "** found patients!"
-        pass
-    
-    context = RequestContext(request, locals())
-    {
-        'weeks' : weeks,
-        'patients' : patients,
-        'patient' : patient,
-        'start_date': start_date,
-        'end_date': end_date,
-    }
-    return render_to_response(template, context)
-
+        #first art, then nonart
+        data = []
+        for n in range(art_num):
+            data.append({'drug_type': 'art', 'dose_number': n, 'dose_total': art_num})
+        for n in range(nonart_num):
+            data.append({'drug_type': 'nonart', 'dose_number': n, 'dose_total': nonart_num })
+        formset = AddendumFormSetFactory(initial=data)
+        for n in range(art_num):
+            context['art_forms'].append(formset.forms[n])
+        for n in range(nonart_num):
+            context['nonart_forms'].append(formset.forms[n+art_num])
+        context['formset'] = formset
+    return  render_to_response(template, context_instance=context)
 @login_required
 def index_couch(request, template='dots/index_couch.html'):
     end_date = _parse_date(request.GET.get('end', datetime.date.today()))
     start_date = _parse_date(request.GET.get('start', end_date-datetime.timedelta(14)))
     patient_id = request.GET.get('patient', None)
-    
-    
-    view_doc_id = request.GET.get('submit_id', None)
-    
-    if view_doc_id != None:
-        #we want to see a direct single instance display. override the display times
-        submit_obs = CObservation.view('pactcarehq/dots_obs_submit', key=view_doc_id).all()
-        sorted_obs = sorted(submit_obs, key=lambda k:k['observed_date'])
-        dates = set([s.observed_date for s in submit_obs])
-        start_date = min(dates)
-        end_date = max(dates)
-        
 
+    do_pdf = request.GET.get('pdf', False)
 
     if start_date > end_date:
         end_date = start_date
     elif end_date - start_date > datetime.timedelta(365):
-        end_date = start_date + datetime.timedelta(365) 
-    dates = []
-    date = start_date
-    while date <= end_date:
-        dates.append(date)
-        date += datetime.timedelta(1)
+        end_date = start_date + datetime.timedelta(365)
 
     try:
-        patient = Patient.objects.get(id=patient_id)        
+        patient = Patient.objects.get(id=patient_id)
         pact_id = patient.couchdoc.pact_id
+
+
     except:
         patient = None
         pact_id=None
-        
 
-    startkey = [pact_id,  start_date.year, start_date.month, start_date.day]
-    endkey = [pact_id,  end_date.year, end_date.month, end_date.day]
-    observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+    view_doc_id = request.GET.get('submit_id', None)
+    
+    if view_doc_id != None:
+        #we want to see a direct single instance display. override the display times
+        observations = CObservation.view('pactcarehq/dots_obs_submit', key=view_doc_id).all()
+    else:
+        startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
+        endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
+        observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+
     total_doses_set = set([obs.total_doses for obs in observations])
-    
-    
+    observed_dates = list(set([s.observed_date for s in observations]))
+    sorted_obs = sorted(observations, key=lambda k:k['observed_date'])
+
+    if len(observed_dates) > 0:
+        min_date = min(observed_dates)
+        max_date = max(observed_dates)
+    else:
+        min_date = datetime.datetime.utcnow()
+        max_date = datetime.datetime.utcnow()
+
+    full_dates = []
+    date = min_date
+    while date <= max_date:
+        full_dates.append(date)
+        date += datetime.timedelta(1)
+
     if view_doc_id != None:
         visits_set = set([view_doc_id])
     else:
         visits_set = set([obs.doc_id for obs in observations])
-        #for v in visits_set:
-            #print v
 
     try:
         timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
@@ -211,7 +210,7 @@ def index_couch(request, template='dots/index_couch.html'):
         timekeys = []
 
     artkeys = ('ART', 'Non ART')
-    
+
     def group_by_is_art_and_time(date):
         grouping = {}
         conflict_dict = {}
@@ -222,24 +221,22 @@ def index_couch(request, template='dots/index_couch.html'):
             for timekey in timekeys:
                 by_time[timekey] = []
             grouping[artkey] = by_time
-            
-        
-            
+
         if date:
-            datekey = [pact_id, date.year, date.month, date.day]
+            datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
             obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
             for ob in obs:
                 #base case if it's never been seen before, add it as the key
                 if not conflict_check.has_key(ob.adinfo[0]):
                     conflict_check[ob.adinfo[0]]= ob
-                    
+
                 #main check.  for the given key adinfo[0], check to see if the value is identical
                 prior_ob = conflict_check[ob.adinfo[0]]
                 if prior_ob.adinfo[1] != ob.adinfo[1]:
                     #they don't match, add the current ob to the conflict dictionary
                     if not conflict_dict.has_key(ob.doc_id):
                         conflict_dict[ob.doc_id] = ob
-                        
+
                     #next, add the one existing in the lookup checker as well because they differed.
                     if not conflict_dict.has_key(prior_ob.doc_id):
                         conflict_dict[prior_ob.doc_id] = prior_ob
@@ -254,7 +251,7 @@ def index_couch(request, template='dots/index_couch.html'):
                     day_notes.append(ob.day_note)
 
                 conflict_check[ob.adinfo[0]]= ob
-                
+
                 if view_doc_id != None and ob.doc_id != view_doc_id:
                     #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                     continue
@@ -269,21 +266,17 @@ def index_couch(request, template='dots/index_couch.html'):
 
         return ([(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.observed_date)[-1:]) for tk in timekeys]) for ak in artkeys], conflict_dict.values(), day_notes)
 
-    
-    start_padding = dates[0].weekday()
-    end_padding = 7-dates[-1].weekday() + 1
-    dates = [None]*start_padding + dates + [None]*end_padding
+    start_padding = full_dates[0].weekday()
+    end_padding = 7-full_dates[-1].weekday() + 1
+    full_dates = [None]*start_padding + full_dates + [None]*end_padding
     #week = [[date, entry]...]
     #entry = [('non_art', [(time1: [obs1, obs2, obs3]), (time2,[obs4, obs5]), (time3,[obs7]),...]), ('art', [(time1:[obs1,obs2...]), (time2, [obs3]), ...])... '
     #time = [ 
 
-    #dates = [(date, group_by_is_art_and_time(date)) for date in dates] #week = [[date, entries],...], where entry = [{art:
-    #weeks = [dates[7*n:7*(n+1)] for n in range(len(dates)/7)]
-    
-    
-    
-    new_dates = [] 
-    for date in dates:
+    #observed_dates = [(date, group_by_is_art_and_time(date)) for date in observed_dates] #week = [[date, entries],...], where entry = [{art:
+    #weeks = [observed_dates[7*n:7*(n+1)] for n in range(len(observed_dates)/7)]
+    new_dates = []
+    for date in full_dates:
         observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2]))
     weeks = [new_dates[7*n:7*(n+1)] for n in range(len(new_dates)/7)]
@@ -303,7 +296,22 @@ def index_couch(request, template='dots/index_couch.html'):
         print "** found patients!"
     
     patients = sorted(patients, key=lambda p: p.couchdoc.last_name+p.couchdoc.first_name)
-    
+    if patient:
+        art_regimen = patient.couchdoc.art_regimen
+        try:
+            art_num = int(ghetto_regimen_map[art_regimen.lower()])
+        except:
+            art_num = 0
+
+        nonart_regimen = patient.couchdoc.non_art_regimen
+        try:
+            nonart_num = int(ghetto_regimen_map[nonart_regimen.lower()])
+        except:
+            nonart_num = 0
+    else:
+        art_num = 0
+        nonart_num = 0
+
     context = RequestContext(request, locals())
     {
         'weeks' : weeks,
@@ -311,5 +319,10 @@ def index_couch(request, template='dots/index_couch.html'):
         'patient' : patient,
         'start_date': start_date,
         'end_date': end_date,
+        'min_date': min_date,
+        'max_date': max_date,
+        'art_num': art_num,
+        'nonart_num': nonart_num,
     }
     return render_to_response(template, context)
+

@@ -6,221 +6,353 @@
 {% endblock %}
 
 {% block page_stylesheets %}
-    <link type="text/css" rel="stylesheet" href="/media/dotsview/stylesheets/dots.css" />
+    <link type="text/css" rel="stylesheet" href="/media/dotsview/stylesheets/dots.css"/>
 {% endblock %}
 
 {% block javascripts %}
     {{ block.super }}
-	<script type="text/javascript">
-	var date_helper = "yyyy-mm-dd";
-	function get_url(){
-		var patient_id = $('#patients option:selected').attr('value');
-		var start_date = $('#start-date').attr('value');
-		var end_date = $('#end-date').attr('value');
-		if(start_date==date_helper) start_date = '';
-		if(end_date==date_helper) end_date = '';
-		return "{{ request.path }}?patient="+patient_id+"&start="+start_date+"&end="+end_date;
-	}
-	$(document).ready(function(){
-		$('#patients').change(function(){
-			$(document).attr('location', get_url());
-		});
-		$('input.date').each(function(){
-			if(! $(this).attr('value')) {
-				$(this).attr('value', date_helper);
-			}
-		}).focus(function(){
-			$(this).select();
-		});
-		$('#start-date').change(function(){
-			$(document).attr('location', get_url());
-		});
-		$('#end-date').change(function(){
-			$(document).attr('location', get_url());
-		});
-	});
-	</script>
+    <script type="text/javascript">
+        var date_helper = "yyyy-mm-dd";
+        function get_url() {
+            var patient_id = $('#patients option:selected').attr('value');
+            var start_date = $('#start-date').attr('value');
+            var end_date = $('#end-date').attr('value');
+            if (start_date == date_helper) start_date = '';
+            if (end_date == date_helper) end_date = '';
+            return "{{ request.path }}?patient=" + patient_id + "&start=" + start_date + "&end=" + end_date;
+        }
+        $(document).ready(function() {
+            $('#patients').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('input.date').each(
+                                function() {
+                                    if (! $(this).attr('value')) {
+                                        $(this).attr('value', date_helper);
+                                    }
+                                }).focus(function() {
+                $(this).select();
+            });
+            $('#start-date').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('#end-date').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('#reconcile-dialog').dialog(
+            {
+                autoOpen: false,
+                height: 500,
+                width: 850,
+                modal: true,
+                buttons: {
+                    'Submit':function() {
+
+                        var isValid = true;
+                        var art_num = {{ art_num }};
+                        var nonart_num = {{ nonart_num }};
+                        var total_drugs = art_num + nonart_num;
+                        var reasonString = "";
+
+                        for (var i = 0; i < total_drugs; i += 1) {
+                            var doses_taken = "form-" + i + "-doses_taken";
+                            var obs_type = "form-" + i + "-observation_type";
+                            var check_doses = $("input[name='" + doses_taken + "']:checked", "#dot_addendum_form").val();
+                            var check_obs = $("input[name='" + obs_type + "']:checked", "#dot_addendum_form").val();
+
+                            if (check_doses == undefined) {
+                                isValid = false;
+                                reasonString += doses_taken + ", ";
+                            }
+                            if (check_obs == undefined) {
+                                isValid = false;
+                                reasonString += obs_type + ", ";
+                            }
+                        }
+
+
+                        if (isValid == false) {
+                            alert("Error, not all inputs filled.");
+                        } else {
+                            //success, let's submit the POST
+                            //first, append the patient_id to the POST
+                            var ptid = document.createElement("input");
+                            ptid.setAttribute("type", "hidden");
+                            ptid.setAttribute("name", "patient_id");
+                            ptid.setAttribute("value", "{{ patient.id }}");
+                            $("#dot_addendum_form").append(ptid);
+
+                            var addendum_date = document.createElement("input");
+                            addendum_date.setAttribute("type", "hidden");
+                            addendum_date.setAttribute("name", "addendum_date");
+                            addendum_date.setAttribute("value", $('#dateplaceholder').attr("class"));
+                            $("#dot_addendum_form").append(addendum_date);
+                            send_xhr = $.ajax({
+                                "type": "POST",
+                                "url":  "{% url dot_addendum_dialog %}",
+                                "data": $("#dot_addendum_form").serialize(),
+                                "success": function(data) {
+                                    $(this).dialog('close');
+                                }, //end success
+                                "error": function(data) {
+                                    alert ("Error trying to save form, please try again.");
+                                }
+                            });
+                            $(this).dialog('close');
+                        }
+                    },
+                    Cancel: function() {
+//                        $("input:radio").attr("checked", false);
+//                        $("#id_comment").val('');
+                        $(this).dialog('close');
+                    },
+                },
+                open: function(event, ui) {
+                    $.get("{% url dot_addendum_dialog %}?patient={{ patient.id }}", function(data) {
+                        $("#reconcile-form-block").html(data);
+                    });
+//                    alert($('#dateplaceholder').attr("class"));
+                },
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
+
+        //date_string = yyyy-mm-dd
+        function reconcile_date(date_string) {
+            $('#dateplaceholder').attr("class", date_string);
+            $('#reconcile-dialog').dialog('open');
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
-	<div class="span-17">
-	<h4>DOT Adherence Data for 
-	<select id="patients">
-		<option value="dots" {% if not patient %} selected="selected" {% endif %}>
-			No patient selected
-		</option>
-		{% for p in patients %}
-			<option value="{{p.id}}"
-				{% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
-				{{p.couchdoc.last_name}}, {{p.couchdoc.first_name}}
-			</option>
-		{% endfor %}
-	</select>
-	From
-	<input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
-	until
-	<input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
-	{% if patient and bad_date_range %}
-		<p class='date-range-warning'>
-			Just so you know, the date range you're looking at is
-			<strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
-			We only have data for <strong>{{patient.full_name}}</strong> between
-			<strong>{{first_observation}}</strong>
-			and <strong>{{last_observation}}</strong>.
-		</p>
-	{% endif %}
-	</h4>
-	<strong>Download CSV:</strong> <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=range&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">This Date Range</a>
-	 | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
-	 </div>
-	 <div class="span-7 last">
+    <div class="span-24">
+        <div class="span-17">
+            <h4>DOT Adherence Data for
+                <select id="patients">
+                    <option value="dots" {% if not patient %} selected="selected" {% endif %}>
+                        No patient selected
+                    </option>
+                    {% for p in patients %}
+                        <option value="{{p.id}}"
+                                {% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
+                            {{ p.couchdoc.last_name }}, {{ p.couchdoc.first_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                for visits: <input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
+                to
+                <input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
+                {% if patient and bad_date_range %}
+                    <p class='date-range-warning'>
+                        Just so you know, the date range you're looking at is
+                        <strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
+                        We only have data for <strong>{{ patient.full_name }}</strong> between
+                        <strong>{{ first_observation }}</strong>
+                        and <strong>{{ last_observation }}</strong>.
+                    </p>
+                {% endif %}
+            </h4>
+            {% if weeks %}
+                Visits cover observation dates from <strong>{{ min_date|date }}</strong> to
+                <strong>{{ max_date|date }}</strong><br>
+            {% endif %}
+            <strong>Download CSV:</strong> <a
+                href="{% url dots_csv_download %}?patient={{patient.id}}&csv=range&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">This
+            Visit Date Range</a>
+            | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
+        </div>
+        <div class="span-7 last">
 	<span style="font-size:75%">
 		<fieldset>
-	    <legend>Legend</legend>
-	        <div class="span-3">
-	        <strong>Obs. Method</strong><br>
-	            <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
-	            <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
-				<img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
+            <legend>Legend</legend>
+            <div class="span-3">
+                <strong>Obs. Method</strong><br>
+                <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
+                <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
+                <img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
                 <img src="/media/dotsview/icons/info.png">&nbsp;Notes<br>
-	        </div>
-	        <div class="span-3 last">
-	        <strong>Pillbox</strong><br>
-	            <img src="/media/dotsview/icons/check.jpg">&nbsp; Empty<br>
-	            <img src="/media/dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
-	            <img src="/media/dotsview/icons/x-mark.png">&nbsp; Full<br>
-	        </div>
-	    </fieldset> 
+            </div>
+            <div class="span-3 last">
+                <strong>Pillbox</strong><br>
+                <img src="/media/dotsview/icons/check.jpg">&nbsp; Empty<br>
+                <img src="/media/dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
+                <img src="/media/dotsview/icons/x-mark.png">&nbsp; Full<br>
+            </div>
+        </fieldset>
 	</span>
-	 
-	 </div>
-	 
-	{% if patient %}
-		<table class="calendar">
-			<tr>
-				<th>{% trans "Monday" %}</th>
-				<th>{% trans "Tuesday" %}</th>
-				<th>{% trans "Wednesday" %}</th>
-				<th>{% trans "Thursday" %}</th>
-				<th>{% trans "Friday" %}</th>
-				<th>{% trans "Saturday" %}</th>
-				<th>{% trans "Sunday" %}</th>
-			</tr>
-		{% for week in weeks %}
-			<tr>
-				{% for date, entries, conflicts, day_notes in week %}
-					{% if date %}
-						<td>
-    					<div class="date-label">{{date}}</div>
-							<div class="calendar-cell">
-								{% for drug_type, times_of_day in entries %}
-								<div class="drug-cell">
-									<div class="drug-label">{% trans drug_type %}</div>
-									{% for time_of_day, obs in times_of_day %}
-										<div class="time-label">{% trans time_of_day %}</div>
-										<div class="time-cell">
-											{% if obs %}
-												{% for ob in obs %}
-													<div class="observation">
-														<div class="ob-{{ob.adherence}}">
-															{{ob.adherence}}
-														</div>
-														<div class="ob-{{ob.method}}">
-															{{ob.method}}
-														</div>
-													</div>
-												{% endfor %} {#observations #}
-											{% endif %}
-										</div>
-									{% endfor %} {# times of day#}
-								</div>
-								{% endfor %} {#drug type in entries #}
-							</div>
-							{% if conflicts %}
-							<div class="date-notes-block">
-								<img src="/media/dotsview/icons/warning.png">
-								{% for conflict in conflicts %}
-								<small>
-								<a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
-								{{conflict.anchor_date|date:"Y-m-d"}}</a>
-								</small><br>
-								{% endfor %}
-							</div>
-							{% endif %}
-                        	{% if day_notes %}
-							<div class="date-notes-block">
-                                <img src="/media/dotsview/icons/info.png">
-                                {% for note in day_notes %}
-								<small>
-                                    {{ note }}  <br>
+        </div>
+    </div>
+
+    {% if patient %}
+        <table class="calendar">
+            <tr>
+                <th>{% trans "Monday" %}</th>
+                <th>{% trans "Tuesday" %}</th>
+                <th>{% trans "Wednesday" %}</th>
+                <th>{% trans "Thursday" %}</th>
+                <th>{% trans "Friday" %}</th>
+                <th>{% trans "Saturday" %}</th>
+                <th>{% trans "Sunday" %}</th>
+            </tr>
+            {% for week in weeks %}
+                <tr>
+                    {% for date, entries, conflicts, day_notes in week %}
+                        {% if date %}
+                            <td>
+                                <div class="date-label">{{ date|date:"m/d/Y" }}</div>
+                                <div class="calendar-cell">
+                                    {% for drug_type, times_of_day in entries %}
+                                        <div class="drug-cell">
+                                            <div class="drug-label">{% trans drug_type %}</div>
+                                            {% for time_of_day, obs in times_of_day %}
+                                                <div class="time-label">{% trans time_of_day %}</div>
+                                                <div class="time-cell">
+                                                    {% if obs %}
+                                                        {% for ob in obs %}
+                                                            <div class="observation">
+
+                                                                {% if ob.adherence == "empty" %}
+                                                                    <img src="/media/dotsview/icons/check.jpg">
+                                                                {% endif %}
+
+                                                                {% if ob.adherence == "partial" %}
+                                                                    <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                                                {% endif %}
+
+                                                                {% if ob.adherence == "full" %}
+                                                                    <img src="/media/dotsview/icons/x-mark.png">
+                                                                {% endif %}
+
+
+                                                                {% if ob.method == "direct" %}
+                                                                    <img src="/media/dotsview/icons/plus.png">
+                                                                {% endif %}
+
+                                                                {% if ob.method == "self" %}
+                                                                    <img src="/media/dotsview/icons/minus.png">
+                                                                {% endif %}
+
+                                                                {#														<div class="ob-{{ob.adherence}}">#}
+                                                                {#															{{ob.adherence}}#}
+                                                                {#														</div>#}
+                                                                {#														<div class="ob-{{ob.method}}">#}
+                                                                {#															{{ob.method}}#}
+                                                                {#														</div>#}
+
+                                                            </div>
+                                                        {% endfor %} {#observations #}
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %} {# times of day#}
+                                        </div>
+                                    {% endfor %} {#drug type in entries #}
+                                </div>
+                                {% if conflicts %}
+                                    <div class="date-notes-block">
+                                        <img src="/media/dotsview/icons/warning.png">
+                                        <small>(<a
+                                                href="javascript:reconcile_date('{{ date|date:"Y-m-d" }}')">Reconcile</a>)
+                                        </small>
+
+                                        {% for conflict in conflicts %}
+                                            <small>
+                                                <a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
+                                                    {{ conflict.anchor_date|date:"m/d/Y" }}</a>
+                                            </small><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if day_notes %}
+                                    <div class="date-notes-block">
+                                        <img src="/media/dotsview/icons/info.png">
+                                        {% for note in day_notes %}
+                                            <small>
+                                                {{ note }} <br>
+                                            </small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </td>
+                        {% else %}
+                            <td class="empty"></td>
+                        {% endif %} {# no date #}
+                    {% endfor %} {# date in week #}
+                </tr>
+            {% endfor %} {#week in weeks #}
+        </table>
+    {% endif %}
+    <div class="container span-24">
+        {% if sorted_visits %}
+            <h4>Visits in this report</h4>
+            <table>
+                <thead>
+                    <th>Visit Date</th>
+                    <tr>
+                    <th>CHW</th>
+                    <th>Visit Type</th>
+                    <th>Visit Kept</th>
+                    <th>Scheduled</th>
+                    <th>Contact</th>
+                    <th class="span-6">Observed ART</th>
+                    <th class="span-6">Observed Non ART</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for vdoc in sorted_visits %}
+                    <tr>
+                        <td>
+                            <a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
+                                {{ vdoc.get_form.encounter_date|date:"m/d/Y" }}</a>
+                        </td>
+                        <td>{{ vdoc.get_form.Meta.username }}</td>
+                        <td>{{ vdoc.get_form.visit_type|title }}</td>
+                        <td>{{ vdoc.get_form.visit_kept|title }}</td>
+                        <td>{{ vdoc.get_form.scheduled|title }}</td>
+                        <td>{{ vdoc.get_form.contact_type|title }}</td>
+                        <td>{{ vdoc.get_form.observed_art|title }}
+                            {% if vdoc.get_form.observed_art == "no" %}
+                                <br>
+                                <small>
+                                    {{ vdoc.get_form.art_no_details }}
                                 </small>
-                                {% endfor %}
-							</div>
-							{% endif %}
-						</td>
-					{% else %} 
-						<td class="empty"></td>
-					{% endif %} {# no date #}
-				{% endfor %} {# date in week #}
-			</tr>
-		{% endfor %} {#week in weeks #}
-		</table>
-	{% endif %}
-	<div class="container span-24">
-		{% if sorted_visits %}
-		<h4>Visits in this report</h4>		
-		<table>
-		<thead>
-			<tr>
-				<th>Visit Date</th>
-				<th>CHW</th>
-				<th>Visit Type</th>
-				<th>Visit Kept</th>
-				<th>Scheduled</th>
-				<th>Contact</th>
-				<th class="span-6">Observed ART</th>
-				<th class="span-6">Observed Non ART</th>
-			</tr>
-		</thead>
-		<tbody>
-		{% for vdoc in sorted_visits %}						
-		<tr>
-			<td>
-				<a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}"> 
-					{{vdoc.get_form.encounter_date}}</a> 
-			</td>
-			<td>{{vdoc.get_form.Meta.username}}</td>
-			<td>{{vdoc.get_form.visit_type|title}}</td>
-			<td>{{vdoc.get_form.visit_kept|title}}</td>
-			<td>{{vdoc.get_form.scheduled|title}}</td>
-			<td>{{vdoc.get_form.contact_type|title}}</td>
-			<td>{{vdoc.get_form.observed_art|title}}
-			{% if vdoc.get_form.observed_art == "no" %}
-				<br><small>
-				{{vdoc.get_form.art_no_details}}
-				</small>
-			{% endif %}
-			</td>
-			<td>{{vdoc.get_form.observed_non_art|title}}
-			{% if vdoc.get_form.observed_non_art == "no" %}
-				<br><small>
-				{{vdoc.get_form.non_art_no_details}}
-				</small>
-			{% endif %}
-			</td>
-			
-			{% if vdoc.get_form.notes|length_is:"0"%}	
-			</tr>
-			{% else %}
-			<tr>
-			<td>&nbsp;</td>
-			<td><small><strong>Notes:</strong></small></td>
-			<td colspan="6"><em><small>{{vdoc.get_form.notes}}</small></em></td>
-			</tr>
-			{% endif %}
-		{% endfor %}
-		</tbody>
-		</table>
-		{%endif%}
-	</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ vdoc.get_form.observed_non_art|title }}
+                            {% if vdoc.get_form.observed_non_art == "no" %}
+                                <br>
+                                <small>
+                                    {{ vdoc.get_form.non_art_no_details }}
+                                </small>
+                            {% endif %}
+                        </td>
+
+                        {% if vdoc.get_form.notes|length_is:"0" %}
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <small><strong>Notes:</strong></small>
+                                </td>
+                                <td colspan="6"><em>
+                                    <small>{{ vdoc.get_form.notes }}</small>
+                                </em></td>
+                            </tr>
+                        {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+
+    <div id="reconcile-dialog" title="Reconcile DOT Regimen">
+        <div id="dateplaceholder"></div> {#total hack way to pass the date #}
+        <div id="reconcile-form-block"></div>
+    </div>
+
 {% endblock %}

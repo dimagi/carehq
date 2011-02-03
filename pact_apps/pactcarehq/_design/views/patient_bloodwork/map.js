@@ -4,11 +4,15 @@ function(doc) {
             if (doc.form.note.bwresults.bw.length != undefined) {
                 //this is hacky because we should check .constructor == Array, but it doesn't seem to work here for some reason.
                 for (var i = 0; i < doc.form.note.bwresults.bw.length; i++) {
-                    emit(doc.form.note.pact_id, doc.form.note.bwresults.bw[i]);
+                    if (doc.form.note.bwresults.bw[i].tests != "") {
+                        emit(doc.form.note.pact_id, doc.form.note.bwresults.bw[i]);
+                    }
                 }
             }
             else {
-                emit(doc.form.note.pact_id, doc.form.note.bwresults.bw);
+                if (doc.form.note.bwresults.bw.tests != "") {
+                    emit(doc.form.note.pact_id, doc.form.note.bwresults.bw);
+                }
             }
         }
     }
