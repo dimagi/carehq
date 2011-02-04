@@ -418,7 +418,9 @@ def index_couch(request, template='dots/index_couch.html'):
     patients = Patient.objects.filter(doc_id__in=dots_ids)
 
     visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id, include_docs=True).first() for visit_id in visits_set]
-    visit_docs.remove(None) #this is a bit hacky, some of the visit_ids are actually reconcile doc_ids, so we need to remove the ones that return None from the view
+    if visit_docs.count(None) > 0:
+        visit_docs.remove(None) #this is a bit hacky, some of the visit_ids are actually reconcile doc_ids, so we need to remove the ones that return None from the view
+
     sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
 
     #sanity check if we're running with old data:
