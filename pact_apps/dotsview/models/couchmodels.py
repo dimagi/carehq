@@ -13,8 +13,8 @@ ADHERENCE_CHOICES = (
     ("full", "Full"),
 )
 METHOD_CHOICES = (
-    ("pillbox", "Pillbox"),
     ("direct", "Direct"),
+    ("pillbox", "Pillbox"),
     ("self", "Self"),
 )
 TIME_LABEL_LOOKUP = (
@@ -39,7 +39,7 @@ class CObservation(Document):
     submitted_date = DateTimeProperty()
     created_date = DateTimeProperty()
     
-    is_art = BooleanField()
+    is_art = BooleanProperty()
     dose_number=IntegerProperty()
     total_doses = IntegerProperty()
     adherence=StringProperty()
@@ -49,17 +49,32 @@ class CObservation(Document):
 
     day_note = StringProperty() #if there's something for that particular day, then it'll be here
     note = StringProperty() #this is for the overall note for that submission, will exist on the anchor date
-    
+
+
+
+    @property
+    def obs_score(self):
+        """Gets the relative score of the observation.
+        """
+        if self.method == "direct":
+            return 3
+        if self.method == "pillbox":
+            return 2
+        if self.method == "self":
+            return 1
+
+
+
     @property
     def adinfo(self):
         """helper function to concatenate adherence and method to check for conflicts"""
-        return ((self.is_art, self.dose_number, self.total_doses), "%s-%s" % (self.adherence, self.method))
+        return ((self.is_art, self.dose_number, self.total_doses), "%s" % (self.adherence))
     
     
 #    def save(self):
 #        #override save as this is not a document but just a view
 #        pass
-    
+
     def __unicode__(self):
         return "Dots Observation: %s on %s" % (self.observed_date, self.anchor_date) 
     

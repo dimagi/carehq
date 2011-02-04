@@ -42,7 +42,7 @@
             $('#reconcile-dialog').dialog(
             {
                 autoOpen: false,
-                height: 500,
+                height: 600,
                 width: 850,
                 modal: true,
                 buttons: {
@@ -93,6 +93,8 @@
                                 "data": $("#dot_addendum_form").serialize(),
                                 "success": function(data) {
                                     $(this).dialog('close');
+                                    location.reload();
+                                    fadeIn("slow");
                                 }, //end success
                                 "error": function(data) {
                                     alert ("Error trying to save form, please try again.");
@@ -108,7 +110,7 @@
                     },
                 },
                 open: function(event, ui) {
-                    $.get("{% url dot_addendum_dialog %}?patient={{ patient.id }}", function(data) {
+                    $.get("{% url dot_addendum_dialog %}?patient={{ patient.id }}&addendum_date=" + $('#dateplaceholder').attr("class"), function(data) {
                         $("#reconcile-form-block").html(data);
                     });
 //                    alert($('#dateplaceholder').attr("class"));
@@ -122,6 +124,15 @@
 
         //date_string = yyyy-mm-dd
         function reconcile_date(date_string) {
+            $('#reconcile-dialog').dialog("option", "title", "Reconcile DOT Regimen (" + date_string + ")");
+            $('#dateplaceholder').attr("class", date_string);
+            $('#reconcile-dialog').dialog('open');
+        }
+
+        //date_string = yyyy-mm-dd
+        function show_reconciliation(date_string) {
+            $('#reconcile-dialog').dialog("option", "title", "Reconciled DOT Regimen(" + date_string + ")");
+            $('#reconcile-dialog').dialog( "option", "buttons", { "Ok": function() { $(this).dialog("close"); } } );
             $('#dateplaceholder').attr("class", date_string);
             $('#reconcile-dialog').dialog('open');
         }
@@ -172,6 +183,7 @@
             <div class="span-3">
                 <strong>Obs. Method</strong><br>
                 <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
+                <img src="/media/dotsview/icons/bucket.png">&nbsp;Pillbox<br>
                 <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
                 <img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
                 <img src="/media/dotsview/icons/info.png">&nbsp;Notes<br>
@@ -231,6 +243,9 @@
                                                                 {% if ob.method == "direct" %}
                                                                     <img src="/media/dotsview/icons/plus.png">
                                                                 {% endif %}
+                                                                {% if ob.method == "pillbox" %}
+                                                                    <img src="/media/dotsview/icons/bucket.png">
+                                                                {% endif %}
 
                                                                 {% if ob.method == "self" %}
                                                                     <img src="/media/dotsview/icons/minus.png">
@@ -254,8 +269,7 @@
                                 {% if conflicts %}
                                     <div class="date-notes-block">
                                         <img src="/media/dotsview/icons/warning.png">
-                                        <small>(<a
-                                                href="javascript:reconcile_date('{{ date|date:"Y-m-d" }}')">Reconcile</a>)
+                                        <small>(<a href="javascript:reconcile_date('{{ date|date:"Y-m-d" }}')">Reconcile</a>)
                                         </small>
 
                                         {% for conflict in conflicts %}
@@ -271,7 +285,13 @@
                                         <img src="/media/dotsview/icons/info.png">
                                         {% for note in day_notes %}
                                             <small>
+                                            {% if note == "[AddendumEntry]" %}
+                                                Reconciled
+                                                (<a href="javascript:show_reconciliation('{{ date|date:"Y-m-d" }}')">View</a>)
+                                                <br>
+                                            {% else %}
                                                 {{ note }} <br>
+                                            {% endif %}
                                             </small>
                                         {% endfor %}
                                     </div>
@@ -306,7 +326,7 @@
                     <tr>
                         <td>
                             <a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
-                                {{ vdoc.get_form.encounter_date|date:"m/d/Y" }}</a>
+                                {{ vdoc.get_form.encounter_date|date:"m/d/Y" }} {{ vdoc.get_id }}</a>
                         </td>
                         <td>{{ vdoc.get_form.Meta.username }}</td>
                         <td>{{ vdoc.get_form.visit_type|title }}</td>

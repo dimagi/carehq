@@ -21,35 +21,139 @@
 {#        $( "#div_id_doses_taken" ).buttonset();#}
 {#	});#}
 {#	</script>#}
+<script type="text/javascript">
+    function delete_entry(doc_id) {
+        send_xhr = $.ajax({
+            "type": "POST",
+            "url":  "{% url delete_addendum %}",
+            "data": { "doc_id": doc_id },
+            "success": function(data) {
+                $(this).dialog('close');
+                location.reload();
+            }, //end success
+            "error": function(data) {
+                alert("Error trying to save form, please try again.");
+            }
+        });
 
-
+    }
+</script>
 <div class="span-20">
-<form method="post" action="" id="dot_addendum_form">
-{{ formset.management_form }}
-{% csrf_token %}
-<div class="span-10">
-<h3>ART</h3>
-{% for form in art_forms %}
-    <div class="span-10 last">
-    <h4>{{ form.get_dose_display }}</h4>
-    <table>
-    {{ form.as_table }}
-        </table>
-    </div>
-{% endfor %}
+    <form method="post" action="" id="dot_addendum_form">
+        {{ formset.management_form }}
+        {% csrf_token %}
+        <div class="span-10">
+            <h3>ART</h3>
+            {% for form in art_forms %}
+                <div class="span-10 last">
+                    <h4>{{ form.get_dose_display }}</h4>
+                    {% if not is_reconciled %}
+                        <table>
+                            {{ form.as_table }}
+                        </table>
+                    {% endif %}
+                    {% if form.conflicts %}
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>CHW</th>
+                                <th>Adherence</th>
+                                <th>Method</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for obs in form.conflicts %}
+                                <tr>
+                                    <td>
+                                        {% if is_reconciled and obs.day_note == "[AddendumEntry]" %}
+                                            <strong>Reconciled</strong> {{ obs.created_date|date:"m-d-Y" }}
+                                        {% else %}
+                                            {{ obs.anchor_date|date:"m-d-Y" }}
+                                        {% endif %}
+
+                                    </td>
+                                    <td>{{ obs.provider }}</td>
+                                    <td>
+                                        {% if obs.adherence == "empty" %}
+                                            <img src="/media/dotsview/icons/check.jpg">
+                                        {% endif %}
+                                        {% if obs.adherence == "partial" %}
+                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                        {% endif %}
+                                        {% if obs.adherence == "full" %}
+                                            <img src="/media/dotsview/icons/x-mark.png">
+                                        {% endif %}
+                                        {{ obs.adherence|title }}
+                                    </td>
+                                    <td>{{ obs.method|title }} {{ obs.doc_id }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                        </table>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="span-10 last">
+            <h3>Non-ART</h3>
+            {% for form in nonart_forms %}
+                <div class="span-10 last">
+                    <h4>{{ form.get_dose_display }}</h4>
+                    {% if not is_reconciled %}
+                        <table>
+                            {{ form.as_table }}
+                        </table>
+                    {% endif %}
+                    {% if form.conflicts %}
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>CHW</th>
+                                <th>Adherence</th>
+                                <th>Method</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for obs in form.conflicts %}
+                                <tr>
+
+                                    <td>
+                                        {% if is_reconciled and obs.day_note == "[AddendumEntry]" %}
+                                            <strong>Reconciled</strong> {{ obs.created_date|date:"m-d-Y" }}
+                                        {% else %}
+                                            {{ obs.anchor_date|date:"m-d-Y" }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ obs.provider }}</td>
+                                    <td>
+                                        {% if obs.adherence == "empty" %}
+                                            <img src="/media/dotsview/icons/check.jpg">
+                                        {% endif %}
+                                        {% if obs.adherence == "partial" %}
+                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                        {% endif %}
+                                        {% if obs.adherence == "full" %}
+                                            <img src="/media/dotsview/icons/x-mark.png">
+                                        {% endif %}
+                                        {{ obs.adherence|title }}
+                                    </td>
+                                    <td>{{ obs.method|title }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                        </table>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </form>
 </div>
-<div class="span-10 last">
-<h3>Non-ART</h3>
-{% for form in nonart_forms %}
-    <div class="span-10 last">
-    <h4>{{ form.get_dose_display }}</h4>
-    <table>
-    {{ form.as_table }}
-    </table>
-    </div>
-{% endfor %}
-</div>
-</div>
-</form>
+{% if is_reconciled %}
+    <a href="javascript:delete_entry('{{ doc_id }}')">Delete This Reconciliation</a>
+{% endif %}
 
 {#result, create 2 schemalists to append to CObservationAddendum #}

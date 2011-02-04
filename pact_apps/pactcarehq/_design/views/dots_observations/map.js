@@ -103,5 +103,25 @@ function(doc) {
             }
         }
 	}
+    else if (doc.doc_type == "CObservationAddendum") {
+       for (var i = 0; i < doc.art_observations.length; i++) {
+            var obs = doc.art_observations[i];
+            var anchor_date = parse_date(obs.anchor_date);
+            var observe_date = parse_date(obs.observed_date);
+
+            emit([obs.pact_id, 'anchor_date', anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs);
+            emit([obs.pact_id, 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
+            emit([observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
+        }
+        for (var i = 0; i < doc.nonart_observations.length; i++) {
+            var obs = doc.nonart_observations[i];
+            var anchor_date = parse_date(obs.anchor_date);
+            var observe_date = parse_date(obs.observed_date);
+
+            emit([obs.pact_id, 'anchor_date', anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs);
+            emit([obs.pact_id, 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
+            emit([observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
+        }
+    }
 }
 

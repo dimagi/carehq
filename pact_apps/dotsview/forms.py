@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from uni_form.helpers import FormHelper, Layout, Row
-from dotsview.models.couchmodels import TIME_LABEL_LOOKUP
+from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, ADHERENCE_CHOICES, METHOD_CHOICES
 
 #source: https://wikis.utexas.edu/display/~bm6432/Django-Modifying+RadioSelect+Widget+to+have+horizontal+buttons
 class HorizRadioRenderer(forms.RadioSelect.renderer):
@@ -14,31 +14,13 @@ class HorizRadioRenderer(forms.RadioSelect.renderer):
         return mark_safe('\n'.join([u'%s\n' % w for w in self]))
 
 class AddendumForm(forms.Form):
-    DOSES_CHOICES = (
-    ('all', 'All'),
-    ('some', 'Some'),
-    ('none', 'None'),
-    ('unknown', 'Unknown'),
-    )
 
-    OBSERVATION_CHOICES = (
-    ('direct', 'Direct'),
-    ('pillbox', 'Pillbox'),
-    ('check', 'Check'),
-    ('self', 'Self')
-    )
-
-
-    DRUG_TYPE_CHOICES = (
-    ('art', 'ART'),
-    ('nonart', 'Non-ART'),
-    )
     drug_type = forms.CharField(widget=forms.HiddenInput())
     dose_number = forms.IntegerField(widget=forms.HiddenInput())
     dose_total = forms.IntegerField(widget=forms.HiddenInput())
 
-    doses_taken = forms.ChoiceField(choices=DOSES_CHOICES, required=True, widget=forms.RadioSelect(renderer=HorizRadioRenderer)) #, attrs={'class': 'fg-button ui-state-default ui-priority-primary'}))
-    observation_type = forms.ChoiceField(choices=OBSERVATION_CHOICES, required=True, widget=forms.RadioSelect(renderer=HorizRadioRenderer)) #, attrs={'class': 'fg-button ui-state-default ui-priority-primary'}))
+    doses_taken = forms.ChoiceField(choices=ADHERENCE_CHOICES, required=True, widget=forms.RadioSelect(renderer=HorizRadioRenderer)) #, attrs={'class': 'fg-button ui-state-default ui-priority-primary'}))
+    observation_type = forms.ChoiceField(choices=METHOD_CHOICES, required=True, widget=forms.RadioSelect(renderer=HorizRadioRenderer)) #, attrs={'class': 'fg-button ui-state-default ui-priority-primary'}))
 
 #    helper = FormHelper()
 #
@@ -56,7 +38,7 @@ class AddendumForm(forms.Form):
 #        self.dose_total = dose_total
 
     def get_dose_display(self):
-        print "get dose display"
+#        print "get dose display"
         if self.initial['dose_number'] == 0 and self.initial['dose_total'] == 0:
             return "--null--"
         else:
