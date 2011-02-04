@@ -8,4 +8,7 @@ class AddProviderForm(forms.Form):
     title = forms.CharField()
     department = forms.CharField(required=False)
     specialty = forms.CharField(required=False)
-    
+
+class LinkProviderForm(forms.Form):
+    doctor = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    patient = forms.HiddenInput()

@@ -78,7 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'auditcare.middleware.AuditMiddleware',
+    'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
@@ -191,10 +191,9 @@ AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
                     #'casetracker.models.Case',
                     #'casetracker.models.CaseEvent',
-                    #'patient.models.Patient',
+                    'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]
-
 
 # import local settings if we find them
 try:

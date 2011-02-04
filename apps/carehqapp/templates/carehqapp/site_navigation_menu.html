@@ -20,8 +20,8 @@
 			</span>
 		</li>
 		
-		{# patient relevant inforamtion #}
-		{% if request.is_patient %}
+		{# patient relevant information #}
+		{% if request.is_patient or request.user.is_superuser %}
 			<li>
 				<span class="head_menu">
 				<a href="site_navigation_menu.html#">My Care Plan</a>
@@ -34,7 +34,7 @@
 			</li>
 		{% endif %}
 	
-		{% if request.is_caregiver or request.is_provider %}
+		{% if request.is_caregiver or request.is_provider or request.user.is_superuser %}
 			<li>
 			{% if patient_careteams %}
 				<span class="head_menu">

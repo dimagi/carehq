@@ -66,7 +66,7 @@
     	</div>	     			
 	    {% endblock tophat %}
 	     
-		<div class="container">
+		<div class="container" id="maincontent">
       		<div class="span-24"> <!-- Header div -->
 				{% block branding %}
 				<div class="span-2">                    
@@ -108,7 +108,7 @@
              	</div>
             {% endif %}
             
-            <div class="span-24">
+            <div class="span-24" id="content">
             {% block content %}
 			{% endblock %}
             </div>

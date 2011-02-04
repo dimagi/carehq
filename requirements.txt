@@ -2,7 +2,6 @@ decorator
 xlwt
 pycrypto
 pyasn1
-#autofixture
 django
 couchdbkit
 django-debug-toolbar
@@ -24,3 +23,9 @@ hg+https://bitbucket.org/akoha/django-digest
 cherrypy
 git+git://github.com/lincolnloop/django-cpserver.git
 django-staticfiles
+
+python-digest
+python-memcached
+guppy
+xlwt
+keyczar

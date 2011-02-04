@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% comment %}
+Link patient to provider.
+{% endcomment %}
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript">
+    $().ready(function(){
+        $("#providerSelection").autocomplete({
+            source: "/providerListQueryAjax/",
+            //minLength: 2,
+            select: function( event, ui ) {
+                if (ui.item) {
+                    console.debug(ui.item);
+                $.post("{% url clinical_core.actors.views.editCareteam %}{{ patient.id }}",
+                {
+                    "patientId": "{{ patient.id }}",
+                    "doctorId": ui.item.value
+                });
+                }
+            }
+        });
+    });
+
+    </script>
+
+{% endblock %}
+
+{% block title %}
+    {% trans "Edit Care Team" %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            <h2>My Care Team</h2>
+        </div>
+    <div id="patientInformation">
+
+        
+    </div>
+    <div id="#careteam" class="prepend-1 span-24 last">
+        <h3>Current Care Team:</h3>
+        {% for d in careTeam %}
+            <div class="carebox span-7">
+                {% include "ashandui/careTeamBox.html" %}
+            </div>
+        {% endfor %}
+    </div>
+    <hr />
+    <div id="#addprovider" class="span-24 last">
+    <h3>Add Provider:</h3>
+    <form action="/linkProvider/{{ patient.id }}" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" />
+        </form>
+    </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Provider Search" %}
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript">
+    $().ready(function(){
+        $('#idSearch').keyup(
+                             function() {
+                                 if (this.value === "") {
+                                     $("#provider-results").html("");
+                                 } else {
+                                 $.getJSON("/providerSearchAjax", {"query": this.value}, function(data) {
+                                     var newHTML = "";
+                                     for (r in data) {
+                                         newHTML += "<tr><td>" + data[r].first_name + "</td><td>" + data[r].last_name + "</td></tr>";
+                                     }
+                                     $("#provider-results").html(newHTML);
+                                 });
+                                 }
+                             }
+                );
+        }
+    );
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            <h2>Provider Search</h2>
+        </div>
+        <div id="searchbox">
+            <input type="text" id="idSearch" />
+        </div>
+    <div id="results">
+        <table id="providers-table">
+        <thead><tr><td>First Name</td><td>Last Name</td></tr></thead>
+            <!-- empty -->
+        <tbody id="provider-results">
+            {% if providers %}
+            {% for p in providers %}
+                <tr><td>{{ p.first_name }}</td><td>{{ p.last_name }}</td></tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+        </table>
+    </div>
+    </div>
+{% endblock %}
