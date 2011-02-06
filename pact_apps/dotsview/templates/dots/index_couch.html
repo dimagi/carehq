@@ -275,7 +275,7 @@
                                         {% for conflict in conflicts %}
                                             <small>
                                                 <a href="{{request.path}}?submit_id={{conflict.doc_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
-                                                    {{ conflict.anchor_date|date:"m/d/Y" }}</a>
+                                                    {{ conflict.anchor_date|date:"m/d/Y" }} </a>
                                             </small><br>
                                         {% endfor %}
                                     </div>
@@ -326,7 +326,8 @@
                     <tr>
                         <td>
                             <a href="{{request.path}}?submit_id={{vdoc.get_id}}&patient={{patient.id}}&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">
-                                {{ vdoc.get_form.encounter_date|date:"m/d/Y" }} </a>
+                                {{ vdoc.get_form.encounter_date|date:"m/d/Y" }}</a>
+{#                            {{ vdoc.get_form.case.update.dots.anchor }} commenting out to use this vs encounter date?#}
                         </td>
                         <td>{{ vdoc.get_form.Meta.username }}</td>
                         <td>{{ vdoc.get_form.visit_type|title }}</td>

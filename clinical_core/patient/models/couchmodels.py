@@ -2,6 +2,7 @@
 from couchdbkit.schema.properties import IntegerProperty, DictProperty, DictProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
 from datetime import datetime
+from datetime import timedelta
 import simplejson
 from dimagi.utils import make_uuid
 from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
@@ -332,6 +333,65 @@ class CPatient(Document):
                 self._prior_bloodwork = self._dashboard.last_bloodwork
 
             return self._dashboard
+
+    def get_dots_data(self):
+        from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
+        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP
+#                [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
+        startdate = datetime.utcnow()
+
+        def get_day_elements(drug_data, num_timekeys):
+            """helper function to return an array of the observations for a given drug_type, for the regimen frequency
+            [[adherence,method], [adherence,method]...]
+            """
+            day_arr = []
+            for timekey in TIME_LABEL_LOOKUP[num_timekeys]:
+                #get the top one from the array
+                if len(drug_data[timekey]) > 0:
+                    obs = drug_data[timekey][0]
+                    if obs.day_note != None and len(obs.day_note) > 0:
+                        day_arr.append([obs.adherence, obs.method, obs['day_note']])
+                    else:
+                        day_arr.append([obs.adherence, obs.method])
+                else:
+                    day_arr.append(["unchecked", "pillbox"])
+            return day_arr
+
+        def get_empty(n):
+            return [["unchecked", "pillbox"] for x in range(n)]
+
+
+
+        ret = {}
+        art_num = int(ghetto_regimen_map[self.art_regimen.lower()])
+        non_art_num = int(ghetto_regimen_map[self.non_art_regimen.lower()])
+
+        ret['regimens'] = [
+                            non_art_num, #non art is 0
+                            art_num,    #art is 1
+                            ]
+
+        ret['days'] = []
+        ret['anchor'] = datetime.now().strftime("%d %b %Y 04:00:00 GMT")
+        for delta in range(21):
+            date = startdate - timedelta(days=delta)
+            day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num)
+            day_arr = []
+            if day_dict.has_key('Non ART'):
+                nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()))
+            else:
+                nonart_data = get_empty(len(day_dict['Non ART'].keys()))
+
+            if day_dict.has_key('ART'):
+                art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()))
+            else:
+                nonart_data = get_empty(len(day_dict['ART'].keys()))
+            day_arr.append([nonart_data, art_data])
+            ret['days'].append(day_arr)
+        return ret
+
+
+
 
 
 
