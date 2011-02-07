@@ -1,4 +1,5 @@
 #TODO:
+import logging
 from couchdbkit.schema.properties import IntegerProperty, DictProperty, DictProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
 from datetime import datetime
@@ -121,7 +122,7 @@ ghetto_patient_xml = """<case>
                        <hp>%(hp)s</hp>
                        <last_note>%(last_note)s</last_note>
                        <last_dot>%(last_dot)s</last_dot>
-                       <last_bw>%(last_bw)s</last_bw>
+                       %(last_bw_xml)s
                    </update>
            </case>"""
 
@@ -336,17 +337,20 @@ class CPatient(Document):
 
     def get_dots_data(self):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
-        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP
+        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, TIME_LABELS
 #                [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
         startdate = datetime.utcnow()
 
-        def get_day_elements(drug_data, num_timekeys):
+        def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
             [[adherence,method], [adherence,method]...]
             """
             day_arr = []
-            for timekey in TIME_LABEL_LOOKUP[num_timekeys]:
+
+            for timekey in TIME_LABELS: #this is just getting ALL the timelabels to see if the line up
                 #get the top one from the array
+                if not drug_data.has_key(timekey):
+                    continue
                 if len(drug_data[timekey]) > 0:
                     obs = drug_data[timekey][0]
                     if obs.day_note != None and len(obs.day_note) > 0:
@@ -354,6 +358,9 @@ class CPatient(Document):
                     else:
                         day_arr.append([obs.adherence, obs.method])
                 else:
+                    day_arr.append(["unchecked", "pillbox"])
+            if len(day_arr) < total_num:
+                for n in range(total_num-len(day_arr)):
                     day_arr.append(["unchecked", "pillbox"])
             return day_arr
 
@@ -363,8 +370,19 @@ class CPatient(Document):
 
 
         ret = {}
-        art_num = int(ghetto_regimen_map[self.art_regimen.lower()])
-        non_art_num = int(ghetto_regimen_map[self.non_art_regimen.lower()])
+        try:
+            art_num = int(ghetto_regimen_map[self.art_regimen.lower()])
+        except:
+            art_num = 0
+            logging.error("Patient does not have a set art regimen")
+
+
+        try:
+            non_art_num = int(ghetto_regimen_map[self.non_art_regimen.lower()])
+        except:
+            non_art_num = 0
+            logging.error("Patient does not have a set non art regimen")
+
 
         ret['regimens'] = [
                             non_art_num, #non art is 0
@@ -378,14 +396,14 @@ class CPatient(Document):
             day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num)
             day_arr = []
             if day_dict.has_key('Non ART'):
-                nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()))
+                nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_num)
             else:
-                nonart_data = get_empty(len(day_dict['Non ART'].keys()))
+                nonart_data = get_empty(non_art_num)
 
             if day_dict.has_key('ART'):
-                art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()))
+                art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
             else:
-                nonart_data = get_empty(len(day_dict['ART'].keys()))
+                nonart_data = get_empty(art_num)
             day_arr.append([nonart_data, art_data])
             ret['days'].append(day_arr)
         return ret
@@ -519,9 +537,13 @@ class CPatient(Document):
         return ret
 
     def get_ghetto_regimen_xml(self):
+        """
+        Returns DOT regimens as well as DOT adherence information
+        """
         ret = ''
         ret += "<artregimen>%s</artregimen>" % (ghetto_regimen_map[self.art_regimen.lower()])
         ret += "<nonartregimen>%s</nonartregimen>" % (ghetto_regimen_map[self.non_art_regimen.lower()])
+        ret += "<dots>%s</dots>" % (simplejson.dumps(self.get_dots_data()))
         return ret
 
     def get_ghetto_address_xml(self):
@@ -598,7 +620,7 @@ class CPatient(Document):
                 xml_dict['last_note'] = last_note[0][1] #array is [[doc_id, encounter_date_string], ...]
 
         #todo: check bloodwork view
-        xml_dict['last_bw'] = self.get_bloodwork_xml()
+        xml_dict['last_bw_xml'] = self.get_bloodwork_xml()
 
 
 
@@ -614,24 +636,40 @@ class CPatient(Document):
 
     def single_bw_item(self, bw):
 
-        ret = ""
-        ret += "\n<bw>"
-        ret += "<test_date>%s</test_date>" % (bw['test_date'])
-        ret += "<tests>%s</tests>" % (bw['tests'])
+        #replicating the xml of submissions isn't in scope for parsing back on the phones.  will defer to simpler string output
+#        ret = ""
+#        ret += "\n<bw>"
+#        ret += "<test_date>%s</test_date>" % (bw['test_date'])
+#        ret += "<tests>%s</tests>" % (bw['tests'])
+#
+#        if bw.has_key('vl'):
+#            ret += "<vl>%s</vl>" % (bw['vl'])
+#        if bw.has_key('cd'):
+#            ret +="<cd><cdcnt>%s</cdcnt><cdper>%s</cdper></cd>" % (bw['cd']['cdcnt'], bw['cd']['cdper'])
+#        ret += "</bw>"
 
-        if bw.has_key('vl'):
-            ret += "<vl>%s</vl>" % (bw['vl'])
+        ret = ""
         if bw.has_key('cd'):
-            ret +="<cd><cdcnt>%s</cdcnt><cdper>%s</cdper></cd>" % (bw['cd']['cdcnt'], bw['cd']['cdper'])
-        ret += "</bw>"
+            ret += "cd %s" % bw['cd']['cdcnt']
+            if bw['cd']['cdper'] != "":
+                ret += " %s%%" % bw['cd']['cdper']
+            ret += ","
+        if bw.has_key('vl'):
+            ret += "vl %s" % (bw['vl'])
+        ret += "\n"
         return ret
 
 
 
     def get_bloodwork_xml(self):
-        """Getn an xml block from the reduction view, patient_bloodwork
+        """Gets an xml block from the reduction view, patient_bloodwork
         return xml
-        <bw><test_date>date</test_date>
+        <last_bw_data>
+        date|cd [count] [pct]%, vl [num]\n*
+        </last_bw_data>
+        <last_bw>
+        datestring
+        </last_bw>
         """
         bloodwork = get_db().view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
         if len(bloodwork) == 0:
@@ -646,8 +684,15 @@ class CPatient(Document):
             pass
         else:
             slice = bloodwork[-3:]
+
+        ret += "<last_bw_data>"
         for bw in slice:
             ret += self.single_bw_item(bw['value'])
+        ret += "</last_bw_data>"
+
+        if len(bloodwork) > 0:
+            ret += "\n<last_bw>" + slice[-1]['value']['test_date'] + "</last_bw>"
+
         return ret
 
 

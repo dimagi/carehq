@@ -102,7 +102,6 @@ def delete_reconciliation(request):
 
 
 artkeys = ('ART', 'Non ART')
-
 def _get_observations_for_date(date, pact_id, art_num, nonart_num):
     """Returns a table showing the conflicts for a given date submission.
     """
@@ -113,28 +112,29 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
     datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
     observations = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
     total_doses_set = set([obs.total_doses for obs in observations])
-    try:
-    #        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
-    #        timekeys = sorted(timekeys, key=TIME_LABELS.index)
-        art_timekeys = TIME_LABEL_LOOKUP[art_num]
-        nonart_timekeys = TIME_LABEL_LOOKUP[nonart_num]
-
-    except:
-        art_timekeys = []
-        nonart_timekeys = []
+#    try:
+#        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
+#        timekeys = sorted(timekeys, key=TIME_LABELS.index)
+#
+#        art_timekeys = TIME_LABEL_LOOKUP[art_num]
+#        nonart_timekeys = TIME_LABEL_LOOKUP[nonart_num]
+#
+#    except:
+#        art_timekeys = []
+#        nonart_timekeys = []
 
     has_reconciled = False
     #prep the groupings
     # grouping[art | nonart] => times[morning | noon | etc] = [observations] - if there are multiple then there are multiple
     for artkey in artkeys:
-        by_time = {}
-        if artkey == "ART":
-            timekeys = art_timekeys
-        elif artkey == 'Non ART':
-            timekeys = nonart_timekeys
-        for timekey in timekeys:
-            by_time[timekey] = []
-        grouping[artkey] = by_time
+#        by_time = {}
+#        if artkey == "ART":
+#            timekeys = art_timekeys
+#        elif artkey == 'Non ART':
+#            timekeys = nonart_timekeys
+#        for timekey in timekeys:
+#            by_time[timekey] = []
+        grouping[artkey] = {}
 
     for ob in observations:
         #base case if it's never been seen before, add it as the key
@@ -154,6 +154,9 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
             #it's a reconciled entry
             has_reconciled = True
 
+
+        if not grouping['ART' if ob.is_art else 'Non ART'].has_key(ob.get_time_label()):
+            grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = []
         grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
 
     #for each class of drug (art, non art) in artkeys
