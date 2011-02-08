@@ -253,11 +253,17 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
 
         for n in range(art_num):
             form = formset.forms[n]
-            form.conflicts = conflicts_dict['ART'][TIME_LABEL_LOOKUP[art_num][n]]
+            if conflicts_dict['ART'].has_key(TIME_LABEL_LOOKUP[art_num][n]):
+                form.conflicts = conflicts_dict['ART'][TIME_LABEL_LOOKUP[art_num][n]]
+            else:
+                form.conflicts = []
             context['art_forms'].append(form)
         for n in range(nonart_num):
             form = formset.forms[n + art_num]
-            form.conflicts = conflicts_dict['Non ART'][TIME_LABEL_LOOKUP[nonart_num][n]]
+            if conflicts_dict['Non ART'].has_key(TIME_LABEL_LOOKUP[nonart_num][n]):
+                form.conflicts = conflicts_dict['Non ART'][TIME_LABEL_LOOKUP[nonart_num][n]]
+            else:
+                form.conflicts = []
             context['nonart_forms'].append(form)
         context['formset'] = formset
         context['is_reconciled'] = is_reconciled
@@ -421,7 +427,7 @@ def index_couch(request, template='dots/index_couch.html'):
     patients = Patient.objects.filter(doc_id__in=dots_ids)
 
     visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id, include_docs=True).first() for visit_id in visits_set]
-    if visit_docs.count(None) > 0:
+    while visit_docs.count(None) > 0:
         visit_docs.remove(None) #this is a bit hacky, some of the visit_ids are actually reconcile doc_ids, so we need to remove the ones that return None from the view
 
     sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
