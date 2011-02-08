@@ -404,7 +404,8 @@ class CPatient(Document):
                 art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
             else:
                 nonart_data = get_empty(art_num)
-            day_arr.append([nonart_data, art_data])
+            day_arr.append(nonart_data)
+            day_arr.append(art_data)
             ret['days'].append(day_arr)
         return ret
 
