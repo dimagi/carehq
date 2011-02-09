@@ -33,7 +33,7 @@ function(doc) {
 			//var use_date = new Date(doc.form['case']['update']['dots']['anchor']);
             emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], obs_dict);
             emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
-            emit([observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
+            emit([anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], eval(uneval(obs_dict)));
 		}
 	}
 	
