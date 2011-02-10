@@ -72,8 +72,17 @@ def get_csv(request):
             start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
             # Create the HttpResponse object with the appropriate CSV header.
 
+    db = get_db()
     for num, obs in enumerate(observations):
         dict_obj = obs.to_json()
+
+#        doc_id = obs.doc_id
+#        encounter_date = ''
+#        if db.doc_exist(doc_id):
+#            doc = db.open_doc(doc_id)
+#            if doc['doc_type'] == "XFormInstance" and doc['xmlns'] == 'http://dev.commcarehq.org/pact/dots_form':
+#                encounter_date = doc['form']['encounter_date']
+#        obs['encounter_date'] = encounter_date
         if num == 0:
             writer.writerow(dict_obj.keys())
         writer.writerow([dict_obj[x] for x in dict_obj.keys()])

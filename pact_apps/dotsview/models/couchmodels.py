@@ -32,7 +32,8 @@ class CObservation(Document):
     
     pact_id = StringProperty() #patient pact id
     provider = StringProperty()
-    
+
+    encounter_date = DateTimeProperty()
     anchor_date = DateTimeProperty()
     observed_date = DateTimeProperty()
     

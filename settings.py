@@ -43,12 +43,14 @@ filepath = os.path.abspath(os.path.dirname(__file__))
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(filepath,'staticmedia')
+MEDIA_ROOT = os.path.join(filepath,'mediafiles') #media for user uploaded media.  in general this won't be used at all.
+STATIC_ROOT = os.path.join(filepath,'staticfiles')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/media/'
+USEMEDIA_URL = '/media/'
+STATIC_URL = '/static/' #note, we should be doing a separation here of MEDIA and STATIC.  In practice for us it's one and the same.
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -109,6 +111,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.i18n', 
                                'django.core.context_processors.media',                               
                                'django.core.context_processors.request',
+                               'staticfiles.context_processors.static',
                                )
 
 INSTALLED_APPS = (
@@ -137,6 +140,7 @@ INSTALLED_APPS = (
     #third party apps
     #'autofixture',
     #'reversion',
+    'staticfiles',
     'django_extensions',
     'django_digest',
     #end third party apps
@@ -205,12 +209,12 @@ INSTALLED_APPS += LOCAL_APPS
 DEVSERVER_MODULES = (
     #'devserver.modules.sql.SQLRealTimeModule',
     'devserver.modules.sql.SQLSummaryModule',
-    'devserver.modules.profile.ProfileSummaryModule',
+#    'devserver.modules.profile.ProfileSummaryModule',
 
     # Modules not enabled by default
     'devserver.modules.ajax.AjaxDumpModule',
 #    'devserver.modules.profile.MemoryUseModule',
-    'devserver.modules.cache.CacheSummaryModule',
+#    'devserver.modules.cache.CacheSummaryModule',
 )
 
 

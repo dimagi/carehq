@@ -47,23 +47,26 @@ for module_name in settings.INSTALLED_APPS:
     # http path), and we are running in DEBUG mode, we will also serve
     # the media for this app via this development server. in production,
     # these files should be served directly
-    if settings.DEBUG:
-        if not settings.MEDIA_URL.startswith("http://"):
-            media_prefix = settings.MEDIA_URL.strip("/")
-            module_suffix = module_name.split(".")[-1]
-
-            # does urls.py have a sibling "static" dir? (media is always
-            # served from "static", regardless of what MEDIA_URL says)
-            module_path = os.path.dirname(module.__file__)
-            static_dir = "%s/static" % (module_path)
-            if os.path.exists(static_dir):
-
-                # map to {{ MEDIA_URL }}/appname
-                urlpatterns += patterns("", url(
-                    "^%s/%s/(?P<path>.*)$" % (
-                        media_prefix,
-                        module_suffix),
-                    "django.views.static.serve",
-                    {"document_root": static_dir}
-                ))
+if settings.DEBUG:
+    urlpatterns += patterns('staticfiles.views', url(r'^static/(?P<path>.*)$', 'serve'), )
+#
+#
+#        if not settings.MEDIA_URL.startswith("http://"):
+#            media_prefix = settings.MEDIA_URL.strip("/")
+#            module_suffix = module_name.split(".")[-1]
+#
+#            # does urls.py have a sibling "static" dir? (media is always
+#            # served from "static", regardless of what MEDIA_URL says)
+#            module_path = os.path.dirname(module.__file__)
+#            static_dir = "%s/static" % (module_path)
+#            if os.path.exists(static_dir):
+#
+#                # map to {{ MEDIA_URL }}/appname
+#                urlpatterns += patterns("", url(
+#                    "^%s/%s/(?P<path>.*)$" % (
+#                        media_prefix,
+#                        module_suffix),
+#                    "django.views.static.serve",
+#                    {"document_root": static_dir}
+#                ))
 

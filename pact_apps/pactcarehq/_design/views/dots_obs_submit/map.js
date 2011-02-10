@@ -49,6 +49,7 @@ function(doc) {
             var anchor_date = new Date(casedata['dots']['anchor']);
             var daily_data = casedata['dots']['days'];
             var drop_note = true;
+            var encounter_date = new Date(doc.form['encounter_date']);
 
             for (var i = 0; i < daily_data.length; i+=1) {
                 //iterate through each day = i
@@ -86,6 +87,7 @@ function(doc) {
                         drug_obs['provider'] = doc.form['Meta']['username'];
                         drug_obs['created_date'] = doc.form['Meta']['TimeStart'];
                         drug_obs['completed_date'] = doc.form['Meta']['TimeEnd'];
+                        drug_obs['encounter_date'] = toISOString(encounter_date);
                         drug_obs['anchor_date'] = toISOString(anchor_date);
                         drug_obs['day_index'] = day_delta;
                         drug_obs['is_art'] = is_art;

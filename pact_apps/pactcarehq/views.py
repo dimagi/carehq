@@ -301,7 +301,6 @@ def post(request):
         #print request.FILES.keys()
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
-            print "read file"
             t = Thread(target=threaded_submission, args=(instance,))
             t.start()
             resp = HttpResponse(status=201)

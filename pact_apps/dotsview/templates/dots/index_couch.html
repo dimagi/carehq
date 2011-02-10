@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block page_stylesheets %}
-    <link type="text/css" rel="stylesheet" href="/media/dotsview/stylesheets/dots.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}dotsview/stylesheets/dots.css"/>
 {% endblock %}
 
 {% block javascripts %}
@@ -182,17 +182,17 @@
             <legend>Legend</legend>
             <div class="span-3">
                 <strong>Obs. Method</strong><br>
-                <img src="/media/dotsview/icons/plus.png">&nbsp;Direct<br>
-                <img src="/media/dotsview/icons/bucket.png">&nbsp;Pillbox<br>
-                <img src="/media/dotsview/icons/minus.png">&nbsp;Self Report<br>
-                <img src="/media/dotsview/icons/warning.png">&nbsp;Conflict<br>
-                <img src="/media/dotsview/icons/info.png">&nbsp;Notes<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/plus.png">&nbsp;Direct<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">&nbsp;Pillbox<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/minus.png">&nbsp;Self Report<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/warning.png">&nbsp;Conflict<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/info.png">&nbsp;Notes<br>
             </div>
             <div class="span-3 last">
                 <strong>Pillbox</strong><br>
-                <img src="/media/dotsview/icons/check.jpg">&nbsp; Empty<br>
-                <img src="/media/dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
-                <img src="/media/dotsview/icons/x-mark.png">&nbsp; Full<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">&nbsp; Empty<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
+                <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">&nbsp; Full<br>
             </div>
         </fieldset>
 	</span>
@@ -228,27 +228,27 @@
                                                             <div class="observation">
 
                                                                 {% if ob.adherence == "empty" %}
-                                                                    <img src="/media/dotsview/icons/check.jpg">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
                                                                 {% endif %}
 
                                                                 {% if ob.adherence == "partial" %}
-                                                                    <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
                                                                 {% endif %}
 
                                                                 {% if ob.adherence == "full" %}
-                                                                    <img src="/media/dotsview/icons/x-mark.png">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
                                                                 {% endif %}
 
 
                                                                 {% if ob.method == "direct" %}
-                                                                    <img src="/media/dotsview/icons/plus.png">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
                                                                 {% endif %}
                                                                 {% if ob.method == "pillbox" %}
-                                                                    <img src="/media/dotsview/icons/bucket.png">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
                                                                 {% endif %}
 
                                                                 {% if ob.method == "self" %}
-                                                                    <img src="/media/dotsview/icons/minus.png">
+                                                                    <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
                                                                 {% endif %}
 
                                                                 {#														<div class="ob-{{ob.adherence}}">#}
@@ -268,7 +268,7 @@
                                 </div>
                                 {% if conflicts %}
                                     <div class="date-notes-block">
-                                        <img src="/media/dotsview/icons/warning.png">
+                                        <img src="{{ STATIC_URL }}dotsview/icons/warning.png">
                                         <small>(<a href="javascript:reconcile_date('{{ date|date:"Y-m-d" }}')">Reconcile</a>)
                                         </small>
 
@@ -282,7 +282,7 @@
                                 {% endif %}
                                 {% if day_notes %}
                                     <div class="date-notes-block">
-                                        <img src="/media/dotsview/icons/info.png">
+                                        <img src="{{ STATIC_URL }}dotsview/icons/info.png">
                                         {% for note in day_notes %}
                                             <small>
                                             {% if note == "[AddendumEntry]" %}
