@@ -67,7 +67,7 @@
 	    {% endblock tophat %}
 	     
 		<div class="container" id="maincontent">
-      		<div class="span-24"> <!-- Header div -->
+      		<div class="span-24 last"> <!-- Header div -->
 				{% block branding %}
 				<div class="span-2">                    
 					<a title="Home" href="{% url home %}">
@@ -84,14 +84,22 @@
 				</div>
 				{% endblock navigation_menu %}					
 				
-				<div id="breadcrumbs" class="span-24">
+				<div id="breadcrumbs" class="span-24 last">
 					{% block breadcrumbs %}
 					{#<span class="crumb">Put &#62; Crumbs &#62; </span>#}
 					{#<span class="active">Here</span>#} 
 					{% endblock breadcrumbs %}
 				</div>
 			</div> <!-- end header class -->            
-	
+
+            {% if messages %}
+               <div class="span-24 last messages" id="messages">
+                    {% for message in messages %}
+                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% if USE_I18N %}
                 <div id="language" class="span-8 prepend-16">
                     <form action="/i18n/setlang/" method="post" style="float:right">
@@ -107,8 +115,8 @@
                     </form>
              	</div>
             {% endif %}
-            
-            <div class="span-24" id="content">
+
+            <div class="span-24 last" id="content">
             {% block content %}
 			{% endblock %}
             </div>

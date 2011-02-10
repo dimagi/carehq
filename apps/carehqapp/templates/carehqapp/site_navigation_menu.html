@@ -72,5 +72,21 @@
 			</div>
 		</li>
 		{% endif %}
+
+        {% if 1 %}
+        <li>
+            <span class="head_menu">Admin 
+                <img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow" />
+            </span>
+
+            <div class="sub_menu">
+                <a href="{% url addProvider %}">Add Provider</a>
+                <a href="{% url new_patient %}">Add Patient</a>
+                <a href="{% url providerSearch %}">Provider List</a>
+
+            </div>
+
+        </li>
+        {% endif %}
 	</ul>
 </div>	

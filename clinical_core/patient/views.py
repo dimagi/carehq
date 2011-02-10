@@ -10,12 +10,12 @@ import urllib
 from patient.models.couchmodels import CPhone
 from datetime import datetime, datetime
 import logging
+from django.contrib import messages
 
 @login_required
 def new_patient(request, template_name="patient/new_patient.html"):
     context = RequestContext(request)
     if request.method == 'POST':
-        print "it's a post"
         form = PactPatientForm(data=request.POST)
         #make patient
         if form.is_valid():
@@ -29,15 +29,13 @@ def new_patient(request, template_name="patient/new_patient.html"):
             newpatient.cset_primary_hp(form.cleaned_data['primary_hp'])
             newpatient.cset_first_name(form.cleaned_data['first_name'])
             newpatient.cset_last_name(form.cleaned_data['last_name'])
-            print "going to save"
             newpatient.save()
-            print "saved"
+            messages.add(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
             return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':newpatient.id}))
         else:
-            print "error"
+            messages.add(request, messages.ERROR, "Failed to add patient!")
             context['patient_form'] = form
     else:
-        print "no error?"
         context['patient_form'] = PactPatientForm()
     return render_to_response(template_name, context_instance=context)
 

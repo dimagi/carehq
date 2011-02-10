@@ -12,8 +12,9 @@ from clinical_core.actors.models.roles import Doctor
 from clinical_core.patient.models.djangomodels import Patient
 from lib.jsonview import render_to_json
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 
-
+@login_required
 def addProvider(request, template="ashandui/addProvider.html"):
     context = RequestContext(request)
     if request.method == 'POST':
@@ -23,7 +24,7 @@ def addProvider(request, template="ashandui/addProvider.html"):
             u.first_name = form.cleaned_data['first_name']
             u.last_name = form.cleaned_data['last_name']
             u.username = form.cleaned_data['username']
-            u.set_password("testpass")
+            u.set_password()
             u.save()
             d = Doctor()
             d.title = form.cleaned_data['title']
@@ -31,11 +32,13 @@ def addProvider(request, template="ashandui/addProvider.html"):
             d.specialty = form.cleaned_data['specialty']
             d.user = u
             d.save()
+            messages.add_message(request, messages.SUCCESS, "Added provider " + u.first_name + " " + u.last_name + " to the system.")
+
             return HttpResponseRedirect("/")
         else:
-            print("oh no an error")
-            print(form)
-            
+            messages.add_message(request, messages.ERROR, "Failed to add provider.")
+            context['form'] = form
+            return render_to_response(template,context)
     else:
         context['form'] = AddProviderForm()
     return render_to_response(template, context)

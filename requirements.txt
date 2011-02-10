@@ -26,6 +26,7 @@ django-staticfiles
 
 python-digest
 python-memcached
+django-breadcrumbs
+django-model-utils
 guppy
-xlwt
 keyczar
