@@ -15,5 +15,18 @@ function(doc) {
                 }
             }
         }
+    } else if(doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/bloodwork") {
+        if (doc.form.results.bw.length != undefined) {
+            //it's an array
+            for (var i = 0; i < doc.form.results.bw.length; i++) {
+                emit (doc.form.pact_id, doc.form.results.bw[i]);       
+            }
+        }
+        else {
+            if (doc.form.results.bw.tests != "") {
+                emit (doc.form.pact_id, doc.form.results.bw);
+            }
+        }
     }
+
 }
