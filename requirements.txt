@@ -21,3 +21,6 @@ virtualenv
 virtualenvwrapper
 BeautifulSoup
 hg+https://bitbucket.org/akoha/django-digest
+cherrypy
+git+git://github.com/lincolnloop/django-cpserver.git
+django-staticfiles

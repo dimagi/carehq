@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     'couchforms',
     'couchexport',
+    'dimagi.utils',
 
     #####################
     #'casetracker',
