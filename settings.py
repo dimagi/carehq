@@ -49,7 +49,7 @@ STATIC_ROOT = os.path.join(filepath,'staticfiles')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-USEMEDIA_URL = '/media/'
+MEDIA_URL = '/media/'
 STATIC_URL = '/static/' #note, we should be doing a separation here of MEDIA and STATIC.  In practice for us it's one and the same.
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
