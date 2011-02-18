@@ -6,7 +6,7 @@ from clinical_core.clincore.utils import generator
 import random
 from casetracker import constants
 
-from casetracker.models import Category, Case, Priority, Status, ActivityClass
+from casetracker.models import Case, Priority, Status, ActivityClass
 import uuid
 from django.core.management import  call_command
 
