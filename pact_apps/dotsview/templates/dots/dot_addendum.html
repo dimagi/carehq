@@ -76,13 +76,13 @@
                                     <td>{{ obs.provider }}</td>
                                     <td>
                                         {% if obs.adherence == "empty" %}
-                                            <img src="/media/dotsview/icons/check.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "partial" %}
-                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "full" %}
-                                            <img src="/media/dotsview/icons/x-mark.png">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
                                         {% endif %}
                                         {{ obs.adherence|title }}
                                     </td>
@@ -130,13 +130,13 @@
                                     <td>{{ obs.provider }}</td>
                                     <td>
                                         {% if obs.adherence == "empty" %}
-                                            <img src="/media/dotsview/icons/check.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "partial" %}
-                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "full" %}
-                                            <img src="/media/dotsview/icons/x-mark.png">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
                                         {% endif %}
                                         {{ obs.adherence|title }}
                                     </td>
