@@ -196,9 +196,15 @@ AUDITABLE_MODELS = [
                     ]
 
 
+# import local settings if we find them
 try:
+    #try to see if there's an environmental variable set for local_settings
+    import sys
+    if os.environ.has_key('SETTINGS_LOCAL'):
+        localpath = os.path.dirname(os.environ['SETTINGS_LOCAL'])
+        sys.path.insert(0, localpath)
     from settings_local import *
-except Exception, e:
+except ImportError, e:
     logging.error("Local settings not found, loading defaults: %s" % (e))
     from settings_default import *
 
