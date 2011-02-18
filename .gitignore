@@ -9,3 +9,5 @@ settings_local.py
 .tmp_*
 .json~
 *.class
+staticfiles/*
+mediafiles/*
