@@ -18,7 +18,6 @@ from django.forms.formsets import formset_factory
 import csv
 
 
-ADDENDUM_NOTE_STRING = "[AddendumEntry]"
 
 def _parse_date(string):
     if isinstance(string, basestring):
@@ -159,14 +158,33 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
                 #next, add the one existing in the lookup checker as well because they differed.
             if not conflict_dict.has_key(prior_ob.doc_id):
                 conflict_dict[prior_ob.doc_id] = prior_ob
-        if ob.day_note == ADDENDUM_NOTE_STRING:
+        if ob.is_reconciliation:
             #it's a reconciled entry
             has_reconciled = True
 
+        try:
+            time_label = ob.get_time_label()
+        except IndexError:
+            logging.error("Error, observation time label index not found, DOT data generation error")
+            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
+            if ob.is_art:
+                total_doses = hack_patient.art_num
+            else:
+                total_doses = hack_patient.non_art_num
 
-        if not grouping['ART' if ob.is_art else 'Non ART'].has_key(ob.get_time_label()):
-            grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = []
-        grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
+            if total_doses > ob.dose_number:
+                time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
+            else:
+                time_label = ''
+
+        if time_label != "":
+            if not grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label):
+                grouping['ART' if ob.is_art else 'Non ART'][time_label] = []
+            grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
+
+        else:
+            logging.error("Error Doc: %s - Time label not retrievable due to regimen count error" % (ob.doc_id))
+            logging.error("Day Index: %s, Dose Number: %d, Total Doses: %d" % (ob.day_index, ob.dose_number, ob.total_doses))
 
     #for each class of drug (art, non art) in artkeys
     #for each time in the timeslots (morning, afternoon, etc)
@@ -240,7 +258,7 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
                 obsa.adherence = f.cleaned_data['doses_taken']
                 obsa.method = f.cleaned_data['observation_type']
                 obsa.day_index = -1
-                obsa.day_note = ADDENDUM_NOTE_STRING
+                obsa.is_reconciliation = True
                 if obsa.is_art:
                     addendum.art_observations.append(obsa)
                 else:
@@ -372,7 +390,8 @@ def index_couch(request, template='dots/index_couch.html'):
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
                     #pre-check
-                if ob.day_note == ADDENDUM_NOTE_STRING:
+                if ob.is_reconciliation == True:
+                    print "reconciliation!"
                     #it's a reconciled entry.  Trump all
                     grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = [ob]
                     found_reconcile = True

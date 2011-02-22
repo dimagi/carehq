@@ -9,7 +9,6 @@ django-debug-toolbar
 django-devserver
 django-extensions
 django-reversion
-gunicorn
 psycopg2
 pycurl
 python-dateutil
