@@ -362,11 +362,16 @@ def index_couch(request, template='dots/index_couch.html'):
     else:
         visits_set = set([obs.doc_id for obs in observations])
 
-    try:
-        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
-        timekeys = sorted(timekeys, key=TIME_LABELS.index)
-    except:
-        timekeys = []
+
+    timekeys = set()
+    for d in total_doses_set:
+        try:
+            timekeys = set.union(timekeys, set(CObservation.get_time_labels(d)))
+        except:
+            pass
+
+#        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
+#        timekeys = sorted(timekeys, key=TIME_LABELS.index)
 
     artkeys = ('ART', 'Non ART')
 
@@ -386,14 +391,26 @@ def index_couch(request, template='dots/index_couch.html'):
             datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
             obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
             for ob in obs:
+                try:
+                    time_label = ob.get_time_label()
+                except IndexError:
+                    logging.error("Error, observation time label index not found, DOT data generation error")
+                    if ob.is_art:
+                        total_doses = patient.couchdoc.art_num
+                    else:
+                        total_doses = patient.couchdoc.non_art_num
+                    if total_doses > ob.dose_number:
+                        time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
+                    else:
+                        time_label = ''
+
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
                     #pre-check
-                if ob.is_reconciliation == True:
-                    print "reconciliation!"
+                if ob.is_reconciliation == True and time_label != "":
                     #it's a reconciled entry.  Trump all
-                    grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = [ob]
+                    grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
                     found_reconcile = True
                     continue
                 else:
@@ -419,8 +436,8 @@ def index_couch(request, template='dots/index_couch.html'):
                         #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                         pass
 
-                    if not found_reconcile:
-                        grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
+                    if not found_reconcile and time_label != '':
+                        grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
 
         #for each class of drug (art, non art) in artkeys
         #for each time in the timeslots (morning, afternoon, etc)
@@ -433,7 +450,7 @@ def index_couch(request, template='dots/index_couch.html'):
 
         return (
         [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        conflict_list, day_notes)
+        conflict_list, day_notes, found_reconcile)
 
     start_padding = full_dates[0].weekday()
     end_padding = 7 - full_dates[-1].weekday() + 1
@@ -447,7 +464,7 @@ def index_couch(request, template='dots/index_couch.html'):
     new_dates = []
     for date in full_dates:
         observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
-        new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2]))
+        new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 
     dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
