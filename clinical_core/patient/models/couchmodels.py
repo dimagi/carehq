@@ -261,7 +261,6 @@ class CPatient(Document):
             next = self.weekly_schedule[i+1]
 
             cur.ended = next.started
-            cur.save()
         #this introduces a circular dependency up top
         from pactcarehq import schedule
         schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO

@@ -77,11 +77,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'dimagi.utils.threadlocals.ThreadLocals',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    #'auditcare.middleware.AuditMiddleware',
-    #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    'auditcare.middleware.AuditMiddleware',
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
-    #'tracking.middleware.VisitorTrackingMiddleware',
 )
 
 AUDIT_VIEWS = [
