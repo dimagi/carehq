@@ -129,7 +129,7 @@ INSTALLED_APPS = (
     #'casetracker',
     'patient',
     'actors',
-    'clincore', #just a library, no app
+#    'clincore', #just a library, no app
     #'auditcare',
     #end clinical_core
 
