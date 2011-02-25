@@ -194,6 +194,7 @@ AUDITABLE_MODELS = [
                     #'patient.models.PatientIdentifier',
                     ]
 
+TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
 # import local settings if we find them
 try:
@@ -244,4 +245,3 @@ COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database"
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]
 
-TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
