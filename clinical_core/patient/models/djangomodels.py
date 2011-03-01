@@ -94,8 +94,9 @@ class Patient(models.Model):
 
     def save(self, *args, **kwargs):
         #time to do some error checking
-#        if not Patient.is_pact_id_unique(self.couchdoc.pact_id):
-#            raise DuplicateIdentifierException()
+        if self.isnew:
+            if not Patient.is_pact_id_unique(self.couchdoc.pact_id):
+                raise DuplicateIdentifierException()
 
         if self.doc_id == None and self.isnew:
             self._couchdoc.save()

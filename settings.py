@@ -196,6 +196,9 @@ AUDITABLE_MODELS = [
 
 TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
+#DEV_APPS are the apps in which you care about for unit testing.
+DEV_APPS=['couchforms','couchexport','patient','actors',]
+
 # import local settings if we find them
 try:
     #try to see if there's an environmental variable set for local_settings
@@ -223,7 +226,6 @@ DEVSERVER_MODULES = (
 #    'devserver.modules.profile.MemoryUseModule',
 #    'devserver.modules.cache.CacheSummaryModule',
 )
-
 
 
 

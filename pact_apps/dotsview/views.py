@@ -308,8 +308,22 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
             context['doc_id'] = reconciled_doc_id
     return  render_to_response(template, context_instance=context)
 
+
+@login_required
+def debug_case_dots(request, template='dots/debug_dots.html'):
+    context = get_couchdata(request)
+    #need to parse context again and do lookups from patient case data
+    return  render_to_response(template, context_instance=context)
+
+
 @login_required
 def index_couch(request, template='dots/index_couch.html'):
+    context = get_couchdata(request)
+    return  render_to_response(template, context_instance=context)
+
+
+
+def get_couchdata(request):
     end_date = _parse_date(request.GET.get('end', datetime.date.today()))
     start_date = _parse_date(request.GET.get('start', end_date - datetime.timedelta(14)))
     patient_id = request.GET.get('patient', None)
@@ -510,5 +524,5 @@ def index_couch(request, template='dots/index_couch.html'):
         'art_num': art_num,
         'nonart_num': nonart_num,
     }
-    return render_to_response(template, context)
 
+    return context
