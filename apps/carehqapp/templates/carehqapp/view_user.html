@@ -3,6 +3,12 @@
 {% block title %}{% trans "User View" %}{% endblock %}
 
 {% block content %}
-<h1> AShand User!</h1>
-{{ selected_user }}
+{% with selected_user as user %}
+    {% include "carehqapp/partials/user_profile_basic.html" %}
+{% endwith %}
+    {% if selected_is_provider %}
+    {% with selected_provider as provider %}
+    {% include "carehqapp/partials/user_profile_provider.html" %}
+    {% endwith %}
+    {% endif %}
 {% endblock %}

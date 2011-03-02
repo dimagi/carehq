@@ -65,7 +65,10 @@ class Role(models.Model):
         return ct
     
     def __unicode__(self):
-        return "Role Base: %s: %s" % (self.role_type, self.role_uuid)
+        if not self.user:
+            return "(DETACHED) %s: %s" % (self.role_type, self.role_uuid)
+        else:
+            return "%s: %s %s" % (self.role_type, self.user.first_name, self.user.last_name)
 
 class CHW(Role):
     title = models.CharField(max_length=64)
@@ -114,8 +117,8 @@ class Doctor(Role):
 
     class Meta:
         app_label = 'actors'
-        verbose_name = "Role (Doctor)"
-        verbose_name_plural = "Roles (Doctor)"
+        verbose_name = "Doctor"
+        verbose_name_plural = "Doctors"
     
     def __unicode__(self):
         if self.user:

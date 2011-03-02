@@ -1,0 +1,15 @@
+<div>{% if events %}
+{% for e in events %}
+    <div class="feed {% if not e.read %}unread{% endif %} span-10 last">
+        {{ e.created }}
+        {{ e.actor.user.first_name }} {{ e.actor.user.last_name }}
+        {{ e.action }}
+    </div>
+{% endfor %}
+{% else %}
+    <div class="info span-10 last">
+    Nothing to report!
+    </div>
+{% endif %}
+
+</div>

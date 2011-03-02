@@ -10,10 +10,10 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
-                        (r'^accounts/login/$', 'django.contrib.auth.views.login', 
+                        (r'^accounts/login/$', 'carehqapp.views.account.login',
                                                 {"template_name": settings.LOGIN_TEMPLATE }),
-                        (r'^accounts/logout/$', 'views.logout', 
-                                                {"template_name": settings.LOGGEDOUT_TEMPLATE }),
+                        (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login',
+                                                ),
 
 
                         (r'^admin/', include(admin.site.urls)),

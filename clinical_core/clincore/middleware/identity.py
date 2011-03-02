@@ -1,5 +1,6 @@
-from provider.models import Provider
+#from provider.models import Provider
 from patient.models import Patient
+from actors.models.roles import *
 
 #http://www.djangosnippets.org/snippets/1661/
 #from django.contrib.sessions.middleware import SessionMiddleware 
@@ -85,9 +86,9 @@ class AshandIdentityMiddleware(object):
         #############################
         #User is a Provider
         try:
-            request.provider = Provider.objects.get(user=request.user)
+            request.provider = Doctor.objects.get(user=request.user)
             is_provider = True                        
-            primary_careteams = ProviderLink.objects.filter(provider=request.user).filter(role__role='nurse-triage')
+            primary_careteams = PatientLink.objects.filter(role__user=request.user)
             if primary_careteams.count() > 0:
                 is_primary = True        
         except ObjectDoesNotExist:
@@ -95,14 +96,21 @@ class AshandIdentityMiddleware(object):
         
         ##############################
         #User is a caregiver
-        request.patient_careteams = CareTeam.objects.all().filter(caregivers=request.user)
-        if request.patient_careteams.count() > 0:
-            is_caregiver = True        
+        try:
+            request.caregiver = Caregiver.objects.get(user=request.user)
+            is_caregiver = True
+        except ObjectDoesNotExist:
+            pass
+
+#        request.patient_careteams = CareTeam.objects.all().filter(caregivers=request.user)
+#        if request.patient_careteams.count() > 0:
+#            is_caregiver = True
         
         request.is_provider = is_provider
         request.is_patient = is_patient
         request.is_caregiver = is_caregiver        
         request.is_primary = is_primary
+#        print("Prov: %s Patient: %s Caregiver: %s Primary: %s" % (is_provider, is_patient, is_caregiver, is_primary))
              
         return None
             

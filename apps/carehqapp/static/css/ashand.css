@@ -90,6 +90,7 @@ nav {
 
 #maincontent {
     border: 2px solid #000;
+    border-top: 10px solid #f90;
     padding: 10px;
 }
 

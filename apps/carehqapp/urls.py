@@ -1,15 +1,16 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth import authenticate, login
 
-urlpatterns = patterns('',
-        url(r'^$', 'carehqapp.views.home.home_view', name='home'),
-        url(r'^dashboard$', 'carehqapp.views.dashboard.dashboard_view', name='dashboard'),
-        url(r'^profile$', 'carehqapp.views.account.my_profile', name='my_profile'),
-        url(r'^cases$', 'carehqapp.views.cases.case_list', name='case_list'),
+urlpatterns = patterns('carehqapp.views',
+        url(r'^$', 'home.home_view', name='home'),
+        url(r'^dashboard$', 'dashboard.dashboard_view', name='dashboard'),
+        url(r'^profile$', 'account.my_profile', name='my_profile'),
+        url(r'^cases$', 'cases.case_list', name='case_list'),
+        url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
+
 
 
 #
-#    (r'^users/(?P<user_id>\d+)$', 'ashandapp.views.users.single'),
 #    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 #
 #    #main navigation tabs

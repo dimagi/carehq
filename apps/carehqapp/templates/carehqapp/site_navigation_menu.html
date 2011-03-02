@@ -13,6 +13,12 @@
 			</span>
 		</li>
 
+        <li>
+               <span class="head_menu">
+                    <a href="{% url my_profile %}">My Profile</a>
+                    </span>
+                </li>
+
 		
 		<li>
 			<span class="head_menu">
@@ -21,7 +27,7 @@
 		</li>
 		
 		{# patient relevant information #}
-		{% if request.is_patient or request.user.is_superuser %}
+		{% if request.is_patient %}
 			<li>
 				<span class="head_menu">
 				<a href="site_navigation_menu.html#">My Care Plan</a>
@@ -34,12 +40,12 @@
 			</li>
 		{% endif %}
 	
-		{% if request.is_caregiver or request.is_provider or request.user.is_superuser %}
+		{% if request.is_caregiver or request.is_provider %}
 			<li>
 			{% if patient_careteams %}
 				<span class="head_menu">
 					<a href="site_navigation_menu.html#">My Patients</a>
-					<img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+					<img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
 				</span>			
 				<div class="sub_menu"> 
 				{% for careteam in patient_careteams %}
@@ -62,7 +68,7 @@
 		<li>
 			<span class="head_menu">
 			<a href="site_navigation_menu.html#" id="ptQMenu" >Ask a Question</a>
-			<img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+			<img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
 			</span>
 			
 			<div class="sub_menu"> 
@@ -76,7 +82,7 @@
         {% if 1 %}
         <li>
             <span class="head_menu">Admin 
-                <img src="/media/ashandapp/img/arrow.png" width="18" height="15" align="top" class="arrow" />
+                <img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow" />
             </span>
 
             <div class="sub_menu">

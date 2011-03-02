@@ -81,8 +81,9 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    #'carehqapp.middleware.identity.AshandIdentityMiddleware',
+    'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
+    'breadcrumbs.middleware.BreadcrumbsMiddleware',
 )
 
 AUDIT_VIEWS = [

@@ -10,10 +10,12 @@ from forms import LinkProviderForm, LinkProviderForm
 from clinical_core.actors.models.actors import PatientActorLink, Actor
 from clinical_core.actors.models.roles import Doctor
 from clinical_core.patient.models.djangomodels import Patient
+from lib.crumbs import crumbs
 from lib.jsonview import render_to_json
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
+@crumbs("Add Provider", "addProvider", "home")
 @login_required
 def addProvider(request, template="ashandui/addProvider.html"):
     context = RequestContext(request)
@@ -75,7 +77,7 @@ def providerListQueryAjax(request, term):
         return formatProvidersAutocomplete(term)
     return formatProvidersAutocomplete(term)
 
-
+@crumbs("Provider Search", "providerSearch", None)
 def providerSearch(request, template="ashandui/providerSearch.html"):
     context = RequestContext(request)
     if 'query' in request.GET:
@@ -85,7 +87,7 @@ def providerSearch(request, template="ashandui/providerSearch.html"):
         context['providers'] = [{'first_name': d.user.first_name, 'last_name': d.user.last_name} for d in Doctor.objects.all()]
     return render_to_response(template, context)
 
-
+@crumbs("Provider Patients", "providerPatients", None)
 def providerPatients(request, doctorId, template="ashandui/providerPatients.html"):
     context = RequestContext(request)
     doctor = get_object_or_404(Doctor, id=doctorId)

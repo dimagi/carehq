@@ -30,10 +30,10 @@ def new_patient(request, template_name="patient/new_patient.html"):
             newpatient.cset_first_name(form.cleaned_data['first_name'])
             newpatient.cset_last_name(form.cleaned_data['last_name'])
             newpatient.save()
-            messages.add(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
+            messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
             return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':newpatient.id}))
         else:
-            messages.add(request, messages.ERROR, "Failed to add patient!")
+            messages.add_message(request, messages.ERROR, "Failed to add patient!")
             context['patient_form'] = form
     else:
         context['patient_form'] = PactPatientForm()
