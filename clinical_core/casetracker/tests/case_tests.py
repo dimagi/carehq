@@ -50,13 +50,13 @@ class BasicCaseTests(TestCase):
         caregiver_creator = generator.generate_actor(user1, 'caregiver')
         provider_assigned = generator.generate_actor(user2, 'provider')
 
-        old_case_count = Case.view('casetracker/all_cases').count()
-        old_event_count = Case.view('casetracker/all_case_events').count()
+        old_case_count = Case.view('casetracker/cases_by_id').count()
+        old_event_count = Case.view('casetracker/all_case_events_date').count()
         newcase = Case.create(caregiver_creator, description, "mock body %s" % (uuid.uuid1().hex), assigned_to=provider_assigned)
 
         #is the thing created?
-        new_case_count = Case.view('casetracker/all_cases').count()
-        new_event_count = Case.view('casetracker/all_case_events').count()
+        new_case_count = Case.view('casetracker/cases_by_id').count()
+        new_event_count = Case.view('casetracker/all_case_events_date').count()
         self.assertEqual(new_case_count, old_case_count + 1)
         self.assertEqual(new_event_count, old_event_count + 1)
 
@@ -68,12 +68,12 @@ class BasicCaseTests(TestCase):
 
     def testModifyCase(self):
         case = self.testCreateCaseApi()
-        old_event_count = Case.view('casetracker/all_case_events').count()
+        old_event_count = Case.view('casetracker/all_case_events_date').count()
         case.description = "changing description " + uuid.uuid1().hex
         case.save()
 
 
-        new_event_count = Case.view('casetracker/all_case_events').count()
+        new_event_count = Case.view('casetracker/all_case_events_date').count()
         self.assertEqual(new_event_count, old_event_count + 1)
 
         self.assertNotEqual(case.description, case.orig_description)
@@ -97,7 +97,7 @@ class BasicCaseTests(TestCase):
         actor1 = generator.generate_actor(user1, 'provider')
 
         
-        dbcase = Case.view('casetracker/all_cases', key=case._id)
+        dbcase = Case.view('casetracker/cases_by_id', key=case._id)
         case.description = CHANGED_DESCRIPTION 
         case.last_edit_by = actor1.id
         #activity = ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
@@ -113,7 +113,7 @@ class BasicCaseTests(TestCase):
         #self.assertEqual(constants.CASE_EVENT_EDIT, events[0].activity.event_class)
         
         #quickly verify that the original description is still unchanged
-        dbcase = Case.view('casetracker/all_cases', key=case._id).first()
+        dbcase = Case.view('casetracker/cases_by_id', key=case._id).first()
         self.assertEqual(dbcase._id, case._id)        
         self.assertEqual(dbcase.orig_description, desc)
     

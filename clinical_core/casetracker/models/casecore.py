@@ -14,7 +14,6 @@ from django.utils.translation import ugettext_lazy as _
 from casetracker import constants
 from patient.models import Patient
 
-from casetracker.managers import CaseManager
 from dimagi.utils import make_uuid, make_time
 import uuid
 from django.contrib.contenttypes.models import ContentType
@@ -241,6 +240,10 @@ class Case(Document):
     events = SchemaListProperty(CaseEvent)
     parent_case = StringProperty()
 
+    @property
+    def get_id(self):
+        return self._id
+
 
     @classmethod
     def create(cls, actor_creator, description, body, created_date=None, priority=None, assigned_to=None, status=None):
@@ -419,7 +422,7 @@ class Case(Document):
         super(Case, self).save()
        
     def __unicode__(self):
-        return "(Case %s) %s" % (self.id, self.description)
+        return "(Case %s) %s" % (self._id, self.description)
     def case_name(self):
         #return "Case %s" % self.id
         return self.description

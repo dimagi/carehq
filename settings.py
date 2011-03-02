@@ -49,7 +49,7 @@ STATIC_ROOT = os.path.join(filepath,'staticfiles')
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-USEMEDIA_URL = '/media/'
+MEDIA_URL = '/media/'
 STATIC_URL = '/static/' #note, we should be doing a separation here of MEDIA and STATIC.  In practice for us it's one and the same.
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -84,6 +84,8 @@ MIDDLEWARE_CLASSES = (
     'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     'breadcrumbs.middleware.BreadcrumbsMiddleware',
+    'dimagi.utils.threadlocals.ThreadLocals',
+    #'carehqapp.middleware.identity.AshandIdentityMiddleware',
 )
 
 AUDIT_VIEWS = [
@@ -132,7 +134,7 @@ INSTALLED_APPS = (
     #'casetracker',
     'patient',
     'actors',
-    'clincore', #just a library, no app
+#    'clincore', #just a library, no app
     #'auditcare',
     #end clinical_core
 
@@ -197,6 +199,11 @@ AUDITABLE_MODELS = [
                     #'patient.models.PatientIdentifier',
                     ]
 
+TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
+
+#DEV_APPS are the apps in which you care about for unit testing.
+DEV_APPS=['couchforms','couchexport','patient','actors',]
+
 # import local settings if we find them
 try:
     #try to see if there's an environmental variable set for local_settings
@@ -228,7 +235,6 @@ DEVSERVER_MODULES = (
 
 
 
-
 ####### Couch Forms & Couch DB Kit Settings #######
 def get_server_url(server_root, username, password):
     if username and password:
@@ -246,4 +252,3 @@ COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database"
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]
 
-TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'

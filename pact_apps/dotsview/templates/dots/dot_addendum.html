@@ -66,7 +66,7 @@
                             {% for obs in form.conflicts %}
                                 <tr>
                                     <td>
-                                        {% if is_reconciled and obs.day_note == "[AddendumEntry]" %}
+                                        {% if is_reconciled and obs.is_reconciliation %}
                                             <strong>Reconciled</strong> {{ obs.created_date|date:"m-d-Y" }}
                                         {% else %}
                                             {{ obs.anchor_date|date:"m-d-Y" }}
@@ -76,13 +76,13 @@
                                     <td>{{ obs.provider }}</td>
                                     <td>
                                         {% if obs.adherence == "empty" %}
-                                            <img src="/media/dotsview/icons/check.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "partial" %}
-                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "full" %}
-                                            <img src="/media/dotsview/icons/x-mark.png">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
                                         {% endif %}
                                         {{ obs.adherence|title }}
                                     </td>
@@ -130,13 +130,13 @@
                                     <td>{{ obs.provider }}</td>
                                     <td>
                                         {% if obs.adherence == "empty" %}
-                                            <img src="/media/dotsview/icons/check.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "partial" %}
-                                            <img src="/media/dotsview/icons/exclamation-point.jpg">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
                                         {% endif %}
                                         {% if obs.adherence == "full" %}
-                                            <img src="/media/dotsview/icons/x-mark.png">
+                                            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
                                         {% endif %}
                                         {{ obs.adherence|title }}
                                     </td>

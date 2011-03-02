@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "DOTS Data Debug" %}
+{% endblock title %}
+
+{% block page_stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}dotsview/stylesheets/dots.css"/>
+{% endblock page_stylesheets%}
+
+{% block javascripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        var date_helper = "yyyy-mm-dd";
+        function get_url() {
+            var patient_id = $('#patients option:selected').attr('value');
+            var start_date = $('#start-date').attr('value');
+            var end_date = $('#end-date').attr('value');
+            if (start_date == date_helper) start_date = '';
+            if (end_date == date_helper) end_date = '';
+            return "{{ request.path }}?patient=" + patient_id + "&start=" + start_date + "&end=" + end_date;
+        }
+        $(document).ready(function() {
+            $('#patients').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('input.date').each(
+                                function() {
+                                    if (! $(this).attr('value')) {
+                                        $(this).attr('value', date_helper);
+                                    }
+                                }).focus(function() {
+                $(this).select();
+            });
+            $('#start-date').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('#end-date').change(function() {
+                $(document).attr('location', get_url());
+            });
+            $('#reconcile-dialog').dialog(
+            {
+                autoOpen: false,
+                height: 600,
+                width: 850,
+                modal: true,
+                buttons: {
+                    'Submit':function() {
+
+                        var isValid = true;
+                        var art_num = {{ art_num }};
+                        var nonart_num = {{ nonart_num }};
+                        var total_drugs = art_num + nonart_num;
+                        var reasonString = "";
+
+                        for (var i = 0; i < total_drugs; i += 1) {
+                            var doses_taken = "form-" + i + "-doses_taken";
+                            var obs_type = "form-" + i + "-observation_type";
+                            var check_doses = $("input[name='" + doses_taken + "']:checked", "#dot_addendum_form").val();
+                            var check_obs = $("input[name='" + obs_type + "']:checked", "#dot_addendum_form").val();
+
+                            if (check_doses == undefined) {
+                                isValid = false;
+                                reasonString += doses_taken + ", ";
+                            }
+                            if (check_obs == undefined) {
+                                isValid = false;
+                                reasonString += obs_type + ", ";
+                            }
+                        }
+
+
+                        if (isValid == false) {
+                            alert("Error, not all inputs filled.");
+                        } else {
+                            //success, let's submit the POST
+                            //first, append the patient_id to the POST
+                            var ptid = document.createElement("input");
+                            ptid.setAttribute("type", "hidden");
+                            ptid.setAttribute("name", "patient_id");
+                            ptid.setAttribute("value", "{{ patient.id }}");
+                            $("#dot_addendum_form").append(ptid);
+
+                            var addendum_date = document.createElement("input");
+                            addendum_date.setAttribute("type", "hidden");
+                            addendum_date.setAttribute("name", "addendum_date");
+                            addendum_date.setAttribute("value", $('#dateplaceholder').attr("class"));
+                            $("#dot_addendum_form").append(addendum_date);
+                            send_xhr = $.ajax({
+                                "type": "POST",
+                                "url":  "{% url dot_addendum_dialog %}",
+                                "data": $("#dot_addendum_form").serialize(),
+                                "success": function(data) {
+                                    $(this).dialog('close');
+                                    location.reload();
+                                    fadeIn("slow");
+                                }, //end success
+                                "error": function(data) {
+                                    alert ("Error trying to save form, please try again.");
+                                }
+                            });
+                            $(this).dialog('close');
+                        }
+                    },
+                    Cancel: function() {
+//                        $("input:radio").attr("checked", false);
+//                        $("#id_comment").val('');
+                        $(this).dialog('close');
+                    },
+                },
+                open: function(event, ui) {
+                    $.get("{% url dot_addendum_dialog %}?patient={{ patient.id }}&addendum_date=" + $('#dateplaceholder').attr("class"), function(data) {
+                        $("#reconcile-form-block").html(data);
+                    });
+//                    alert($('#dateplaceholder').attr("class"));
+                },
+            });
+        });
+    </script>
+
+{% endblock javascripts %}
+
+
+{% block content %}
+<div class="container span-24">
+    <div class="span-4">
+        <strong>Date</strong>
+    </div>
+    <div class="span-20 last"><strong>Data</strong></div>
+        {%  for visit_date, cal_data, case_data, others in date_arr %}
+            <div class="span-4">
+                {{ visit_date|date }}
+            </div>
+            <div class="span-20">
+                <div class="span-5">
+                    Calendar Data:
+                    Encounter Date
+                    Anchor Date
+                    Adherence Data
+                    Submit ID
+                </div>
+                <div class="span-5">
+                    Case Data:
+                    Encounter Date
+                    Anchor Date
+                    Adherence Data
+                    Submit ID
+                </div>
+                {% for data in date_arr %}
+                    <div class="span-5">
+                        Submit Data:
+                        Encounter Date
+                        Anchor Date
+                        Day Index
+                        Adherence Data
+                        Submit ID
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

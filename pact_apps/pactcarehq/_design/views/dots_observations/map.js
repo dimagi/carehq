@@ -110,6 +110,7 @@ function(doc) {
             var obs = doc.art_observations[i];
             var anchor_date = parse_date(obs.anchor_date);
             var observe_date = parse_date(obs.observed_date);
+            obs['doc_id'] = doc._id;
 
             emit([obs.pact_id, 'anchor_date', anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs);
             emit([obs.pact_id, 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));

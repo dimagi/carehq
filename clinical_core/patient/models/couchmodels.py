@@ -224,6 +224,26 @@ class CPatient(Document):
     #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
     notes = StringProperty()
 
+
+    @property
+    def art_num(self):
+        try:
+            num = int(ghetto_regimen_map[self.art_regimen.lower()])
+        except:
+            num = 0
+            logging.error("Patient does not have a set art regimen")
+        return num
+
+    @property
+    def non_art_num(self):
+        try:
+            num = int(ghetto_regimen_map[self.non_art_regimen.lower()])
+        except:
+            num = 0
+            logging.error("Patient does not have a set non art regimen")
+        return num
+
+
     class Meta:
         app_label = 'patient'
 
@@ -241,7 +261,6 @@ class CPatient(Document):
             next = self.weekly_schedule[i+1]
 
             cur.ended = next.started
-            cur.save()
         #this introduces a circular dependency up top
         from pactcarehq import schedule
         schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO
@@ -351,14 +370,18 @@ class CPatient(Document):
                 #get the top one from the array
                 if not drug_data.has_key(timekey):
                     continue
-                if len(drug_data[timekey]) > 0:
+                if len(day_arr) >= total_num:
+                    logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
+                if len(drug_data[timekey]) > 0 and len(day_arr) < total_num:
                     obs = drug_data[timekey][0]
                     if obs.day_note != None and len(obs.day_note) > 0:
                         day_arr.append([obs.adherence, obs.method, obs['day_note']])
                     else:
                         day_arr.append([obs.adherence, obs.method])
-                else:
-                    day_arr.append(["unchecked", "pillbox"])
+
+
+                #else:
+                 #   day_arr.append(["unchecked", "pillbox"])
             if len(day_arr) < total_num:
                 for n in range(total_num-len(day_arr)):
                     day_arr.append(["unchecked", "pillbox"])

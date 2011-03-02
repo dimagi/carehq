@@ -8,7 +8,7 @@
 {% else %}
     <div class="error">
 {% endif %}
-    <strong>Scheduled Visits: </strong> 
+    <strong>Scheduled Visits: </strong>
             {{ total_visited }} / {{ total_scheduled }}
     </div>
 </div>
@@ -16,7 +16,7 @@
     <a href="{{ request.path }}?interval=1">Today</a> &nbsp;
     <a href="{{ request.path }}?interval={% now "w" %}">Week to date</a> &nbsp;
     <a href="{{ request.path }}?interval=7">7 days</a> &nbsp;
-    <a href={{ request.path }}?interval={% now "j" %}>Month to date</a>
+    <a href="{{ request.path }}?interval={% now "j" %}">Month to date</a>
     <a href="{{ request.path }}?interval=30">30 days</a> &nbsp;
     <br>
     <a href="{{ request.path }}?getcsv&interval=7">CSV 7</a>

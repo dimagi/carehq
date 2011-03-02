@@ -33,17 +33,34 @@ def _get_next(request):
         raise Http404 # No next url was supplied in GET or POST.
     return next
 
+
+from casetracker.managers.casemanager import CaseManager
+casemanager = CaseManager()
 @login_required
-def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
+def all_cases(request, template_name='casetracker/cases_list.html'):
+    context = RequestContext(request)
+    start = request.GET.get('start', 0)
+    count = request.GET.get('count',50)
+    group_by = request.GET.get('groupBy','opened_date')
+
+    cases = Case.view('casetracker/case_dates', startkey=['opened_date',], include_docs=True, skip=start, limit=count).all()
+    context['cases'] = cases
+    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+
+    return render_to_response(template_name, context_instance=context)
+
+
+
+
+
+@login_required
+def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
     context = RequestContext(request)
     
-    thecase = Case.objects.select_related('opened_by','last_edit_by',\
-                                          'resolved_by','closed_by','assigned_to',
-                                          'priority','category','status').get(id=case_id)
-
+    thecase = casemanager.get_case(case_id)
 
     do_edit = False    
     activity_slug = None
@@ -53,9 +70,8 @@ def manage_case(request, case_id): #template_name='casetracker/manage_case.html'
             activity = ActivityClass.objects.get(slug=value)
     context['case'] = thecase
    
-    template_name = thecase.category.handler.read_template(request, context)
-    context = thecase.category.handler.read_context(thecase,request, context)
-
+    #template_name = thecase.category.handler.read_template(request, context)
+    #context = thecase.category.handler.read_context(thecase,request, context)
     ########################
     # Inline Form display
     if activity:                

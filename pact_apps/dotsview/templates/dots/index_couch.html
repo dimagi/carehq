@@ -212,7 +212,7 @@
             </tr>
             {% for week in weeks %}
                 <tr>
-                    {% for date, entries, conflicts, day_notes in week %}
+                    {% for date, entries, conflicts, day_notes, is_reconciled in week %}
                         {% if date %}
                             <td>
                                 <div class="date-label">{{ date|date:"m/d/Y" }}</div>
@@ -257,8 +257,8 @@
                                                                 {#														<div class="ob-{{ob.method}}">#}
                                                                 {#															{{ob.method}}#}
                                                                 {#														</div>#}
-
                                                             </div>
+
                                                         {% endfor %} {#observations #}
                                                     {% endif %}
                                                 </div>
@@ -266,6 +266,14 @@
                                         </div>
                                     {% endfor %} {#drug type in entries #}
                                 </div>
+                                {% if is_reconciled %}
+                                    <div class="date-notes-block">
+                                   Reconciled
+                                   (<a href="javascript:show_reconciliation('{{ date|date:"Y-m-d" }}')">View</a>)
+                                   </div>
+                                {% endif %}
+
+
                                 {% if conflicts %}
                                     <div class="date-notes-block">
                                         <img src="{{ STATIC_URL }}dotsview/icons/warning.png">
@@ -285,13 +293,7 @@
                                         <img src="{{ STATIC_URL }}dotsview/icons/info.png">
                                         {% for note in day_notes %}
                                             <small>
-                                            {% if note == "[AddendumEntry]" %}
-                                                Reconciled
-                                                (<a href="javascript:show_reconciliation('{{ date|date:"Y-m-d" }}')">View</a>)
-                                                <br>
-                                            {% else %}
-                                                {{ note }} <br>
-                                            {% endif %}
+                                               {{ note }} <br>
                                             </small>
                                         {% endfor %}
                                     </div>

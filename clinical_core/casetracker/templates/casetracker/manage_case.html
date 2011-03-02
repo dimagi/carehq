@@ -35,12 +35,12 @@
 		<div id="casehistory">			
 		</div>
 		<script type="text/javascript">
-  			$("#casehistory").load("{%url case-newsfeed case.id %}");
+  			$("#casehistory").load("{%url case-newsfeed case.get_id %}");
 		</script>		
 		{% if can_comment %}
 		{% include "casetracker/manage/comment.html" %}
 		{% endif %}
-		{% endblock newsfeed-area %}										
+		{% endblock newsfeed-area %}
 		</div>		
 	</div>	<!-- end case body and info container -->	
 	<div class="span-6 last"> <!-- specialized category block -->

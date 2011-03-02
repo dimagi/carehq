@@ -758,11 +758,13 @@ def _get_submissions_for_patient(patient):
         xmlns = note['xmlns']
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
+            date = note['form']['encounter_date']
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
+            date = note['form']['note']['encounter_date']
         else:
             formtype = "Unknown"
-        submissions.append([note._id, note.form['Meta']['TimeEnd'], note.form['Meta']['username'] , formtype])
+        submissions.append([note._id, date, note.form['Meta']['username'] , formtype])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 
@@ -831,9 +833,14 @@ def _get_submissions_for_user(username):
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
             submissions.append([xform._id, xform.form['note']['encounter_date'], patient_name, formtype,started, start_end, end_received, received])
+        elif xmlns == "http://dev.commcarehq.org/pact/bloodwork":
+            formtype = "Bloodwork"
+            #TODO implement bloodwork view
+#            submissions.append([xform._id, xform.form['case']['date_modified'].date(), patient_name, formtype,started, start_end, end_received, received])
         else:
             formtype = "Unknown"
-            submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype, started, start_end, end_received, received])
+            print xmlns
+            #submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype, started, start_end, end_received, received])
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
@@ -854,6 +861,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     context = RequestContext(request)
     xform = XFormInstance.get(doc_id)
     progress_note = xform['form']['note']
+    progress_note['chw'] = xform.form['Meta']['username']
     context['progress_note'] = progress_note
 
     case_id = xform['form']['case']['case_id']
@@ -909,6 +917,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     xform = XFormInstance.get(doc_id)
     dots_note = {}
     raw = xform['form']
+    dots_note['chw'] = raw['Meta']['username']
     dots_note['encounter_date'] = raw['encounter_date']
     dots_note['schedued'] = raw['scheduled']
     dots_note['visit_type'] = raw['visit_type']

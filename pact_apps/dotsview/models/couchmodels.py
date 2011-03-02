@@ -26,6 +26,7 @@ TIME_LABEL_LOOKUP = (
 )
 TIME_LABELS = ('Dose', 'Morning', 'Noon', 'Evening', 'Bedtime')
 
+ADDENDUM_NOTE_STRING = "[AddendumEntry]"
 class CObservation(Document):
     doc_id = StringProperty()
     patient = StringProperty() #case id
@@ -45,6 +46,8 @@ class CObservation(Document):
     total_doses = IntegerProperty()
     adherence=StringProperty()
     method=StringProperty()
+
+    is_reconciliation = BooleanProperty(default=False)
     
     day_index = IntegerProperty()
 

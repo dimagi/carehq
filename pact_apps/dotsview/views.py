@@ -18,7 +18,6 @@ from django.forms.formsets import formset_factory
 import csv
 
 
-ADDENDUM_NOTE_STRING = "[AddendumEntry]"
 
 def _parse_date(string):
     if isinstance(string, basestring):
@@ -159,14 +158,33 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
                 #next, add the one existing in the lookup checker as well because they differed.
             if not conflict_dict.has_key(prior_ob.doc_id):
                 conflict_dict[prior_ob.doc_id] = prior_ob
-        if ob.day_note == ADDENDUM_NOTE_STRING:
+        if ob.is_reconciliation:
             #it's a reconciled entry
             has_reconciled = True
 
+        try:
+            time_label = ob.get_time_label()
+        except IndexError:
+            logging.error("Error, observation time label index not found, DOT data generation error")
+            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
+            if ob.is_art:
+                total_doses = hack_patient.art_num
+            else:
+                total_doses = hack_patient.non_art_num
 
-        if not grouping['ART' if ob.is_art else 'Non ART'].has_key(ob.get_time_label()):
-            grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = []
-        grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
+            if total_doses > ob.dose_number:
+                time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
+            else:
+                time_label = ''
+
+        if time_label != "":
+            if not grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label):
+                grouping['ART' if ob.is_art else 'Non ART'][time_label] = []
+            grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
+
+        else:
+            logging.error("Error Doc: %s - Time label not retrievable due to regimen count error" % (ob.doc_id))
+            logging.error("Day Index: %s, Dose Number: %d, Total Doses: %d" % (ob.day_index, ob.dose_number, ob.total_doses))
 
     #for each class of drug (art, non art) in artkeys
     #for each time in the timeslots (morning, afternoon, etc)
@@ -240,7 +258,7 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
                 obsa.adherence = f.cleaned_data['doses_taken']
                 obsa.method = f.cleaned_data['observation_type']
                 obsa.day_index = -1
-                obsa.day_note = ADDENDUM_NOTE_STRING
+                obsa.is_reconciliation = True
                 if obsa.is_art:
                     addendum.art_observations.append(obsa)
                 else:
@@ -290,8 +308,22 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
             context['doc_id'] = reconciled_doc_id
     return  render_to_response(template, context_instance=context)
 
+
+@login_required
+def debug_case_dots(request, template='dots/debug_dots.html'):
+    context = get_couchdata(request)
+    #need to parse context again and do lookups from patient case data
+    return  render_to_response(template, context_instance=context)
+
+
 @login_required
 def index_couch(request, template='dots/index_couch.html'):
+    context = get_couchdata(request)
+    return  render_to_response(template, context_instance=context)
+
+
+
+def get_couchdata(request):
     end_date = _parse_date(request.GET.get('end', datetime.date.today()))
     start_date = _parse_date(request.GET.get('start', end_date - datetime.timedelta(14)))
     patient_id = request.GET.get('patient', None)
@@ -344,11 +376,16 @@ def index_couch(request, template='dots/index_couch.html'):
     else:
         visits_set = set([obs.doc_id for obs in observations])
 
-    try:
-        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
-        timekeys = sorted(timekeys, key=TIME_LABELS.index)
-    except:
-        timekeys = []
+
+    timekeys = set()
+    for d in total_doses_set:
+        try:
+            timekeys = set.union(timekeys, set(CObservation.get_time_labels(d)))
+        except:
+            pass
+
+#        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
+#        timekeys = sorted(timekeys, key=TIME_LABELS.index)
 
     artkeys = ('ART', 'Non ART')
 
@@ -368,13 +405,26 @@ def index_couch(request, template='dots/index_couch.html'):
             datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
             obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
             for ob in obs:
+                try:
+                    time_label = ob.get_time_label()
+                except IndexError:
+                    logging.error("Error, observation time label index not found, DOT data generation error")
+                    if ob.is_art:
+                        total_doses = patient.couchdoc.art_num
+                    else:
+                        total_doses = patient.couchdoc.non_art_num
+                    if total_doses > ob.dose_number:
+                        time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
+                    else:
+                        time_label = ''
+
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
                     #pre-check
-                if ob.day_note == ADDENDUM_NOTE_STRING:
+                if ob.is_reconciliation == True and time_label != "":
                     #it's a reconciled entry.  Trump all
-                    grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()] = [ob]
+                    grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
                     found_reconcile = True
                     continue
                 else:
@@ -400,8 +450,8 @@ def index_couch(request, template='dots/index_couch.html'):
                         #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                         pass
 
-                    if not found_reconcile:
-                        grouping['ART' if ob.is_art else 'Non ART'][ob.get_time_label()].append(ob)
+                    if not found_reconcile and time_label != '':
+                        grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
 
         #for each class of drug (art, non art) in artkeys
         #for each time in the timeslots (morning, afternoon, etc)
@@ -414,7 +464,7 @@ def index_couch(request, template='dots/index_couch.html'):
 
         return (
         [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        conflict_list, day_notes)
+        conflict_list, day_notes, found_reconcile)
 
     start_padding = full_dates[0].weekday()
     end_padding = 7 - full_dates[-1].weekday() + 1
@@ -428,7 +478,7 @@ def index_couch(request, template='dots/index_couch.html'):
     new_dates = []
     for date in full_dates:
         observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
-        new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2]))
+        new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 
     dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
@@ -474,5 +524,5 @@ def index_couch(request, template='dots/index_couch.html'):
         'art_num': art_num,
         'nonart_num': nonart_num,
     }
-    return render_to_response(template, context)
 
+    return context

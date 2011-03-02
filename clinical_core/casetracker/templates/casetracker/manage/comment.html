@@ -1,5 +1,5 @@
-<form method="POST" action="{{request.path}}?activity=issue-event-comment" id="comment_form_{{ case.id }}">
-<h4>Add a comment to this {{case.category.display.lower}}</h4>
+<form method="POST" action="{{request.path}}?activity=issue-event-comment" id="comment_form_{{ case.get_id }}">
+<h4>Add a comment to this Case</h4>
 <table>
 <tr>
     <td><textarea id="id_comment" rows="4" cols="80" name="comment"></textarea>
