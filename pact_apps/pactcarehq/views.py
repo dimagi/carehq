@@ -758,11 +758,13 @@ def _get_submissions_for_patient(patient):
         xmlns = note['xmlns']
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
+            date = note['form']['encounter_date']
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
+            date = note['form']['note']['encounter_date']
         else:
             formtype = "Unknown"
-        submissions.append([note._id, note.form['Meta']['TimeEnd'], note.form['Meta']['username'] , formtype])
+        submissions.append([note._id, date, note.form['Meta']['username'] , formtype])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 
