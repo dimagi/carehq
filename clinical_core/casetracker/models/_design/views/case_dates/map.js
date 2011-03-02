@@ -1,5 +1,9 @@
 function(doc) {
     function make_date_key(dateproperty, datestring, doc) {
+        if (datestring == null) {
+            //if it's null don't bother emitting
+            return;
+        }
         var dateval = new Date(Date.parse(datestring));
         emit([dateproperty,
             dateval.getFullYear(),

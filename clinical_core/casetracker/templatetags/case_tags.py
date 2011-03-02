@@ -18,3 +18,13 @@ def time_interval(date):
     
     datestring = t.render(c).split(',')[0] + " " + time_suffix
     return datestring
+
+
+@register.simple_tag
+def case_column(case, col_name):
+    if hasattr(case, col_name):
+        return case[col_name]
+    else:
+        return " -- noproperty --"
+
+

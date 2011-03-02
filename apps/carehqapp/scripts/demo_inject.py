@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import random_inject
-from casetracker.models import Case, Category, Status, Priority, Priority, ActivityClass
+from casetracker.models import Case, Status, Priority, Priority, ActivityClass
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
 from clincore.utils import generator
@@ -81,7 +81,7 @@ def run():
     """Inject a standard set of data for demo/trial demonstration.
     """
     call_command('loaddata', 'samplesetup-fixture.json')
-    call_command('load_categories')
+#    call_command('load_categories')
     #establish the patient and careteams.
     for t in DEMO_CARETEAMS:
         print t['patient']
@@ -91,15 +91,14 @@ def run():
         for i in range(0,10):
             arr = DEMO_CASES.pop()
             actor_creator = random.choice(all_people)
-            newcase = Case.objects.new_case(Category.objects.all()[0],
-                              actor_creator,
-                              arr[0],
-                              arr[1],
-                              Priority.objects.all()[0],
-                              patient=pt,
-                              status=Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0],
-                              activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
-                              )
+            caregiver_creator = random.choice(all_people)
+            provider_assigned = random.choice(providers)
+            description = arr[0]
+            body = arr[1]
+            newcase = Case.create(caregiver_creator, description, body, assigned_to=provider_assigned)
+            newcase.patient=pt.id
+            newcase.save()
+
 
 #
 #    #establish initial data

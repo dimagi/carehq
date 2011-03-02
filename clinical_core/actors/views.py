@@ -34,3 +34,9 @@ def addProvider(request, template="addProvider.html"):
     else:
         context['form'] = AddProviderForm()
     return render_to_response(template, context)
+
+
+
+def view_actor(request, actor_id, template="actors/single_actor.html"):
+    context = RequestContext(request)
+    return render_to_response(template, context)

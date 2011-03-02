@@ -1,43 +1,49 @@
-from django.db import models
 from datetime import datetime
+import logging
+from casetracker.models.casecore import Case
 
-class CaseManager(models.Manager):
+class CaseManager(object):
+    """
+    CaseManager is a wrapper function to make a manager-like accessor for the couchdb Case document class
+    """
+
+    def get_case(self, case_id):
+        if Case.view('casetracker/cases_by_id',key=case_id).count() == 0:
+            return None
+        else:
+            return Case.view('casetracker/cases_by_id',key=case_id, include_docs=True).first()
+
     def get_authored(self, actor, patient=None, category=None):
-        """Return a queryset authored (opened_by) an actor.
+        """Return a view result of cases opened_by an actor.
         Additional optional filtration by patient and category"""
-        qset = super(CaseManager, self).get_query_set().filter(opened_by=actor)
-        if patient:
-            qset = qset.filter(patient=patient)
-        if category:
-            qset = qset.filter(category=category)
-        return qset
+        if patient != None:
+            logging.warning("Patient filtering is not implemented yet")
+        if category != None:
+            logging.warning("Category filtering is not implemented yet")
+        results = Case.view('casetracker/by_actor', key=['opened_by', actor.id]).all()
+        return results
 
     def get_edited(self, actor, patient=None, category=None):
         """Return a queryset edited (last_edit_by) an actor.
         Additional optional filtration by patient and category"""
-        qset = super(CaseManager, self).get_query_set().filter(last_edit_by=actor)
-        if patient:
-            qset = qset.filter(patient=patient)
-        if category:
-            qset = qset.filter(category=category)
-        return qset
+        results = Case.view('casetracker/by_actor', key=['last_edit_by', actor.id]).all()
+        return results
 
     def get_closed(self, actor, patient=None, category=None):
         """Return a queryset closed (closed_by) an actor.
         Additional optional filtration by patient and category"""
-        qset = super(CaseManager, self).get_query_set().filter(closed_by=actor)
-        if patient:
-            qset = qset.filter(patient=patient)
-        if category:
-            qset = qset.filter(category=category)
-        return qset
+        results = Case.view('casetracker/by_actor', key=['closed_by', actor.id]).all()
+        return results
 
     def get_for_patient(self, patient):
         """Return a queryset of cases that are linked to a patient.  Technically this is redundant to the patient instance method for getting cases"""
-        qset = super(CaseManager, self).get_query_set().filter(patient=patient)
-        return qset
+        if patient == None:
+            results =Case.view('casetracker/by_patient', key=None).all()
+        else:
+            results = Case.view('casetracker/by_patient', key=patient.id).all()
+        return results
 
-    def get_all_activities(self, actor, patient=None, category=None, activity=None):
+    def actor_activities(self, actor, patient=None, category=None, activity=None):
         """Returns a queryset of any case touched by actor with other filtrations
         """
         qset = super(CaseManager, self).get_query_set().filter(case_events__created_by=actor)
