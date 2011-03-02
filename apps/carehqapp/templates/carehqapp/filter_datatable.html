@@ -1,12 +1,12 @@
 {# note, depredcating filter_datatable to use the queryset.html generic template for case filters #}
 
 {% load filter_tags %}
-<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery-1.4.1.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}ashandapp/js/jquery-1.4.1.min.js"></script>
 
-<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table.css" type="text/css">
-<link rel="stylesheet" href="{{MEDIA_URL}}ashandapp/css/demo_table_jui.css" type="text/css">
-<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="{{MEDIA_URL}}ashandapp/js/datatable.dateformat.js"></script>
+<link rel="stylesheet" href="{{STATIC_URL}}ashandapp/css/demo_table.css" type="text/css">
+<link rel="stylesheet" href="{{STATIC_URL}}ashandapp/css/demo_table_jui.css" type="text/css">
+<script type="text/javascript" src="{{STATIC_URL}}ashandapp/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}ashandapp/js/datatable.dateformat.js"></script>
 
 {% with display_filter as filter %}
 <script type="text/javascript">
@@ -14,7 +14,7 @@ $(document).ready(function() {
 	$('.{{grid_name}}').dataTable( {
 		"bJQueryUI": true,
 		"iDisplayLength": 25,
-		"bProcessing": '<img src="{{MEDIA_URL}}ashandapp/img/ajax-loader.gif">',
+		"bProcessing": '<img src="{{STATIC_URL}}ashandapp/img/ajax-loader.gif">',
 		"sAjaxSource": "{% url json_string %}",
 		"sPaginationType": "two_button",		
 		{% autoescape off %}

@@ -9,30 +9,30 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         {% block stylesheets %}
 			<!-- stylesheets -->
-	        <link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/blueprint/screen.css" type="text/css" media="screen, projection">
-	        <link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/blueprint/print.css" type="text/css" media="print">
+	        <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/blueprint/screen.css" type="text/css" media="screen, projection">
+	        <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/blueprint/print.css" type="text/css" media="print">
 	        <!--[if lt IE 8]>
-	        <link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/blueprint/ie.css" type="text/css" media="screen, projection">
+	        <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/blueprint/ie.css" type="text/css" media="screen, projection">
 	        <![endif]-->
 
-	        <link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/ashand.css" type="text/css">
-            <link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/jquery-ui-1.8.custom.css" type="text/css">
-			<link rel="stylesheet" href="{{MEDIA_URL}}carehqapp/css/flickr-menu-style.css" type="text/css">
+	        <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/ashand.css" type="text/css">
+            <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/jquery-ui-1.8.custom.css" type="text/css">
+			<link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/flickr-menu-style.css" type="text/css">
 	        {% block page_stylesheets %}{% endblock %}        
         {% endblock %} {# stylesheets #}
         
         <!-- javascripts (global, app, page) -->
-        <script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery-ui-1.8.custom.min.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery.address-1.1.min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery-ui-1.8.custom.min.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.address-1.1.min.js"></script>
 		
-{#		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/pmenu/jquery.ui.potato.menu.js"></script>#}
-{#		<link rel="stylesheet" type="text/css" href="{{MEDIA_URL}}carehqapp/pmenu/jquery.ui.potato.menu.css">#}
+{#		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/pmenu/jquery.ui.potato.menu.js"></script>#}
+{#		<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}carehqapp/pmenu/jquery.ui.potato.menu.css">#}
 				
-		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery.flickrmenu.js"></script>
-        <script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/careteam.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery.cookie.yc.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}carehqapp/js/jquery.timeago.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.flickrmenu.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/careteam.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.cookie.yc.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.timeago.js"></script>
 		
         {% block extrahead %}{% endblock %}
     </head>
@@ -71,7 +71,7 @@
 				{% block branding %}
 				<div class="span-2">                    
 					<a title="Home" href="{% url home %}">
-					<img src="{{MEDIA_URL}}carehqapp/img/dimagilogo.png">
+					<img src="{{STATIC_URL}}carehqapp/img/dimagilogo.png">
 					</a>                    
 				</div>
 				{% endblock branding %}              
