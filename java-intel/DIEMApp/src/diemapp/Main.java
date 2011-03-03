@@ -52,7 +52,7 @@ public class Main {
 
             //System.out.println(secSvc.Ping(3));
             SessionService sessSvc = new SessionService(secSvc);
-
+            System.out.println("Got session");
             Patient ptzero = sessSvc.GetPatient(SessionService.DimagiZeroID);
 
                /*

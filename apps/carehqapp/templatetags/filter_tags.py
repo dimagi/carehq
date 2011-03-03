@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 
-from casetracker.models import  CaseEvent, Status
+from casetracker.models import  CaseEvent
 from datetime import datetime
 from casetracker.models.casecore import Case
 from patient.models.djangomodels import Patient
@@ -95,8 +95,8 @@ def render_filter_heading(heading_object):
         return "<h3>%s</h3>" % heading_object.full_name
     elif isinstance(heading_object, Actor):
         return "<h3>By: %s</h3>" % heading_object.title
-    elif isinstance(heading_object, Status):
-        return "some status"
+#    elif isinstance(heading_object, Status):
+#        return "some status"
     else:
         return ""
 
@@ -140,8 +140,8 @@ def render_case_column(case, gridorder, plain_text=True):
             datastring = data.title
         elif isinstance(data, CaseEvent):
             return data.activity.get_event_class_display()
-        elif isinstance(data, Status):
-            return data.get_state_class_display()
+#        elif isinstance(data, Status):
+#            return data.get_state_class_display()
         elif isinstance(data, unicode) or isinstance(data, str):            
             if column == 'description':
                 if case.category.slug == 'HomeMonitoring':

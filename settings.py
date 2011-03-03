@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'staticfiles',
     'django_extensions',
     'django_digest',
+    #'south',
     #end third party apps
 
     ###########################

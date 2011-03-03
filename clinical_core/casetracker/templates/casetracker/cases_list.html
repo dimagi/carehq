@@ -37,7 +37,7 @@
     {% for case in cases %}
         <tr>
             <td>
-                <a href="{% url manage-case case.get_id %}">View Case</a>
+                <a href="{% url manage-case case.id %}">View Case</a>
             </td>
             {% for col in columns %}
             <td>

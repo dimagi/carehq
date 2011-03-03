@@ -56,7 +56,7 @@ class CaseEvent(models.Model):
         super(CaseEvent, self).save()
 
     def __unicode__(self):
-        return "Event (%s} by %s on %s" % (self.activity.slug, self.created_by.title(), self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
+        return "Event (%s} by %s on %s" % (self.activity, self.created_by, self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
 
     class Meta:
         app_label = 'casetracker'
@@ -119,21 +119,21 @@ class Case(models.Model):
 
     @property
     def is_active(self):
-        if self.status.state_class == constants.CASE_STATE_OPEN:
+        if self.status == constants.CASE_STATE_OPEN:
             return True
         else:
             return False
 
     @property
     def is_resolved(self):
-        if self.status.state_class == constants.CASE_STATE_RESOLVED or self.status.state_class == constants.CASE_STATE_CLOSED:
+        if self.status == constants.CASE_STATE_RESOLVED or self.status == constants.CASE_STATE_CLOSED:
             return True
         else:
             return False
 
     @property
     def is_closed(self):
-        if self.status.state_class == constants.CASE_STATE_CLOSED:
+        if self.status == constants.CASE_STATE_CLOSED:
             return True
         else:
             return False
@@ -229,13 +229,12 @@ class Case(models.Model):
             raise Exception("Missing fields in edited Case: last_edit_by")
 
         #now, we need to check the status change being done to this.
-        state_class = self.status.state_class
-        if state_class == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+        if self.status == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
             if self.resolved_by == None:
                 raise Exception("Case state is now resolved, you must set a resolved_by")
             else:
                 self.resolved_date = datetime.utcnow()
-        elif state_class == constants.CASE_STATE_CLOSED:
+        elif self.status == constants.CASE_STATE_CLOSED:
             if self.closed_by == None:
                 raise Exception("Case state is now closed, you must set a closed_by")
             else:

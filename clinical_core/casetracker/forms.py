@@ -4,7 +4,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 
 from django import forms
 from django.forms import widgets
-from casetracker.models import Case, Status
+from casetracker.models import Case
 from casetracker import constants
 
 class CaseCommentForm(forms.Form):    
@@ -37,9 +37,7 @@ class CaseResolveCloseForm(forms.Form):
         if case is None:
             raise Exception("Error, you must pass in a valid case to process this form")
 
-        state_qset = Status.objects.filter(category=case.category).filter(state_class=state_class)
-        self.fields['state'].queryset = state_qset
-        self.fields['state'].choices = [(x.id, x.display.title()) for x in state_qset]
+        #self.fields['state'].choices = [(x.id, x.display.title()) for x in state_qset]
 
         #Thanks Django documentation to help set the initial value of the RadioSelect widget.
         #oh wait, yeah, THE DOC FOR THIS DOES NOT EXIST!!!

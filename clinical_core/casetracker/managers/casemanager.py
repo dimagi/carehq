@@ -62,7 +62,6 @@ class CaseManager(models.Manager):
 
         if status != None:
             newcase.status = status
-        #newcase.status = Status.objects.filter(state_class=constants.CASE_STATE_OPEN)[0] #get the default opener - this is a bit sketchy
         newcase.description = description
         newcase.body = body
 

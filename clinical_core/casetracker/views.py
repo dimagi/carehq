@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from casetracker.models import Case, CaseEvent, ActivityClass
+from casetracker.models import Case, CaseEvent
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
 from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
@@ -43,7 +43,7 @@ def all_cases(request, template_name='casetracker/cases_list.html'):
     count = request.GET.get('count',50)
     group_by = request.GET.get('groupBy','opened_date')
 
-    cases = Case.view('casetracker/case_dates', startkey=['opened_date',], include_docs=True, skip=start, limit=count).all()
+    cases = Case.objects.all().select_related('opened_by','assigned_to','last_edit_by')
     context['cases'] = cases
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
 
@@ -59,15 +59,14 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
     context = RequestContext(request)
-    
-    thecase = casemanager.get_case(case_id)
+    thecase = Case.objects.get(id=case_id)
 
     do_edit = False    
     activity_slug = None
     activity = None
     for key, value in request.GET.items():            
         if key == 'activity':            
-            activity = ActivityClass.objects.get(slug=value)
+            activity = value
     context['case'] = thecase
    
     #template_name = thecase.category.handler.read_template(request, context)
@@ -76,10 +75,10 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
     # Inline Form display
     if activity:                
         context['show_form'] = True
-        context['form_headline' ] = activity.active_tense.title()            
-        
-        if request.method == 'POST': 
-            if activity.event_class == constants.CASE_EVENT_EDIT or activity.event_class == constants.CASE_EVENT_ASSIGN:
+        context['form_headline' ] = activity
+
+        if request.method == 'POST':
+            if activity == constants.CASE_EVENT_EDIT or activity == constants.CASE_EVENT_ASSIGN:
                 form = CaseModelForm(data=request.POST, instance=thecase, editor_user=request.user, activity=activity)
                 context['form'] = form
                 if form.is_valid():                    
@@ -88,7 +87,7 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
                     case.last_edit_by = request.user
                     case.last_edit_date = datetime.utcnow()                    
                     #next, we need to see the mode and flip the fields depending on who does what.
-                    if activity.event_class == constants.CASE_EVENT_ASSIGN:
+                    if activity == constants.CASE_EVENT_ASSIGN:
                         case.assigned_date = datetime.utcnow()
                         case.assigned_by = request.user            
                         edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), case.assigned_to.title(), request.user.title())
@@ -96,7 +95,7 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
                     case.save(activity=activity, save_comment = edit_comment)                                        
                     return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))            
             
-            elif activity.event_class == constants.CASE_EVENT_RESOLVE or activity.event_class == constants.CASE_EVENT_CLOSE:
+            elif activity == constants.CASE_EVENT_RESOLVE or activity == constants.CASE_EVENT_CLOSE:
                 form = CaseResolveCloseForm(data=request.POST, case=thecase, activity=activity)
                 context['form'] = form
                 if form.is_valid():                     
@@ -105,15 +104,15 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
                     thecase.status = status 
                     thecase.last_edit_by = request.user
                     
-                    if activity.event_class == constants.CASE_EVENT_CLOSE:
+                    if activity == constants.CASE_EVENT_CLOSE:
                         thecase.closed_by=request.user
-                    elif activity.event_class == constants.CASE_EVENT_RESOLVE:
+                    elif activity == constants.CASE_EVENT_RESOLVE:
                         thecase.resolved_by=request.user
         
                     thecase.save(activity = activity, save_comment = comment)
                     
                     return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))                    
-            elif activity.event_class == constants.CASE_EVENT_COMMENT:
+            elif activity == constants.CASE_EVENT_COMMENT:
                 form = CaseCommentForm(data=request.POST)
                 context['form'] = form
                 if form.is_valid():    
@@ -122,9 +121,8 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
                     evt = CaseEvent()
                     evt.case = thecase
                     evt.notes = comment
-                    evt.activity = ActivityClass.objects.filter(category=thecase.category)\
-                        .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
-                    evt.created_by = request.user            
+                    evt.activity = constants.CASE_EVENT_COMMENT
+                    evt.created_by = request.user
                     evt.save()
                     return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))
         else:

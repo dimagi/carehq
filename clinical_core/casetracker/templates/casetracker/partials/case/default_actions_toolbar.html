@@ -6,8 +6,8 @@
 {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
 {#			</li>			#}
 {#		{% endfor %}#}
-        <a href="{% url manage-case case.get_id %}?activity=edit">Edit</a>
-        <a href="{% url manage-case case.get_id %}?activity=edit">Foo</a>
-        <a href="{% url manage-case case.get_id %}?activity=edit">Bar</a>
+        <a href="{% url manage-case case.id %}?activity=edit">Edit</a>
+        <a href="{% url manage-case case.id %}?activity=edit">Foo</a>
+        <a href="{% url manage-case case.id %}?activity=edit">Bar</a>
     </ul>
 </div>

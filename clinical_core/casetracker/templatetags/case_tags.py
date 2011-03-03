@@ -23,8 +23,11 @@ def time_interval(date):
 @register.simple_tag
 def case_column(case, col_name):
     if hasattr(case, col_name):
-        return case[col_name]
+        return getattr(case, col_name)
     else:
+        #print case.__dict__.keys()
+        #print col_name
+        #print "\n"
         return " -- noproperty --"
 
 
