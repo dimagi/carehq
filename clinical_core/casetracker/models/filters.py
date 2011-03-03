@@ -5,6 +5,7 @@ from dimagi.utils.make_uuid import make_uuid
 from django.utils.translation import ugettext_lazy as _
 from actors.models.actors import Actor
 from django.db import models
+from casetracker import constants
 
 class Filter(models.Model):
     """
@@ -65,9 +66,9 @@ class Filter(models.Model):
                                      help_text=_('This is the actual method name of the model filter you wish to run.'))
 
     #case related properties
-    #category = models.ForeignKey(Category, null=True, blank=True)
-    #status = models.ForeignKey(Status, null=True, blank=True)
-    #priority = models.ForeignKey(Priority, null=True, blank=True)
+    category = models.CharField(max_length=160, null=True, blank=True, choices=constants.CATEGORY_CHOICES)
+    status = models.CharField(max_length=160, null=True, blank=True, choices=constants.STATUS_CHOICES)
+    priority = models.IntegerField(null=True, blank=True, choices=constants.PRIORITY_CHOICES)
 
     opened_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_opened_by")
     assigned_to = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_assigned_to")

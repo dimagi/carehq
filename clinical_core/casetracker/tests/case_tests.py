@@ -76,8 +76,6 @@ class BasicCaseTests(TestCase):
         new_event_count = Case.view('casetracker/all_case_events_date').count()
         self.assertEqual(new_event_count, old_event_count + 1)
 
-        self.assertNotEqual(case.description, case.orig_description)
-
 
         events = case.events
         self.assertEqual('edit', events[-1].activity.slug)
@@ -115,8 +113,7 @@ class BasicCaseTests(TestCase):
         #quickly verify that the original description is still unchanged
         dbcase = Case.view('casetracker/cases_by_id', key=case._id).first()
         self.assertEqual(dbcase._id, case._id)        
-        self.assertEqual(dbcase.orig_description, desc)
-    
+
 
     def testCaseCreateChildCases(self):
         oldcase = self.testCreateCaseApi()

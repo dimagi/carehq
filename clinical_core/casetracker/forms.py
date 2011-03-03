@@ -75,7 +75,6 @@ class CaseModelForm(DocumentForm):
         #and then the form will display the fields you remove from the exclusion list.
         fields_to_exclude = ['id',
                      'description',
-                     'orig_description',
                      'category',
                      'status',
                      'body',
@@ -95,7 +94,6 @@ class CaseModelForm(DocumentForm):
         
         if event_class == constants.CASE_EVENT_EDIT:
             fields_to_exclude = ['id',
-                     'orig_description',
                      'category',
                      'status',
                      'opened_date',
