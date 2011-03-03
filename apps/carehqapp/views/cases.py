@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
+from lib.crumbs import crumbs
 
 def my_cases_patient(request, template_name = "carehqapp/my_cases_patient.html"):
     context = RequestContext(request)
@@ -27,9 +28,10 @@ def cases_patient(request, patient_id, template_name='carehqapp/cases_patient.ht
     return render_to_response(template_name, context_instance=context)
 
 
-
+@crumbs("Case List", "case_list", "my_profile")
 @login_required
 def case_list(request, template_name="carehqapp/list_cases.html"):
+#    request.breadcrumbs("Case List", reverse(case_list))
     context = RequestContext(request)
     user = request.user
     return render_to_response(template_name, context_instance=context)

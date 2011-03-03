@@ -122,36 +122,32 @@ class Patient(models.Model):
     def grant_care_access(self, actor):
         pass
 
-    def add_actor(self, actor):
-        from actors.models.actors import PatientActorLink
-        pal = PatientActorLink(patient=self, actor=actor, active=True)
+    def add_role(self, role):
+        from actors.models.roles import PatientLink
+        pal = PatientLink(patient=self, role=role, active=True)
         pal.save()
 
-    def add_provider(self, actor):
-        self.add_actor(actor)
+    def add_provider(self, role):
+        self.add_role(role)
 
-    def add_caregiver(self, actor):
-        self.add_actor(actor)
+    def add_caregiver(self, role):
+        self.add_role(role)
 
     def get_caregivers(self):
         """Returns a queryset of actors for this given patient whose role is a caregiver"""
-        from actors.models.actors import PatientActorLink
-        from actors.models.roles import Role
-        all_actors = PatientActorLink.objects.filter(patient=self)
+        from actors.models.roles import Role, PatientLink
+        all_roles = PatientLink.objects.filter(patient=self)
         cg_roles = Role.objects.CaregiverRoles()
-        caregivers = all_actors.filter(actor__role__role_type__in=cg_roles)
+        caregivers = all_roles.filter(role__role_type__in=cg_roles)
         return caregivers
 
-    def get_providers(self):
-        """Returns a queryset of actors for this given patient whose role is a provider"""
-        from actors.models.actors import PatientActorLink
-        from actors.models.roles import Role
-        all_actors = PatientActorLink.objects.filter(patient=self)
-        prov_roles = Role.objects.ProviderRoles()
-
-        providers = all_actors.filter(actor__role__role_type__in=prov_roles)
+    def get_caregivers(self):
+        """Returns a queryset of actors for this given patient whose role is a caregiver"""
+        from actors.models.roles import Role, PatientLink
+        all_roles = PatientLink.objects.filter(patient=self)
+        pr_roles = Role.objects.ProviderRoles()
+        providers = all_roles.filter(role__role_type__in=pr_roles)
         return providers
-
 
 
 

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Add Provider" %}
+{% endblock %}
+
+{% block content %}
+            <h2>Add Provider</h2>
+        <hr />
+        <div class="span-12 last">
+            <form method="POST" action="{% url addProvider %}">
+             <fieldset>
+
+                 <legend>Provider Info</legend>
+                <table>
+                 {% csrf_token %}
+                {{ form.as_table }}
+                <tr><td><input type="submit" va/></td></tr>
+                    </table>
+             </fieldset>
+            </form>
+        </div>
+{% endblock %}

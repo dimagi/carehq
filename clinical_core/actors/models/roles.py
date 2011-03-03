@@ -6,6 +6,7 @@ from clinical_core.patient.models import Patient
 from django.db.models import Q
 
 from dimagi.utils import make_uuid, make_time
+from django.shortcuts import get_object_or_404
 
 
 class RoleManager(models.Manager):
@@ -64,7 +65,10 @@ class Role(models.Model):
         return ct
     
     def __unicode__(self):
-        return "Role Base: %s: %s" % (self.role_type, self.role_uuid)
+        if not self.user:
+            return "(DETACHED) %s: %s" % (self.role_type, self.role_uuid)
+        else:
+            return "%s: %s %s" % (self.role_type, self.user.first_name, self.user.last_name)
 
 class CHW(Role):
     title = models.CharField(max_length=64)
@@ -109,13 +113,18 @@ class Doctor(Role):
     department = models.CharField(max_length=64)
     specialty = models.CharField(max_length=64)
 
+
+
     class Meta:
         app_label = 'actors'
-        verbose_name = "Role (Doctor)"
-        verbose_name_plural = "Roles (Doctor)"
+        verbose_name = "Doctor"
+        verbose_name_plural = "Doctors"
     
     def __unicode__(self):
-        return "Doctor: %s - %s at %s" % (self.title, self.specialty, self.department)
+        if self.user:
+            return "%s %s: %s - %s at %s" % (self.user.first_name, self.user.last_name, self.title, self.specialty, self.department)
+
+        return "%s - %s at %s" % (self.title, self.specialty, self.department)
     
     
 class Caregiver(Role):    
@@ -150,3 +159,18 @@ class PatientRole(Role):
         verbose_name_plural = "Patient Roles"
 
 
+class PatientLink(models.Model):
+    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    patient = models.ForeignKey(Patient)
+    role = models.ForeignKey(Role)
+
+    active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(default=make_time)
+    modified_date = models.DateTimeField(default=make_time)
+
+    class Meta:
+        app_label = 'actors'
+        unique_together = ('patient','role')
+
+    def __unicode__(self):
+        return "Patient(%s) :: %s" % (self.patient, self.actor)

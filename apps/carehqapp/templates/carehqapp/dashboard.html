@@ -22,11 +22,9 @@
 </script>
 {% endblock %}
 {% block content %}
-    <h2>My Dashboard</h2>
-    <div class="span-24 notice">
-        <h3>In the past 24 hours</h3>
-        <p>Lots of stuff</p>
-        <p>happened</p>
+    <div class="span-24 last"><h3>My Dashboard</h3></div>
+    <div class="span-20 last">
+        {% include "carehqapp/partials/feed.html" %}
     </div>
-
+    
 {% endblock %}

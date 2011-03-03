@@ -21,7 +21,6 @@
 	        {% block page_stylesheets %}{% endblock %}        
         {% endblock %} {# stylesheets #}
         
-        <!-- javascripts (global, app, page) -->
         <script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery-1.4.2.min.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery-ui-1.8.custom.min.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.address-1.1.min.js"></script>
@@ -37,61 +36,69 @@
         {% block extrahead %}{% endblock %}
     </head>
     <body>    	
-		{% block tophat %}      		
-  		<div id="tophat">		    	
-			{% block searchbar %}
-                {% comment %}
-			<div id="searchbar">
-			<form method="POST" action="{{request.path}}?activity=issue-event-comment" >
-                {% csrf_token %}
-				<textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>						
-				<input type="hidden" name="next" value="{{ request.path }}" />
-				</form>
-			</div>
-			{% endcomment %}
-			{% endblock searchbar %}
-			{% block auth %}
-			<div id="identityblock">
-				{% if user.is_superuser %}
-				<a href="/admin">Admin</a>
-				{% endif %}
-				
-		        {% if user.is_authenticated %}
-		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
-		        {% else %}
-		            <a href="/accounts/login/">{% trans "Log in" %}</a>
-		        {% endif %}		        
-        	</div>
-        	{% endblock auth %}
-    	</div>	     			
-	    {% endblock tophat %}
-	     
-		<div class="container">
-      		<div class="span-24"> <!-- Header div -->
+
+        <div id="outer-container">
+		<div class="container" id="maincontent">
+
+            {% block tophat %}
+              <div id="tophat">
+                {% block searchbar %}
+                    {% comment %}
+                <div id="searchbar">
+                <form method="POST" action="{{request.path}}?activity=issue-event-comment" >
+                    {% csrf_token %}
+                    <textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>
+                    <input type="hidden" name="next" value="{{ request.path }}" />
+                    </form>
+                </div>
+                {% endcomment %}
+                {% endblock searchbar %}
+
+            </div>
+            {% endblock tophat %}
+
+      		<div class="span-24 last"> <!-- Header div -->
 				{% block branding %}
-				<div class="span-2">                    
+				<div class="span-2">
 					<a title="Home" href="{% url home %}">
 					<img src="{{STATIC_URL}}carehqapp/img/dimagilogo.png">
 					</a>                    
 				</div>
 				{% endblock branding %}              
-				      	
+
+                <div class="span-22 last">
+                                    {% block auth %}
+                <div id="identityblock" class="prepend-15">
+                    {% if user.is_superuser %}
+                    <a href="/admin">Admin</a>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                        <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp; <a href="{%url my_profile %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
+                    {% else %}
+                        <a href="/accounts/login/">{% trans "Log in" %}</a>
+                    {% endif %}
+                </div>
+                {% endblock auth %}
+                </div>
 				{% block navigation_menu %}
-				<div class="span-22 last">
-					{% if user.is_authenticated %}										
+				<div class="span-24 last">
+					{% if user.is_authenticated %}
 					{% navigation_menu %}
 					{% endif %}
 				</div>
-				{% endblock navigation_menu %}					
-				
-				<div id="breadcrumbs" class="span-24">
+				{% endblock navigation_menu %}
+
+				<div id="breadcrumbs" class="span-24 last">
 					{% block breadcrumbs %}
-					{#<span class="crumb">Put &#62; Crumbs &#62; </span>#}
-					{#<span class="active">Here</span>#} 
+                        {% for breadcrumb in request.breadcrumbs %}
+                            <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>{% if not forloop.last %} &gt; {% endif %}
+                        {% endfor %}
 					{% endblock breadcrumbs %}
 				</div>
+              <hr />
 			</div> <!-- end header class -->            
-	
+
             {% if USE_I18N %}
                 <div id="language" class="span-8 prepend-16">
                     <form action="/i18n/setlang/" method="post" style="float:right">
@@ -107,8 +114,21 @@
                     </form>
              	</div>
             {% endif %}
-            
-            <div class="span-24">
+
+
+            <div class="span-24 last page-title">
+                {% block page_title %}
+                {% endblock %}
+            </div>
+            {% if messages %}
+               <div class="span-24 last messages" id="messages">
+                    {% for message in messages %}
+                        <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="span-24 last" id="content">
             {% block content %}
 			{% endblock %}
             </div>
@@ -125,5 +145,6 @@
             {% endblock %}            
         </div>
       </div>
+    </div>
     </body>
 </html>

@@ -1,5 +1,5 @@
-from roles import *
-
+from dimagi.utils import make_uuid
+from clinical_core.actors.models.roles import *
 
 class ActorManager(models.Manager):
     def for_user(self, user):
@@ -49,7 +49,7 @@ class ActorPermissionManager(models.Manager):
         For a given patient, and a given login, this is a challenge to verify that the user has a role.
         Returns a Queryset of the roles that the user has for the given patient.
         """
-        ptlinks = PatientActorLink.objects.filter(patient=patient, actor__role__user=user, active=True)
+        ptlinks = PatientLink.objects.filter(patient=patient, actor__role__user=user, active=True)
         #ok, so we have the PatientActorLinks
         roles = ptlinks.values_list('actor__role__id', flat=True)
         return Role.objects.all().filter(id__in=roles)
@@ -58,13 +58,13 @@ class ActorPermissionManager(models.Manager):
         """
         Manager method to return actors for a given patient
         """
-        return Actor.objects.filter(id__in=PatientActorLink.objects.filter(patient=patient).values_list('actor__id', flat=True))
+        return Actor.objects.filter(id__in=PatientLink.objects.filter(patient=patient).values_list('actor__id', flat=True))
     
     def get_patients(self):
         """
         For this actor, return if this actor has patients under its care.
         """
-        pals = PatientActorLink.objects.filter(actor=self).values_list('patient__id', flat=True)
+        pals = PatientLink.objects.filter(actor=self).values_list('patient__id', flat=True)
         return Patient.objects.filter(id__in=pals)
     
 #    def get_providers(self, patient):
@@ -75,7 +75,7 @@ class ActorPermissionManager(models.Manager):
 #        doc_type = ContentType.objects.get_for_model(Doctor)
 #        q_doctype = Q(actor__role__role_type=doc_type)
 #        q_triagetype = Q(actor__role__role_type=triage_type)
-#        return Actor.objects.filter(id__in=PatientActorLink.objects.filter(q_doctype | q_triagetype).values_list('actor__id', flat=True))
+#        return Actor.objects.filter(id__in=PatientLink.objects.filter(q_doctype | q_triagetype).values_list('actor__id', flat=True))
 #
 #    def get_caregivers(self, patient):
 #        """
@@ -83,7 +83,7 @@ class ActorPermissionManager(models.Manager):
 #        """
 #        caregiver_type = ContentType.objects.get_for_model(Caregiver)
 #        q_caregiver_type = Q(actor__role__role_type=caregiver_type)
-#        return Actor.objects.filter(PatientActorLink.objects.filter(q_caregiver_type).values_list('actor__id', flat=True))
+#        return Actor.objects.filter(PatientLink.objects.filter(q_caregiver_type).values_list('actor__id', flat=True))
 #
     def can_view(self, patient, user):
         if patient.user == user:
@@ -92,8 +92,8 @@ class ActorPermissionManager(models.Manager):
 
         triage_type= ContentType.objects.get_for_model(TriageNurse)
         doc_type = ContentType.objects.get_for_model(Doctor)
-        q_doctype = Q(actor__role__role_type=doc_type)
-        q_triagetype = Q(actor__role__role_type=triage_type)
+        q_doctype = Q(role__role_type=doc_type)
+        q_triagetype = Q(role__role_type=triage_type)
 
         caregiver_type = ContentType.objects.get_for_model(Caregiver)
         q_caregiver_type = Q(actor__role__role_type=caregiver_type)        
@@ -101,7 +101,7 @@ class ActorPermissionManager(models.Manager):
         q_actor_query = Q(actor__role__user=user)
         q_patient = Q(patient=patient)
         
-        links = PatientActorLink.objects.filter(q_actor_query, q_patient)
+        links = PatientLink.objects.filter(q_actor_query, q_patient)
         if links.count() > 0:
             return True
         else:
@@ -113,7 +113,8 @@ class Actor(models.Model):
     The Actor is the primary way in which an authenticated User gets mapped to a particular role and permission through the system.     
     """    
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)    
-    role = models.ForeignKey(Role, unique=True) #Multiple roles, multiple actors.  this essentially makes it a 1:1 mapping of actors to roles.  Revocation of actor access is done at the actor level, retaining the Role instance.
+    role = models.ForeignKey(Role, unique=True)
+    #Multiple roles, multiple actors.  this essentially makes it a 1:1 mapping of actors to roles.  Revocation of actor access is done at the actor level, retaining the Role instance.
 
     objects = ActorManager()
     permissions = ActorPermissionManager()
@@ -128,11 +129,11 @@ class Actor(models.Model):
         Property that retuns queryset of patients that this actor can view.
         Was originally a many to many through, but it now needs to be explicitly defined.
         """
-        link_patient_ids = PatientActorLink.objects.filter(actor=self).values_list('patient__id', flat=True)
+        link_patient_ids = PatientLink.objects.filter(actor=self).values_list('patient__id', flat=True)
         return Patient.objects.filter(id__in=link_patient_ids)
     
     def __unicode__(self):
-        return "Actor [%s] is a %s" % (self.role.description, self.role)
+        return "[%s] is a %s" % (self.role.description, self.role)
 
     @property
     def title(self):
@@ -143,22 +144,6 @@ class Actor(models.Model):
         verbose_name = "Actor"
         verbose_name_plural = "Actors"        
 
-
-class PatientActorLink(models.Model):
-    id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    patient = models.ForeignKey(Patient)
-    actor = models.ForeignKey(Actor)
-    
-    active = models.BooleanField(default=True)
-    created_date = models.DateTimeField(default=make_time)
-    modified_date = models.DateTimeField(default=make_time)    
-    
-    class Meta:
-        app_label = 'actors'
-        unique_together = ('patient','actor')
-    
-    def __unicode__(self):
-        return "Patient(%s) :: %s" % (self.patient, self.actor)
 
 
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}
+    Patients: {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            <h2>Patients: {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h2>
+        </div>
+        <div id="results">
+            {% if patients %}
+                <table id="patients-table">
+                    <thead><tr><td>First Name</td><td>Last Name</td></tr></thead>
+                    <!-- empty -->
+                    <tbody id="patient-list">
+                    {% for p in patients %}
+                        <tr><td><h4><a href="{% url pactcarehq.views.patient_view cpatient.django_uuid %}">{{p.cget_last_name}}, {{p.cget_first_name}}</a></h4></td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="nopatients">No patients on file for this provider.</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
