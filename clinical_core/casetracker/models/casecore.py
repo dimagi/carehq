@@ -3,7 +3,7 @@ from itertools import chain
 from django.db import models
 
 from django.db.models import Q
-from clinical_core.actors.models import Actor
+from clinical_core.actors.models import Role
 
 from datetime import datetime, timedelta
 from casetracker.middleware import threadlocals
@@ -39,7 +39,7 @@ class CaseEvent(models.Model):
     activity = models.CharField(choices=constants.CASE_EVENT_CHOICES, max_length=160)
 
     created_date = models.DateTimeField()
-    created_by = models.ForeignKey(Actor)
+    created_by = models.ForeignKey(Role)
     parent_event = models.ForeignKey("self", blank=True, null=True, related_name="child_events")
 
     def save(self, unsafe=False):
@@ -91,19 +91,19 @@ class Case(models.Model):
 
 
     opened_date = models.DateTimeField()
-    opened_by = models.ForeignKey(Actor, related_name="case_opened_by") #cannot be null because this has to have originated from somewhere
+    opened_by = models.ForeignKey(Role, related_name="case_opened_by") #cannot be null because this has to have originated from somewhere
 
-    assigned_to = models.ForeignKey(Actor, related_name="case_assigned_to", null=True, blank=True)
+    assigned_to = models.ForeignKey(Role, related_name="case_assigned_to", null=True, blank=True)
     assigned_date = models.DateTimeField(null=True, blank=True)
 
     last_edit_date = models.DateTimeField(null=True, blank=True)
-    last_edit_by = models.ForeignKey(Actor, related_name="case_last_edit_by", null=True, blank=True)
+    last_edit_by = models.ForeignKey(Role, related_name="case_last_edit_by", null=True, blank=True)
 
     resolved_date = models.DateTimeField(null=True, blank=True)
-    resolved_by = models.ForeignKey(Actor, related_name="case_resolved_by", null=True, blank=True)
+    resolved_by = models.ForeignKey(Role, related_name="case_resolved_by", null=True, blank=True)
 
     closed_date = models.DateTimeField(null=True, blank=True)
-    closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
+    closed_by = models.ForeignKey(Role, related_name="case_closed_by", null=True, blank=True)
 
     due_date = models.DateTimeField(null=True, blank=True)
 

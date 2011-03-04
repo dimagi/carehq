@@ -5,9 +5,9 @@
 			headClass: "head_menu",
 			subClass: "sub_menu",
 			arrowClass: "arrow",
-			arrowPic: "/media/carehqapp/img/arrow.png",
-			arrowPicA: "/media/carehqapp/img/arrow_select.png",
-			arrowPicH: "/media/carehqapp/img/arrow_hover.png",
+			arrowPic: "/static/carehqapp/img/arrow.png",
+			arrowPicA: "/static/carehqapp/img/arrow_select.png",
+			arrowPicH: "/static/carehqapp/img/arrow_hover.png",
 		};
 		
 		var options = $.extend(defaults, options); 

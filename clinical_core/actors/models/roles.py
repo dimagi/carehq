@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from actors.models.permissions import RolePermissionManager, RoleIdentityManager
 from clinical_core.patient.models import Patient
 from django.db.models import Q
 
@@ -41,7 +42,9 @@ class Role(models.Model):
     role_object = generic.GenericForeignKey('role_type', 'role_uuid')
     user = models.ForeignKey(User, blank=True, null=True)
 
-    objects=RoleManager()
+    objects = RoleManager()
+    permissions = RolePermissionManager()
+    identities = RoleIdentityManager()
 
     @property
     def description(self):

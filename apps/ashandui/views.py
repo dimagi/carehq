@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from forms import AddProviderForm
 from django.db.models import Q
 from forms import LinkProviderForm, LinkProviderForm
-from clinical_core.actors.models.actors import PatientActorLink, Actor
 from clinical_core.actors.models.roles import Doctor
 from clinical_core.patient.models.djangomodels import Patient
 from lib.crumbs import crumbs

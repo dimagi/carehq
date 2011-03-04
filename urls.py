@@ -10,7 +10,7 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
-                        (r'^accounts/login/$', 'carehqapp.views.account.login',
+                        (r'^accounts/login/$', 'django.contrib.auth.views.login',
                                                 {"template_name": settings.LOGIN_TEMPLATE }),
                         (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login',
                                                 ),
@@ -51,8 +51,7 @@ for module_name in settings.INSTALLED_APPS:
     # these files should be served directly
 if settings.DEBUG:
     urlpatterns += patterns('staticfiles.views', url(r'^static/(?P<path>.*)$', 'serve'), )
-#
-#
+
 #        if not settings.MEDIA_URL.startswith("http://"):
 #            media_prefix = settings.MEDIA_URL.strip("/")
 #            module_suffix = module_name.split(".")[-1]

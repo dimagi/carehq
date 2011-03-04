@@ -3,7 +3,7 @@ from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
 from django.utils.translation import ugettext_lazy as _
-from actors.models.actors import Actor
+from actors.models import Role
 from django.db import models
 from casetracker import constants
 
@@ -53,7 +53,7 @@ class Filter(models.Model):
 
     #metadata about the query
     description = models.CharField(max_length=64)
-    creator = models.ForeignKey(Actor, related_name="filter_creator", null=True, blank=True)
+    creator = models.ForeignKey(Role, related_name="filter_creator", null=True, blank=True)
     shared = models.BooleanField(default=False)
 
 
@@ -70,11 +70,11 @@ class Filter(models.Model):
     status = models.CharField(max_length=160, null=True, blank=True, choices=constants.STATUS_CHOICES)
     priority = models.IntegerField(null=True, blank=True, choices=constants.PRIORITY_CHOICES)
 
-    opened_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_opened_by")
-    assigned_to = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_assigned_to")
-    last_edit_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_last_edit_by")
-    resolved_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_resolved_by")
-    closed_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_closed_by")
+    opened_by = models.ForeignKey(Role, null=True, blank=True, related_name="filter_opened_by")
+    assigned_to = models.ForeignKey(Role, null=True, blank=True, related_name="filter_assigned_to")
+    last_edit_by = models.ForeignKey(Role, null=True, blank=True, related_name="filter_last_edit_by")
+    resolved_by = models.ForeignKey(Role, null=True, blank=True, related_name="filter_resolved_by")
+    closed_by = models.ForeignKey(Role, null=True, blank=True, related_name="filter_closed_by")
 
     opened_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     assigned_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
@@ -85,7 +85,7 @@ class Filter(models.Model):
     #case Event information
     #last_event_type = models.ForeignKey(ActivityClass, null=True, blank=True)
     last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
-    last_event_by = models.ForeignKey(Actor, null=True, blank=True)
+    last_event_by = models.ForeignKey(Role, null=True, blank=True)
 
 
     def get_absolute_url(self):
@@ -179,7 +179,7 @@ class Filter(models.Model):
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))
 
         #now, we got the queries built up, let's run the queries
-        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'status', 'category', 'priority', 'carteam_set').all()
+        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'carteam_set').all()
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain

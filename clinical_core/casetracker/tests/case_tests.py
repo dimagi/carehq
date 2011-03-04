@@ -56,19 +56,19 @@ class EventActivityVerificationTest(TestCase):
         user1 = generator.get_or_create_user()
         user2 = generator.get_or_create_user()
 
-        actor1 = generator.generate_actor(user1, 'caregiver')
-        actor2 = generator.generate_actor(user2, 'provider')
+        role1 = generator.generate_role(user1, 'caregiver')
+        role2 = generator.generate_role(user2, 'provider')
 
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
 
 #        newcase = Case()
 #        newcase.description = description
-#        newcase.opened_by = actor1
-#        newcase.last_edit_by = actor1
+#        newcase.opened_by = role1
+#        newcase.last_edit_by = role1
 #
 #        newcase.assigned_date = datetime.utcnow()
-#        newcase.assigned_to = actor2
+#        newcase.assigned_to = role2
 #        newcase.category = Category.objects.all()[0]
 #        newcase.status = Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0]
 #        newcase.priority = Priority.objects.all()[0]
@@ -76,7 +76,7 @@ class EventActivityVerificationTest(TestCase):
 #        newcase.save(activity=activity)
 
         newcase = Case.objects.new_case(constants.CATEGORY_CHOICES[0][0],
-                              actor1,
+                              role1,
                               description,
                               "mock body %s" % (uuid.uuid1().hex),
                               constants.PRIORITY_MEDIUM,
@@ -104,7 +104,7 @@ class EventActivityVerificationTest(TestCase):
         self.testCreateCaseApi(description=desc)
 
         user1 = generator.get_or_create_user()
-        actor1 = generator.generate_actor(user1, 'provider')
+        actor1 = generator.generate_role(user1, 'provider')
 
 
         case = Case.objects.all().get(description=desc)
@@ -131,7 +131,7 @@ class EventActivityVerificationTest(TestCase):
     def testCaseCreateChildCases(self):
         self.testCreateCaseApi()
         user1 = generator.get_or_create_user()
-        actor1 = generator.generate_actor(user1, 'provider')
+        role1 = generator.generate_role(user1, 'provider')
 
         case = Case.objects.all().get(description =INITIAL_DESCRIPTION)
         CHILD_CASES=10
@@ -139,7 +139,7 @@ class EventActivityVerificationTest(TestCase):
             desc = uuid.uuid1().hex
             newcase = self.testCreateCaseApi(description=desc)
             newcase.parent_case = case
-            newcase.last_edit_by = actor1
+            newcase.last_edit_by = role1
             activity = constants.CASE_EVENT_EDIT
             newcase.save_comment="editing in testCaseCreateChildCases"
             newcase.save(activity=activity)

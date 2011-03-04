@@ -5,4 +5,4 @@ register = template.Library()
 @register.inclusion_tag('carehqapp/site_navigation_menu.html', takes_context=True)
 def navigation_menu(context):
     newcontext = {}
-    return newcontext
+    return context

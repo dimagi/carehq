@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load case_tags %}
+{% block title %}{% trans "Casetracker Reference" %}{% endblock title %}
+{% block extrahead %}
+
+{% endblock extrahead %}
+{% block content %}
+<h2>Casetracker application reference views</h2>
+<div class="ui-tabs span-24">
+<a href="{% url casetracker.views.debug_reference %}">Reference Dashboard</a> &nbsp; | &nbsp;
+</div>
+
+<div class="span-24">
+<div class="span-8">
+    <h2>Users</h2>
+    <ul>
+    {% for user in users %}
+        <li>
+            {{ user.id }} {{ user.username }} <a href="{% url casetracker.views.user_cases user.id %}">User Cases</a>
+        </li>
+    {% endfor %}
+    </ul>
+
+</div>
+<div class="span-8">
+    <h2>Roles</h2>
+    <ul>
+    {% for role in roles %}
+        <li>
+            {{ role }} <a href="{% url casetracker.views.role_cases role.id %}">Role Cases</a>
+        </li>
+
+    {% endfor %}
+    </ul>
+</div>
+
+<div class="span-8 last">
+    <h2>Patients</h2>
+    <ul>
+    {% for patient in patients %}
+    <li>
+        {{ patient }} <a href="{% url casetracker.views.patient_cases patient.id %}">Patient Cases</a>
+    </li>
+    {% endfor %}
+    </ul>
+
+</div>
+
+</div>
+{% endblock content %}

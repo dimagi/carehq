@@ -12,7 +12,6 @@ urlpatterns = patterns('carehqapp.views',
 
 
 
-#
 #    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 #
 #    #main navigation tabs
@@ -27,8 +26,6 @@ urlpatterns = patterns('carehqapp.views',
 #    url(r'^grid/cases/triage$', 'ashandapp.views.cases.queries.grid_triage_cases', name='grid_triage_cases'),
 #    url(r'^grid/cases/caregiver$', 'ashandapp.views.cases.queries.grid_caregiver_cases', name='grid_caregiver_cases'),
 #    url(r'^grid/cases/recent$', 'ashandapp.views.cases.queries.grid_recent_activity', name='grid_recent_activity'),
-#
-#
 #
 #    url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),
 #    url(r'^careteam/mine/$', 'ashandapp.views.careteam.network.my_careteam', name='my_careteam'),
@@ -49,6 +46,5 @@ urlpatterns = patterns('carehqapp.views',
 #
 #    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/question$', 'ashandapp.views.cases.create.new_question'),
 #    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/issue$', 'ashandapp.views.cases.create.new_issue'),
-
-)    
+)
     

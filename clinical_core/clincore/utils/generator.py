@@ -135,7 +135,7 @@ def get_or_create_user(first_name=None, last_name=None, always_new=True):
        user.save()
     return user
 
-def get_or_create_actor(user, role_type, title_string=None, department_string=None, always_create=True):
+def get_or_create_role(user, role_type, title_string=None, department_string=None, always_create=True):
     #next see if there are any roles for this user already
     existing_roles = Role.objects.all().filter(user=user)
     role = None
@@ -159,13 +159,9 @@ def get_or_create_actor(user, role_type, title_string=None, department_string=No
     else:
         print "\tUsing existing role"
 
-    if Actor.objects.filter(role=role).count() > 0:
-        print "\t\tFound existing actor"
-        return Actor.objects.all().filter(role=role)[0]
-    else:
-        print "\t\tCreating new actor"
-        act = Actor.objects.create_actor(role)
-        return act
+    return role
+
+
 
 def generate_role(user, role_type_string, title_string=None, department_string=None):
     """Helper function to generate a role.
@@ -206,10 +202,10 @@ def mock_case():
     user2 = get_or_create_user(always_new=False)
 
     print "Got mock users"
-    caregiver_creator = get_or_create_actor(user1, 'caregiver', title_string="some caregiver " + random_word(length=12),  department_string="some department " + random_word(length=12), always_create=False)
-    provider_assigned = get_or_create_actor(user2, 'provider', title_string="some provider " + random_word(length=12),  always_create=False)
+    caregiver_creator = get_or_create_role(user1, 'caregiver', title_string="some caregiver " + random_word(length=12),  department_string="some department " + random_word(length=12), always_create=False)
+    provider_assigned = get_or_create_role(user2, 'provider', title_string="some provider " + random_word(length=12),  always_create=False)
 
-    print "Got Actors"
+    print "Got Roles"
     print "Creating Patient..."
     patient = get_or_create_patient(get_or_create_user(always_new=False))
     print "Got Patient"
@@ -231,10 +227,10 @@ def generate_case(creator, description, body, assigned_to, subtype=None):
     newcase = casetype.create(creator, description, body, assigned_to=assigned_to)
     return newcase
 
-def generate_actor(user, role_type, title_string=None, department_string=None, always_create=True):
-    role = generate_role(user, role_type,title_string=title_string, department_string=department_string)
-    act = Actor.objects.create_actor(role)
-    return act
+#def generate_actor(user, role_type, title_string=None, department_string=None, always_create=True):
+#    role = generate_role(user, role_type,title_string=title_string, department_string=department_string)
+#    act = Actor.objects.create_actor(role)
+#    return act
 
 def generate_patient_and_careteam(team_dictionary=None):
     """Bootstrap function to generate a mock patient with a careteam around it.
@@ -254,16 +250,16 @@ def generate_patient_and_careteam(team_dictionary=None):
         cg_arr = team_dictionary['caregivers']
         for arr in cg_arr:
             cguser = get_or_create_user(first_name=arr[0], last_name=arr[1])
-            cgact = get_or_create_actor(cguser, 'caregiver', None, None)
-            patient.add_caregiver(cgact)
-            caregivers.append(cgact)
+            cgrole = get_or_create_role(cguser, 'caregiver', None, None)
+            patient.add_caregiver(cgrole)
+            caregivers.append(cgrole)
 
         prov_arr = team_dictionary['providers']
         for arr in prov_arr:
             provuser = get_or_create_user(first_name=arr[0], last_name=arr[1])
-            provact = get_or_create_actor(provuser, 'provider', arr[2], arr[3])
-            patient.add_provider(provact)
-            providers.append(provact)
+            provrole = get_or_create_role(provuser, 'provider', arr[2], arr[3])
+            patient.add_provider(provrole)
+            providers.append(provrole)
     else:
         patient = get_or_create_patient(user=ptuser)
 
@@ -280,9 +276,9 @@ def generate_patient_and_careteam(team_dictionary=None):
 
         max_providers = random.randint(1, MAX_PROVIDERS)
         for cg in range(max_providers):
-            provactor = generate_actor(get_or_create_user(), 'provider')
-            patient.add_provider(provactor)
-            providers.append(provactor)
+            provrole = get_or_create_role(get_or_create_user(), 'provider', None, None)
+            patient.add_provider(provrole)
+            providers.append(provrole)
 
         print "Generated %d providers" % (len(providers))
         print "Generated %d caregivers" % (len(caregivers))

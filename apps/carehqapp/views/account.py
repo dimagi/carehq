@@ -16,4 +16,4 @@ def my_profile(request, template_name = "carehqapp/my_profile.html"):
     return render_to_response(template_name, context_instance=context)
 
 def login(req, template_name="/registration/login.html"):
-    return audit_login(req, template_name)
+    return audit_login(None, request=req, user=req.user)

@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime
+from django.contrib.auth.models import User
 from django.http import  Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from actors.models.roles import Role
 from casetracker.models import Case, CaseEvent
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
@@ -12,6 +14,7 @@ from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseFo
 
 #taken from the threadecomments django project
 from casetracker.models.filters import Filter
+from patient.models.djangomodels import Patient
 
 def _get_next(request):
     """
@@ -197,9 +200,67 @@ def view_filter(request, filter_id):
     template_name='casetracker/filter/filter_simpletable.html'
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+def debug_reference(request, template_name="casetracker/debug_reference.html"):
+    users = User.objects.all()
+    roles = Role.objects.all()
+    patients = Patient.objects.all()
+    context = RequestContext(request)
+    context['users'] = users
+    context['roles'] = roles
+    context['patients'] = patients
+    return render_to_response(template_name, context_instance=context)
 
 
+def all_users(request, template_name="casetracker/all_users.html"):
+    users = User.objects.all()
+    context = RequestContext(request)
+    context['users'] = users
+    return render_to_response(template_name, context_instance=context)
 
+def all_roles(request, template_name="casetracker/all_roles.html"):
+    roles = Roles.objects.all()
+    context = RequestContext(request)
+    context['roles'] = roles
+    return render_to_response(template_name, context_instance=context)
 
+def all_patients(request, template_name="casetracker/all_patients.html"):
+    patients = Patient.objects.all()
+    context = RequestContext(request)
+    context['patients'] = patients
+    return render_to_response(template_name, context_instance=context)
 
+def user_cases(request, user_id, template_name="casetracker/user_cases.html"):
+    casefilter = str(request.GET.get('casefilter', 'opened_by'))
+
+    context = RequestContext(request)
+    user = User.objects.get(id=user_id)
+    roles = Role.identities.for_user(user)
+    role_cases = [(role, Case.objects.filter(**{casefilter: role}))for role in roles]
+
+    context['user'] = user
+    context['casefilter'] = casefilter
+    context['role_cases'] = role_cases
+    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+    return render_to_response(template_name, context_instance=context)
+
+def role_cases(request, role_id, template_name="casetracker/role_cases.html"):
+    context = RequestContext(request)
+    role = Role.objects.get(id=role_id)
+    casefilter = str(request.GET.get('casefilter', 'opened_by'))
+    cases = Case.objects.filter(**{casefilter:role})
+
+    context['role'] = role
+    context['cases'] = cases
+    context['casefilter'] = casefilter
+    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+    return render_to_response(template_name, context_instance=context)
+
+def patient_cases(request, patient_id, template_name="casetracker/patient_cases.html"):
+    context = RequestContext(request)
+    patient = Patient.objects.get(id=patient_id)
+    cases = Case.objects.filter(patient=patient)
+    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+    context['patient'] = patient
+    context['cases'] = cases
+    return render_to_response(template_name, context_instance=context)
 

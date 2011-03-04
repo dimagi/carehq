@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from actors.models.roles import PatientLink
 from clinical_core.actors.models import Role, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
 from clinical_core.patient.models import Patient
 
@@ -47,17 +48,17 @@ class BasicPermissionsTest(TestCase):
         print "===========================\nCreating singular patient with careteam via API"
         pt = generator.get_or_create_patient()
 
-        provactor = generator.generate_actor(generator.get_or_create_user(), 'provider')
-        pt.add_provider(provactor)
-        provactor = generator.generate_actor(generator.get_or_create_user(), 'provider')
-        pt.add_provider(provactor)
-        provactor = generator.generate_actor(generator.get_or_create_user(), 'provider')
-        pt.add_provider(provactor)
+        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        pt.add_provider(provoler)
+        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        pt.add_provider(provoler)
+        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        pt.add_provider(provoler)
 
-        cgactor = generator.generate_actor(generator.get_or_create_user(), 'caregiver')
-        pt.add_caregiver(cgactor)
-        cgactor = generator.generate_actor(generator.get_or_create_user(), 'caregiver')
-        pt.add_caregiver(cgactor)
+        cgrole = generator.generate_role(generator.get_or_create_user(), 'caregiver')
+        pt.add_caregiver(cgoler)
+        cgrole = generator.generate_role(generator.get_or_create_user(), 'caregiver')
+        pt.add_caregiver(cgoler)
 
         #next, verify single careteam exists via the patient access API.
         cg_pull = pt.get_caregivers()
@@ -104,15 +105,15 @@ class BasicPermissionsTest(TestCase):
 
     def testAdvancedPermissionsOnePatient(self):
         """
-        Create a multitude of patients where a provider has varying actor roles (provider, none, etc)
+        Create a multitude of patients where a provider has varying roles (provider, none, etc)
         """
         patient = generator.get_or_create_patient()
         role_possibilities = ['caregiver', 'provider', None]
         for r in role_possibilities:
             user = self._createUser()
             if r != None:
-                actor = generator.generate_actor(user, r)
-                pal = PatientActorLink(patient=patient, actor=actor, active=True)
+                role = generator.generate_role(user, r)
+                pal = PatientLink(patient=patient, role=role, active=True)
                 pal.save()
 
             if r == 'caregiver':                
@@ -136,7 +137,7 @@ class BasicPermissionsTest(TestCase):
             patient = patients[i]
             role = role_options[i]
             if role != None:
-                actor = generator.generate_actor(user, role)
+                actor = generator.generate_role(user, role)
                 patient.add_actor(actor)
 
         for i in range(0,3):
@@ -160,7 +161,7 @@ class BasicPermissionsTest(TestCase):
         my_patients = 5
 
         user = generator.get_or_create_user()
-        actor = generator.generate_actor(user, 'provider')
+        actor = generator.generate_role(user, 'provider')
 
         patients = [generator.get_or_create_patient() for i in range(num_patients)]
         for i in range(my_patients):
