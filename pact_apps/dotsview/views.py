@@ -72,19 +72,13 @@ def get_csv(request):
             # Create the HttpResponse object with the appropriate CSV header.
 
     db = get_db()
+
+    csv_keys = ['submitted_date', u'note', u'patient', 'doc_type', 'is_reconciliation', u'provider', u'day_index', 'day_note', u'encounter_date', u'anchor_date', u'total_doses', u'pact_id', u'dose_number', u'created_date', u'is_art', u'adherence', '_id', u'doc_id', u'method', u'observed_date']
     for num, obs in enumerate(observations):
         dict_obj = obs.to_json()
-
-#        doc_id = obs.doc_id
-#        encounter_date = ''
-#        if db.doc_exist(doc_id):
-#            doc = db.open_doc(doc_id)
-#            if doc['doc_type'] == "XFormInstance" and doc['xmlns'] == 'http://dev.commcarehq.org/pact/dots_form':
-#                encounter_date = doc['form']['encounter_date']
-#        obs['encounter_date'] = encounter_date
         if num == 0:
-            writer.writerow(dict_obj.keys())
-        writer.writerow([dict_obj[x] for x in dict_obj.keys()])
+            writer.writerow(csv_keys)
+        writer.writerow([dict_obj[x] for x in csv_keys])
 
     return response
 
