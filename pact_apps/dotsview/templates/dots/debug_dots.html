@@ -39,84 +39,27 @@
             $('#end-date').change(function() {
                 $(document).attr('location', get_url());
             });
-            $('#reconcile-dialog').dialog(
-            {
-                autoOpen: false,
-                height: 600,
-                width: 850,
-                modal: true,
-                buttons: {
-                    'Submit':function() {
 
-                        var isValid = true;
-                        var art_num = {{ art_num }};
-                        var nonart_num = {{ nonart_num }};
-                        var total_drugs = art_num + nonart_num;
-                        var reasonString = "";
-
-                        for (var i = 0; i < total_drugs; i += 1) {
-                            var doses_taken = "form-" + i + "-doses_taken";
-                            var obs_type = "form-" + i + "-observation_type";
-                            var check_doses = $("input[name='" + doses_taken + "']:checked", "#dot_addendum_form").val();
-                            var check_obs = $("input[name='" + obs_type + "']:checked", "#dot_addendum_form").val();
-
-                            if (check_doses == undefined) {
-                                isValid = false;
-                                reasonString += doses_taken + ", ";
-                            }
-                            if (check_obs == undefined) {
-                                isValid = false;
-                                reasonString += obs_type + ", ";
-                            }
-                        }
-
-
-                        if (isValid == false) {
-                            alert("Error, not all inputs filled.");
-                        } else {
-                            //success, let's submit the POST
-                            //first, append the patient_id to the POST
-                            var ptid = document.createElement("input");
-                            ptid.setAttribute("type", "hidden");
-                            ptid.setAttribute("name", "patient_id");
-                            ptid.setAttribute("value", "{{ patient.id }}");
-                            $("#dot_addendum_form").append(ptid);
-
-                            var addendum_date = document.createElement("input");
-                            addendum_date.setAttribute("type", "hidden");
-                            addendum_date.setAttribute("name", "addendum_date");
-                            addendum_date.setAttribute("value", $('#dateplaceholder').attr("class"));
-                            $("#dot_addendum_form").append(addendum_date);
-                            send_xhr = $.ajax({
-                                "type": "POST",
-                                "url":  "{% url dot_addendum_dialog %}",
-                                "data": $("#dot_addendum_form").serialize(),
-                                "success": function(data) {
-                                    $(this).dialog('close');
-                                    location.reload();
-                                    fadeIn("slow");
-                                }, //end success
-                                "error": function(data) {
-                                    alert ("Error trying to save form, please try again.");
-                                }
-                            });
-                            $(this).dialog('close');
-                        }
-                    },
-                    Cancel: function() {
-//                        $("input:radio").attr("checked", false);
-//                        $("#id_comment").val('');
-                        $(this).dialog('close');
-                    },
-                },
-                open: function(event, ui) {
-                    $.get("{% url dot_addendum_dialog %}?patient={{ patient.id }}&addendum_date=" + $('#dateplaceholder').attr("class"), function(data) {
-                        $("#reconcile-form-block").html(data);
+            {% for date in full_dates %}
+                {% if date %}
+                    $('#raw_{{ date|date:"m_d_Y" }}').dialog(
+                    {
+                       autoOpen: false,
+                        height:800,
+                        width: 900,
+                        modal:true,
                     });
-//                    alert($('#dateplaceholder').attr("class"));
-                },
-            });
+                {% endif %}
+            {% endfor %}
+
         });
+    </script>
+
+
+    <script type="text/javascript">
+    function show_raw_obs(date_string) {
+            $('#raw_' + date_string).dialog('open');
+        }
     </script>
 
 {% endblock javascripts %}
@@ -124,41 +67,256 @@
 
 {% block content %}
 <div class="container span-24">
-    <div class="span-4">
-        <strong>Date</strong>
+    <div class="span-24">
+    <div class="span-17">
+            <h4>DOT Adherence Data for
+                <select id="patients">
+                    <option value="dots" {% if not patient %} selected="selected" {% endif %}>
+                        No patient selected
+                    </option>
+                    {% for p in patients %}
+                        <option value="{{p.id}}"
+                                {% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
+                            {{ p.couchdoc.last_name }}, {{ p.couchdoc.first_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                for visits: <input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
+                to
+                <input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
+                {% if patient and bad_date_range %}
+                    <p class='date-range-warning'>
+                        Just so you know, the date range you're looking at is
+                        <strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
+                        We only have data for <strong>{{ patient.full_name }}</strong> between
+                        <strong>{{ first_observation }}</strong>
+                        and <strong>{{ last_observation }}</strong>.
+                    </p>
+                {% endif %}
+            </h4>
+            <h4>ART Num: {{ patient.couchdoc.art_num }}</h4>
+            <h4>Non ART Num: {{ patient.couchdoc.non_art_num }}</h4>
+            {% if weeks %}
+                Visits cover observation dates from <strong>{{ min_date|date }}</strong> to
+                <strong>{{ max_date|date }}</strong><br>
+            {% endif %}
+        </div>
+    <div class="span-7 last">
+        &nbsp;
     </div>
-    <div class="span-20 last"><strong>Data</strong></div>
-        {%  for visit_date, cal_data, case_data, others in date_arr %}
-            <div class="span-4">
-                {{ visit_date|date }}
+    </div>
+
+    <div class="span-2">
+        <h3><strong>Date</strong></h3>
+    </div>
+    <div class="span-22 last">
+        <h3><strong>Data (Calendar Data, Case Output, Raw Submits)</strong></h3>
+    </div>
+        {%  for date, cal_entries, case_data, raw_obs in debug_data %}
+            <div class="span-2">
+               <strong>{{ date|date:"m-d-Y" }}</strong>
             </div>
-            <div class="span-20">
-                <div class="span-5">
-                    Calendar Data:
-                    Encounter Date
-                    Anchor Date
-                    Adherence Data
-                    Submit ID
+            <div class="span-22 last">
+            <hr>
+                <div class="span-9">
+                {# calendar data #}
+                    {% for drug_type, times in cal_entries %}
+                        <div class="span-4">
+                            <strong>{{ drug_type }}</strong>
+                            {% for t, obs in times reversed %}
+                                {% if obs %}
+                                    <hr>
+                                    {{ t }} {#dose time of day#}
+                                    {% for ob in obs %}
+                                        {% if ob.adherence == "empty" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
+                                        {% endif %}
+
+                                        {% if ob.adherence == "partial" %}
+                                            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
+                                        {% endif %}
+
+                                        {% if ob.adherence == "full" %}
+                                            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
+                                        {% endif %}
+
+
+                                        {% if ob.method == "direct" %}
+                                            <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
+                                        {% endif %}
+                                        {% if ob.method == "pillbox" %}
+                                            <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
+                                        {% endif %}
+
+                                        {% if ob.method == "self" %}
+                                            <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                        {% endif %}
+                                        <hr>
+                                        {{ ob.dose_number }}/{{ ob.total_doses }}<br>
+                                        {% if ob.is_reconciliation %}
+                                        edate: -- reconciled --<br>
+                                        {% else %}
+                                        edate: {{ ob.encounter_date|date:"m-d-Y" }} <br>
+                                        {% endif %}
+
+                                        adate: {{ ob.anchor_date|date:"m-d-Y" }}<br>
+
+
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+{#                    Calendar Data:#}
+{#                    Encounter Date#}
+{#                    Anchor Date#}
+{#                    Adherence Data#}
+{#                    Submit ID#}
                 </div>
-                <div class="span-5">
-                    Case Data:
-                    Encounter Date
-                    Anchor Date
-                    Adherence Data
-                    Submit ID
+                <div class="span-9">
+                    {#case data#}
+                    {% for drug_arr in case_data %}
+                        <div class="span-4">
+                            {% if forloop.first %}
+                            <strong>ART</strong>
+                            {% else %}
+                            <strong>Non-ART</strong>
+                            {% endif %}
+                            <hr>
+                            {% for adh, method in drug_arr %}
+                                {% if adh == "empty" %}
+                                <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
+                                {% endif %}
+
+                                {% if adh == "partial" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
+                                {% endif %}
+
+                                {% if adh == "full" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
+                                {% endif %}
+
+
+                                {% if method == "direct" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
+                                {% endif %}
+                                {% if method == "pillbox" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
+                                {% endif %}
+
+                                {% if method == "self" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                {% endif %}
+                                <hr>
+                                {{ forloop.counter0 }}/{{ drug_arr|length }}<br>
+                                <br>
+                                <br>
+                                <br>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+{#                    Encounter Date#}
+{#                    Anchor Date#}
+{#                    Adherence Data#}
+{#                    Submit ID#}
                 </div>
-                {% for data in date_arr %}
-                    <div class="span-5">
-                        Submit Data:
-                        Encounter Date
-                        Anchor Date
-                        Day Index
-                        Adherence Data
-                        Submit ID
-                    </div>
-                {% endfor %}
+                <div class="span-3 last">
+                    {#raw observations #}
+                    <a href="javascript:show_raw_obs('{{ date|date:"m_d_Y" }}')">Raw Observations</a>
+
+
+                </div>
             </div>
         {% endfor %}
-    </div>
 </div>
+
+    {%  for date, cal_entries, case_data, raw_obs in debug_data %}
+    <div id="raw_{{ date|date:"m_d_Y" }}">
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Num</th>#}
+{#                            <th>Encounter</th>#}
+{#                            <th>Anchor</th>#}
+{#                            <th>Day Index</th>#}
+{#                            <th>Drug Type</th>#}
+{#                            <th>Adherence</th>#}
+{#                            <th>Dose Number</th>#}
+{#                            <th>Total Doses</th>#}
+{#                            <th>Doc ID</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+                    {% for drug_type, drug_matrix in raw_obs.items %}
+                        <h3>{{ drug_type }} Submit Matrix</h3>
+                        {% for dose_num, obs in drug_matrix.items %}
+                            {# art: {dose_num: [] ... #}
+                            <h4>{{ drug_type }} Dose {{ dose_num }}</h4>
+                            <table>
+                                <thead>
+                                <tr>
+                                <th>Encounter</th>
+                                <th>Anchor</th>
+                                <th>Day Index</th>
+                                <th>Drug Type</th>
+                                <th>Adherence</th>
+{#                                <th>Dose Number</th>#}
+                                <th>Total Doses</th>
+                                <th>Doc ID</th>
+                                </tr>
+                                </thead>
+                            <tbody>
+                            {% for raw in obs %}
+                                <td>
+                                    {% if raw.is_reconciliation %}
+                                    Reconciled
+                                    {% else %}
+                                    {{ raw.encounter_date|date:"m-d-Y" }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ raw.anchor_date|date:"m-d-Y" }}</td>
+                                <td>{{ raw.day_index }}</td>
+                                <td>
+                                    <strong>
+                                    {% if raw.is_art %}
+                                        ART
+                                    {% else %}
+                                        Non-ART
+                                    {% endif %}
+                                    </strong>
+                                </td>
+                                <td>
+                                    {% if raw.adherence == "empty" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
+                                    {% endif %}
+                                    {% if raw.adherence == "partial" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
+                                    {% endif %}
+                                    {% if raw.adherence == "full" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
+                                    {% endif %}
+                                &nbsp;
+                                    {% if raw.method == "direct" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
+                                    {% endif %}
+                                    {% if raw.method == "pillbox" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
+                                    {% endif %}
+                                    {% if raw.method == "self" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                    {% endif %}
+                                </td>
+{#                                <td> {{ raw.dose_number }} </td>#}
+                                <td> {{ raw.total_doses }}</td>
+                                <td> {{ raw.doc_id }}</td>
+                            </tr>
+                            </tbody>
+                            {% endfor %} {# raw in obs #}
+                            </table>
+                        {% endfor %}  {#dose number for loop #}
+                    {% endfor %} {#art non art dictonary #}
+                </div>
+
+    {% endfor %}
+
+
+
 {% endblock content %}

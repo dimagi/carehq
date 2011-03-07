@@ -354,11 +354,9 @@ class CPatient(Document):
 
             return self._dashboard
 
-    def get_dots_data(self):
+    def dots_casedata_for_day(self, date, art_num, non_art_num):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
         from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, TIME_LABELS
-#                [(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        startdate = datetime.utcnow()
 
         def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
@@ -391,6 +389,28 @@ class CPatient(Document):
             return [["unchecked", "pillbox"] for x in range(n)]
 
 
+        #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
+        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num)
+        day_arr = []
+        if day_dict.has_key('Non ART'):
+            nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_num)
+        else:
+            nonart_data = get_empty(non_art_num)
+        if day_dict.has_key('ART'):
+            art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
+        else:
+            nonart_data = get_empty(art_num)
+        day_arr.append(nonart_data)
+        day_arr.append(art_data)
+        return day_arr
+
+    def get_dots_data(self):
+
+        startdate = datetime.utcnow()
+
+
+
+
 
         ret = {}
         try:
@@ -416,19 +436,7 @@ class CPatient(Document):
         ret['anchor'] = datetime.now().strftime("%d %b %Y 04:00:00 GMT")
         for delta in range(21):
             date = startdate - timedelta(days=delta)
-            day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num)
-            day_arr = []
-            if day_dict.has_key('Non ART'):
-                nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_num)
-            else:
-                nonart_data = get_empty(non_art_num)
-
-            if day_dict.has_key('ART'):
-                art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
-            else:
-                nonart_data = get_empty(art_num)
-            day_arr.append(nonart_data)
-            day_arr.append(art_data)
+            day_arr = self.dots_casedata_for_day(date, art_num, non_art_num)
             ret['days'].append(day_arr)
         return ret
 

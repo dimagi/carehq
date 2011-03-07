@@ -1,5 +1,5 @@
 from dimagi.utils import make_uuid
-from clinical_core.actors.models.roles import *
+from django.db import models
 
 class RoleIdentityManager(models.Manager):
     def for_user(self, user):
@@ -50,7 +50,7 @@ class RolePermissionManager(models.Manager):
         Returns a Queryset of the roles that the user has for the given patient.
         """
         ptlinks = PatientLink.objects.filter(patient=patient, role__user=user, active=True)
-        #ok, so we have the PatientActorLinks
+        #ok, so we have the PatienLinks
         roles = ptlinks.values_list('role__id', flat=True)
         return Role.objects.all().filter(id__in=roles)
 

@@ -120,16 +120,6 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
     datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
     observations = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
     total_doses_set = set([obs.total_doses for obs in observations])
-#    try:
-#        timekeys = set.union(*map(set, map(CObservation.get_time_labels, total_doses_set)))
-#        timekeys = sorted(timekeys, key=TIME_LABELS.index)
-#
-#        art_timekeys = TIME_LABEL_LOOKUP[art_num]
-#        nonart_timekeys = TIME_LABEL_LOOKUP[nonart_num]
-#
-#    except:
-#        art_timekeys = []
-#        nonart_timekeys = []
 
     has_reconciled = False
     #prep the groupings
@@ -313,12 +303,46 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
 def debug_case_dots(request, template='dots/debug_dots.html'):
     context = get_couchdata(request)
     #need to parse context again and do lookups from patient case data
+    full_dates = context['full_dates']
+    def realdate(d):
+        return d[0] != None
+
+    def raw_obs_for_date(date):
+        datekey = [patient.couchdoc.pact_id, 'observe_date', date.year, date.month, date.day]
+        raw_obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
+        raw_obs = sorted(raw_obs, key=lambda x: x.anchor_date, reverse=True)
+        artmatrix = {}
+        nonartmatrix = {}
+        for r in raw_obs:
+            if r.is_art:
+                if not artmatrix.has_key(r.dose_number):
+                    artmatrix[r.dose_number] = [] #keyed by dose num
+                artmatrix[r.dose_number].append(r)
+            else:
+                if not nonartmatrix.has_key(r.dose_number):
+                    nonartmatrix[r.dose_number] = [] #keyed by dose num
+                nonartmatrix[r.dose_number].append(r)
+        return { "ART" : artmatrix, "Non-ART": nonartmatrix }
+
+    #(date, calendar_display, casedata, [component_submissions])
+
+    patient = context['patient']
+    if patient != None:
+        cal_obs = filter(realdate, context['new_dates'])
+        art_num = patient.couchdoc.art_num
+        non_art_num = patient.couchdoc.non_art_num
+
+
+        results = [(cal[0], cal[1], patient.couchdoc.dots_casedata_for_day(cal[0], art_num, non_art_num), raw_obs_for_date(cal[0])) for cal in cal_obs]
+        context['debug_data'] = results
+
     return  render_to_response(template, context_instance=context)
 
 
 @login_required
 def index_couch(request, template='dots/index_couch.html'):
     context = get_couchdata(request)
+
     return  render_to_response(template, context_instance=context)
 
 
@@ -445,8 +469,10 @@ def get_couchdata(request):
 
                     if view_doc_id != None and ob.doc_id != view_doc_id:
                         #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
+                        #skip if we're only looking at one doc
                         continue
                     else:
+                        #show it because we're looking at all observations
                         #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                         pass
 
@@ -477,7 +503,7 @@ def get_couchdata(request):
     #weeks = [observed_dates[7*n:7*(n+1)] for n in range(len(observed_dates)/7)]
     new_dates = []
     for date in full_dates:
-        observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1
+        observation_tuple = group_by_is_art_and_time(date)#entries = 0, conflicts = 1, notes=2, reconcile=3
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 

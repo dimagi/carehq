@@ -57,6 +57,8 @@ function(doc) {
 
             for (var i = 0; i < daily_data.length; i+=1) {
                 //iterate through each day = i
+                //i = 0 = oldest
+                //i = length-1 = youngest, ie, today
                 var day_delta = daily_data.length-1-i;
                 var drug_classes = daily_data[i];
                 //var observed_date = new Date(anchor_date.getTime() - (24*3600*1000 * i));
