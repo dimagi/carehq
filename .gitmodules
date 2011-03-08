@@ -13,3 +13,6 @@
 [submodule "submodules/auditcare"]
 	path = submodules/auditcare
 	url = git@github.com:dimagi/auditcare.git
+[submodule "couchlog"]
+	path = couchlog
+	url = git@github.com:dimagi/couchlog.git
