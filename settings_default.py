@@ -52,3 +52,15 @@ LOCAL_APPS = ()
 LOCAL_APP_URLS = patterns('',
                           (r'', include('patient.urls'))
                         )
+
+
+#DEV_APPS are the apps in which you care about for unit testing.
+DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
+
+AUDIT_MODEL_SAVE = [
+                        'django.contrib.auth.models.User',
+                        'patient.models.couchmodels.CPatient',
+                        'dotsview.models.couchmodels.CObservationAddendum',
+                        'dotsview.models.couchmodels.CObservation',
+                        ]
+

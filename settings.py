@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     'couchforms',
     'couchexport',
+    'couchlog',
     'dimagi.utils',
 
     #####################
@@ -203,7 +204,7 @@ AUDITABLE_MODELS = [
 TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
 #DEV_APPS are the apps in which you care about for unit testing.
-DEV_APPS=['couchforms','couchexport','patient','actors',]
+DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
 
 #have sessions expire at browser close for security reasons
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

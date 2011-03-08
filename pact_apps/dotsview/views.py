@@ -313,7 +313,7 @@ def get_couchdata(request):
     else:
         startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
         endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
-        observations = CObservation.view('pactcarehq/kwargsdots_observations', startkey=startkey, endkey=endkey).all()
+        observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
 
     total_doses_set = set([obs.total_doses for obs in observations])
     observed_dates = list(set([s.observed_date for s in observations]))

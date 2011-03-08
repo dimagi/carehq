@@ -345,6 +345,7 @@ def my_patient_activity_grouped(request, template_name="pactcarehq/patients_dash
     #patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
     context['chw_patients_arr'] = [(x, chw_patient_dict[x]) for x in chws]
 
+    foo
     return render_to_response(template_name, context_instance=context)
 
 
@@ -375,7 +376,6 @@ def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.ht
     chws = sorted(chw_patient_dict.keys())
     #patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
     context['chw_patients_arr'] = [(x, chw_patient_dict[x]) for x in chws]
-
     #context['chw_patients'] = chw_patient_dict
     return render_to_response(template_name, context_instance=context)
 
