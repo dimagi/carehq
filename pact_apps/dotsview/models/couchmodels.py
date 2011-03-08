@@ -23,8 +23,10 @@ TIME_LABEL_LOOKUP = (
     ('Morning', 'Evening'),
     ('Morning', 'Noon', 'Evening'),
     ('Morning', 'Noon', 'Evening', 'Bedtime'),
+    ('Dose', 'Morning', 'Noon', 'Evening', 'Bedtime'),
 )
 TIME_LABELS = ('Dose', 'Morning', 'Noon', 'Evening', 'Bedtime')
+MAX_LEN_DAY = len(TIME_LABELS)
 
 ADDENDUM_NOTE_STRING = "[AddendumEntry]"
 class CObservation(Document):

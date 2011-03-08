@@ -356,7 +356,7 @@ class CPatient(Document):
 
     def dots_casedata_for_day(self, date, art_num, non_art_num):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
-        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, TIME_LABELS
+        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
 
         def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
@@ -368,11 +368,11 @@ class CPatient(Document):
                 #get the top one from the array
                 if not drug_data.has_key(timekey):
                     continue
-                if len(day_arr) >= total_num:
-                    logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
-                if len(drug_data[timekey]) > 0 and len(day_arr) < total_num:
+#                if len(day_arr) >= total_num:
+                    #logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
+                if len(drug_data[timekey]) > 0 and len(day_arr) < MAX_LEN_DAY:
                     obs = drug_data[timekey][0]
-                    if obs.day_note != None and len(obs.day_note) > 0:
+                    if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
                         day_arr.append([obs.adherence, obs.method, obs['day_note']])
                     else:
                         day_arr.append([obs.adherence, obs.method])
@@ -381,7 +381,8 @@ class CPatient(Document):
                 #else:
                  #   day_arr.append(["unchecked", "pillbox"])
             if len(day_arr) < total_num:
-                for n in range(total_num-len(day_arr)):
+                delta = total_num - len(day_arr)
+                for n in range(total_num-delta):
                     day_arr.append(["unchecked", "pillbox"])
             return day_arr
 
@@ -390,7 +391,7 @@ class CPatient(Document):
 
 
         #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num)
+        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num, reconcile_trump=True)
         day_arr = []
         if day_dict.has_key('Non ART'):
             nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_num)
@@ -400,18 +401,14 @@ class CPatient(Document):
             art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
         else:
             nonart_data = get_empty(art_num)
+        print "Non ART: %d/%d" % (len(nonart_data), non_art_num)
+        print "ART: %d/%d" % (len(art_data), art_num)
         day_arr.append(nonart_data)
         day_arr.append(art_data)
         return day_arr
 
     def get_dots_data(self):
-
         startdate = datetime.utcnow()
-
-
-
-
-
         ret = {}
         try:
             art_num = int(ghetto_regimen_map[self.art_regimen.lower()])
@@ -438,6 +435,7 @@ class CPatient(Document):
             date = startdate - timedelta(days=delta)
             day_arr = self.dots_casedata_for_day(date, art_num, non_art_num)
             ret['days'].append(day_arr)
+        ret['days'].reverse()
         return ret
 
 

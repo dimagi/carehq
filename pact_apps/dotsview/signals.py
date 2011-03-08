@@ -2,7 +2,7 @@ from couchforms.signals import xform_saved
 import logging
 import simplejson
 
-def process_dots_submission(sender, form, **kwarsg):
+def process_dots_submission(sender, form, **kwargs):
     if form.xmlns != "http://dev.commcarehq.org/pact/dots_form":
         print "skipping non dots"
         return

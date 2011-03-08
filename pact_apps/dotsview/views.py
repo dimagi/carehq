@@ -28,59 +28,8 @@ def _parse_date(string):
 
 @login_required
 def get_csv(request):
-    csv_mode = request.GET.get('csv', None)
-    end_date = _parse_date(request.GET.get('end', datetime.date.today()))
-    start_date = _parse_date(request.GET.get('start', end_date - datetime.timedelta(30)))
-    view_doc_id = request.GET.get('submit_id', None)
-    patient_id = request.GET.get('patient', None)
+    pass
 
-    try:
-        patient = Patient.objects.get(id=patient_id)
-        pact_id = patient.couchdoc.pact_id
-    except:
-        patient = None
-        pact_id = None
-
-    response = HttpResponse(mimetype='text/csv')
-    writer = csv.writer(response, dialect=csv.excel)
-    if patient != None:
-        if csv_mode == 'all':
-            start_date = end_date - datetime.timedelta(1000)
-            startkey = [pact_id.encode('ascii'), 'anchor_date', start_date.year, start_date.month, start_date.day]
-            endkey = [pact_id.encode('ascii'), 'anchor_date', end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
-            response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s.csv' % (pact_id)
-        else:
-            startkey = [pact_id.encode('ascii'), 'anchor_date', start_date.year, start_date.month, start_date.day]
-            endkey = [pact_id.encode('ascii'), 'anchor_date', end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
-            response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_%s-%s_to_%s.csv' % (
-            pact_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
-    elif patient == None:
-        if csv_mode == 'all':
-            start_date = end_date - datetime.timedelta(1000)
-            startkey = [start_date.year, start_date.month, start_date.day]
-            endkey = [end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
-            response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_all.csv'
-        else:
-            startkey = [start_date.year, start_date.month, start_date.day]
-            endkey = [end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
-            response['Content-Disposition'] = 'attachment; filename=dots_csv_pt_all-%s_to_%s.csv' % (
-            start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
-            # Create the HttpResponse object with the appropriate CSV header.
-
-    db = get_db()
-
-    csv_keys = ['submitted_date', u'note', u'patient', 'doc_type', 'is_reconciliation', u'provider', u'day_index', 'day_note', u'encounter_date', u'anchor_date', u'total_doses', u'pact_id', u'dose_number', u'created_date', u'is_art', u'adherence', '_id', u'doc_id', u'method', u'observed_date']
-    for num, obs in enumerate(observations):
-        dict_obj = obs.to_json()
-        if num == 0:
-            writer.writerow(csv_keys)
-        writer.writerow([dict_obj[x] for x in csv_keys])
-
-    return response
 
 @login_required
 def delete_reconciliation(request):
@@ -104,7 +53,7 @@ def delete_reconciliation(request):
 
 
 artkeys = ('ART', 'Non ART')
-def _get_observations_for_date(date, pact_id, art_num, nonart_num):
+def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_trump=False):
     """Returns a table showing the conflicts for a given date submission.
     """
     grouping = {}
@@ -119,13 +68,6 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
     #prep the groupings
     # grouping[art | nonart] => times[morning | noon | etc] = [observations] - if there are multiple then there are multiple
     for artkey in artkeys:
-#        by_time = {}
-#        if artkey == "ART":
-#            timekeys = art_timekeys
-#        elif artkey == 'Non ART':
-#            timekeys = nonart_timekeys
-#        for timekey in timekeys:
-#            by_time[timekey] = []
         grouping[artkey] = {}
 
     for ob in observations:
@@ -150,21 +92,22 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num):
             time_label = ob.get_time_label()
         except IndexError:
             logging.error("Error, observation time label index not found, DOT data generation error")
-            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
-            if ob.is_art:
-                total_doses = hack_patient.art_num
-            else:
-                total_doses = hack_patient.non_art_num
-
-            if total_doses > ob.dose_number:
-                time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
-            else:
-                time_label = ''
+#            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
+#            if ob.is_art:
+#                total_doses = hack_patient.art_num
+#            else:
+#                total_doses = hack_patient.non_art_num
+            time_label = TIME_LABELS[ob.dose_number]
 
         if time_label != "":
             if not grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label):
                 grouping['ART' if ob.is_art else 'Non ART'][time_label] = []
-            grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
+
+            if ob.is_reconciliation and reconcile_trump==True:
+                grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
+                logging.error("reconciled entry, droping all others for time label")
+            else:
+                grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
 
         else:
             logging.error("Error Doc: %s - Time label not retrievable due to regimen count error" % (ob.doc_id))
@@ -370,7 +313,7 @@ def get_couchdata(request):
     else:
         startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
         endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
-        observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+        observations = CObservation.view('pactcarehq/kwargsdots_observations', startkey=startkey, endkey=endkey).all()
 
     total_doses_set = set([obs.total_doses for obs in observations])
     observed_dates = list(set([s.observed_date for s in observations]))
@@ -427,20 +370,13 @@ def get_couchdata(request):
                     time_label = ob.get_time_label()
                 except IndexError:
                     logging.error("Error, observation time label index not found, DOT data generation error")
-                    if ob.is_art:
-                        total_doses = patient.couchdoc.art_num
-                    else:
-                        total_doses = patient.couchdoc.non_art_num
-                    if total_doses > ob.dose_number:
-                        time_label = TIME_LABEL_LOOKUP[total_doses][ob.dose_number]
-                    else:
-                        time_label = ''
+                    time_label = TIME_LABELS[ob.dose_number]
 
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
                     #pre-check
-                if ob.is_reconciliation == True and time_label != "":
+                if ob.is_reconciliation == True:
                     #it's a reconciled entry.  Trump all
                     grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
                     found_reconcile = True
@@ -462,7 +398,7 @@ def get_couchdata(request):
                     conflict_check[ob.adinfo[0]] = ob
 
                     if view_doc_id != None and ob.doc_id != view_doc_id:
-                        #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
+                        print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                         #skip if we're only looking at one doc
                         continue
                     else:

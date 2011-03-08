@@ -205,6 +205,9 @@ TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 #DEV_APPS are the apps in which you care about for unit testing.
 DEV_APPS=['couchforms','couchexport','patient','actors',]
 
+#have sessions expire at browser close for security reasons
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # import local settings if we find them
 try:
     #try to see if there's an environmental variable set for local_settings

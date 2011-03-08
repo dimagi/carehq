@@ -178,9 +178,9 @@
                     {% for drug_arr in case_data %}
                         <div class="span-4">
                             {% if forloop.first %}
-                            <strong>ART</strong>
-                            {% else %}
                             <strong>Non-ART</strong>
+                            {% else %}
+                            <strong>ART</strong>
                             {% endif %}
                             <hr>
                             {% for adh, method in drug_arr %}
