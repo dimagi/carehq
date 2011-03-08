@@ -777,6 +777,8 @@ def _get_submissions_for_user(username):
     for xform in xform_submissions:
         if not xform.form.has_key('case'):
             continue
+        if not xform.form['case'].has_key('case_id'):
+            continue
         case_id = xform.form['case']['case_id']
 
         #for dev purposes this needs to be done for testing
