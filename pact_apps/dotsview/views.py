@@ -2,9 +2,11 @@ from StringIO import StringIO
 import logging
 import os
 import uuid
+from django.core.servers.basehttp import FileWrapper
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template.context import Context, Context
 from dimagi.utils.couch.database import get_db
 from dotsview.forms import AddendumForm
@@ -15,20 +17,33 @@ from patient.models.couchmodels import CPatient
 from couchforms.models import XFormInstance
 from patient.models.couchmodels import ghetto_regimen_map
 from django.forms.formsets import formset_factory
+from django.core.cache import cache
+from dotsview.tasks import csv_export
+from datetime import datetime, timedelta
 import csv
 
 
 
 def _parse_date(string):
     if isinstance(string, basestring):
-        return datetime.datetime.strptime(string, "%Y-%m-%d").date()
+        return datetime.strptime(string, "%Y-%m-%d").date()
     else:
         return string
 
 
 @login_required
 def get_csv(request):
-    pass
+    download_id = uuid.uuid1().hex
+
+    csv_mode = request.GET.get('csv', None)
+    end_date = _parse_date(request.GET.get('end', datetime.utcnow()))
+    start_date = _parse_date(request.GET.get('start', end_date - timedelta(30)))
+    patient_id = request.GET.get('patient', None)
+
+    csv_export.delay(csv_mode, end_date.strftime('%Y-%m-%d'), start_date.strftime('%Y-%m-%d'), patient_id, download_id)
+    return HttpResponseRedirect(reverse('dotsview.views.file_download', kwargs={'download_id': download_id}))
+    #return HttpResponse('<html><body>Task for csv download generated<br><br><a href="%s">Download Link</a></body></html>' % (reverse('dotsview.views.file_download', kwargs={'download_id':download_id})))
+
 
 
 @login_required
@@ -130,7 +145,6 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
 
     return (grouping, has_reconciled)
 
-
 @login_required
 def dot_addendum(request, template='dots/dot_addendum.html'):
     #get stuff from the GET
@@ -140,10 +154,10 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
     #step 1, basic prep
     if request.method == "GET":
         patient_id = request.GET.get('patient', None)
-        addendum_date = datetime.datetime.strptime(request.GET.get('addendum_date', None), "%Y-%m-%d")
+        addendum_date = datetime.strptime(request.GET.get('addendum_date', None), "%Y-%m-%d")
     elif request.method == "POST":
         patient_id = request.POST['patient_id']
-        addendum_date = datetime.datetime.strptime(request.POST['addendum_date'], "%Y-%m-%d")
+        addendum_date = datetime.strptime(request.POST['addendum_date'], "%Y-%m-%d")
 
     patient = Patient.objects.get(id=patient_id)
     pact_id = patient.couchdoc.pact_id
@@ -163,7 +177,7 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
             addendum = CObservationAddendum()
             addendum._id = uuid.uuid1().hex
             addendum.observed_date = addendum_date.date()
-            addendum.created_date = datetime.datetime.utcnow()
+            addendum.created_date = datetime.utcnow()
             addendum.created_by = request.user.username
             for f in formset.forms:
                 obsa = CObservation()
@@ -172,8 +186,8 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
                 obsa.provider = request.user.username
                 obsa.observed_date = addendum_date
                 obsa.anchor_date = addendum_date
-                obsa.submited_date = datetime.datetime.utcnow()
-                obsa.created_date = datetime.datetime.utcnow()
+                obsa.submited_date = datetime.utcnow()
+                obsa.created_date = datetime.utcnow()
                 if f.cleaned_data['drug_type'] == 'art':
                     obsa.is_art = True
                 elif f.cleaned_data['drug_type'] == 'nonart':
@@ -277,6 +291,34 @@ def debug_case_dots(request, template='dots/debug_dots.html'):
 
 
 @login_required
+def file_download(request, download_id,template="dots/file_download.html" ):
+    do_download = request.GET.has_key('get_file')
+    if do_download:
+        download_data = cache.get(download_id, None)
+        if download_data == None:
+            logging.error("Download file request for expired/nonexistent file requested")
+            raise Http404
+        else:
+            download_json = simplejson.loads(download_data)
+            f = file(download_json['location'], 'rb')
+            wrapper = FileWrapper(f)
+            response = HttpResponse(wrapper, mimetype=download_json['mimetype'])
+            response['Transfer-Encoding'] = 'chunked'
+            response['Content-Disposition'] = download_json['Content-Disposition']
+            return response
+    else:
+        download_data = cache.get(download_id, None)
+        if download_data == None:
+            is_ready = False
+        else:
+            is_ready=True
+        context = RequestContext(request)
+        context['is_ready'] = is_ready
+        return render_to_response(template, context_instance=context)
+
+
+
+@login_required
 def index_couch(request, template='dots/index_couch.html'):
     context = get_couchdata(request)
 
@@ -285,16 +327,16 @@ def index_couch(request, template='dots/index_couch.html'):
 
 
 def get_couchdata(request):
-    end_date = _parse_date(request.GET.get('end', datetime.date.today()))
-    start_date = _parse_date(request.GET.get('start', end_date - datetime.timedelta(14)))
+    end_date = _parse_date(request.GET.get('end', datetime.utcnow()))
+    start_date = _parse_date(request.GET.get('start', end_date - timedelta(14)))
     patient_id = request.GET.get('patient', None)
 
     do_pdf = request.GET.get('pdf', False)
 
     if start_date > end_date:
         end_date = start_date
-    elif end_date - start_date > datetime.timedelta(365):
-        end_date = start_date + datetime.timedelta(365)
+    elif end_date - start_date > timedelta(365):
+        end_date = start_date + timedelta(365)
 
     try:
         patient = Patient.objects.get(id=patient_id)
@@ -323,14 +365,14 @@ def get_couchdata(request):
         min_date = min(observed_dates)
         max_date = max(observed_dates)
     else:
-        min_date = datetime.datetime.utcnow()
-        max_date = datetime.datetime.utcnow()
+        min_date = datetime.utcnow()
+        max_date = datetime.utcnow()
 
     full_dates = []
     date = min_date
     while date <= max_date:
         full_dates.append(date)
-        date += datetime.timedelta(1)
+        date += timedelta(1)
 
     if view_doc_id != None:
         visits_set = set([view_doc_id])
@@ -398,7 +440,7 @@ def get_couchdata(request):
                     conflict_check[ob.adinfo[0]] = ob
 
                     if view_doc_id != None and ob.doc_id != view_doc_id:
-                        print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
+                        #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
                         #skip if we're only looking at one doc
                         continue
                     else:
@@ -407,6 +449,10 @@ def get_couchdata(request):
                         pass
 
                     if not found_reconcile and time_label != '':
+                        if grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label) == False:
+                            grouping['ART' if ob.is_art else 'Non ART'][time_label] = []
+                            logging.error("Error, a key not expected was found in this entry: ob doc: %s, day index: %d, art status: %s, dose: %d/%d, is reconciled: %s" % (ob.doc_id, ob.day_index, ob.is_art, ob.dose_number, ob.total_doses, ob.is_reconciliation))
+
                         grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
 
         #for each class of drug (art, non art) in artkeys

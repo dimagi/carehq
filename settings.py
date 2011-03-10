@@ -149,6 +149,8 @@ INSTALLED_APPS = (
     'staticfiles',
     'django_extensions',
     'django_digest',
+    'djcelery',    # pip install django-celery
+    'djkombu',     # pip install django-kombu
     #'south',
     #end third party apps
 
@@ -208,6 +210,9 @@ DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
 
 #have sessions expire at browser close for security reasons
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+#celery config
+CARROT_BACKEND = "django"
 
 # import local settings if we find them
 try:
