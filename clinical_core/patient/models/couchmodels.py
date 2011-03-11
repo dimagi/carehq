@@ -276,15 +276,12 @@ class CPatient(Document):
         try:
             couchjson = simplejson.dumps(self.to_json())
             cache.set('%s_couchdoc' % (self.django_uuid), couchjson)
-            #print "invalidated and updated cache for patient"
         except Exception, ex:
-            #print "unable to invalidate cache: %s" % (ex)
             pass
 
     @property
     def last_bloodwork(self):
         """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """
-        #print "getting last bloodwork"
         if hasattr(self, '_prior_bloodwork'):
             #in memory lookup
             return self._prior_bloodwork
@@ -323,22 +320,18 @@ class CPatient(Document):
     @property
     def activity_dashboard(self):
         #[count, encounter_date, doc_id, chw_id, xmlns, received_on]
-        #print "\tActivity dashboard %s" % (self._id)
 
         if hasattr(self, '_dashboard'):
-            #print "\t\tIn memory"
             return self._dashboard
         else:
             #Let's check memcached.
             cached_dashboard_json = cache.get('%s_dashboard' % (self._id), None)
             if cached_dashboard_json != None:
-                #print "\t\tmemcached hit!"
                 if cached_dashboard_json == '[##Null##]':
                     self._dashboard = None #nullstring, so we have no dashboard but we don't want to requery
                 else:
                     self._dashboard = CActivityDashboard.wrap(simplejson.loads(cached_dashboard_json))
             else:
-                #print "\t\tRequery"
                 dashboard_data = CActivityDashboard.view('pactcarehq/patient_dashboard', key=self.pact_id).first()
                 if dashboard_data == None:
                     #if it's null, set it to null in memcached using a nullstring
@@ -349,7 +342,6 @@ class CPatient(Document):
                     self._dashboard = CActivityDashboard.wrap(dashboard_data['value'])
 
             if self._dashboard != None and self._dashboard.last_bloodwork.test_date != None:
-                #print "\t\t\tSetting prior bloodwork"
                 self._prior_bloodwork = self._dashboard.last_bloodwork
 
             return self._dashboard
@@ -382,7 +374,7 @@ class CPatient(Document):
                  #   day_arr.append(["unchecked", "pillbox"])
             if len(day_arr) < total_num:
                 delta = total_num - len(day_arr)
-                for n in range(total_num-delta):
+                for n in range(delta):
                     day_arr.append(["unchecked", "pillbox"])
             return day_arr
 
@@ -401,8 +393,6 @@ class CPatient(Document):
             art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
         else:
             nonart_data = get_empty(art_num)
-        print "Non ART: %d/%d" % (len(nonart_data), non_art_num)
-        print "ART: %d/%d" % (len(art_data), art_num)
         day_arr.append(nonart_data)
         day_arr.append(art_data)
         return day_arr
