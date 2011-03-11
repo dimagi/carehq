@@ -7,11 +7,17 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^profile$', 'account.my_profile', name='my_profile'),
         url(r'^cases$', 'cases.case_list', name='case_list'),
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
+        url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
+        url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
 
+        url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
+        url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),
+        url(r'^providerListQueryAjax/(?P<term>.*)$', 'ashandui.providerListQueryAjax', name='providerListQueryAjax'),
+        url(r'^providerSearch/?$', 'ashandui.providerSearch', name='providerSearch'),
+        url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
+        url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
 
-
-
-
+#
 #    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),
 #
 #    #main navigation tabs
@@ -26,6 +32,8 @@ urlpatterns = patterns('carehqapp.views',
 #    url(r'^grid/cases/triage$', 'ashandapp.views.cases.queries.grid_triage_cases', name='grid_triage_cases'),
 #    url(r'^grid/cases/caregiver$', 'ashandapp.views.cases.queries.grid_caregiver_cases', name='grid_caregiver_cases'),
 #    url(r'^grid/cases/recent$', 'ashandapp.views.cases.queries.grid_recent_activity', name='grid_recent_activity'),
+#
+#
 #
 #    url(r'^profile/$', 'ashandapp.views.users.my_profile', name="my_profile"),
 #    url(r'^careteam/mine/$', 'ashandapp.views.careteam.network.my_careteam', name='my_careteam'),
@@ -46,5 +54,6 @@ urlpatterns = patterns('carehqapp.views',
 #
 #    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/question$', 'ashandapp.views.cases.create.new_question'),
 #    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/issue$', 'ashandapp.views.cases.create.new_issue'),
-)
+
+)    
     

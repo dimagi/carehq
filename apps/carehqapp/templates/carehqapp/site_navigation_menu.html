@@ -6,7 +6,7 @@
 </script>
 
 <div id="menu" style="z-index:-1;">
-	<ul>
+	<ul> 
 		<li>
 			<span class="head_menu">
 			<a href="{% url dashboard %}">Dashboard</a>
@@ -30,7 +30,7 @@
 		{% if request.is_patient %}
 			<li>
 				<span class="head_menu">
-				<a href="site_navigation_menu.html#">My Care Plan</a>
+				<a href="{% url careplan %}">My Care Plan</a>
 				</span>
 			</li> 
 			<li>
@@ -45,7 +45,7 @@
 			{% if patient_careteams %}
 				<span class="head_menu">
 					<a href="site_navigation_menu.html#">My Patients</a>
-					<img src="{{ STATIC_URL }}carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+					<img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
 				</span>			
 				<div class="sub_menu"> 
 				{% for careteam in patient_careteams %}
@@ -68,7 +68,7 @@
 		<li>
 			<span class="head_menu">
 			<a href="site_navigation_menu.html#" id="ptQMenu" >Ask a Question</a>
-			<img src="{{ STATIC_URL }}carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+			<img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
 			</span>
 			
 			<div class="sub_menu"> 
@@ -82,7 +82,7 @@
         {% if 1 %}
         <li>
             <span class="head_menu">Admin 
-                <img src="{{ STATIC_URL }}carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow" />
+                <img src="/media/carehqapp/img/arrow.png" width="18" height="15" align="top" class="arrow" />
             </span>
 
             <div class="sub_menu">

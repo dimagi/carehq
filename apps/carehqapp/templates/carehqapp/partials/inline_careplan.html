@@ -1,0 +1,8 @@
+<div class="careplan border-2 span-22 last">
+    {{ careplan.text|safe }}
+    <hr>
+    {% for element in careplan_elements %}
+    <h3>{{ element.name|safe }}</h3>
+    {{ element.text|safe }}
+    {% endfor %}
+</div>

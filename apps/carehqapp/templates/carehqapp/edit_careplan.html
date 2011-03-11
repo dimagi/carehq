@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Care Network" %} {% endblock %}
+{% block content %}
+<h2>Edit {{ patient.first_name }}'s Care Plan</h2>
+    <div class="span-20 last">
+    <form method="post" action="{% url edit_careplan patient.id %}">
+        {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit New Care Plan"/>
+        </form>
+    </div>
+{% endblock %}
+
+

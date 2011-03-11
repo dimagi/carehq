@@ -34,6 +34,9 @@
 		<script type="text/javascript" src="{{STATIC_URL}}carehqapp/js/jquery.timeago.js"></script>
 		
         {% block extrahead %}{% endblock %}
+    {% if form and form.media %}
+        {{ form.media }}
+    {% endif %}
     </head>
     <body>    	
 
