@@ -321,7 +321,6 @@ def file_download(request, download_id,template="dots/file_download.html" ):
 @login_required
 def index_couch(request, template='dots/index_couch.html'):
     context = get_couchdata(request)
-
     return  render_to_response(template, context_instance=context)
 
 

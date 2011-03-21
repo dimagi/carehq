@@ -137,7 +137,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
 
     if address_edit:
-        context['address_form'] = AddressForm()
+        context['address_form'] = AddressForm(instance=patient.couchdoc.address[-1])
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
     if phone_edit:
@@ -152,7 +152,6 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             form = ScheduleForm(data=request.POST)
             if form.is_valid():
                 sched = CDotWeeklySchedule()
-                print form.cleaned_data
                 for day in DAYS_OF_WEEK:
                     if form.cleaned_data[day] != None:
                         setattr(sched, day, form.cleaned_data[day].username)
@@ -183,15 +182,13 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                 new_phone = CPhone()
                 new_phone.description = form.cleaned_data['description']
                 new_phone.number = form.cleaned_data['number']
-                print form.cleaned_data
-                print form.cleaned_data.has_key('notes')
                 new_phone.notes = form.cleaned_data['notes']
                 new_phone.created_by = request.user.username
                 patient.couchdoc.phones.append(new_phone)
                 patient.couchdoc.save()
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
             else:
-                print "invalid phone form"
+                logging.error("Error, invalid phone form data")
         elif patient_edit:
             form = CPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
             if form.is_valid():
@@ -245,7 +242,6 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
 
             reductions = XFormInstance.view('pactcarehq/submit_counts_by_user_date', keys=keys, group=True).all()
             for reduction in reductions:
-                #print reduction['key']
                 if len(reduction) > 0:
                     monthstring = str(reduction['key'][2])
                     if len(monthstring) == 1:
@@ -309,7 +305,7 @@ def post(request):
         else:
             return HttpResponse("No form data")
     except Exception, e:
-        print "Error: %s" % (e)
+        logging.error("Error on submission: %s" % (e))
         return HttpResponse("fail")
 
 @login_required
@@ -395,11 +391,21 @@ def my_patient_activity_reduce(request, template_name = "pactcarehq/patients_das
         context['reduces'].append(dashboard)
     return render_to_response(template_name, context_instance=context)
 
+def ms_from_timedelta(td):
+    """
+    Given a timedelta object, returns a float representing milliseconds
+    """
+    return (td.seconds * 1000) + (td.microseconds / 1000.0)
+
 def threaded_submission(instance):
+    start_time = datetime.utcnow()
+    logging.debug("Begin threaded submission")
     doc = post_xform_to_couch(instance)
-    print "posted"
-    xform_saved.send(sender="post", form=doc) #ghetto way of signalling a submission signal
-    print "post_signal: %s" % (doc)
+    delta_post =  datetime.utcnow() - start_time
+    logging.debug("Submission posted: %d ms" % (ms_from_timedelta(delta_post)))
+    xform_saved.send(sender="post", xform=doc) #ghetto way of signalling a submission signal
+    delta_signal = datetime.utcnow() - (start_time + delta_post)
+    logging.debug("Signal emitted: %d ms" % (ms_from_timedelta(delta_signal)))
 
 @httpdigest()
 def get_caselist(request):
