@@ -60,11 +60,12 @@ class Role(models.Model):
         app_label = 'actors'
         verbose_name = "Role"
         verbose_name_plural = "Roles"
-        unique_together = ('role_type', 'role_uuid')
+        unique_together = (('role_type', 'role_uuid'), ('role_type','user'))
     
     @classmethod
     def child_contenttype(cls):
         ct = ContentType.objects.get(model=cls.__name__.lower())
+        print "Returning CT : " + ct
         return ct
     
     def __unicode__(self):
@@ -156,10 +157,22 @@ class Caregiver(Role):
 class PatientRole(Role):
     """A Patient can be a role too"""
     patient = models.ForeignKey(Patient, unique=True)
+
+    @property
+    def description(self):
+        return unicode(self)
+
+    @property
+    def full_name(self):
+        return self.patient.full_name()
+
+    def __unicode__(self):
+        return "Patient: " + self.full_name
+
     class Meta:
         app_label='actors'
-        verbose_name = "Patient Role"
-        verbose_name_plural = "Patient Roles"
+        verbose_name = "Role (Patient)"
+        verbose_name_plural = "Roles (Patient)"
 
 
 class PatientLink(models.Model):

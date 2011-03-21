@@ -1,4 +1,5 @@
 from clinical_core.actors.models import *
+from clinical_core.actors.models.roles import PatientRole
 from clinical_core.casetracker.models import *
 from clinical_core.patient.models import *
 import uuid
@@ -102,6 +103,9 @@ def get_or_create_patient(user=None, first_name=None, last_name=None, gender=Non
 #    cpt.date_modified = DateTimeProperty(default=datetime.utcnow)
 
     pt.save()
+    if user is not None:
+        pr = PatientRole(user=user, patient=pt)
+        pr.save()
     return pt
 
 def get_or_create_user(first_name=None, last_name=None, always_new=True):
@@ -150,6 +154,9 @@ def get_or_create_role(user, role_type, title_string=None, department_string=Non
                 elif role_type == 'caregiver' and isinstance(r.role_object, Caregiver):
                     role = r
                     break
+                elif role_type == 'patient' and isinstance(r.role_object, PatientRole):
+                    role = r
+                    break
             print "\tLooped through %d existing roles" % (existing_roles.count())
 
 
@@ -167,7 +174,7 @@ def generate_role(user, role_type_string, title_string=None, department_string=N
     """Helper function to generate a role.
     Parameters:
     User object
-    role_type_string (provider, caregiver)
+    role_type_string (provider, caregiver, patient)
     returns: Role object of the correct subclass type
     """
     if title_string == None:
@@ -192,6 +199,8 @@ def generate_role(user, role_type_string, title_string=None, department_string=N
     elif role_type_string=='caregiver':
         role = Caregiver(user=user, notes=random_text(128), relationship_type= Caregiver.RELATIONSHIP_CHOICES[random.randint(0, len(Caregiver.RELATIONSHIP_CHOICES)-1)])
         role.save()
+    elif role_type_string=='patient':
+        role = PatientRole(user=user)
     return role
 
 

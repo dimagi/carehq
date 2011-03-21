@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Plan" %} {% endblock %}
+{% block content %}
+<h2>{{ patient.first_name }}'s Care Plan</h2>
+    <div class="span-20 border-1 last">
+    {% with user as patient %}
+    {% include "carehqapp/partials/inline_careplan.html" %}
+    {% endwith %}
+    </div>
+{% endblock %}
+
+

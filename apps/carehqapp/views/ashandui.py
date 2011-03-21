@@ -4,9 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.contrib.auth.models import User
-from forms import AddProviderForm
 from django.db.models import Q
-from forms import LinkProviderForm, LinkProviderForm
 from clinical_core.actors.models.roles import Doctor
 from clinical_core.patient.models.djangomodels import Patient
 from lib.crumbs import crumbs
@@ -129,8 +127,4 @@ def editCareteam(request, patientId, template="ashandui/providerLink.html"):
     context["form"] = form
     context["patient"] = patient
     context["careTeam"] = careTeam
-    return render_to_response(template,context)
-
-def ashandHome(request, template="ashandui/home.html"):
-    context = RequestContext(request)
     return render_to_response(template,context)
