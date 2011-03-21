@@ -1,4 +1,5 @@
 import urllib
+from django.core.servers.basehttp import FileWrapper
 from dimagi.utils.couch.database import get_db
 from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
 from patient.models.djangomodels import Patient
@@ -33,6 +34,7 @@ from pactcarehq.forms.phone_form import PhoneForm
 from pactcarehq.forms.pactpatient_form import CPatientForm
 from threading import Thread
 from pactcarehq import schedule
+from pactcarehq.tasks import all_chw_submit_report
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -211,7 +213,11 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
     total_interval = 7
     if request.GET.has_key('interval'):
         try:
-            total_interval = int(request.GET['interval'])
+            total_interval = request.GET['interval']
+            if total_interval == "all":
+                total_interval = 1000
+            else:
+                total_interval = int(total_interval)
         except:
             pass
 
@@ -439,7 +445,11 @@ def patient_schedule_report(request, patient_id, template_name="pactcarehq/patie
     total_interval = 7
     if request.GET.has_key('interval'):
         try:
-            total_interval = int(request.GET['interval'])
+            total_interval = request.GET['interval']
+            if total_interval == "all":
+                total_interval = 1000
+            else:
+                total_interval = int(total_interval)
         except:
             pass
 
@@ -476,28 +486,21 @@ def getpatient(pact_id):
         patient_pactid_cache[pact_id] = pt
         return pt
 
-@login_required
-def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_calendar_submit_report.html"):
-    """Calendar view of submissions by CHW, overlaid with their scheduled visits, and whether they made them or not."""
-    context = RequestContext(request)
-    all_patients = request.GET.get("all_patients", False)
-    context['username'] = username
-
-    user = User.objects.get(username=username)
+def _get_schedule_tally(username, total_interval):
+    """
+    For a given username and interval, get a simple array of the username and scheduled visit (whether a submission is there or not)  exists.
+    returns (schedule_tally_array, patient_array)
+    schedul_tally_array = [visit_date, [(patient1, visit1), (patient2, visit2), (patient3, None), (patient4, visit4), ...]]
+    where visit = XFormInstance
+    """
     #got the chw schedule
     chw_schedule = schedule.get_schedule(username)
     #now let's walk through the date range, and get the scheduled CHWs per this date.visit_dates = []
     ret = [] #where it's going to be an array of tuples:
     #(date, scheduled[], submissions[] - that line up with the scheduled)
-    total_interval = 7
-    if request.GET.has_key('interval'):
-        try:
-            total_interval = int(request.GET['interval'])
-        except:
-            pass
 
     nowdate = datetime.utcnow()
-    total_scheduled = 0
+    total_scheduled=0
     total_visited=0
 
     for n in range(0, total_interval):
@@ -510,6 +513,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
             if pact_id == None:
                 continue
             try:
+                total_scheduled += 1
                 cpatient = getpatient(pact_id) #TODO: this is a total waste of queries, doubly getting the cpatient, then getting the django object again
 #                patients.append(Patient.objects.get(id=cpatient.django_uuid))
                 patients.append(cpatient)
@@ -538,8 +542,43 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
                     visited.append(None)
 
         #print (visit_date, patients, visited)
-        total_scheduled+= len(patients)
         ret.append((visit_date, zip(patients, visited)))
+    return ret, patients, total_scheduled, total_visited
+
+
+
+@login_required
+def chw_calendar_submit_report_all(request):
+    download_id = uuid.uuid1().hex
+    total_interval = 7
+    if request.GET.has_key('interval'):
+        try:
+            total_interval = request.GET['interval']
+            if total_interval == "all":
+                total_interval = 1000
+            else:
+                total_interval = int(total_interval)
+        except:
+            pass
+    all_chw_submit_report.delay(total_interval, download_id)
+    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+
+@login_required
+def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_calendar_submit_report.html"):
+    """Calendar view of submissions by CHW, overlaid with their scheduled visits, and whether they made them or not."""
+    context = RequestContext(request)
+    all_patients = request.GET.get("all_patients", False)
+    context['username'] = username
+    user = User.objects.get(username=username)
+    total_interval = 7
+    if request.GET.has_key('interval'):
+        try:
+            total_interval = int(request.GET['interval'])
+        except:
+            pass
+
+    ret, patients, total_scheduled, total_visited= _get_schedule_tally(username, total_interval)
+
     context['date_arr'] = ret
     context['total_scheduled'] = total_scheduled
     context['total_visited'] = total_visited
@@ -1006,4 +1045,30 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
 
 
 
+
+@login_required
+def file_download(request, download_id,template="dots/file_download.html" ):
+    do_download = request.GET.has_key('get_file')
+    if do_download:
+        download_data = cache.get(download_id, None)
+        if download_data == None:
+            logging.error("Download file request for expired/nonexistent file requested")
+            raise Http404
+        else:
+            download_json = simplejson.loads(download_data)
+            f = file(download_json['location'], 'rb')
+            wrapper = FileWrapper(f)
+            response = HttpResponse(wrapper, mimetype=download_json['mimetype'])
+            response['Transfer-Encoding'] = 'chunked'
+            response['Content-Disposition'] = download_json['Content-Disposition']
+            return response
+    else:
+        download_data = cache.get(download_id, None)
+        if download_data == None:
+            is_ready = False
+        else:
+            is_ready=True
+        context = RequestContext(request)
+        context['is_ready'] = is_ready
+        return render_to_response(template, context_instance=context)
 

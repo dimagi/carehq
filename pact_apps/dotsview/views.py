@@ -2,7 +2,6 @@ from StringIO import StringIO
 import logging
 import os
 import uuid
-from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -41,7 +40,7 @@ def get_csv(request):
     patient_id = request.GET.get('patient', None)
 
     csv_export.delay(csv_mode, end_date.strftime('%Y-%m-%d'), start_date.strftime('%Y-%m-%d'), patient_id, download_id)
-    return HttpResponseRedirect(reverse('dotsview.views.file_download', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
     #return HttpResponse('<html><body>Task for csv download generated<br><br><a href="%s">Download Link</a></body></html>' % (reverse('dotsview.views.file_download', kwargs={'download_id':download_id})))
 
 
@@ -289,32 +288,6 @@ def debug_case_dots(request, template='dots/debug_dots.html'):
 
     return  render_to_response(template, context_instance=context)
 
-
-@login_required
-def file_download(request, download_id,template="dots/file_download.html" ):
-    do_download = request.GET.has_key('get_file')
-    if do_download:
-        download_data = cache.get(download_id, None)
-        if download_data == None:
-            logging.error("Download file request for expired/nonexistent file requested")
-            raise Http404
-        else:
-            download_json = simplejson.loads(download_data)
-            f = file(download_json['location'], 'rb')
-            wrapper = FileWrapper(f)
-            response = HttpResponse(wrapper, mimetype=download_json['mimetype'])
-            response['Transfer-Encoding'] = 'chunked'
-            response['Content-Disposition'] = download_json['Content-Disposition']
-            return response
-    else:
-        download_data = cache.get(download_id, None)
-        if download_data == None:
-            is_ready = False
-        else:
-            is_ready=True
-        context = RequestContext(request)
-        context['is_ready'] = is_ready
-        return render_to_response(template, context_instance=context)
 
 
 

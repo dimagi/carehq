@@ -14,6 +14,17 @@
 {#{% endblock extrahead %}#}
 {% block content %}
 <h2>CHW List</h2>
+<div class="span-8 last">
+<strong>Schedule CSV Report for all CHWs</strong>
+    <br>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=7">CSV 7</a>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval={% now "j" %}">CSV MTD</a>&nbsp;
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=30">CSV 30</a>&nbsp;
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=all">All Data</a>&nbsp;
+<br>
+</div>
+
+
 <table>
 <thead>
     <tr>
