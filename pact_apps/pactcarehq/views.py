@@ -837,10 +837,10 @@ def _get_submissions_for_user(username):
 
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
             formtype = "DOTS"
-            submissions.append([xform._id, xform.form['encounter_date'], patient_name, formtype, started, start_end, end_received, received])
+            submissions.append([xform._id, xform.form['encounter_date'], patient, formtype, started, start_end, end_received, received])
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
-            submissions.append([xform._id, xform.form['note']['encounter_date'], patient_name, formtype,started, start_end, end_received, received])
+            submissions.append([xform._id, xform.form['note']['encounter_date'], patient, formtype,started, start_end, end_received, received])
         elif xmlns == "http://dev.commcarehq.org/pact/bloodwork":
             formtype = "Bloodwork"
             #TODO implement bloodwork view

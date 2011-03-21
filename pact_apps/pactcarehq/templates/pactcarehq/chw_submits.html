@@ -1,43 +1,45 @@
 {% extends "base.html" %}
 {% include render_json_tags %}
-{#{% block extrahead %}#}
-{#<script type="text/javascript" charset="utf-8">#}
-{#$(document).ready(#}
-{#        function()#}
-{#        {#}
-{#			//placeholder for autorefresh, but turning off for now#}
-{#            //var autoRefresh = setInterval(refreshNotification, 30000);#}
-{#            jQuery("abbr.timeago").timeago();#}
-{#        }#}
-{#    );#}
-{#</script>#}
-{#{% endblock extrahead %}#}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
+{% endblock %}
 {% block content %}
 <h3>{{ username }}'s Submissions</h3>
 <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
     {% if submit_arr %}
-    <table>
+    <table id="submits-table" class="tablesorter">
     <thead>
         <tr>
             <th class="span-4">Encounter Date</th>
-            <th class="span-4">Patient</th>
+            <th class="span-2">ID</th>
+            <th class="span-3">Last Name</th>
+            <th class="span-3">First Name</th>
             <th class="span-4">Form</th>
             
             <th class="span-4">Started</th>
-            <th class="span-4">Time to Finish</th>
-            <th class="span-4">Time to Submit</th>
-            <th class="span-4">Submitted Date</th>
+            <th class="span-4">Finish Time</th>
+            <th class="span-4">Submit Time</th>
+            <th class="span-4">Submit Date</th>
         </tr>
     </thead>
     {% for submission in submit_arr %}
         <tr>
             {% if submission.3 == "DOTS" %}
                 {#ghetto hacky way to differentiate between the submission types#}
-                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1}}</a> </td>
+                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
             {% else %}
-                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1}}</a> </td>
+                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
             {% endif %}
-            <td> {{ submission.2 }}</td>
+            <td> {{ submission.2.pact_id }}</td>
+            <td> {{ submission.2.last_name }}</td>
+            <td> {{ submission.2.first_name }}</td>
             <td> {{ submission.3 }}</td>
 
             <td> {{ submission.4|date:"Y-m-d H:i" }}</td> {# started date #}
