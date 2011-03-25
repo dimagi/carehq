@@ -553,10 +553,10 @@ class CPatient(Document):
                 continue
             else:
                 ret += "<Phone%d>%s</Phone%d>" % (num, phone.number.replace("(", "").replace(")", ""),num)
-                if len(phone.description) > 0:
-                    ret += "<Phon%dType>%s</Phone%dType>" % (num, phone.description, num)
+                if phone.description != None and len(phone.description) > 0:
+                    ret += "<Phone%dType>%s</Phone%dType>" % (num, phone.description, num)
                 else:
-                    ret += "<Phon%dType>Default</Phone%dType>" % (num, num)
+                    ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret
 
     def get_ghetto_regimen_xml(self):
@@ -575,7 +575,7 @@ class CPatient(Document):
         for num, addr in enumerate(self.active_addresses, start=1):
             addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
             ret += "<address%d>%s</address%d>" % (num,addconcat, num)
-            if len(addr.description) > 0:
+            if addr.description != None and len(addr.description) > 0:
                 ret += "<address%dtype>%s</address%dtype>" % (num,addr.description, num)
             else:
                 ret += "<address%dtype>Default</address%dtype>" % (num, num)
