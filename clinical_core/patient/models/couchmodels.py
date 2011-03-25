@@ -548,12 +548,15 @@ class CPatient(Document):
     def get_ghetto_phone_xml(self):
         ret = ''
         counter = 1
-        for phone in self.active_phones:
+        for num, phone in enumerate(self.active_phones, start=1):
             if phone.number == '':
                 continue
             else:
-                ret += "<Phone%d>%s</Phone%d>" % (counter, phone.number.replace("(", "").replace(")", ""),counter)
-                counter += 1
+                ret += "<Phone%d>%s</Phone%d>" % (num, phone.number.replace("(", "").replace(")", ""),num)
+                if len(phone.description) > 0:
+                    ret += "<Phon%dType>%s</Phone%dType>" % (num, phone.description, num)
+                else:
+                    ret += "<Phon%dType>Default</Phone%dType>" % (num, num)
         return ret
 
     def get_ghetto_regimen_xml(self):
@@ -569,10 +572,13 @@ class CPatient(Document):
     def get_ghetto_address_xml(self):
         ret = ''
         counter = 1
-        for addr in self.active_addresses:
+        for num, addr in enumerate(self.active_addresses, start=1):
             addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
-            ret += "<address%d>%s</address%d>" % (counter,addconcat, counter)
-            counter += 1
+            ret += "<address%d>%s</address%d>" % (num,addconcat, num)
+            if len(addr.description) > 0:
+                ret += "<address%dtype>%s</address%dtype>" % (num,addr.description, num)
+            else:
+                ret += "<address%dtype>Default</address%dtype>" % (num, num)
         return ret
 
     def get_ghetto_schedule_xml(self):

@@ -78,13 +78,11 @@ def remove_schedule(request):
                 sched = patient.couchdoc.weekly_schedule[i]
                 if sched.schedule_id == schedule_id:
                     remove_id = i
-                    print "matching schedule_id"
                     break
 
             new_schedules = []
             couchdoc = patient.couchdoc
             if remove_id != -1:
-                print "removing weekly schedule %d" % (remove_id)
                 #note the idiocy of me needing to iterate through the list in order to delete it.
                 #a simple remove() or a pop(i) could not work for some reason
                 for i in range(0, len(couchdoc.weekly_schedule)):
@@ -139,7 +137,11 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
 
     if address_edit:
-        context['address_form'] = AddressForm(instance=patient.couchdoc.address[-1])
+        if len(patient.couchdoc.address) > 0:
+            #if there's an existing address out there, then use it, else, make a new one
+            context['address_form'] = AddressForm(instance=patient.couchdoc.address[-1])
+        else:
+            context['address_form'] = AddressForm()
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
     if phone_edit:
@@ -258,10 +260,6 @@ def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.ht
                     yearstring = str(reduction['key'][1])
                     datestring = "%s/%s/%s" % (monthstring, daystring, yearstring)
                     date_index = datestrings.index(datestring)
-                    #print datestrings
-                    #print datestring
-                    #print "Value: %d" % (reduction['value'])
-                    #print "Index: %d" % (date_index)
                     submission_dict[schema][user.username][date_index] = reduction['value']
             #when done let's reverse it so it goes from oldest to youngest left to right
             submission_dict[schema][user.username]
@@ -300,7 +298,6 @@ def post(request):
     Post an xform instance here.
     """
     try:
-        #print request.FILES.keys()
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
             t = Thread(target=threaded_submission, args=(instance,))
@@ -578,6 +575,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
             pass
 
     ret, patients, total_scheduled, total_visited= _get_schedule_tally(username, total_interval)
+    nowdate = datetime.utcnow()
 
     context['date_arr'] = ret
     context['total_scheduled'] = total_scheduled
@@ -588,17 +586,26 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
 
     if request.GET.get('getcsv', None) != None:
         csvdata = []
-        csvdata.append(','.join(['visit_date','assigned_chw','pact_id','is_scheduled','visit_type','submitted_by','visit_id']))
+        csvdata.append(','.join(['visit_date','assigned_chw','pact_id','is_scheduled','contact_type', 'visit_type','visit_kept', 'submitted_by','visit_id']))
         for date, pt_visit in ret:
             if len(pt_visit) > 0:
                 for cpt, v in pt_visit:
                     rowdata = [date.strftime('%Y-%m-%d'), username, cpt.pact_id]
                     if v != None:
+
+                        #is scheduled
                         if v.form['scheduled'] == 'yes':
                             rowdata.append('scheduled')
                         else:
                             rowdata.append('unscheduled')
+                        #contact_type
+                        rowdata.append(v.form['contact_type'])
+
+                        #visit type
                         rowdata.append(v.form['visit_type'])
+
+                        #visit kept
+                        rowdata.append(v.form['visit_kept'])
 
                         rowdata.append(v.form['Meta']['username'])
                         if v.form['Meta']['username'] == username:
@@ -614,7 +621,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
 
         resp = HttpResponse()
 
-        resp['Content-Disposition'] = 'attachment; filename=chw_schedule_%s-%s_to_%s.csv' % (username, nowdate.utcnow().strftime("%Y-%m-%d"),  (nowdate - timedelta(days=total_interval)).strftime("%Y-%m-%d"))
+        resp['Content-Disposition'] = 'attachment; filename=chw_schedule_%s-%s_to_%s.csv' % (username, datetime.utcnow().strftime("%Y-%m-%d"),  (nowdate - timedelta(days=total_interval)).strftime("%Y-%m-%d"))
         resp.write('\n'.join(csvdata))
         return resp
 
@@ -886,7 +893,6 @@ def _get_submissions_for_user(username):
 #            submissions.append([xform._id, xform.form['case']['date_modified'].date(), patient_name, formtype,started, start_end, end_received, received])
         else:
             formtype = "Unknown"
-            print xmlns
             #submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype, started, start_end, end_received, received])
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
@@ -908,8 +914,11 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     context = RequestContext(request)
     xform = XFormInstance.get(doc_id)
     progress_note = xform['form']['note']
+    progress_note['memo'] = progress_note['memo'].replace('"', '&quot;')
+    progress_note['memo'] = progress_note['memo'].replace("'", '&apos;')
+    progress_note['memo'] = progress_note['memo'].replace("\n", '<br>')
     progress_note['chw'] = xform.form['Meta']['username']
-    context['progress_note'] = progress_note
+    context['progress_note'] = simplejson.dumps(xform.to_json()['form']['note'])
 
     case_id = xform['form']['case']['case_id']
 
@@ -963,7 +972,10 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     context = RequestContext(request)
     xform = XFormInstance.get(doc_id)
     dots_note = {}
-    raw = xform['form']
+    raw = xform.to_json()['form']
+
+
+
     dots_note['chw'] = raw['Meta']['username']
     dots_note['encounter_date'] = raw['encounter_date']
     dots_note['schedued'] = raw['scheduled']
@@ -997,6 +1009,23 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
 
 
     context['dots_note'] = dots_note
+    raw['pillbox_check']['check'] = ''
+    raw['pillbox_check']['artnow'] = ''
+    raw['pillbox_check']['nonartnow'] = ''
+    raw['static'] = ''
+
+    if raw.has_key('art_no_details'):
+        raw['art_no_details'] = raw['art_no_details'].replace('"', "&quot;")
+        raw['art_no_details'] = raw['art_no_details'].replace("'", '&apos;')
+        raw['art_no_details'] = raw['art_no_details'].replace("\n", '<br>')
+
+    if raw.has_key('non_art_no_details'):
+        raw['non_art_no_details'] = raw['non_art_no_details'].replace('"', "&quot;")
+        raw['non_art_no_details'] = raw['non_art_no_details'].replace("'", '&apos;')
+        raw['non_art_no_details'] = raw['non_art_no_details'].replace("\n", '<br>')
+    
+
+    context['raw_note'] = simplejson.dumps(raw)
     case_id = xform['form']['case']['case_id']
 
     ###########################################################

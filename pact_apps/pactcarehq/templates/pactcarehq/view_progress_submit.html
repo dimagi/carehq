@@ -1,10 +1,24 @@
 {% extends "base.html" %}
 {% load render_json_tags %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{ STATIC_URL }}pactcarehq/js/jsonreport.js"></script>
+
+    <script type="text/javascript">
+    $().ready(function(){
+        $("#jsonblock").html(_.jsonreport('{{ progress_note|safe}}'));
+    });
+
+    </script>
+{% endblock extrahead %}
 {% block content %}
 <div class="span-14">
 <h2>View progress note</h2>
 <h3>{{ patient_name }}</h3>
-{% get_table_from_json progress_note %}
+{#{% get_table_from_json progress_note %}#}
+<div id="jsonblock" class="jsonreport span-14">
+</div>
+
+
 </div>
 <div class="span-10 last">
 <h3>Supplemental Memos</h3>

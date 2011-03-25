@@ -323,7 +323,7 @@ def get_couchdata(request):
 
     if view_doc_id != None:
         #we want to see a direct single instance display. override the display times
-        observations = CObservation.view('pactcarehq/dots_obs_submit', key=view_doc_id).all()
+        observations = CObservation.view('pactcarehq/dots_observations', key=['doc_id', view_doc_id]).all()
     else:
         startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
         endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
@@ -341,10 +341,11 @@ def get_couchdata(request):
         max_date = datetime.utcnow()
 
     full_dates = []
-    date = min_date
-    while date <= max_date:
-        full_dates.append(date)
-        date += timedelta(1)
+    days_delta = (max_date - min_date).days
+    full_dates = [min_date + timedelta(days=x) for x in range(0,days_delta+2)]
+    #while date <= max_date:
+        #full_dates.append(date)
+        #date += timedelta(1)
 
     if view_doc_id != None:
         visits_set = set([view_doc_id])
@@ -363,7 +364,6 @@ def get_couchdata(request):
 #        timekeys = sorted(timekeys, key=TIME_LABELS.index)
 
     artkeys = ('ART', 'Non ART')
-
     def group_by_is_art_and_time(date):
         grouping = {}
         conflict_dict = {}

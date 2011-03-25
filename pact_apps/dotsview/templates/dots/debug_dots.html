@@ -184,34 +184,38 @@
                             {% endif %}
                             <hr>
                             {% for adh, method in drug_arr %}
-                                {% if adh == "empty" %}
-                                <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
-                                {% endif %}
 
-                                {% if adh == "partial" %}
-                                    <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
-                                {% endif %}
+                                {% if adh != "unchecked" %}
 
-                                {% if adh == "full" %}
-                                    <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
-                                {% endif %}
+                                    {% if adh == "empty" %}
+                                    <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
+                                    {% endif %}
+
+                                    {% if adh == "partial" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
+                                    {% endif %}
+
+                                    {% if adh == "full" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
+                                    {% endif %}
 
 
-                                {% if method == "direct" %}
-                                    <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
-                                {% endif %}
-                                {% if method == "pillbox" %}
-                                    <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
-                                {% endif %}
+                                    {% if method == "direct" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
+                                    {% endif %}
+                                    {% if method == "pillbox" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
+                                    {% endif %}
 
-                                {% if method == "self" %}
-                                    <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                    {% if method == "self" %}
+                                        <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                    {% endif %}
+                                    <hr>
+                                    {{ forloop.counter0 }}/{{ drug_arr|length }}<br>
+                                    <br>
+                                    <br>
+                                    <br>
                                 {% endif %}
-                                <hr>
-                                {{ forloop.counter0 }}/{{ drug_arr|length }}<br>
-                                <br>
-                                <br>
-                                <br>
                             {% endfor %}
                         </div>
                     {% endfor %}

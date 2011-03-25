@@ -34,6 +34,7 @@ function(doc) {
             emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], obs_dict);
             emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
             emit([anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], eval(uneval(obs_dict)));
+            emit(['doc_id', doc._id], eval(uneval(obs_dict)));
 		}
 	}
 	
@@ -104,6 +105,41 @@ function(doc) {
                         do_observation(doc, observed_date, anchor_date, dispenses[drug_freq], drug_obs);
                     }
                 }
+            }
+            //finally, if the observed_date and anchor dates are different, we need to make a manual single DOT entry:
+            if (anchor_date.toDateString() != encounter_date.toDateString()) {
+                var new_drug_obs = {};
+                new_drug_obs['doc_id'] = doc._id;
+                new_drug_obs['patient'] = doc.form['case']['case_id'];
+                new_drug_obs['pact_id'] = doc.form['pact_id'];
+                new_drug_obs['provider'] = doc.form['Meta']['username'];
+                new_drug_obs['created_date'] = doc.form['Meta']['TimeStart'];
+                new_drug_obs['encounter_date'] = toISOString(encounter_date);
+                new_drug_obs['completed_date'] = doc.form['Meta']['TimeEnd'];
+                new_drug_obs['anchor_date'] = toISOString(encounter_date);
+                new_drug_obs['day_index'] = -1;
+                new_drug_obs['note'] = note;
+
+                //non_art
+                if(doc.form['pillbox_check']['nonartbox'] != "") {
+                    new_drug_obs['is_art'] = false;
+                    new_drug_obs['total_doses'] = parseInt(doc.form['case']['update']['nonartregimen']);
+                    new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['nonartbox']);
+                    new_drug_obs['observed_date'] = toISOString(encounter_date);
+                    var non_art_dispense = eval(doc.form['pillbox_check']['nonartnow']);
+                    do_observation(doc, observed_date, anchor_date, non_art_dispense, eval(uneval(new_drug_obs)));
+                }
+
+                //art
+                if(doc.form['pillbox_check']['artbox'] != "") {
+                    new_drug_obs['is_art'] = true;
+                    new_drug_obs['total_doses'] = parseInt(doc.form['case']['update']['artregimen']);
+                    new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['artbox']);
+                    new_drug_obs['observed_date'] = toISOString(encounter_date);
+                    var art_dispense = eval(doc.form['pillbox_check']['artnow']);
+                    do_observation(doc, observed_date, anchor_date, art_dispense, eval(uneval(new_drug_obs)));
+                }
+
             }
         }
 	}

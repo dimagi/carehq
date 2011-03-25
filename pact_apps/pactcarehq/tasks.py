@@ -21,6 +21,7 @@ def all_chw_submit_report(total_interval, download_id):
 
     csv_filename = "chw_schedule_report-%s-%d_days.csv" % (datetime.utcnow().strftime("%Y-%m-%d"), total_interval)
     csv_keys = ['visit_date','assigned_chw','scheduled_pact_id','is_scheduled','visit_type','submitted_by','visit_id']
+    csv_keys = ['visit_date','assigned_chw','pact_id','is_scheduled','contact_type', 'visit_type','visit_kept', 'submitted_by','visit_id']
     csv_writer.writerow(csv_keys)
 
     for user in users:
@@ -31,11 +32,19 @@ def all_chw_submit_report(total_interval, download_id):
                 for cpt, v in pt_visit:
                     rowdata = [date.strftime('%Y-%m-%d'), username, cpt.pact_id]
                     if v != None:
+                        #is scheduled
                         if v.form['scheduled'] == 'yes':
                             rowdata.append('scheduled')
                         else:
                             rowdata.append('unscheduled')
+                        #contact_type
+                        rowdata.append(v.form['contact_type'])
+
+                        #visit type
                         rowdata.append(v.form['visit_type'])
+
+                        #visit kept
+                        rowdata.append(v.form['visit_kept'])
 
                         rowdata.append(v.form['Meta']['username'])
                         if v.form['Meta']['username'] == username:
@@ -45,7 +54,6 @@ def all_chw_submit_report(total_interval, download_id):
                         rowdata.append(v.get_id)
                     else:
                         rowdata.append('novisit')
-                    #csvdata.append(','.join(rowdata))
                     csv_writer.writerow(rowdata)
             else:
                 #csvdata.append(','.join([date.strftime('%Y-%m-%d'),'nopatients']))
