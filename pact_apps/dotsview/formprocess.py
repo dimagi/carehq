@@ -1,4 +1,3 @@
-from dotsview.models import Observation
 from patient.models.djangomodels import Patient
 from patient.models.couchmodels import CPatient
 from django.contrib.auth.models import User
