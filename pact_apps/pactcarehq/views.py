@@ -486,7 +486,7 @@ def getpatient(pact_id):
 def _get_schedule_tally(username, total_interval):
     """
     For a given username and interval, get a simple array of the username and scheduled visit (whether a submission is there or not)  exists.
-    returns (schedule_tally_array, patient_array)
+    returns (schedule_tally_array, patient_array, total_scheduled (int), total_visited(int))
     schedul_tally_array = [visit_date, [(patient1, visit1), (patient2, visit2), (patient3, None), (patient4, visit4), ...]]
     where visit = XFormInstance
     """

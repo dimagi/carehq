@@ -45,22 +45,28 @@ def get_csv(request):
 
 
 
-@login_required
 def delete_reconciliation(request):
+    print "entering delete reconciliation"
     if request.method == "POST":
         try:
             doc_id = request.POST['doc_id']
             db = get_db()
+            print "does doc exist"
             if db.doc_exist(doc_id):
+                print "trying to get doc id"
                 doc = db.open_doc(doc_id)
+                print "got doc id"
                 if doc['doc_type'] == "CObservationAddendum":
+                    print "trying to delete"
                     db.delete_doc(doc)
+                    print "able to delete"
                     return HttpResponse("Success")
                 else:
+                    print "wtf, not an Cobservation?"
                     raise
         except Exception, e:
+            print "huh, weird"
             logging.error("Error getting args:" + str(e))
-
             return HttpResponse("Error")
     else:
         raise Http404
@@ -207,8 +213,10 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
         else:
             raise Exception("error")
     else:
+        #it's a GET
+        #it's already there, we want to review the reconciliations
         conflicts_dict, is_reconciled = _get_observations_for_date(addendum_date, pact_id, art_num, nonart_num)
-        reconcile_doc_id = None
+        reconciled_doc_id = None
 
         #first art, then nonart
         data = []
@@ -239,8 +247,9 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
             for drug_type, time_labels_dict in conflicts_dict.items():
                 for time_label, observations in time_labels_dict.items():
                     for obs in observations:
-                        reconciled_doc_id = obs.doc_id
-                        break
+                        if getattr(obs, 'is_reconciliation', False):
+                            reconciled_doc_id = obs.doc_id
+                            break
                     if reconciled_doc_id != None:
                         break
                 if reconciled_doc_id != None:
@@ -394,6 +403,7 @@ def get_couchdata(request):
                     #it's a reconciled entry.  Trump all
                     grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
                     found_reconcile = True
+                    print "found reconciliation: %s" % (ob.doc_id)
                     continue
                 else:
                     #base case if it's never been seen before, add it as the key

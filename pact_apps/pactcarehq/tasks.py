@@ -1,13 +1,15 @@
 from datetime import timedelta, datetime
+from celery.schedules import crontab
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http import HttpResponse
 import simplejson
-from celery.decorators import task
+from celery.decorators import task, periodic_task
 import tempfile
 import zipfile
 import csv
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
+from django.core.mail import send_mail
 
 @task
 def all_chw_submit_report(total_interval, download_id):
@@ -71,3 +73,31 @@ def all_chw_submit_report(total_interval, download_id):
     zip_file.close()
     temp_zip.close()
     cache.set(download_id, simplejson.dumps(cache_container), 86400)
+
+
+@periodic_task(run_every=crontab(minute=30, hour=15))
+#@periodic_task(run_every=crontab(hour="*", minute="*", day_of_week="*"))
+def schedule_coverage_tally_report():
+    """scheduled tally for all CHWs sms'ed via email"""
+    from pactcarehq.views import _get_schedule_tally
+    #for each CHW
+    #do a single date query for dateitme.today(), get the num actual vs. expected
+    #ping chw with text message
+    #then append to email message to clare
+
+    users = sorted(filter(lambda x: x.username.count("_") == 0, User.objects.all().filter(is_active=True)), key=lambda x: x.username)
+    total_interval = 1
+    scheduled = []
+    unscheduled = []
+    subject =  "CHW Scheduled submission report for %s" % (datetime.now().strftime("%A %B %Y, %I:%M%p"))
+    for user in users:
+        ret, patients, total_scheduled, total_visited= _get_schedule_tally(user.username, total_interval)
+        if total_scheduled > 0:
+            scheduled.append("%s: %d/%d" % (user.username, total_visited, total_scheduled))
+        else:
+            unscheduled.append(user.username)
+
+
+    body = '\n'.join([subject, '', 'Scheduled Today:\n', '\n'.join(scheduled), '\nNot Scheduled Today:\n', '\n'.join(unscheduled)])
+    send_mail(subject, body, 'notifications@dimagi.com', ['dmyung@dimagi.com', 'CMCBEE@partners.org'], fail_silently=False)
+

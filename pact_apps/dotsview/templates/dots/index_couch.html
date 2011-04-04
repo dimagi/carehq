@@ -43,7 +43,7 @@
             {
                 autoOpen: false,
                 height: 600,
-                width: 850,
+                width: 900,
                 modal: true,
                 buttons: {
                     'Submit':function() {
@@ -226,29 +226,33 @@
                                                     {% if obs %}
                                                         {% for ob in obs %}
                                                             <div class="observation">
+                                                                {% if ob.adherence == "unchecked" %}
+                                                                    <span style="font-size:85%;color:#888;font-style:italic;">unchecked</span>
+                                                                {% else %}
 
-                                                                {% if ob.adherence == "empty" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
-                                                                {% endif %}
+                                                                    {% if ob.adherence == "empty" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">
+                                                                    {% endif %}
 
-                                                                {% if ob.adherence == "partial" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
-                                                                {% endif %}
+                                                                    {% if ob.adherence == "partial" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">
+                                                                    {% endif %}
 
-                                                                {% if ob.adherence == "full" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
-                                                                {% endif %}
+                                                                    {% if ob.adherence == "full" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">
+                                                                    {% endif %}
 
 
-                                                                {% if ob.method == "direct" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
-                                                                {% endif %}
-                                                                {% if ob.method == "pillbox" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
-                                                                {% endif %}
+                                                                    {% if ob.method == "direct" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/plus.png">
+                                                                    {% endif %}
+                                                                    {% if ob.method == "pillbox" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">
+                                                                    {% endif %}
 
-                                                                {% if ob.method == "self" %}
-                                                                    <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                                                    {% if ob.method == "self" %}
+                                                                        <img src="{{ STATIC_URL }}dotsview/icons/minus.png">
+                                                                    {% endif %}
                                                                 {% endif %}
 
                                                                 {#														<div class="ob-{{ob.adherence}}">#}

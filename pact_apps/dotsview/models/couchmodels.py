@@ -11,6 +11,7 @@ ADHERENCE_CHOICES = (
     ("empty", "Empty"),
     ("partial", "Partial"),
     ("full", "Full"),
+    ("unchecked", "Unchecked"),
 )
 METHOD_CHOICES = (
     ("direct", "Direct"),

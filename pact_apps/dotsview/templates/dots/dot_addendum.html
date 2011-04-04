@@ -23,29 +23,47 @@
 {#	</script>#}
 <script type="text/javascript">
     function delete_entry(doc_id) {
-        send_xhr = $.ajax({
-            "type": "POST",
-            "url":  "{% url delete_addendum %}",
-            "data": { "doc_id": doc_id },
-            "success": function(data) {
-                $(this).dialog('close');
-                location.reload();
-            }, //end success
-            "error": function(data) {
-                alert("Error trying to save form, please try again.");
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
             }
-        });
+            return cookieValue;
+        }
+        send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  "{% url delete_reconciliation %}",
+                    "data": { "doc_id": doc_id, 'csrfmiddlewaretoken': getCookie("csrftoken")},
+                    "success": function(data) {
+                        $(this).dialog('close');
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        if(xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0)
+                            return;  // it's not really an error
+                        else
+                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
 
     }
 </script>
-<div class="span-20">
+<div class="span-22">
     <form method="post" action="" id="dot_addendum_form">
         {{ formset.management_form }}
         {% csrf_token %}
-        <div class="span-10">
+        <div class="span-11">
             <h3>ART</h3>
             {% for form in art_forms %}
-                <div class="span-10 last">
+                <div class="span-11 last">
                     <h4>{{ form.get_dose_display }}</h4>
                     {% if not is_reconciled %}
                         <table>
@@ -96,10 +114,10 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="span-10 last">
+        <div class="span-11 last">
             <h3>Non-ART</h3>
             {% for form in nonart_forms %}
-                <div class="span-10 last">
+                <div class="span-11 last">
                     <h4>{{ form.get_dose_display }}</h4>
                     {% if not is_reconciled %}
                         <table>
