@@ -39,11 +39,17 @@
         <td>
             <a href="{% url pactcarehq.views.chw_submits username %}">{{ username }}</a>
         </td>
+        {% if dashboard %}
         <td>{{ dashboard.count }}</td>
         <td>{{ dashboard.last_received|date:"Y-m-d H:i"}}</td>
+        {% else %}
+            <td>0</td>
+            <td>Never</td>
+        {% endif %}
         <td>
             <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
         </td>
+
     </tr>
 {% endfor %}
 </table>

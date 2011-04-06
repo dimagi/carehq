@@ -306,6 +306,7 @@ def post(request):
             #resp['Content-Length'] = 0 #required for nginx
             return resp
         else:
+            logging.error("Error, no form data")
             return HttpResponse("No form data")
     except Exception, e:
         logging.error("Error on submission: %s" % (e))
@@ -652,6 +653,8 @@ def chw_list(request, template_name="pactcarehq/chw_list.html"):
     for uname in users:
         if username_dashboard_dict.has_key(uname):
             context['chw_dashboards'].append((uname, username_dashboard_dict[uname]))
+        else:
+            context['chw_dashboards'].append((uname, None))
     return render_to_response(template_name, context_instance=context)
 
 
