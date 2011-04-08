@@ -3,7 +3,7 @@ from django.core.servers.basehttp import FileWrapper
 from dimagi.utils.couch.database import get_db
 from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
 from patient.models.djangomodels import Patient
-from couchexport.export import export_excel
+from couchexport.export import export
 from django.http import   Http404
 from StringIO import StringIO
 import uuid
@@ -47,7 +47,7 @@ def export_excel_file(request):
     if not export_tag:
         return HttpResponse("You must specify a model to download")
     tmp = StringIO()
-    if export_excel(export_tag, tmp):
+    if export(export_tag, tmp):
         response = HttpResponse(mimetype='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment; filename=%s.xls' % export_tag
         response.write(tmp.getvalue())
@@ -484,20 +484,24 @@ def getpatient(pact_id):
         patient_pactid_cache[pact_id] = pt
         return pt
 
-def _get_schedule_tally(username, total_interval):
+def _get_schedule_tally(username, total_interval, override_date=None):
     """
     For a given username and interval, get a simple array of the username and scheduled visit (whether a submission is there or not)  exists.
     returns (schedule_tally_array, patient_array, total_scheduled (int), total_visited(int))
     schedul_tally_array = [visit_date, [(patient1, visit1), (patient2, visit2), (patient3, None), (patient4, visit4), ...]]
     where visit = XFormInstance
     """
+    if override_date == None:
+        nowdate = datetime.utcnow()
+        chw_schedule = schedule.get_schedule(username)
+    else:
+        nowdate = override_date
+        chw_schedule = schedule.get_schedule(username, override_date = nowdate)
     #got the chw schedule
-    chw_schedule = schedule.get_schedule(username)
     #now let's walk through the date range, and get the scheduled CHWs per this date.visit_dates = []
     ret = [] #where it's going to be an array of tuples:
     #(date, scheduled[], submissions[] - that line up with the scheduled)
 
-    nowdate = datetime.utcnow()
     total_scheduled=0
     total_visited=0
 

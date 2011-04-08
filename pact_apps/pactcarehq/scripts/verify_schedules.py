@@ -38,27 +38,51 @@ def testSimpleIntervals():
     #yesterday, day before, nothing
 
 
-
+from pactcarehq.views import DAYS_OF_WEEK
 def verify_chw_schedules():
     #username = 'ss524'
     #username = 'rachel'
     #username = 'godfrey'
     #username = 'cs783'
-    username = 'lm723'
+    #username = 'lm723'
     #username='nc903'
     #username='lnb9'
+    username='an907'
 
     usr_schedule = schedule.get_schedule(username)
-    for day in usr_schedule.raw_schedule.keys():
-        print "For day: %s" % (day)
-        usr_schedule.raw_schedule[day] = sorted(usr_schedule.raw_schedule[day], key=lambda x: x['schedule_index'])
-        for item in usr_schedule.raw_schedule[day]:
-           start = datetime.strptime(item['active_date'], "%Y-%m-%dT%H:%M:%SZ")
-           if item['ended_date'] == None:
-               end = datetime.utcnow()
-           else:
-               end = datetime.strptime(item['ended_date'], "%Y-%m-%dT%H:%M:%SZ")
-           print "\t%s: %s From:%s - %s" % (item['schedule_index'], item['pact_id'], start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
+    print usr_schedule
+    for item in usr_schedule.raw_schedule:
+        data = item['value']
+        #print "For day: %s" % (data)
+
+        row = [username, DAYS_OF_WEEK[data['day_of_week']], data['pact_id']]
+
+        if data['ended_date'] == None:
+            end_date = datetime.utcnow()
+        else:
+            end_date = datetime.strptime(data['ended_date'], "%Y-%m-%dT%H:%M:%SZ")
+
+        nowdelta = datetime.utcnow() - end_date
+
+        duration_delta = end_date - datetime.strptime(data['active_date'], "%Y-%m-%dT%H:%M:%SZ")
+
+        startx = ['0' for x in range(nowdelta.days/7)]
+        durationx = ['1' for x in range(duration_delta.days/7)]
+
+        row = row + startx
+        row = row + durationx
+
+
+        print ','.join(row)
+
+#        usr_schedule.raw_schedule[day] = sorted(usr_schedule.raw_schedule[day], key=lambda x: x['schedule_index'])
+#        for item in usr_schedule.raw_schedule[day]:
+#           start = datetime.strptime(item['active_date'], "%Y-%m-%dT%H:%M:%SZ")
+#           if item['ended_date'] == None:
+#               end = datetime.utcnow()
+#           else:
+#               end = datetime.strptime(item['ended_date'], "%Y-%m-%dT%H:%M:%SZ")
+#           print "\t%s: %s From:%s - %s" % (item['schedule_index'], item['pact_id'], start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
 
 
 

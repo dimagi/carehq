@@ -43,10 +43,14 @@ class CHWPatientSchedule(object):
         day_tree.intersect(get_seconds(date_val)-.1, get_seconds(date_val), lambda x:results.append(x.other))
         return results
 
-def get_schedule(chw_username):
+def get_schedule(chw_username, override_date = None):
     #print "doing schedule lookup for %s" % (chw_username)
     if cached_schedules.has_key(chw_username):
         return cached_schedules[chw_username]
+    if override_date == None:
+        nowdate = datetime.utcnow()
+    else:
+        nowdate = override_date
     db = CPatient.get_db()
     chw_schedules = db.view('pactcarehq/chw_dot_schedule_condensed', key=chw_username).all()
     day_intervaltree = {}
@@ -58,10 +62,10 @@ def get_schedule(chw_username):
         if day_intervaltree.has_key(day_of_week):
             daytree = day_intervaltree[day_of_week]
         else:
-            daytree = IntervalNode(get_seconds(datetime.min), get_seconds(datetime.utcnow() + timedelta(days=10)))
+            daytree = IntervalNode(get_seconds(datetime.min), get_seconds(nowdate + timedelta(days=10)))
 
         if single_sched['ended_date'] == None:
-            enddate = datetime.utcnow()+timedelta(days=9)
+            enddate = nowdate+timedelta(days=9)
         else:
             enddate = datetime.strptime(single_sched['ended_date'], "%Y-%m-%dT%H:%M:%SZ")
             #enddate = single_sched['ended_date']
