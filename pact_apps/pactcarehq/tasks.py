@@ -8,7 +8,7 @@ from celery.decorators import task, periodic_task
 import tempfile
 import zipfile
 import csv
-from couchexport.export import export
+from couchexport.export import export, Format
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
 from django.core.mail import send_mail
 
@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 def schema_export(namespace, download_id):
     cache_container = {}
     tmp = tempfile.NamedTemporaryFile(suffix='.xls', delete=False)
-    if export(namespace, tmp):
+    if export(namespace, tmp, format=Format.XLS):
         cache_container['mimetype'] = 'application/vnd.ms-excel'
         cache_container['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace
         cache_container['location'] = tmp.name

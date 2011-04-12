@@ -932,6 +932,16 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     progress_note['memo'] = progress_note['memo'].replace('"', '&quot;')
     progress_note['memo'] = progress_note['memo'].replace("'", '&apos;')
     progress_note['memo'] = progress_note['memo'].replace("\n", '<br>')
+
+    try:
+        progress_note['times']['other_location'] = progress_note['times']['other_location'].replace("'", "&quot;")
+    except:
+        pass
+    try:
+        progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("'", "&quot;")
+    except:
+        pass
+
     progress_note['chw'] = xform.form['Meta']['username']
     context['progress_note'] = simplejson.dumps(xform.to_json()['form']['note'])
 
@@ -1084,11 +1094,6 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
         if request.GET.has_key('comment'):
             context['form'] = ProgressNoteComment()
     return render_to_response(template_name, context_instance=context)
-
-
-
-
-
 
 @login_required
 def file_download(request, download_id,template="dots/file_download.html" ):
