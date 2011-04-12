@@ -46,6 +46,8 @@ class Patient(models.Model):
             return self._couchdoc
             self._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
 
+        if self._couchdoc == None:
+            print "Error, this is None: %s->%s" % (self.id, self.doc_id)
         return self._couchdoc
 
 

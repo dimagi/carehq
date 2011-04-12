@@ -61,6 +61,11 @@ def patient_list(request, template_name="pactcarehq/patient_list.html"):
     """Return a list of all the patients in the system"""
     patients = Patient.objects.all()
     sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+
+    #if there's a mismatch of the patients in django and in couch (eg dev environment)
+    #patients = filter(lambda x: x.couchdoc !=None, patients)
+    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+
     context= RequestContext(request)
     context['patients'] = sorted_pts
     return render_to_response(template_name, context_instance=context)
