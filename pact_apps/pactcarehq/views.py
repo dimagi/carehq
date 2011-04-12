@@ -1,5 +1,6 @@
 import urllib
 from django.core.servers.basehttp import FileWrapper
+from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
 from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
 from patient.models.djangomodels import Patient
@@ -34,7 +35,7 @@ from pactcarehq.forms.phone_form import PhoneForm
 from pactcarehq.forms.pactpatient_form import CPatientForm
 from threading import Thread
 from pactcarehq import schedule
-from pactcarehq.tasks import all_chw_submit_report
+from pactcarehq.tasks import all_chw_submit_report, schema_export
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -43,18 +44,20 @@ def export_excel_file(request):
     """
     Download all data for a couchdbkit model
     """
-    export_tag = request.GET.get("export_tag", "")
-    if not export_tag:
+
+    namespace = request.GET.get("export_tag", "")
+    if not namespace:
         return HttpResponse("You must specify a model to download")
-    tmp = StringIO()
-    if export(export_tag, tmp):
-        response = HttpResponse(mimetype='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=%s.xls' % export_tag
-        response.write(tmp.getvalue())
-        tmp.close()
-        return response
-    else:
-        return HttpResponse("Sorry, there was no data found for the tag '%s'." % export_tag)
+    docs = get_docs(namespace)
+    if not docs:
+        return HttpResponse("Error, no documents for that schema exist")
+    download_id = uuid.uuid1().hex
+    schema_export.delay(namespace, download_id)
+    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+
+
+
+    
 
 @login_required
 def patient_list(request, template_name="pactcarehq/patient_list.html"):
@@ -1097,6 +1100,16 @@ def file_download(request, download_id,template="dots/file_download.html" ):
             raise Http404
         else:
             download_json = simplejson.loads(download_data)
+
+            if download_json['location'] == None:
+                #there's no data, likely an error
+                response = HttpResponse(mimetype=download_json['mimetype'])
+                if download_json.has_key('message'):
+                    response.write(download_json['message'])
+                else:
+                    response.write("No data")
+                return response
+
             f = file(download_json['location'], 'rb')
             wrapper = FileWrapper(f)
             response = HttpResponse(wrapper, mimetype=download_json['mimetype'])

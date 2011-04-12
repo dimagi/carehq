@@ -8,8 +8,26 @@ from celery.decorators import task, periodic_task
 import tempfile
 import zipfile
 import csv
+from couchexport.export import export
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
 from django.core.mail import send_mail
+
+@task
+def schema_export(namespace, download_id):
+    cache_container = {}
+    tmp = tempfile.NamedTemporaryFile(suffix='.xls', delete=False)
+    if export(namespace, tmp):
+        cache_container['mimetype'] = 'application/vnd.ms-excel'
+        cache_container['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace
+        cache_container['location'] = tmp.name
+        tmp.close()
+    else:
+        cache_container = {}
+        cache_container['mimetype'] = 'text/plain'
+        cache_container['location'] = None
+        cache_container['message'] = "No data due to an error generating the file"
+    cache.set(download_id, simplejson.dumps(cache_container), 86400)
+
 
 @task
 def all_chw_submit_report(total_interval, download_id):
@@ -89,7 +107,7 @@ def schedule_coverage_tally_report():
     total_interval = 1
     scheduled = []
     unscheduled = []
-    subject =  "CHW Scheduled submission report for %s" % (datetime.now().strftime("%A %B %Y, %I:%M%p"))
+    subject =  "CHW Scheduled submission report for %s" % (datetime.now().strftime("%A %B %d, %Y, %I:%M%p"))
     for user in users:
         ret, patients, total_scheduled, total_visited= _get_schedule_tally(user.username, total_interval)
         if total_scheduled > 0:
