@@ -829,8 +829,14 @@ def _get_submissions_for_patient(patient):
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             formtype = "Progress Note"
             date = note['form']['note']['encounter_date']
+            #commenting out patientupdate until submissions get fixed, and handling is done correctly for case data
+#        elif xmlns == "http://dev.commcarehq.org/pact/patientupdate":
+#            formtype = "Patient Update"
+#            date = note['form']
         else:
             formtype = "Unknown"
+            date = None
+            print "Unknown submission: %s" % (xmlns)
         submissions.append([note._id, date, note.form['Meta']['username'] , formtype])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
