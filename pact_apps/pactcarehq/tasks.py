@@ -93,6 +93,21 @@ def all_chw_submit_report(total_interval, download_id):
     cache.set(download_id, simplejson.dumps(cache_container), 86400)
 
 
+
+hack_chw_username_phones = {
+    'ss524': '6178168512@vtext.com',
+    'lm723': '6175434561@vtext.com',
+    'an907': '6178941127@vtext.com',
+    'lnb9':  '6178944627@vtext.com',
+    'ma651': '6176509230@vtext.com',
+    'ac381': '6179218161@vtext.com',
+    'cs783': '6178168506@vtext.com',
+    'ao970': '6178168507@vtext.com',
+    'nc903': '6173788671@vtext.com',
+    'isaac': '6174597765@vtext.com',
+    'clare': '6175298471@vtext.com',
+}
+
 @periodic_task(run_every=crontab(minute=30, hour=15))
 #@periodic_task(run_every=crontab(hour="*", minute="*", day_of_week="*"))
 def schedule_coverage_tally_report():
@@ -107,7 +122,7 @@ def schedule_coverage_tally_report():
     total_interval = 1
     scheduled = []
     unscheduled = []
-    subject =  "CHW Scheduled submission report for %s" % (datetime.now().strftime("%A %B %d, %Y, %I:%M%p"))
+    subject =  "CHW consolidated submission report for %s" % (datetime.now().strftime("%A %B %d, %Y, %I:%M%p"))
     for user in users:
         ret, patients, total_scheduled, total_visited= _get_schedule_tally(user.username, total_interval)
         if total_scheduled > 0:
@@ -118,4 +133,29 @@ def schedule_coverage_tally_report():
 
     body = '\n'.join([subject, '', 'Scheduled Today:\n', '\n'.join(scheduled), '\nNot Scheduled Today:\n', '\n'.join(unscheduled)])
     send_mail(subject, body, 'notifications@dimagi.com', ['dmyung@dimagi.com', 'CMCBEE@partners.org'], fail_silently=False)
+
+
+@periodic_task(run_every=crontab(minute=00, hour=15))
+def schedule_coverage_tally_report_sms():
+    """scheduled tally for all CHWs sms'ed via SMS email"""
+    from pactcarehq.views import _get_schedule_tally
+    #for each CHW
+    #do a single date query for dateitme.today(), get the num actual vs. expected
+    #ping chw with text message
+    #then append to email message to clare
+
+    users = sorted(filter(lambda x: x.username.count("_") == 0, User.objects.all().filter(is_active=True)), key=lambda x: x.username)
+    total_interval = 1
+    scheduled = []
+    unscheduled = []
+    for user in users:
+        if user.username.lower() in hack_chw_username_phones:
+            ret, patients, total_scheduled, total_visited= _get_schedule_tally(user.username, total_interval)
+            if total_scheduled > 0:
+                if total_visited == total_scheduled:
+                    message_text = "You have submitted data for all %d of your patients today, great!" % (total_scheduled)
+                else:
+                    message_text = "Today you have submitted %d of your %d scheduled patient visits." % (total_visited, total_scheduled)
+                message_text += " To see your full schedule visit https://pact.dimagi.com/schedules/chw/%s" % (user.username.lower())
+                send_mail('', message_text, 'notifications@dimagi.com', [hack_chw_username_phones[user.username.lower()]], fail_silently=False)
 
