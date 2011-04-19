@@ -834,9 +834,8 @@ def _get_submissions_for_patient(patient):
 #            formtype = "Patient Update"
 #            date = note['form']
         else:
-            formtype = "Unknown"
-            date = None
-            print "Unknown submission: %s" % (xmlns)
+            logging.debug("Skipping these namespaces until they are handled correctly %s" % (xmlns))
+            continue
         submissions.append([note._id, date, note.form['Meta']['username'] , formtype])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
