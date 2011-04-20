@@ -16,3 +16,6 @@
 [submodule "submodules/couchlog"]
 	path = submodules/couchlog
 	url = git@github.com:dimagi/couchlog.git
+[submodule "submodules/receiver"]
+	path = submodules/receiver
+	url = git@github.com:dimagi/receiver.git

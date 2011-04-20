@@ -1,5 +1,5 @@
 from django import forms
-from lib.formextras import UserField
+from ashand.lib.formextras import UserField
 
 class AddProviderForm(forms.Form):
     first_name = forms.CharField(required=True, max_length=30)

@@ -1,0 +1,8 @@
+django-debug-toolbar
+django-devserver
+django-extensions
+git+git://github.com/dimagi/couchdbkit-debugpanel.git
+django-staticfiles
+guppy
+
+
