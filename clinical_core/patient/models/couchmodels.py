@@ -198,6 +198,7 @@ class CPatient(Document):
     )
 
     django_uuid = StringProperty() #the django uuid of the patient object
+    case_id = StringProperty() # the case_id generated for this patient object.  where case == patient, but in reality cases can be other things.
     pact_id = StringProperty(required=True)
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
