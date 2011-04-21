@@ -15,6 +15,8 @@ sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
 sys.path.insert(0, os.path.join(filedir,'submodules','dimagi-utils'))
 sys.path.insert(0, os.path.join(filedir,'submodules','receiver'))
 sys.path.insert(0, os.path.join(filedir,'submodules','core-hq'))
+sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq'))
+sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq', 'apps'))
 sys.path.insert(0, os.path.join(filedir,'submodules','auditcare'))
 sys.path.insert(0, os.path.join(filedir,'submodules','couchlog'))
 
