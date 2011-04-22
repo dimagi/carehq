@@ -2,7 +2,7 @@ import urllib
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
-from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard
+from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard, CAddress
 from patient.models.djangomodels import Patient
 from couchexport.export import export
 from django.http import   Http404
@@ -115,6 +115,10 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
     schedule_edit = request.GET.get("edit_schedule", False)
     address_edit = request.GET.get("edit_address", False)
+    address_edit_id = request.GET.get("address_id", None)
+
+
+    new_address = True if request.GET.get("new_address", False) == "True" else False
     phone_edit = request.GET.get("edit_phone", False)
     patient_edit = request.GET.get('edit_patient', None)
     show_all_schedule = request.GET.get('allschedules', None)
@@ -144,12 +148,16 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             context['bloodwork_overdue'] = False
 
 
-    if address_edit:
+    if address_edit and not new_address:
         if len(patient.couchdoc.address) > 0:
             #if there's an existing address out there, then use it, else, make a new one
-            context['address_form'] = AddressForm(instance=patient.couchdoc.address[-1])
+            context['address_form'] = AddressForm(instance=patient.couchdoc.get_address(address_edit_id))
         else:
             context['address_form'] = AddressForm()
+    if new_address:
+        context['address_form'] = AddressForm()
+        context['address_edit'] = True
+        print "new address damn it!"
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
     if phone_edit:
@@ -178,12 +186,30 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
             else:
                 context['schedule_form'] = form
-        elif address_edit:
+        elif address_edit or new_address:
             form = AddressForm(data=request.POST)
             if form.is_valid():
-                instance = form.save(commit=False)
-                instance.created_by = request.user.username
-                patient.couchdoc.set_address(instance)
+                is_new_addr = False
+                if form.cleaned_data['address_id'] != '':
+                    is_new_addr=False
+                    address_edit_id = form.cleaned_data['address_id']
+                    instance = patient.couchdoc.get_address(address_edit_id)
+                else:
+                    is_new_addr=True
+                    instance=CAddress()
+                    instance.created_by = request.user.username
+                instance.description = form.cleaned_data['description']
+                instance.street = form.cleaned_data['street']
+                instance.city = form.cleaned_data['city']
+                instance.state = form.cleaned_data['state']
+                instance.postal_code = form.cleaned_data['postal_code']
+
+                if is_new_addr == False:
+                    index = patient.couchdoc.address_index(address_edit_id)
+                    patient.couchdoc.address[index] = instance
+                else:
+                    patient.couchdoc.set_address(instance)
+
                 patient.couchdoc.save()
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
             else:
@@ -937,6 +963,12 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     progress_note['memo'] = progress_note['memo'].replace('"', '&quot;')
     progress_note['memo'] = progress_note['memo'].replace("'", '&apos;')
     progress_note['memo'] = progress_note['memo'].replace("\n", '<br>')
+    progress_note['memo'] = progress_note['memo'].replace("\t", '&nbsp;')
+
+    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace('"', '&quot;')
+    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("\n", '<br>')
+    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("\t", '&nbsp;')
+    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("'", '&apos;')
 
     try:
         progress_note['times']['other_location'] = progress_note['times']['other_location'].replace("'", "&quot;")
@@ -1032,9 +1064,11 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     else:
         dots_note['observed_non_art'] = 'No'
     try:
-        dots_note['notes'] = raw['notes']
+        raw['notes'] = raw['notes'].replace("'", "&quot;")
+        raw['notes'] = raw['notes'].replace('"', "&quot;")
+        raw['notes'] = raw['notes'].replace("\n", "<br>")
     except:
-        dots_note['notes'] = ''
+        raw['notes'] = ''
 
 
 
@@ -1055,6 +1089,8 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
         raw['non_art_no_details'] = raw['non_art_no_details'].replace("\n", '<br>')
     
 
+    for key, val in raw.items():
+        print "%s: %s" % (key, val)
     context['raw_note'] = simplejson.dumps(raw)
     case_id = xform['form']['case']['case_id']
 

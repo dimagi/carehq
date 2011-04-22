@@ -487,7 +487,20 @@ class CPatient(Document):
         else:
             return []
         return ret
-        
+
+    def get_address(self, address_id):
+        filtered = filter(lambda x: x.address_id==address_id, self.address)
+        if len(filtered) == 0:
+            return None
+        else:
+            return filtered[0]
+
+    def address_index(self, address_id):
+        for i, addr in enumerate(self.address):
+            if addr.address_id == address_id:
+                return i
+        return -1
+
     @property
     def latest_address(self):
         #return sorted(self.weekly_schedule, key=lambda x:x.started)[-1]
@@ -514,15 +527,13 @@ class CPatient(Document):
         self.weekly_schedule.append(new_schedule)
         self.save()
 
-    def set_address(self, new_address):
+    def remove_address(self, address_id):
+        #remove a given address in the address array by the givenguid
+        self.address = filter(lambda x: x.address_id!=address_id, self.address)
+        self.save()
+
+    def set_address(self, new_address, ):
         """set the schedule as head of the schedule by accepting a cdotweeklychedule"""
-        #first, set all the others to inactive
-        for addr in self.address:
-            if not addr.deprecated:
-                addr.deprecated=True
-                addr.ended=datetime.utcnow()
-                addr.save()
-        new_address.deprecated=False
         self.address.append(new_address)
         self.save()
 
@@ -535,15 +546,7 @@ class CPatient(Document):
             else:
                 ret.append(phone)
         return ret
-    @property
-    def active_addresses(self):
-        ret = []
-        for addr in self.address:
-            if addr.deprecated:
-                continue
-            else:
-                ret.append(addr)
-        return ret
+
 
     def get_ghetto_phone_xml(self):
         ret = ''
@@ -572,7 +575,7 @@ class CPatient(Document):
     def get_ghetto_address_xml(self):
         ret = ''
         counter = 1
-        for num, addr in enumerate(self.active_addresses, start=1):
+        for num, addr in enumerate(self.address, start=1):
             addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
             ret += "<address%d>%s</address%d>" % (num,addconcat, num)
             if addr.description != None and len(addr.description) > 0:
