@@ -389,6 +389,15 @@ def get_couchdata(request):
             datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
             obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
             for ob in obs:
+                if view_doc_id != None and ob.doc_id != view_doc_id:
+                    #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
+                    #skip if we're only looking at one doc
+                    continue
+                else:
+                    #show it because we're looking at all observations
+                    #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
+                    pass
+
                 try:
                     time_label = ob.get_time_label()
                 except IndexError:
@@ -398,6 +407,9 @@ def get_couchdata(request):
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
+                    print date
+                    print ob.doc_id
+                    print ob.day_note
                     #pre-check
                 if ob.is_reconciliation == True:
                     #it's a reconciled entry.  Trump all
@@ -421,14 +433,8 @@ def get_couchdata(request):
                             conflict_dict[prior_ob.doc_id] = prior_ob
                     conflict_check[ob.adinfo[0]] = ob
 
-                    if view_doc_id != None and ob.doc_id != view_doc_id:
-                        #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
-                        #skip if we're only looking at one doc
-                        continue
-                    else:
-                        #show it because we're looking at all observations
-                        #print "\tShow:Is ART: %s: %d/%d %s:%s" % (str(ob.is_art)[0], ob.dose_number, ob.total_doses, ob.adherence, ob.method)
-                        pass
+
+
 
                     if not found_reconcile and time_label != '':
                         if grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label) == False:

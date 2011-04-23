@@ -21,6 +21,18 @@ ghetto_regimen_map = {
     '': '' ,
 }
 
+html_escape_table = {
+    "&": "&amp;",
+    '"': "&quot;",
+    "'": "&apos;",
+    ">": "&gt;",
+    "<": "&lt;",
+    }
+
+def html_escape(text):
+    """Produce entities within text."""
+    return "".join(html_escape_table.get(c,c) for c in text)
+
 class CPhone(Document):
     phone_id=StringProperty(default=make_uuid)
     is_default = BooleanProperty()
@@ -113,6 +125,7 @@ ghetto_patient_xml = """<case>
                        <pactid>%(pact_id)s</pactid>
                        <gender>%(sex)s</gender>
                        <type>%(arm)s</type>
+                       <patient_notes>%(patient_note)s</patient_notes>
                        %(phones)s
                        %(addresses)s
                        %(dot_schedule)s
@@ -616,6 +629,7 @@ class CPatient(Document):
         xml_dict['pact_id'] = self.pact_id
         xml_dict['sex'] = self.gender
         xml_dict['arm'] = self.arm
+        xml_dict['patient_note'] = html_escape(self.notes) if self.notes != None else ""
         xml_dict['dob'] = self.birthdate.strftime("%Y-%m-%d")
         xml_dict['pt_initials'] = "%s%s" % (self.first_name[0], self.last_name[0])
         xml_dict['hp'] = self.primary_hp

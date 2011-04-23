@@ -334,8 +334,12 @@ def post(request):
     try:
         if request.FILES.has_key("xml_submission_file"):
             instance = request.FILES["xml_submission_file"].read()
-            t = Thread(target=threaded_submission, args=(instance,))
-            t.start()
+            #t = Thread(target=do_submission, args=(instance,))
+            #t.start()
+
+            #todo: need to switch this into using receiver
+            do_submission(instance)
+
             resp = HttpResponse(status=201)
             #resp['Content-Length'] = 0 #required for nginx
             return resp
@@ -435,7 +439,7 @@ def ms_from_timedelta(td):
     """
     return (td.seconds * 1000) + (td.microseconds / 1000.0)
 
-def threaded_submission(instance):
+def do_submission(instance):
     start_time = datetime.utcnow()
     logging.debug("Begin threaded submission")
     doc = post_xform_to_couch(instance)
