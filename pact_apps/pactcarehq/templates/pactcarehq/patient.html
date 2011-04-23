@@ -35,7 +35,37 @@ function post_phone_delete(patient_id, phone_id) {
     form.submit();
 }
 
-function post_schedule_delete(patient_id, schedule_id) {
+function post_address_delete(patient_id, address_id) {
+    //method = method || "post"; // Set method to post by default, if not specified.
+    method="post";
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", '{% url remove_address %}');
+
+    var csrf = document.createElement("input");
+    csrf.setAttribute("type", "hidden");
+    csrf.setAttribute("name", "csrfmiddlewaretoken");
+    csrf.setAttribute("value", "{{ csrf_token }}");
+    form.appendChild(csrf);
+
+    var patientIDField = document.createElement("input");
+    patientIDField.setAttribute("type", "hidden");
+    patientIDField.setAttribute("name", "patient_id");
+    patientIDField.setAttribute("value", patient_id);
+    form.appendChild(patientIDField);
+
+    var phoneIDField = document.createElement("input");
+    phoneIDField.setAttribute("type", "hidden");
+    phoneIDField.setAttribute("name", "address_id");
+    phoneIDField.setAttribute("value", address_id);
+    form.appendChild(phoneIDField);
+
+    document.body.appendChild(form);    // Not entirely sure if this is necessary
+    form.submit();
+}function post_schedule_delete(patient_id, schedule_id) {
     //method = method || "post"; // Set method to post by default, if not specified.
     method="post";
 
@@ -177,6 +207,7 @@ $(function() {
 	<div class="span-24">
 		<div class="span-12">
             {# #################### Address view/edit ################### #}
+            <strong><span style="font-size:125%">Address Information</span></strong> <small>(<a href="{{ request.path }}?new_address=True">Add new</a>)</small>
             {% if address_edit %}
                 <fieldset>
                     <legend>Change Address</legend>
@@ -191,28 +222,24 @@ $(function() {
                 </fieldset>
             {% else %}
                 <div class="span-12">
-                <strong><span style="font-size:125%">Primary Address</span></strong> <small>(<a href="{{ request.path }}?edit_address=True">Edit</a>)</small>
                 </div>
                 <div class="span-11 prepend-1 last">
-                    {% with pdoc.latest_address as patient_address %}
-                        {% if patient_address %}
-                            <div class="span-8">
+                    {% for patient_address in pdoc.address %}
+                            <div class="span-11">
                                 {% if patient_address.description %}
-                                {{ patient_address.description|title }}<br>
+                                <strong>{{ patient_address.description|title }}</strong> &nbsp;
+                                    <small><a href="{{ request.path }}?edit_address=True&address_id={{ patient_address.address_id }}">Change</a></small> &nbsp;
+                                    <small><a href="javascript:post_address_delete('{{patient.id }}', '{{ patient_address.address_id }}')">Remove</a></small><br>
                                 {% endif %}
                                 {{patient_address.street}} <br>{{patient_address.city}}, {{patient_address.state}} {{patient_address.postal_code}}<br>
-{#                                <small><a href="{{ request.path }}?edit_address=True">Change</a></small>#}
                             </div>
-                        {% else %}
-                            <a href="{{ request.path }}?edit_address=True">Change Address</a></small>
-                        {% endif %}
-                    {% endwith %}
+                    {% endfor %}
                     </div>
             {% endif %}
             {# ######################## End address editing #################### #}
         </div>
         <div class="span-12 last">
-            {# Phone Display/Edit #}
+            {# ####################### Phone Display/Edit ###################### #}
             <strong><span style="font-size:125%">Phone Contact</span></strong> <small>(<a href="{{ request.path }}?edit_phone=True">Add new</a>)</small>
             {% if phone_edit %}
             <div class="span-8">
@@ -232,16 +259,16 @@ $(function() {
 
             {% for phone in pdoc.active_phones %}
                 <div class="span-12">
-                    <div class="span-2" align="right">
+                    <div class="span-3" align="right">
                         <strong>{{ phone.description|title }}</strong>
                     </div>
-                    <div class="span-8 last">
+                    <div class="span-9 last">
                         <em>{{ phone.number }}</em>
                         <small>(<a href="javascript:post_phone_delete('{{patient.id }}', '{{ phone.phone_id }}')">Remove</a>)</small>
                     </div>
                 </div>
             {% endfor %}
-            {# End Phone Display/Edit #}
+            {# ########################### End Phone Display/Edit ####################### #}
         </div>
     </div>
     <hr>

@@ -48,14 +48,31 @@ def remove_phone(request):
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
             patient = Patient.objects.get(id=patient_id)
             phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
-            for i in range(0, len(patient.couchdoc.phones)):
-                p = patient.couchdoc.phones[i]
+            for i, p in enumerate(patient.couchdoc.phones):
                 if p.phone_id == phone_id:
                     p.deprecated=True
                     p.ended=datetime.utcnow()
                     p.edited_by = request.user.username
                     patient.couchdoc.phones[i] = p
                     patient.couchdoc.save()
+            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+        except Exception, e:
+            logging.error("Error getting args:" + str(e))
+            #return HttpResponse("Error: %s" % (e))
+    else:
+        pass
+
+
+
+@login_required
+def remove_address(request):
+    if request.method == "POST":
+        print request.POST
+        try:
+            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            patient = Patient.objects.get(id=patient_id)
+            address_id = urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore')
+            patient.couchdoc.remove_address(address_id)
             return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
         except Exception, e:
             logging.error("Error getting args:" + str(e))

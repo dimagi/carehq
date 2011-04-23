@@ -3,26 +3,23 @@ from django import forms
 from couchdbkit.ext.django.forms import DocumentForm
 from patient.models.couchmodels import CAddress
 
-class AddressForm(DocumentForm):
-    """
-    DocumentForm
-    """
 
-    class Meta:
-        document = CAddress
-        exclude = ('edited_by','created_by', 'started', 'ended', 'deprecated', 'address_id')
-        
-#
-#    def clean(self):
-#        cleaned_data = self.cleaned_data
-#        all_null=True
-#        for day in days:
-#            if cleaned_data.get(day) != None:
-#                all_null=False
-#                break
-#
-#        if all_null:
-#            raise forms.ValidationError("Error, at least one day must be chosen")
-#        # Always return the full collection of cleaned data.
-#        return cleaned_data
+class AddressForm(forms.Form):
+    """
+    Form to provide for simple editing/commentnig on an inbound progrssnote for PACT
+    """
+    description = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    street = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    city = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    state = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    postal_code = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    address_id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
+    def __init__(self, instance=None, *args, **kwargs):
+        if instance != None:
+            initial = {'description': instance.description, 'street': instance.street, 'city': instance.city, 'state': instance.state, 'postal_code': instance.postal_code, 'address_id':instance.address_id}
+            super(AddressForm, self).__init__(*args, **{'initial': initial})
+        else:
+            super(AddressForm, self).__init__(*args, **kwargs)
 

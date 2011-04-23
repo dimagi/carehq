@@ -107,7 +107,11 @@ function(doc) {
                 }
             }
             //finally, if the observed_date and anchor dates are different, we need to make a manual single DOT entry:
-            if (anchor_date.toDateString() != encounter_date.toDateString()) {
+            //doing a direct string interpretation due to timezone issues, at the time of creation on the phone, the DATE is correct, regardless of time taken.  So comparing by the individual
+            //date components is the most accurate way to fly here.
+
+            var anchor_datestring = anchor_date.getFullYear() + "-" + padzero(anchor_date.getMonth()+1) + "-" + anchor_date.getDate()
+            if (anchor_datestring != doc.form['encounter_date']) {
                 var new_drug_obs = {};
                 new_drug_obs['doc_id'] = doc._id;
                 new_drug_obs['patient'] = doc.form['case']['case_id'];
@@ -118,7 +122,8 @@ function(doc) {
                 new_drug_obs['completed_date'] = doc.form['Meta']['TimeEnd'];
                 new_drug_obs['anchor_date'] = toISOString(encounter_date);
                 new_drug_obs['day_index'] = -1;
-                new_drug_obs['note'] = note;
+                new_drug_obs['day_note'] = "No check, from form";
+
 
                 //non_art
                 if(doc.form['pillbox_check']['nonartbox'] != "") {
@@ -127,7 +132,7 @@ function(doc) {
                     new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['nonartbox']);
                     new_drug_obs['observed_date'] = toISOString(encounter_date);
                     var non_art_dispense = eval(doc.form['pillbox_check']['nonartnow']);
-                    do_observation(doc, observed_date, anchor_date, non_art_dispense, eval(uneval(new_drug_obs)));
+                    do_observation(doc, encounter_date, anchor_date, non_art_dispense, eval(uneval(new_drug_obs)));
                 }
 
                 //art
@@ -137,7 +142,7 @@ function(doc) {
                     new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['artbox']);
                     new_drug_obs['observed_date'] = toISOString(encounter_date);
                     var art_dispense = eval(doc.form['pillbox_check']['artnow']);
-                    do_observation(doc, observed_date, anchor_date, art_dispense, eval(uneval(new_drug_obs)));
+                    do_observation(doc, encounter_date, anchor_date, art_dispense, eval(uneval(new_drug_obs)));
                 }
 
             }
