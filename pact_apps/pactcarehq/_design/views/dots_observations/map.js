@@ -16,11 +16,7 @@ function(doc) {
 		//source: http://williamsportwebdeveloper.com/cgi/wp/?p=503
 		return d.getUTCFullYear() + '-' +  padzero(d.getUTCMonth() + 1) + '-' + padzero(d.getUTCDate()) + 'T' + padzero(d.getUTCHours()) + ':' +  padzero(d.getUTCMinutes()) + ':' + padzero(d.getUTCSeconds()) + '.' + pad2zeros(d.getUTCMilliseconds()) + 'Z';
 	}
-//	function fnToISO() {
-//		var now = new Date();
-//		alert(toISOString(now));
-//	}
-	
+
 	function do_observation(doc, observe_date, anchor_date, drug_arr, obs_dict) {
         //previously from using anchor_date, used observed_date, but pact wanted the anchor date to drive the date bounds.
         if (drug_arr.length >= 2 && drug_arr[0] != 'unchecked') {
@@ -29,8 +25,6 @@ function(doc) {
             if (drug_arr.length == 3) {
 				obs_dict['day_note'] = drug_arr[2];
 			}
-			//emit([doc._id, i.toString()], drug_obs);
-			//var use_date = new Date(doc.form['case']['update']['dots']['anchor']);
             emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], obs_dict);
             emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth()+1, observe_date.getDate()], eval(uneval(obs_dict)));
             emit([anchor_date.getFullYear(), anchor_date.getMonth()+1, anchor_date.getDate()], eval(uneval(obs_dict)));
@@ -49,10 +43,10 @@ function(doc) {
 	
 	//function to emit all the dots observations into a format that's readable by the dotsview app
     if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form") {
-		var casedata = doc.form['case']['update'];
-        if (casedata['dots'] != undefined) {
-            var anchor_date = new Date(casedata['dots']['anchor']);
-            var daily_data = casedata['dots']['days'];
+		var pactdata = doc['pact_data'];
+        if (pactdata['dots'] != undefined) {
+            var anchor_date = new Date(pactdata['dots']['anchor']);
+            var daily_data = pactdata['dots']['days'];
             var drop_note = true;
             var encounter_date = new Date(doc.form['encounter_date']);
 
@@ -63,7 +57,7 @@ function(doc) {
                 var day_delta = daily_data.length-1-i;
                 var drug_classes = daily_data[i];
                 //var observed_date = new Date(anchor_date.getTime() - (24*3600*1000 * i));
-                var observed_date = new Date(casedata['dots']['anchor']);
+                var observed_date = new Date(pactdata['dots']['anchor']);
                 observed_date.setDate(anchor_date.getDate()-day_delta);
                 for (var j = 0; j < drug_classes.length; j+=1) {
                     //iterate through the drugs to get art status within a given day.  right now that's just 2
@@ -149,6 +143,7 @@ function(doc) {
         }
 	}
     else if (doc.doc_type == "CObservationAddendum") {
+        //if it's a reconciliation object, then unpack the internal individual entries and emit them one by one.
        for (var i = 0; i < doc.art_observations.length; i++) {
             var obs = doc.art_observations[i];
             var anchor_date = parse_date(obs.anchor_date);
