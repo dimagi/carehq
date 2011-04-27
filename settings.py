@@ -74,7 +74,7 @@ MIDDLEWARE_CLASSES = (
     #'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -130,6 +130,8 @@ INSTALLED_APPS = (
     'couchexport',
     'couchlog',
     'dimagi.utils',
+    'case',
+    'touchforms.formplayer',
 
     #####################
     #'casetracker',
@@ -205,14 +207,27 @@ AUDITABLE_MODELS = [
 
 TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
-#DEV_APPS are the apps in which you care about for unit testing.
-DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
 
 #have sessions expire at browser close for security reasons
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 #celery config
 CARROT_BACKEND = "django"
+
+
+#DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
+DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors','case', 'touchforms.formsplayer',]
+#to be overrided by localsettings if need be.  These are the BARE MINIMUM
+COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','case',]
+
+
+import os
+
+XFORMS_PATH = "data/xforms"
+XFORMS_BOOTSTRAP_PATH = "data/bootstrap_xforms"
+XFORMS_PLAYER_URL = "http://localhost:4444/"
+TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
+
 
 # import local settings if we find them
 try:

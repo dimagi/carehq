@@ -19,3 +19,6 @@
 [submodule "submodules/receiver"]
 	path = submodules/receiver
 	url = git@github.com:dimagi/receiver.git
+[submodule "submodules/touchforms"]
+	path = submodules/touchforms
+	url = git@github.com:dimagi/touchforms.git
