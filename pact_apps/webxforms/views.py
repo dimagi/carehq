@@ -75,8 +75,8 @@ def new_progress_note(request): #patient_id
     def callback(xform, doc):
         return HttpResponseRedirect(reverse('webxforms.views.temp_landing')) #go to patient page
 
-    #url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_progress_note.xml')
-    url_resp = urllib2.urlopen('http://xforms.dimagi.com/download/48')
+    url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_progress_note.xml')
+    #url_resp = urllib2.urlopen('http://xforms.dimagi.com/download/48')
     xform_str = url_resp.read()
     try:
         tmp_file_handle, tmp_file_path = tempfile.mkstemp()
@@ -91,17 +91,14 @@ def new_progress_note(request): #patient_id
         notice = "Problem creating xform from %s: %s" % (file, e)
         raise e
 
-    preloader_data = {"meta": {
-        #"DeviceID": 'touchforms',
-                               "UserID": '999',
-                               "UserName": 'someuser',
-                               "pactid": "foo",
-                               "case-id": "bar",
-                               #"start": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                               #"end": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                               #"general": uuid.uuid1().hex,
-                               "callduration": '5',
-
+    preloader_data = {
+        "case": {"case-id": "0000000",
+                 "pactid": "foo",
+                 },
+        "property": { "DeviceID": "touchforms"},
+        "meta": {
+                               "UserID": '0000000',
+                               "UserName": '00000000000me',
                                }
     }
     #preloader_data = {}
