@@ -291,6 +291,7 @@ class CPatient(BasePatient):
     def save(self):
         #reorder the schedules to sort by start date
         self._set_schedule_dates()
+        self.date_modified = datetime.utcnow()
         super(CPatient, self).save()
         #next, we need to invalidate the cache
         cache.delete('%s_couchdoc' % (self.django_uuid))

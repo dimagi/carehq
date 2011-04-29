@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import os
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 import urllib2
@@ -67,6 +68,7 @@ def play(request, xform_id, callback=None, preloader_data={}):
                                "preloader_data": preloader_data_js},
                               context_instance=RequestContext(request))
 
+@login_required
 def new_progress_note(request): #patient_id
     """
     Fill out a NEW progress note
@@ -92,14 +94,13 @@ def new_progress_note(request): #patient_id
         raise e
 
     preloader_data = {
-        "case": {"case-id": "0000000",
-                 "pactid": "foo",
+        "case": {"case-id": "66a4f2d0e9d5467e34122514c341ed92",
+                 "pactid": "999999",
                  },
         "property": { "DeviceID": "touchforms"},
         "meta": {
-                               "UserID": '0000000',
-                               "UserName": '00000000000me',
-                               }
+               "UserID": '%d' % (request.user.id),
+               "UserName": request.user.username,
+               }
     }
-    #preloader_data = {}
     return play(request, new_form.id, callback, preloader_data)
