@@ -112,7 +112,7 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
             time_label = ob.get_time_label()
         except IndexError:
             logging.error("Error, observation time label index not found, DOT data generation error")
-#            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
+#            hack_patient = CPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).first()
 #            if ob.is_art:
 #                total_doses = hack_patient.art_num
 #            else:
@@ -471,7 +471,7 @@ def get_couchdata(request):
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 
-    dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
+    dots_pts = CPatient.view('pactcarehq/all_dots', include_docs=True).all()
     dots_ids = [pt._id for pt in dots_pts]
     patients = Patient.objects.filter(doc_id__in=dots_ids)
 

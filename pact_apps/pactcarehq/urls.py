@@ -9,6 +9,7 @@ urlpatterns = patterns ('',
 
     #(r'^$', 'pactcarehq.views.user_submit_tallies'),
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
+    (r'^cases$', 'pactcarehq.views.get_casexml'),
     (r'^submit$', 'pactcarehq.views.post'),
     (r'^submit/$', 'pactcarehq.views.post'),
     (r'^receiver/submit/.*$', 'pactcarehq.views.post'),

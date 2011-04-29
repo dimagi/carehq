@@ -372,7 +372,7 @@ def my_patient_activity_grouped(request, template_name="pactcarehq/patients_dash
 
     chw_patient_dict = {}
     for chw in chw_patient_assignments.keys():
-        chw_patient_dict[chw] = CPatient.view('patient/pact_ids', keys=chw_patient_assignments[chw], include_docs=True).all()
+        chw_patient_dict[chw] = CPatient.view('pactcarehq/patient_pact_ids ', keys=chw_patient_assignments[chw], include_docs=True).all()
 
     #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
     #keys = [p.couchdoc.pact_id for p in sorted_pts]
@@ -405,7 +405,7 @@ def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.ht
         pact_id = res['value'].encode('ascii')
         if not chw_patient_dict.has_key(chw):
             chw_patient_dict[chw] = []
-        chw_patient_dict[chw].append(CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first())
+        chw_patient_dict[chw].append(CPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).first())
 
     #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
     #keys = [p.couchdoc.pact_id for p in sorted_pts]
@@ -449,8 +449,18 @@ def do_submission(instance):
     delta_signal = datetime.utcnow() - (start_time + delta_post)
     logging.debug("Signal emitted: %d ms" % (ms_from_timedelta(delta_signal)))
 
+
+@httpdigest()
+def get_casexml(request):
+    """
+    Use the orthodox dimagi.case casexml generation method to get casexml
+    """
+    pass
+
 @httpdigest()
 def get_caselist(request):
+    """Intermediary/ghetto way of producing casexml, to be deprecated.
+    """
     regblock= get_ghetto_registration_block(request.user)
     patient_block = ""
     patients = CPatient.view("patient/search", include_docs=True)

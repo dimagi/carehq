@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import *
+from actors.models import *
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -12,3 +12,9 @@ class PatientLinkAdmin(admin.ModelAdmin):
     list_filter  = ['patient','active']
 
 admin.site.register(PatientLink, PatientLinkAdmin)
+
+
+class ClinicalUserProfileAdmin(admin.ModelAdmin):
+    list_display=('user', 'profile_doc_id', 'couchdoc')
+
+admin.site.register(ClinicalUserProfile, ClinicalUserProfileAdmin)

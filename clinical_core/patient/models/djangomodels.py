@@ -9,8 +9,11 @@ import logging
 from dimagi.utils import make_uuid, make_time
 from django.core.cache import cache
 from patient.models.couchmodels import CPatient
+
 class DuplicateIdentifierException(Exception):
     pass
+
+
 
 
 
@@ -89,7 +92,7 @@ class Patient(models.Model):
     @staticmethod
     def is_pact_id_unique(pact_id):
         #print "checking pact_id: " + str(pact_id)
-        if CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).count() > 0:
+        if CPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).count() > 0:
             return False
         else:
             return True

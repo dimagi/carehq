@@ -203,7 +203,11 @@ class CActivityDashboard(Document):
     class Meta:
         app_label = 'patient'
 
-class CPatient(Document):
+
+class BasePatient(Document):
+    """
+    Base class for case-able patient model in CareHQ.  Actual implementations of CareHQ ought to subclass this for its own uses. Especially in cases of multi tenancy, or code reuse.
+    """
     GENDER_CHOICES = (
         ('m','Male'),
         ('f','Female'),
@@ -211,33 +215,36 @@ class CPatient(Document):
     )
 
     django_uuid = StringProperty() #the django uuid of the patient object
-    case_id = StringProperty() # the case_id generated for this patient object.  where case == patient, but in reality cases can be other things.
-    pact_id = StringProperty(required=True)
+    case_id = StringProperty() # the case_id generated for this patient object.  This is in situations where case == patient, but in reality cases can be other things.
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
     gender = StringProperty(required=True)
-    primary_hp = StringProperty(required=True)
-    arm = StringProperty()
     birthdate = DateProperty()
     patient_id = StringProperty()
     address = SchemaListProperty(CAddress)
     phones = SchemaListProperty(CPhone)
-    #cases = SchemaListProperty(PatientCase)
-    art_regimen = StringProperty()
-    non_art_regimen = StringProperty()
     date_modified = DateTimeProperty(default=datetime.utcnow)
-
-    prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
-
-    last_note = StringProperty() #will be a timestamp
-    last_dot = StringProperty() #will be a timestamp
-
-    dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
-    weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
-    #    providers = SchemaListProperty(CProvider) # providers in PACT are done via the careteam
     notes = StringProperty()
 
+    base_type = StringProperty(default="BasePatient")
+
+    class Meta:
+        app_label = 'patient'
+
+
+class CPatient(BasePatient):
+
+    pact_id = StringProperty(required=True)
+    primary_hp = StringProperty(required=True)
+    arm = StringProperty()
+    art_regimen = StringProperty()
+    non_art_regimen = StringProperty()
+    prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
+    last_note = StringProperty() #will be a timestamp
+    last_dot = StringProperty() #will be a timestamp
+    dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
+    weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
 
     @property
     def art_num(self):
