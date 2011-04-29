@@ -635,7 +635,7 @@ class CPatient(BasePatient):
 #            ret +="<cd><cdcnt>%s</cdcnt><cdper>%s</cdper></cd>" % (bw['cd']['cdcnt'], bw['cd']['cdper'])
 #        ret += "</bw>"
 
-        ret = ""
+        ret = "%s|" % (bw['test_date'])
         if bw.has_key('cd'):
             ret += "cd %s" % bw['cd']['cdcnt']
             if bw['cd']['cdper'] != "":

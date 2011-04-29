@@ -333,12 +333,17 @@ def post(request):
     """
     try:
         if request.FILES.has_key("xml_submission_file"):
+            attachments = {}
             instance = request.FILES["xml_submission_file"].read()
+            for key, item in request.FILES.items():
+                if key != "xml_submission_file":
+                    attachments[key] = item
+
             #t = Thread(target=do_submission, args=(instance,))
             #t.start()
 
             #todo: need to switch this into using receiver
-            do_submission(instance)
+            do_submission(instance, attachments=attachments)
 
             resp = HttpResponse(status=201)
             #resp['Content-Length'] = 0 #required for nginx
@@ -439,15 +444,12 @@ def ms_from_timedelta(td):
     """
     return (td.seconds * 1000) + (td.microseconds / 1000.0)
 
-def do_submission(instance):
+def do_submission(instance, attachments={}):
     start_time = datetime.utcnow()
     logging.debug("Begin threaded submission")
-    doc = post_xform_to_couch(instance)
+    doc = post_xform_to_couch(instance, attachments=attachments)
     delta_post =  datetime.utcnow() - start_time
-    logging.debug("Submission posted: %d ms" % (ms_from_timedelta(delta_post)))
-    xform_saved.send(sender="post", xform=doc) #ghetto way of signalling a submission signal
-    delta_signal = datetime.utcnow() - (start_time + delta_post)
-    logging.debug("Signal emitted: %d ms" % (ms_from_timedelta(delta_signal)))
+    logging.debug("Submission posted: %d ms, doc_id: %s" % (ms_from_timedelta(delta_post), doc._id))
 
 
 @httpdigest()
