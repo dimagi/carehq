@@ -22,6 +22,9 @@ class Patient(models.Model):
     This object is retained to provide a Relational foreign key for traditional django models.
 
     Also, permissions via the Actor framework and other permission/integration/security features will link to this object rather.
+
+    All differentiations of roles and patient types for this should be determined by the underlying couchmodel.  This model is just a placeholder for the
+    actors permission framework which uses the django orm.
     """
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
@@ -89,18 +92,10 @@ class Patient(models.Model):
         else:
             self.isnew=False
 
-    @staticmethod
-    def is_pact_id_unique(pact_id):
-        #print "checking pact_id: " + str(pact_id)
-        if CPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).count() > 0:
-            return False
-        else:
-            return True
-
     def save(self, *args, **kwargs):
         #time to do some error checking
         if self.isnew:
-            if not Patient.is_pact_id_unique(self.couchdoc.pact_id):
+            if not CPatient.is_pact_id_unique(self.couchdoc.pact_id):
                 raise DuplicateIdentifierException()
 
         if self.doc_id == None and self.isnew:
