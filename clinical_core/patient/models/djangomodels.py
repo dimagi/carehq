@@ -3,18 +3,45 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
 import simplejson
+from dimagi.utils.couch.database import get_db
+from patient.models.couchmodels import BasePatient
 
 import settings
 import logging
 from dimagi.utils import make_uuid, make_time
 from django.core.cache import cache
-from patient.models.couchmodels import CPatient
+
 
 class DuplicateIdentifierException(Exception):
     pass
 
+#preload all subclasses of BasePatient into a dictionary for easy access for casting documents to their instance class
+
+base_subclass_dict = {}
+def get_subclass_dict():
+    if len(base_subclass_dict.keys()) == 0:
+        for cls in BasePatient.__subclasses__():
+            base_subclass_dict[unicode(cls.__name__)] = cls
+    return base_subclass_dict
 
 
+def _get_typed_patient_from_dict(doc_dict):
+    doc_type = doc_dict['doc_type']
+    if get_subclass_dict().has_key(doc_type):
+        cast_class = get_subclass_dict()[doc_type]
+    else:
+        cast_class = BasePatient
+        logging.warning("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
+    return cast_class.wrap(doc_dict)
+
+def _get_typed_patient(doc_id):
+    """
+    Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
+    """
+    #todo this is hacky in a multitenant environment
+    db = get_db()
+    doc_dict = db.open_doc(doc_id)
+    return _get_typed_patient_from_dict(doc_dict)
 
 
 class Patient(models.Model):
@@ -43,14 +70,14 @@ class Patient(models.Model):
         #couchjson = None
         if couchjson == None:
             try:
-                self._couchdoc = CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
+                self._couchdoc = _get_typed_patient(self.doc_id)
                 couchjson = simplejson.dumps(self._couchdoc.to_json())
                 cache.set('%s_couchdoc' % (self.id), couchjson)
             except Exception, ex:
                 self._couchdoc = None
         else:
             return self._couchdoc
-            self._couchdoc = CPatient.wrap(simplejson.loads(couchjson))
+            #self._couchdoc = _get_typed_patient_from_dict(simplejson.loads(couchjson))
 
         if self._couchdoc == None:
             print "Error, this is None: %s->%s" % (self.id, self.doc_id)
@@ -61,7 +88,7 @@ class Patient(models.Model):
 #            return self._couchdoc
 #        else:
 #            try:
-#                self._couchdoc =  CPatient.view('patient/all', key=self.doc_id, include_docs=True).first()
+#                self._couchdoc =  BasePatient.view('patient/all', key=self.doc_id, include_docs=True).first()
 #            except:
 #                self._couchdoc = None
 #            return self._couchdoc
@@ -86,7 +113,7 @@ class Patient(models.Model):
     def __init__(self, *args, **kwargs):
         super(Patient, self).__init__(*args, **kwargs)
         if self.doc_id == None:
-            self._couchdoc = CPatient()
+            self._couchdoc = BasePatient()
             self._couchdoc.django_uuid = self.id #the id is set at init
             self.isnew = True
         else:
@@ -95,7 +122,7 @@ class Patient(models.Model):
     def save(self, *args, **kwargs):
         #time to do some error checking
         if self.isnew:
-            if not CPatient.is_pact_id_unique(self.couchdoc.pact_id):
+            if not BasePatient.is_pact_id_unique(self.couchdoc.pact_id):
                 raise DuplicateIdentifierException()
 
         if self.doc_id == None and self.isnew:
@@ -148,6 +175,14 @@ class Patient(models.Model):
         pr_roles = Role.objects.ProviderRoles()
         providers = all_roles.filter(role__role_type__in=pr_roles)
         return providers
+
+
+class MergedPatient(models.Model):
+    """
+    For multi tenancy, or multi context patients, we will merge them via django
+    """
+    id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+    patients = models.ManyToManyField(Patient)
 
 
 

@@ -4,7 +4,7 @@ import simplejson
 import hashlib
 
 def run():
-
+    """Script to de-eval the case block for dots forms back to a string, evaling said case block to a new section of the xform instance pact_data"""
     offset = 0
     block_size = 250
 

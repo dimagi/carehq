@@ -59,7 +59,7 @@ DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
 
 AUDIT_MODEL_SAVE = [
                         'django.contrib.auth.models.User',
-                        'patient.models.couchmodels.CPatient',
+                        'pactpatient.models.PactPatient',
                         'dotsview.models.couchmodels.CObservationAddendum',
                         'dotsview.models.couchmodels.CObservation',
                         ]

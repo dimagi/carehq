@@ -1,3 +1,3 @@
 function(doc) { 
-    return (doc.doc_type == "CPatient"); 
+    return (doc.base_type == "BasePatient");
 }

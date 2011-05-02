@@ -39,24 +39,24 @@ def csv_export(csv_mode, end_date_str, start_date_str, patient_id, download_id):
             start_date = end_date - timedelta(1000)
             startkey = [pact_id.encode('ascii'), 'anchor_date', start_date.year, start_date.month, start_date.day]
             endkey = [pact_id.encode('ascii'), 'anchor_date', end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+            observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
             csv_filename = 'dots_csv_pt_%s.csv' % (pact_id)
         else:
             startkey = [pact_id.encode('ascii'), 'anchor_date', start_date.year, start_date.month, start_date.day]
             endkey = [pact_id.encode('ascii'), 'anchor_date', end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+            observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
             csv_filename = 'dots_csv_pt_%s-%s_to_%s.csv' % (pact_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
     elif patient == None:
         if csv_mode == 'all':
             start_date = end_date - timedelta(1000)
             startkey = [start_date.year, start_date.month, start_date.day]
             endkey = [end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+            observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
             csv_filename = 'dots_csv_pt_all.csv'
         else:
             startkey = [start_date.year, start_date.month, start_date.day]
             endkey = [end_date.year, end_date.month, end_date.day]
-            observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+            observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
             csv_filename = 'dots_csv_pt_all-%s_to_%s.csv' % (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
     csv_keys = ['submitted_date', u'note', u'patient', 'doc_type', 'is_reconciliation', u'provider', u'day_index', 'day_note', u'encounter_date', u'anchor_date', u'total_doses', u'pact_id', u'dose_number', u'created_date', u'is_art', u'adherence', '_id', u'doc_id', u'method', u'observed_date']
     for num, obs in enumerate(observations):

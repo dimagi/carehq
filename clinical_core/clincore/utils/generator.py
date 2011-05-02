@@ -8,6 +8,7 @@ import random
 from datetime import timedelta, datetime
 import string
 from django.contrib.webdesign import lorem_ipsum as lorem
+from pactpatient.models.pactmodels import PactPatient
 
 PATIENT_IS_USER_PERCENTAGE = .25
 PROVIDER_IS_MULTIPLE_THRESHOLD=.33
@@ -77,7 +78,7 @@ def get_or_create_patient(user=None, first_name=None, last_name=None, gender=Non
         cpt.last_name = last_name
 
     if gender == None:
-        cpt.gender = CPatient.GENDER_CHOICES[random.randint(0, 1)][0]
+        cpt.gender = PactPatient.GENDER_CHOICES[random.randint(0, 1)][0]
     else:
         cpt.gender = gender
 

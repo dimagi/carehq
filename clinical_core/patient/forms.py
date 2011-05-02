@@ -1,10 +1,9 @@
 from django import forms
-from django.forms import widgets
-from patient.models.couchmodels import CPatient
-from patient.models.djangomodels import Patient
-from django.core.exceptions import ValidationError
 
 class BasicPatientForm(forms.Form):
+    """
+    A really basic form implementation.
+    """
     GENDER_CHOICES =(
         ('m', 'Male'),
         ('f', 'Female')

@@ -1,3 +1,4 @@
+from datetime import datetime
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, DateTimeProperty
 from django.contrib.auth.models import User
@@ -19,7 +20,7 @@ if not hasattr(settings, "AUTH_PROFILE_MODULE"):
     raise ActorConfigurationException("No settings configuration for auth profile.")
 
 if not hasattr(settings, "ACTOR_PROFILE_DOCUMENT_CLASS"):
-    logging.warning("You do not have a custon ACTOR_PROFILE_DOCUMENT_CLASS set in your settings, defaulting to the default generic profile setting.")
+    logging.warning("You do not have a custom ACTOR_PROFILE_DOCUMENT_CLASS set in your settings, defaulting to the default generic profile setting.")
 
 
 
@@ -30,12 +31,12 @@ if not hasattr(settings, "ACTOR_PROFILE_DOCUMENT_CLASS"):
 class BaseProfileDocument(Document):
     base_type = StringProperty(default="ProfileDocument") #for subclassing this needs to stay consistent
     profile_id = StringProperty() #the model id of the linked profile object
-    last_edit = DateTimeProperty(default = getdate)
+    last_edit = DateTimeProperty(default=datetime.utcnow)
 
     class Meta:
         app_label='actors'
 
-class ClinicalUserProfile(models.model):
+class ClinicalUserProfile(models.Model):
     """
     Django auth.user profile linking to the user.  you must set the UserProfile document to use this.
     This is just a passthrough model that links a user profile to a couchdb document that provides more useful metadata.

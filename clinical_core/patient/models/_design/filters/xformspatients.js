@@ -1,5 +1,5 @@
 function(doc) {
-    if (doc.doc_type == "CPatient") {
+    if (doc.base_type == "BasePatient") {
        return true;
     }
     if (doc.doc_type == "XFormInstance") {

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
+from pactpatient.models.pactmodels import PactPatient
 from patient.forms import BasicPatientForm
-from patient.models.couchmodels import CPatient
+from django import forms
 
 class PactPatientForm(BasicPatientForm):
     PACT_ARM_CHOICES = (
@@ -23,8 +24,8 @@ class PactPatientForm(BasicPatientForm):
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
 
     def clean_pact_id(self):
-        if CPatient.is_pact_id_unique(self.cleaned_data['pact_id']) == False:
+        if PactPatient.is_pact_id_unique(self.cleaned_data['pact_id']) == False:
             raise ValidationError("Error, pact id must be unique")
         else:
             return self.cleaned_data['pact_id']
-    primary_hp = forms.CharField(required=True) #this is the sketchy, hacky way in which we link patients to providers for pact pilot
+    primary_hp = forms.CharField(required=True)

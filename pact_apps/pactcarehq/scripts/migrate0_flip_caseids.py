@@ -1,12 +1,13 @@
 import uuid
 from couchdbkit.ext.django.schema import Document
 from dimagi.utils.couch.database import get_db
-from patient.models.couchmodels import CPatient
+from pactpatient.models.pactmodels import PactPatient
 from patient.models.djangomodels import Patient
 import time
 
 def run():
-    """Need to fix CPatient and djangopatient to use id's DIFFERENT from case_id"""
+    """Script to flip CPatient to PactPatient (subclass of BasePatient), then switch doc_id to a new id, and assign a case_id fromt he original doc_id
+    """
 
     #django patient -> django_uuid = new
     #cpatient-> doc_id = case_id, doc_id = new, == to djpatient.django_uuid
@@ -14,21 +15,21 @@ def run():
     #this needs to be coupled with fixing up the patient/all querying
     #patient/all needs to emit the case_id
     patients = Patient.objects.all()
+    db = get_db()
     for p in patients:
         print "Flipping ID Patient ID: %s: Couchdoc: %s" % (p.id, p.doc_id)
         if p.couchdoc == None:
             print "\tSkipped!"
             continue
-        couchdoc = p.couchdoc
         real_case_id = p.doc_id + ""
         new_doc_id = uuid.uuid1().hex
 
-
+        couchdoc = db.open_doc(p.doc_id)
         #flip the document ids.
-        db = get_db()
-        copy_doc = CPatient.wrap(couchdoc.to_json())
+        copy_doc = PactPatient.wrap(couchdoc)
         copy_doc.case_id = real_case_id
         copy_doc._id = new_doc_id
+        copy_doc.doc_type = PactPatient.__name__
         copy_doc.save()
         p.doc_id = new_doc_id
         p._couchdoc = copy_doc

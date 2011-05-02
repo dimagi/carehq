@@ -1,12 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty
-from couchdbkit.schema.properties_proxy import SchemaProperty
+from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
 from dimagi.utils.couch.database import get_db
 from patient.models.couchmodels import BasePatient
 import logging
+from dimagi.utils import make_uuid
 
 ghetto_regimen_map = {
     "qd": '1',
@@ -160,8 +161,7 @@ class CActivityDashboard(Document):
         app_label='pactpatient'
 
 
-class CPatient(BasePatient):
-
+class PactPatient(BasePatient):
     pact_id = StringProperty(required=True)
     primary_hp = StringProperty(required=True)
     arm = StringProperty()
@@ -219,7 +219,7 @@ class CPatient(BasePatient):
         #reorder the schedules to sort by start date
         self._set_schedule_dates()
         self.date_modified = datetime.utcnow()
-        super(CPatient, self).save()
+        super(PactPatient, self).save()
         #next, we need to invalidate the cache
         cache.delete('%s_couchdoc' % (self.django_uuid))
         try:
@@ -231,7 +231,7 @@ class CPatient(BasePatient):
 
     @staticmethod
     def is_pact_id_unique(pact_id):
-        if CPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).count() > 0:
+        if PactPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).count() > 0:
             return False
         else:
             return True
@@ -264,7 +264,7 @@ class CPatient(BasePatient):
             cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
             return bw_docs[0]
         if self.prior_bloodwork.test_date == None:
-            #this is a bit hacky, it should really be null, but since this is an added on object, to CPatient, it doesn't show up as None
+            #this is a bit hacky, it should really be null, but since this is an added on object, to PactPatient, it doesn't show up as None
             #so we need to do an explicit check for the
             cache.set('%s_bloodwork' % (self._id), '[##Null##]')
             pass
@@ -682,3 +682,5 @@ class CPatient(BasePatient):
 
         return ret
 
+
+from pactpatient.models.signals import *

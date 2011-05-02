@@ -1,7 +1,7 @@
 import csv
 from sys import stdin
 from patient.models import Patient
-from patient.models import CPatient, CPhone, CAddress, CDotSchedule
+from patient.models import PactPatient, CPhone, CAddress, CDotSchedule
 
 
 # is there seriously no 'Address 2 - Country'?
@@ -177,7 +177,7 @@ def run():
         non_art_regimen = patient_dict['non-art_regimen']
 
         ptquerystring = last_name.lower() + first_name.lower() + dob.strftime("%Y-%m-%d")
-        existing_pts = CPatient.view("patient/search", key=ptquerystring, include_docs=True).count()
+        existing_pts = PactPatient.view("patient/search", key=ptquerystring, include_docs=True).count()
 
         if existing_pts > 0:
             print "Patient already exists, skipping"
@@ -187,7 +187,7 @@ def run():
         django_patient.doc_id=None
         django_patient.save()
 
-        cpatient = CPatient(django_uuid=django_patient.id,
+        cpatient = PactPatient(django_uuid=django_patient.id,
                             pact_id=pact_id,
                             first_name = first_name,
                             last_name=last_name,

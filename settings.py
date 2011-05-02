@@ -229,6 +229,9 @@ XFORMS_PLAYER_URL = "http://localhost:4444/"
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 
 
+AUTH_PROFILE_MODULE = 'actors.models.ClinicalUserProfile'
+
+
 # import local settings if we find them
 try:
     #try to see if there's an environmental variable set for local_settings

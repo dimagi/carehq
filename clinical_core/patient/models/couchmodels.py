@@ -53,6 +53,8 @@ class CAddress(Document):
         app_label = 'patient'
 
 
+
+
 class BasePatient(Document):
     """
     Base class for case-able patient model in CareHQ.  Actual implementations of CareHQ ought to subclass this for its own uses. Especially in cases of multi tenancy, or code reuse.

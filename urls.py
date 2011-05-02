@@ -23,7 +23,6 @@ urlpatterns += patterns('',
                         # we just include the urls at the root.
                         # The correct solution is likely to break apart urls or harmonize
                         # apps so they all have proper prefixing.
-                        (r'', include('patient.urls')), #patient's always here.  carehq cares for patients!
                         (r'', include('actors.urls')), #patient's always here.  carehq cares for patients!
                         )
 if hasattr(settings, 'LOCAL_APP_URLS' ):
