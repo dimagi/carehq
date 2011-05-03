@@ -5,7 +5,7 @@ import urllib
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 from datetime import datetime
 from django.core.urlresolvers import reverse
 
@@ -14,10 +14,14 @@ def remove_phone(request):
     if request.method == "POST":
         print "got the post for remove_phone"
         try:
+            print "trying"
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            print "got patient_id"
             patient = Patient.objects.get(id=patient_id)
+            print "got patient: %s" % (patient)
             phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
             for i, p in enumerate(patient.couchdoc.phones):
+                print "iterating through phones: %d: %s" % (i, p)
                 if p.phone_id == phone_id:
                     p.deprecated=True
                     p.ended=datetime.utcnow()

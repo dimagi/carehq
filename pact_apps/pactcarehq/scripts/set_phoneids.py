@@ -1,5 +1,5 @@
-from patient.models.djangomodels import Patient
-from patient.models.couchmodels import PactPatient, CDotWeeklySchedule
+from patient.models import Patient
+from patient.models import PactPatient, CDotWeeklySchedule
 from datetime import datetime, timedelta
 import uuid
 

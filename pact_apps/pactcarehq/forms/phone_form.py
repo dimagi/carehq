@@ -3,7 +3,7 @@ from django.forms.util import ValidationError
 from django.forms import widgets
 
 from casetracker import constants
-from patient.models.couchmodels import CPhone
+from patient.models import CPhone
 
 class PhoneForm(forms.Form):
     """

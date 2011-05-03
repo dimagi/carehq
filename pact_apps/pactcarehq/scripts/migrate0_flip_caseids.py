@@ -2,7 +2,7 @@ import uuid
 from couchdbkit.ext.django.schema import Document
 from dimagi.utils.couch.database import get_db
 from pactpatient.models.pactmodels import PactPatient
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 import time
 
 def run():

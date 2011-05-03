@@ -5,7 +5,7 @@ from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListPropert
 from django.core.cache import cache
 import simplejson
 from dimagi.utils.couch.database import get_db
-from patient.models.couchmodels import BasePatient
+from patient.models import BasePatient
 import logging
 from dimagi.utils import make_uuid
 
@@ -214,24 +214,13 @@ class PactPatient(BasePatient):
         schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO
 
 
-
     def save(self):
-        #reorder the schedules to sort by start date
         self._set_schedule_dates()
         self.date_modified = datetime.utcnow()
         super(PactPatient, self).save()
-        #next, we need to invalidate the cache
-        cache.delete('%s_couchdoc' % (self.django_uuid))
-        try:
-            couchjson = simplejson.dumps(self.to_json())
-            cache.set('%s_couchdoc' % (self.django_uuid), couchjson)
-        except Exception, ex:
-            pass
 
-
-    @staticmethod
-    def is_pact_id_unique(pact_id):
-        if PactPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).count() > 0:
+    def is_unique(self):
+        if self.__class__.view('pactcarehq/patient_pact_ids ', key=self.pact_id, include_docs=True).count() > 0:
             return False
         else:
             return True

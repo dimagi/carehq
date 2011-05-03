@@ -1,42 +1,42 @@
-from django.test import testcase
-from pactpatient.models.pactmodels import cpatient
-from patient.models.djangomodels import patient, duplicateidentifierexception, duplicateidentifierexception
+from django.test import TestCase
 from django.contrib.webdesign import lorem_ipsum
 import random
 from datetime import timedelta, datetime
+from pactpatient.models.pactmodels import PactPatient
+from patient.models import Patient, DuplicateIdentifierException
 
-class basicpatienttests(testcase):
-    def setup(self):
-        patient.objects.all().delete()
+class basicPatientTest(TestCase):
+    def setUp(self):
+        Patient.objects.all().delete()
 
 
-    def testcreatepatient(self):
-        oldptcount = patient.objects.all().count()
-        oldcptcount = cpatient.view('patient/all').count()
+    def testCreatePatient(self):
+        oldptcount = Patient.objects.all().count()
+        oldcptcount = PactPatient.view('patient/all').count()
         
-        newpatient = patient()
-        newpatient.cset_first_name('mock')
-        newpatient.cset_last_name(lorem_ipsum.words(1))
-        newpatient.cset_birthdate((datetime.utcnow() - timedelta(days=random.randint(0,7000))).date())
-        newpatient.cset_pact_id('mock_id-' + str(random.randint(0,100000)))
-        newpatient.cset_primary_hp('mock-hp-' + str(random.randint(0,100000)))
-        newpatient.cset_gender('f')
+        newpatient = Patient()
+        newpatient.couchdoc.first_name = 'mock'
+        newpatient.couchdoc.last_name = lorem_ipsum.words(1)
+        newpatient.couchdoc.birthdate = (datetime.utcnow() - timedelta(days=random.randint(0,7000))).date()
+        newpatient.couchdoc.pact_id = 'mock_id-' + str(random.randint(0,100000))
+        newpatient.couchdoc.primary_hp = 'mock-hp-' + str(random.randint(0,100000))
+        newpatient.couchdoc.gender = 'f'
         newpatient.save()
 
-        newptcount = patient.objects.all().count()
-        newcptcount = cpatient.view('patient/all').count()
+        newptcount = Patient.objects.all().count()
+        newcptcount = PactPatient.view('patient/all').count()
 
         self.assertequals(oldptcount+1, newptcount)
         self.assertequals(oldcptcount+1, newcptcount)
         return newpatient
 
-    def testdeletepatient(self):
-        oldptcount = patient.objects.all().count()
-        oldcptcount = cpatient.view('patient/all').count()
-        pt = self.testcreatepatient()
+    def testDeletePatient(self):
+        oldptcount = Patient.objects.all().count()
+        oldcptcount = PactPatient.view('patient/all').count()
+        pt = self.testCreatePatient()
 
-        newptcount = patient.objects.all().count()
-        newcptcount = cpatient.view('patient/all').count()
+        newptcount = Patient.objects.all().count()
+        newcptcount = PactPatient.view('patient/all').count()
 
         #sanity check that it's there
         self.assertequals(oldptcount+1, newptcount)
@@ -44,29 +44,36 @@ class basicpatienttests(testcase):
 
         pt.delete()
 
-        newptcount = patient.objects.all().count()
-        newcptcount = cpatient.view('patient/all').count()
+        newptcount = Patient.objects.all().count()
+        newcptcount = PactPatient.view('patient/all').count()
 
         self.assertequals(oldptcount, newptcount)
         self.assertequals(oldcptcount, newcptcount)
+    def testModifyPatient(self):
+        pt = self.testCreatePatient()
+        pt.couchdoc.last_name = "fooo change"
+        pt.couchdoc.save()
+
+        pt.couchdoc.first_name = "fooooo changed again"
+        pt.save()
         
-    def testcreateduplicatepactid(self):
-        pt1 = self.testcreatepatient()
+    def testCreateDuplicatePatient(self):
+        pt1 = self.testCreatePatient()
 
         try:
-            newpatient = patient()
-            newpatient.cset_first_name('mock')
-            newpatient.cset_last_name(lorem_ipsum.words(1))
-            newpatient.cset_birthdate((datetime.utcnow() - timedelta(days=random.randint(0,7000))).date())
-            newpatient.cset_pact_id(pt1.couchdoc.pact_id)
-            newpatient.cset_primary_hp('mock-hp-' + str(random.randint(0,100000)))
-            newpatient.cset_gender('f')
+            newpatient = Patient()
+            newpatient.couchdoc.first_name = 'mock'
+            newpatient.couchdoc.last_name = lorem_ipsum.words(1)
+            newpatient.couchdoc.birthdate = (datetime.utcnow() - timedelta(days=random.randint(0,7000))).date()
+            newpatient.couchdoc.pact_id = pt1.couchdoc.pact_id
+            newpatient.couchdoc.primary_hp = 'mock-hp-' + str(random.randint(0,100000))
+            newpatient.couchdoc.gender = 'f'
             newpatient.save()
             self.fail("error, you should not be able to save a patient with duplicate pact ids")
-        except duplicateidentifierexception, e:
+        except DuplicateIdentifierException, e:
             pass #yay, success at finding the bad pactid
         except exception, e:
-            self.fail("wrong exception expected, expected duplicateidentifierexception, but got %s" % (e))
+            self.fail("wrong exception expected, expected DuplicateIdentifierException, but got %s" % (e))
 
 
 

@@ -7,7 +7,7 @@ from actors.models.roles import Role
 from casetracker.models import  CaseEvent
 from datetime import datetime
 from casetracker.models.casecore import Case
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 
 register = template.Library()
 

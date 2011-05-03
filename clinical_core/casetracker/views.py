@@ -14,7 +14,7 @@ from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseFo
 
 #taken from the threadecomments django project
 from casetracker.models.filters import Filter
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 
 def _get_next(request):
     """

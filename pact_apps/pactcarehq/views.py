@@ -4,8 +4,8 @@ from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from pactpatient.models.pactmodels import CActivityDashboard
-from patient.models.couchmodels import CAddress, CPhone, CSimpleComment
-from patient.models.djangomodels import Patient
+from patient.models import CAddress, CPhone, CSimpleComment
+from patient.models import Patient
 from django.http import   Http404
 import uuid
 from django.http import HttpResponse, HttpResponseRedirect

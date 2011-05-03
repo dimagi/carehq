@@ -6,7 +6,7 @@ from patient.models import PactPatient, CPhone, CAddress, CDotSchedule
 
 # is there seriously no 'Address 2 - Country'?
 from django.contrib.auth.models import User
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 import sys
 from datetime import datetime
 

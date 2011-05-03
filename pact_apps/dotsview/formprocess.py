@@ -1,5 +1,5 @@
 from pactpatient.models.pactmodels import PactPatient
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 from django.contrib.auth.models import User
 
 def process_dots_json(doc, dots_json):

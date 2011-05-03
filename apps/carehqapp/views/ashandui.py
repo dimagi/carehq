@@ -6,7 +6,7 @@ from django.template.context import RequestContext
 from django.contrib.auth.models import User
 from django.db.models import Q
 from clinical_core.actors.models.roles import Doctor
-from clinical_core.patient.models.djangomodels import Patient
+from clinical_core.patient.models import Patient
 from lib.crumbs import crumbs
 from lib.jsonview import render_to_json
 from django.shortcuts import get_object_or_404

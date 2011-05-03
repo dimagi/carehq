@@ -8,7 +8,7 @@ import simplejson
 from dimagi.utils.couch.database import get_db
 from dotsview.models.couchmodels import CObservation
 from django.core.cache import cache
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 import tempfile, os, zipfile
 
 try:
