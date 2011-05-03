@@ -1,4 +1,7 @@
 import uuid
+from couchdbkit.ext.django.schema import Document
+from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty
+from couchdbkit.schema.properties_proxy import SchemaListProperty
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
@@ -14,6 +17,14 @@ from django.core.cache import cache
 
 class DuplicateIdentifierException(Exception):
     pass
+class PatientCreationException(Exception):
+    """Exception on initial creation of a Patient object"""
+    pass
+
+class PatientIntegrityException(Exception):
+    """Data integrity exception on a patient being recalled from the database"""
+    pass
+
 
 #preload all subclasses of BasePatient into a dictionary for easy access for casting documents to their instance class
 
@@ -26,6 +37,7 @@ def get_subclass_dict():
 
 
 def _get_typed_patient_from_dict(doc_dict):
+    print "get "
     doc_type = doc_dict['doc_type']
     if get_subclass_dict().has_key(doc_type):
         cast_class = get_subclass_dict()[doc_type]
@@ -57,19 +69,6 @@ class Patient(models.Model):
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist
 
-
-    def __init__(self, couchdoc=None, *args, **kwargs):
-        super(Patient, self).__init__(*args, **kwargs)
-        if couchdoc != None:
-            if not isinstance(couchdoc, BasePatient):
-                raise Exception("Error, a BasePatient subclass must be used to instantiate a patient django instance: %s" % (couchdoc.__class__))
-            self._couchdoc = couchdoc
-            if self._couchdoc.doc_id != self.doc_id:
-                raise Exception("Integrity error with patient and underlying document")
-        else:
-            pass
-
-
     class Meta:
         app_label = 'patient'
 
@@ -89,10 +88,9 @@ class Patient(models.Model):
                 self._couchdoc = None
         else:
             self._couchdoc = _get_typed_patient_from_dict(simplejson.loads(couchjson))
-            return self._couchdoc
 
-        if self._couchdoc == None:
-            raise Exception("Error, unable to instantiate the patient document object")
+#        if self._couchdoc == None:
+#            raise PatientIntegrityException("Error, unable to instantiate the patient document object")
         return self._couchdoc
 
     def _get_COUCHDATA(self, propertyname):
@@ -112,33 +110,29 @@ class Patient(models.Model):
             if do_save:
                 doc.save()
 
-
-    def save(self, *args, **kwargs):
-        if self.id == None:
-            #it's a new instance
+    def save(self, django_uuid=None, doc_id=None, *args, **kwargs):
+        """
+        Saving of Patient django objects directly is discouraged.  This usually will only be in the case where you are creating a new Patient.
+        This should be done from the BasePatient subclass, where it will automatically generate this object.
+        """
+        if self.id == None or self.id == '':
             isnew = True
-            self.id = uuid.uuid1().hex
-        else:
-            isnew = False
-        if self._couchdoc == None:
-            raise Exception("Error, no couch document defined for this patient, not saving.")
+            if doc_id == None:
+                raise PatientCreationException("In order to create a new Patient django model, you must provide a patient couch document id.")
+            if django_uuid == None:
+                raise PatientCreationException("In order to create a new Patient django model, you must provide a patient django model id as well.")
 
-        if isnew:
-            #for a new document do sanity check for doc uniqueness for the given patient subclass' identifier
-            if not self._couchdoc.is_unique():
-                raise DuplicateIdentifierException()
-            self._couchdoc.django_uuid = self.id
-            self._couchdoc.save()
-            if self.doc_id == None:
-                self.doc_id = self._couchdoc._id
+            #sanity check to ensure that this doc_id isn't counted elsewhere
+            if self.__class__.objects.filter(doc_id=doc_id).count() != 0:
+                raise PatientCreationException("Error saving patient, the doc_id %s already exists in the patient database." % (doc_id))
+
+            self.id = django_uuid
+            self.doc_id = doc_id
         else:
-            if self.doc_id == self._couchdoc._id and self.id == self._couchdoc.django_uuid:
-                self._couchdoc.save()
+            #nothing to see here, just save it like a normal django model.
+            pass
         super(Patient, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        #note, we do not delete the couchdoc itself here.
-        super(Patient, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         if self.couchdoc:
@@ -182,26 +176,14 @@ class Patient(models.Model):
         return providers
 
 
-class MergedPatient(models.Model):
-    """
-    For multi tenancy, or multi context patients, we will merge them via django
-    """
-    id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    patients = models.ManyToManyField(Patient)
+#class MergedPatient(models.Model):
+#    """
+#    For multi tenancy, or multi context patients, we will merge them via django
+#    """
+#    id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
+#    patients = models.ManyToManyField(Patient)
+#
 
-
-#TODO:
-import logging
-from couchdbkit.schema.properties import IntegerProperty, DictProperty, DictProperty
-from couchdbkit.schema.properties_proxy import SchemaListProperty, SchemaProperty
-from datetime import datetime
-from datetime import timedelta
-import simplejson
-from dimagi.utils import make_uuid
-from couchdbkit.ext.django.schema import StringProperty, BooleanProperty, DateTimeProperty, Document, DateProperty
-from dimagi.utils.couch.database import get_db
-from dimagi.utils.make_time import make_time
-from django.core.cache import cache
 
 
 class CPhone(Document):
@@ -282,19 +264,41 @@ class BasePatient(Document):
     def __init__(self, *args, **kwargs):
         super(BasePatient, self).__init__(*args, **kwargs)
 
+    def delete(self):
+        """
+        Overriding delete for a patient, by setting base_type and doc_type to DeletedFOO
+        Do not delete in the patient context, only deprecate.
+        """
+#        self.doc_type = "Deleted%s" % (self._get_my_type())
+#        self.base_type = "DeletedBasePatient"
+#        self.save()
+        django_model = Patient.objects.get(id=self.django_uuid)
+        django_model.delete()
+
+
 
 
     def save(self):
         if self.django_uuid == None:
             #this is a new instance
+            #first check global uniqueness
+            if not self.is_unique():
+                raise DuplicateIdentifierException()
+
             djangopt = Patient()
-            djangopt.id = uuid.uuid1().hex
-            self.django_uuid = djangopt.id
+            django_uuid = uuid.uuid1().hex
+            doc_id = uuid.uuid1().hex
+            self.django_uuid = django_uuid
+            self._id = doc_id
+            try:
+                djangopt.save(django_uuid=django_uuid, doc_id=doc_id)
+                super(BasePatient, self).save()
+            except PatientCreationException, ex:
+                logging.error("Error creating patient: %s" % ex)
+                raise ex
+        else:
+            #it's not new
             super(BasePatient, self).save()
-
-
-
-
         #Invalidate the cache entry of this instance
         cache.delete('%s_couchdoc' % (self.django_uuid))
         try:
@@ -317,4 +321,4 @@ class CSimpleComment(Document):
     class Meta:
         app_label = 'patient'
 
-from patient.models.signals import *
+from .signals import *

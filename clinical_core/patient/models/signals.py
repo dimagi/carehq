@@ -1,8 +1,8 @@
 from django.db.models.signals import post_init, post_delete
 from functools import partial
 import simplejson
-from patient.models import BasePatient
-from patient.models import Patient
+from .patientmodels import BasePatient
+from .patientmodels import Patient
 from django.core.cache import cache
 
 
@@ -31,6 +31,9 @@ post_init.connect(load_couchpatient, sender=Patient)
 def patient_post_delete(sender, instance, *args, **kwargs):
     if instance.couchdoc != None:
         doc = instance.couchdoc
-        doc.delete()
+        #delete manually
+        doc.doc_type = "Deleted%s" % (doc._get_my_type())
+        doc.base_type = "DeletedBasePatient"
+        doc.save()
 
 post_delete.connect(patient_post_delete, sender=Patient )

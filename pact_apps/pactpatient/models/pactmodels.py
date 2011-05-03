@@ -13,7 +13,7 @@ ghetto_regimen_map = {
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
-    "qd-pm": '1',
+
     "tid": '3',
     "qid": '4',
     '': '' ,
@@ -220,7 +220,7 @@ class PactPatient(BasePatient):
         super(PactPatient, self).save()
 
     def is_unique(self):
-        if self.__class__.view('pactcarehq/patient_pact_ids ', key=self.pact_id, include_docs=True).count() > 0:
+        if self.__class__.view('pactcarehq/patient_pact_ids', key=self.pact_id, include_docs=True).count() > 0:
             return False
         else:
             return True
