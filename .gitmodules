@@ -22,3 +22,6 @@
 [submodule "submodules/touchforms"]
 	path = submodules/touchforms
 	url = git@github.com:dimagi/touchforms.git
+[submodule "submodules/django-permissions"]
+	path = submodules/django-permissions
+	url = git@github.com:dimagi/django-permissions.git
