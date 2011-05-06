@@ -22,3 +22,6 @@
 [submodule "submodules/touchforms"]
 	path = submodules/touchforms
 	url = git@github.com:dimagi/touchforms.git
+[submodule "submodules/djactor-permissions"]
+	path = submodules/djactor-permissions
+	url = git@github.com:dimagi/djactor-permissions.git
