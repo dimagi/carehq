@@ -10,6 +10,7 @@ import logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template.context import RequestContext
 from couchforms.util import post_xform_to_couch
+from patient.models.patientmodels import Patient
 import settings
 import uuid
 from touchforms.formplayer.models import XForm, PlaySession
@@ -69,13 +70,17 @@ def play(request, xform_id, callback=None, preloader_data={}):
                               context_instance=RequestContext(request))
 
 @login_required
-def new_progress_note(request): #patient_id
+def new_progress_note(request, patient_id): #patient_id
     """
     Fill out a NEW progress note
     """
 
+    patient = Patient.objects.get(id=patient_id)
+    pact_id = patient.couchdoc.pact_id
+    case_id = patient.couchdoc.case_id
     def callback(xform, doc):
-        return HttpResponseRedirect(reverse('webxforms.views.temp_landing')) #go to patient page
+        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        return HttpResponseRedirect(reverse_back)
 
     url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_progress_note.xml')
     #url_resp = urllib2.urlopen('http://xforms.dimagi.com/download/48')
@@ -94,8 +99,8 @@ def new_progress_note(request): #patient_id
         raise e
 
     preloader_data = {
-        "case": {"case-id": "66a4f2d0e9d5467e34122514c341ed92",
-                 "pactid": "999999",
+        "case": {"case-id": case_id,
+                 "pactid": pact_id,
                  },
         "property": { "DeviceID": "touchforms"},
         "meta": {

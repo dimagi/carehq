@@ -26,7 +26,7 @@ def load_couchpatient(sender, instance, *args, **kwargs):
                 instance._couchdoc = None
         else:
             instance._couchdoc = BasePatient.wrap(simplejson.loads(couchjson))
-post_init.connect(load_couchpatient, sender=Patient)
+#post_init.connect(load_couchpatient, sender=Patient)
 
 def patient_post_delete(sender, instance, *args, **kwargs):
     if instance.couchdoc != None:

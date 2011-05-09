@@ -2,12 +2,12 @@ from django import template
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
-from actors.models.roles import Role
 
 from casetracker.models import  CaseEvent
 from datetime import datetime
 from casetracker.models.casecore import Case
 from patient.models import Patient
+from permissions.models import Actor
 
 register = template.Library()
 
@@ -93,7 +93,7 @@ def render_filter_heading(heading_object):
         return "<h3>Category: %s</h3>" % heading_object.display
     elif isinstance(heading_object,Patient):
         return "<h3>%s</h3>" % heading_object.full_name
-    elif isinstance(heading_object, Role):
+    elif isinstance(heading_object, Actor):
         return "<h3>By: %s</h3>" % heading_object.title
 #    elif isinstance(heading_object, Status):
 #        return "some status"
@@ -134,7 +134,7 @@ def render_case_column(case, gridorder, plain_text=True):
             datastring = data.full_name
         elif isinstance(data, Case):
             datastring = data.doc_type
-        elif isinstance(data, Role):
+        elif isinstance(data, Actor):
             #print "is a freaking user: "  + str(data)
             #datastring = '<a href="%s">%s</a>' % (reverse('carehqapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
             datastring = data.title

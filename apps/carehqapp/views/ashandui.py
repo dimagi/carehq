@@ -5,7 +5,6 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.contrib.auth.models import User
 from django.db.models import Q
-from clinical_core.actors.models.roles import Doctor
 from clinical_core.patient.models import Patient
 from lib.crumbs import crumbs
 from lib.jsonview import render_to_json
@@ -25,7 +24,7 @@ def addProvider(request, template="ashandui/addProvider.html"):
             u.username = form.cleaned_data['username']
             u.set_password()
             u.save()
-            d = Doctor()
+            d = Actor()
             d.title = form.cleaned_data['title']
             d.department = form.cleaned_data['department']
             d.specialty = form.cleaned_data['specialty']

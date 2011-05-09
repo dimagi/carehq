@@ -8,7 +8,7 @@ urlpatterns = patterns ('',
     (r'^reduce$', 'pactcarehq.views.my_patient_activity_reduce'),
 
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
-    (r'^cases$', 'pactcarehq.views.get_casexml'),
+    (r'^cases$', 'pactcarehq.views.debug_casexml_new'),
     (r'^submit$', 'pactcarehq.views.post'),
     (r'^submit/$', 'pactcarehq.views.post'),
     (r'^receiver/submit/.*$', 'pactcarehq.views.post'),

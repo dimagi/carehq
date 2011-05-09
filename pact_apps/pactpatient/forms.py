@@ -24,7 +24,7 @@ class PactPatientForm(BasicPatientForm):
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
 
     def clean_pact_id(self):
-        if PactPatient.is_pact_id_unique(self.cleaned_data['pact_id']) == False:
+        if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:
             raise ValidationError("Error, pact id must be unique")
         else:
             return self.cleaned_data['pact_id']

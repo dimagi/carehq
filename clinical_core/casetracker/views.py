@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from actors.models.roles import Role
 from casetracker.models import Case, CaseEvent
 from casetracker import constants
 from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
@@ -15,6 +14,7 @@ from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseFo
 #taken from the threadecomments django project
 from casetracker.models.filters import Filter
 from patient.models import Patient
+from permissions.models import Actor
 
 def _get_next(request):
     """
@@ -202,7 +202,7 @@ def view_filter(request, filter_id):
 
 def debug_reference(request, template_name="casetracker/debug_reference.html"):
     users = User.objects.all()
-    roles = Role.objects.all()
+    roles = Actor.objects.all()
     patients = Patient.objects.all()
     context = RequestContext(request)
     context['users'] = users
@@ -234,7 +234,7 @@ def user_cases(request, user_id, template_name="casetracker/user_cases.html"):
 
     context = RequestContext(request)
     user = User.objects.get(id=user_id)
-    roles = Role.identities.for_user(user)
+    roles = Actor.identities.for_user(user)
     role_cases = [(role, Case.objects.filter(**{casefilter: role}))for role in roles]
 
     context['user'] = user
@@ -245,7 +245,7 @@ def user_cases(request, user_id, template_name="casetracker/user_cases.html"):
 
 def role_cases(request, role_id, template_name="casetracker/role_cases.html"):
     context = RequestContext(request)
-    role = Role.objects.get(id=role_id)
+    role = Actor.objects.get(id=role_id)
     casefilter = str(request.GET.get('casefilter', 'opened_by'))
     cases = Case.objects.filter(**{casefilter:role})
 

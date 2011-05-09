@@ -81,7 +81,7 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
+    #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
@@ -131,12 +131,13 @@ INSTALLED_APPS = (
     'couchlog',
     'dimagi.utils',
     'case',
+    'permissions',
+    'django.contrib.flatpages',
     'touchforms.formplayer',
 
     #####################
     #'casetracker',
     'patient',
-    'actors',
 #    'clincore', #just a library, no app
     #'auditcare',
     #end clinical_core
@@ -230,7 +231,10 @@ TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 
 
 AUTH_PROFILE_MODULE = 'actors.models.ClinicalUserProfile'
-
+AUTHENTICATION_BACKENDS = (
+            'django.contrib.auth.backends.ModelBackend',
+            'permissions.backend.ObjectPermissionsBackend',
+        )
 
 # import local settings if we find them
 try:

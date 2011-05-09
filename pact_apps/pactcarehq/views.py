@@ -235,20 +235,19 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
 def get_ghetto_registration_block(user):
     registration_block = """
-    <registration>
-                <username>%s</username>
-                <password>%s</password>
-                <uuid>%s</uuid>
-                <date>%s</date>
-                <registering_phone_id>%s</registering_phone_id>
-                <user_data>
-                    <data key="promoter_id">%s</data>
-                    <data key="promoter_name">%s</data>
-                    <data key="promoter_member_id">%s</data>
-                </user_data>
-
-           </registration>
-           """
+    <Registration xmlns="http://openrosa.org/user/registration">
+        <username>%s</username>
+        <password>%s</password>
+        <uuid>%s</uuid>
+        <date>%s</date>
+        <registering_phone_id>%s</registering_phone_id>
+        <user_data>
+            <data key="promoter_id">%s</data>
+            <data key="promoter_name">%s</data>
+            <data key="promoter_member_id">%s</data>
+        </user_data>
+   </Registration>
+   """
     #promoter_member_id is the nasty id from the csv, this should be fixed to match the Partners id -->
     resp_txt = ""
     #prov = Provider.objects.filter(user=user)[0] #hacky nasty
@@ -380,18 +379,18 @@ def do_submission(instance, attachments={}):
 
 
 @httpdigest()
-def get_casexml(request):
-    """
-    Use the orthodox dimagi.case casexml generation method to get casexml
-    """
-    regblock= get_ghetto_registration_block(request.user)
-    patient_block = ""
-    patients = PactPatient.view("patient/search", include_docs=True)
-    for pt in patients:
-        patient_block += pt.ghetto_xml()
-    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
-    #logging.error(resp_text)
+def get_formhistory(request):
+    """Provide a download to send all submitted XForms down to the phone for a given user."""
+    restore_id = request.GET.get('since')
 
+@httpdigest()
+def debug_casexml_new(request):
+    """
+    Use the standard way for dimagi.case casexml generation method to get casexml.  This is case OTA Restore for Pact.
+    """
+    regblock = get_ghetto_registration_block(request.user)
+    patient_blocks = [pt.ghetto_xml() for pt in PactPatient.view('patient/search', include_docs=True).all()]
+    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, '\n'.join(patient_blocks))
     template_name="pactcarehq/debug_casexml.html"
     context = RequestContext(request)
     context['casexml'] = resp_text

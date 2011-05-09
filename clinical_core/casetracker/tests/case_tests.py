@@ -37,8 +37,8 @@ class EventActivityVerificationTest(TestCase):
 #    def tearDown(self):
 #        Case.objects.all().delete()
 #        Actor.objects.all().delete()
-#        Role.objects.all().delete()
-#        PatientLink.objects.all().delete()
+#        Actor.objects.all().delete()
+#        CareTeamMember.objects.all().delete()
 #        Patient.objects.all().delete()
 #        Category.objects.all().delete()
 #        User.objects.all().delete()

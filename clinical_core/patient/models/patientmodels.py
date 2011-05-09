@@ -28,32 +28,7 @@ class PatientIntegrityException(Exception):
 
 #preload all subclasses of BasePatient into a dictionary for easy access for casting documents to their instance class
 
-base_subclass_dict = {}
-def get_subclass_dict():
-    if len(base_subclass_dict.keys()) == 0:
-        for cls in BasePatient.__subclasses__():
-            base_subclass_dict[unicode(cls.__name__)] = cls
-    return base_subclass_dict
 
-
-def _get_typed_patient_from_dict(doc_dict):
-    print "get "
-    doc_type = doc_dict['doc_type']
-    if get_subclass_dict().has_key(doc_type):
-        cast_class = get_subclass_dict()[doc_type]
-    else:
-        cast_class = BasePatient
-        logging.warning("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
-    return cast_class.wrap(doc_dict)
-
-def _get_typed_patient(doc_id):
-    """
-    Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
-    """
-    #todo this is hacky in a multitenant environment
-    db = get_db()
-    doc_dict = db.open_doc(doc_id)
-    return _get_typed_patient_from_dict(doc_dict)
 
 
 class Patient(models.Model):
@@ -69,25 +44,26 @@ class Patient(models.Model):
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist
 
+
     class Meta:
         app_label = 'patient'
 
     @property
     def couchdoc(self):
         #next, do a memcached lookup
-        if hasattr(self, '_couchdoc'):
+        if hasattr(self, '_couchdoc') and self._couchdoc != None:
             return self._couchdoc
 
         couchjson = cache.get('%s_couchdoc' % (self.id), None)
         if couchjson == None:
             try:
-                self._couchdoc = _get_typed_patient(self.doc_id)
+                self._couchdoc = BasePatient.get_typed_from_id(self.doc_id)
                 couchjson = simplejson.dumps(self._couchdoc.to_json())
                 cache.set('%s_couchdoc' % (self.id), couchjson)
             except Exception, ex:
                 self._couchdoc = None
         else:
-            self._couchdoc = _get_typed_patient_from_dict(simplejson.loads(couchjson))
+            self._couchdoc = BasePatient.get_typed_from_dict(simplejson.loads(couchjson))
 
 #        if self._couchdoc == None:
 #            raise PatientIntegrityException("Error, unable to instantiate the patient document object")
@@ -147,33 +123,33 @@ class Patient(models.Model):
 
     def grant_care_access(self, actor):
         pass
-
-    def add_role(self, role):
-        from actors.models.roles import PatientLink
-        pal = PatientLink(patient=self, role=role, active=True)
-        pal.save()
-
-    def add_provider(self, role):
-        self.add_role(role)
-
-    def add_caregiver(self, role):
-        self.add_role(role)
-
-    def get_caregivers(self):
-        """Returns a queryset of actors for this given patient whose role is a caregiver"""
-        from actors.models.roles import Role, PatientLink
-        all_roles = PatientLink.objects.filter(patient=self)
-        cg_roles = Role.objects.CaregiverRoles()
-        caregivers = all_roles.filter(role__role_type__in=cg_roles)
-        return caregivers
-
-    def get_caregivers(self):
-        """Returns a queryset of actors for this given patient whose role is a caregiver"""
-        from actors.models.roles import Role, PatientLink
-        all_roles = PatientLink.objects.filter(patient=self)
-        pr_roles = Role.objects.ProviderRoles()
-        providers = all_roles.filter(role__role_type__in=pr_roles)
-        return providers
+#todo: replace these accessors with functions from the django-permissions framework
+#    def add_role(self, role):
+#        from actors.models.roles import CareTeamMember
+#        pal = CareTeamMember(patient=self, role=role, active=True)
+#        pal.save()
+#
+#    def add_provider(self, role):
+#        self.add_role(role)
+#
+#    def add_caregiver(self, role):
+#        self.add_role(role)
+#
+#    def get_caregivers(self):
+#        """Returns a queryset of actors for this given patient whose role is a caregiver"""
+#        from actors.models.roles import Actor, CareTeamMember
+#        all_roles = CareTeamMember.objects.filter(patient=self)
+#        cg_roles = Actor.objects.CaregiverRoles()
+#        caregivers = all_roles.filter(role__role_type__in=cg_roles)
+#        return caregivers
+#
+#    def get_caregivers(self):
+#        """Returns a queryset of actors for this given patient whose role is a caregiver"""
+#        from actors.models.roles import Actor, CareTeamMember
+#        all_roles = CareTeamMember.objects.filter(patient=self)
+#        pr_roles = Actor.objects.ProviderRoles()
+#        providers = all_roles.filter(role__role_type__in=pr_roles)
+#        return providers
 
 
 #class MergedPatient(models.Model):
@@ -246,13 +222,45 @@ class BasePatient(Document):
     last_name = StringProperty(required=True)
     gender = StringProperty(required=True)
     birthdate = DateProperty()
-    #patient_id = StringProperty() #particular identifiers will likley be defined in the subclass.
+    patient_id = StringProperty() #particular identifiers will likley be defined in the subclass. - this is a placeholder for nothing actually used.
     address = SchemaListProperty(CAddress)
     phones = SchemaListProperty(CPhone)
     date_modified = DateTimeProperty(default=datetime.utcnow)
     notes = StringProperty()
 
     base_type = StringProperty(default="BasePatient")
+
+
+    _subclass_dict = {}
+    @classmethod
+    def _get_subclass_dict(cls):
+        print "calling _get_subclass_dict"
+        if len(cls._subclass_dict.keys()) == 0:
+            for c in cls.__subclasses__():
+                cls._subclass_dict[unicode(c.__name__)] = c
+        return cls._subclass_dict
+
+
+    @classmethod
+    def get_typed_from_dict(cls, doc_dict):
+        doc_type = doc_dict['doc_type']
+        if cls._get_subclass_dict().has_key(doc_type):
+            cast_class = cls._get_subclass_dict()[doc_type]
+        else:
+            cast_class = BasePatient
+            logging.error("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
+        return cast_class.wrap(doc_dict)
+
+    @classmethod
+    def get_typed_from_id(cls, doc_id):
+        """
+        Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
+        """
+        #todo this is hacky in a multitenant environment
+        db = get_db()
+        doc_dict = db.open_doc(doc_id)
+        return cls.get_typed_from_dict(doc_dict)
+
 
     def is_unique(self):
         raise NotImplementedError("Error, subclass for patient document type must have a uniqueness check for its own instance.  %s" % (self.__class__()))

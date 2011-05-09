@@ -13,7 +13,7 @@ ghetto_regimen_map = {
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
-
+    "qd-pm": '1',
     "tid": '3',
     "qid": '4',
     '': '' ,
@@ -218,6 +218,14 @@ class PactPatient(BasePatient):
         self._set_schedule_dates()
         self.date_modified = datetime.utcnow()
         super(PactPatient, self).save()
+
+    @classmethod
+    def check_pact_id(cls, pact_id):
+        if cls.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).count() > 0:
+            return False
+        else:
+            return True
+
 
     def is_unique(self):
         if self.__class__.view('pactcarehq/patient_pact_ids', key=self.pact_id, include_docs=True).count() > 0:
@@ -555,7 +563,7 @@ class PactPatient(BasePatient):
 
     def ghetto_xml(self):
         xml_dict = {}
-        xml_dict['case_id'] = self._id
+        xml_dict['case_id'] = self.case_id
         xml_dict['date_modified'] = self.date_modified.strftime("%Y-%m-%dT%H:%M:%S.000")
         xml_dict['patient_name'] = "%s, %s" % (self.last_name, self.first_name)
         xml_dict['patient_id'] = self.django_uuid
