@@ -9,7 +9,7 @@ def run():
     offset =0
     while True:
 
-        xforms = XFormInstance.view('pactcarehq/all_by_patient_date', include_docs=True, skip=offset, descending=False, limit=100).all()
+        xforms = XFormInstance.view('pactcarehq/all_submits_by_patient_date', include_docs=True, skip=offset, descending=False, limit=100).all()
         if len(xforms) == 0:
             break
         offset += 100

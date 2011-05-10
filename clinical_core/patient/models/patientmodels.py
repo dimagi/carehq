@@ -234,7 +234,6 @@ class BasePatient(Document):
     _subclass_dict = {}
     @classmethod
     def _get_subclass_dict(cls):
-        print "calling _get_subclass_dict"
         if len(cls._subclass_dict.keys()) == 0:
             for c in cls.__subclasses__():
                 cls._subclass_dict[unicode(c.__name__)] = c

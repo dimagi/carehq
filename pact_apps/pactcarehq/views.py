@@ -1,4 +1,5 @@
 import urllib
+from couchdbkit.exceptions import ResourceNotFound
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
@@ -33,6 +34,7 @@ from pactcarehq.forms.phone_form import PhoneForm
 from pactcarehq.forms.pactpatient_form import PactPatientForm
 from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
+import tempfile
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -1125,4 +1127,36 @@ def file_download(request, download_id,template="dots/file_download.html" ):
         context = RequestContext(request)
         context['is_ready'] = is_ready
         return render_to_response(template, context_instance=context)
+@httpdigest()
+def xml_download(request):
+    #username = request.user.username
+    username='lm723'
+    offset =0
+    limit_count=100
+    temp_xml = tempfile.TemporaryFile()
+    temp_xml.write("<restoredata>\n")
+    db = get_db()
+    while True:
+        xforms = XFormInstance.view("pactcarehq/all_submits", key=username, skip=offset, limit=limit_count).all()
+        if len(xforms) == 0:
+            break
+        limit_count += 100
+        for form in xforms:
+            try:
+                xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+                temp_xml.write(xml_str)
+                temp_xml.write("\n")
+            except ResourceNotFound:
+                logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
+        offset += limit_count
+
+    temp_xml.write("</restoredata>")
+    length = temp_xml.tell()
+    temp_xml.seek(0)
+    wrapper = FileWrapper(temp_xml)
+    response = HttpResponse(wrapper, mimetype='text/xml')
+    #response['Content-Length'] = length
+    response['Transfer-Encoding'] = 'chunked'
+    return response
+
 
