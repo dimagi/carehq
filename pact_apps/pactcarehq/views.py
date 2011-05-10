@@ -1129,8 +1129,7 @@ def file_download(request, download_id,template="dots/file_download.html" ):
         return render_to_response(template, context_instance=context)
 @httpdigest()
 def xml_download(request):
-    #username = request.user.username
-    username='lm723'
+    username = request.user.username
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
