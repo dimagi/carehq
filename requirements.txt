@@ -14,6 +14,7 @@ simplejson
 virtualenv
 virtualenvwrapper
 BeautifulSoup
+python_digest
 hg+https://bitbucket.org/akoha/django-digest
 cherrypy
 git+git://github.com/lincolnloop/django-cpserver.git
@@ -21,11 +22,13 @@ python-digest
 django-breadcrumbs
 guppy
 django-kombu
+djkombu
 django-celery
 kombu
 fabric
 django-breadcrumbs
 django-south
+djcelery
 celery
 
 
