@@ -4,8 +4,8 @@ from fabric.contrib import console
 from fabric import utils
 from fabric.contrib import files
 
-env.root = '/opt/carehq_project
-env.code_repo = 'git://github.com/dimagi/carehq.git
+env.root = '/opt/carehq_project'
+env.code_repo = 'git://github.com/dimagi/carehq.git'
 
 def _join(*args):
     """
@@ -22,7 +22,7 @@ def _setup_path():
 
 def production():
     """ use production environment on remote host"""
-    env.code_branch = 'develop'
+    env.code_branch = 'casepatientfix'
     env.sudo_user = 'pact'
     env.hosts = ['10.84.168.247']
     env.environment = 'production'
@@ -50,7 +50,7 @@ def deploy():
         if not console.confirm('Are you sure you want to deploy production?', default=False):
             utils.abort('Production deployment aborted.')
     
-    if files.exists(env.src_root) == False:
+    if files.exists(env.code_root) == False:
         with cd(env.src_root):
             sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
     with cd(env.code_root):

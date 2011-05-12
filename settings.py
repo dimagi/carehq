@@ -150,7 +150,6 @@ INSTALLED_APPS = (
     #'autofixture',
     #'reversion',
     'staticfiles',
-    'django_extensions',
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu

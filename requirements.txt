@@ -3,6 +3,7 @@ xlwt
 pycrypto
 pyasn1
 django==1.2.5
+django-staticfiles
 restkit==2.3.3
 couchdbkit==0.5.1
 psycopg2
