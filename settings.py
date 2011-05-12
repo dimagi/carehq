@@ -83,7 +83,7 @@ MIDDLEWARE_CLASSES = (
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
-    'breadcrumbs.middleware.BreadcrumbsMiddleware',
+    #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
 )
