@@ -2,10 +2,9 @@ decorator
 xlwt
 pycrypto
 pyasn1
-django
-restkit
-couchdbkit
-django-reversion
+django==1.2.5
+restkit==2.3.3
+couchdbkit==0.5.1
 psycopg2
 pycurl
 python-dateutil
