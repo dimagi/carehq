@@ -78,7 +78,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
