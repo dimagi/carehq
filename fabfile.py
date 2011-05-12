@@ -3,7 +3,7 @@ from fabric.contrib import console
 from fabric import utils
 
 env.root = '/opt/carehq_project
-env.code_repo = 'git://github.com/dimagi/ashand.git
+env.code_repo = 'git://github.com/dimagi/carehq.git
 
 def _join(*args):
     """

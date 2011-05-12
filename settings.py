@@ -159,7 +159,6 @@ INSTALLED_APPS = (
 
     ###########################
     #Apps for production use
-    #'haystack',
     #'johnny',
 
     ####################
@@ -167,11 +166,6 @@ INSTALLED_APPS = (
     #'gunicorn',
     #'devserver',
 )
-
-#haystack
-HAYSTACK_SITECONF = 'ashand.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'solr'
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 
 INTERNAL_IPS = ('127.0.0.1',)
 JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_myproj'
