@@ -53,6 +53,9 @@ def deploy():
     if files.exists(env.code_root) == False:
         with cd(env.src_root):
             sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
+            sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/')
+            sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/')
+            sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
     with cd(env.code_root):
         sudo('git checkout %(code_branch)s' % env, user=env.sudo_user)
         sudo('git pull', user=env.sudo_user)
