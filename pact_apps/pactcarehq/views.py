@@ -1129,26 +1129,24 @@ def file_download(request, download_id,template="dots/file_download.html" ):
         return render_to_response(template, context_instance=context)
 @httpdigest()
 def xml_download(request):
-    username = request.user.username
+    #username = request.user.username
+    username = 'lm723'
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
     temp_xml.write("<restoredata>\n")
+    total_count = 0
     db = get_db()
-    while True:
-        xforms = XFormInstance.view("pactcarehq/all_submits", key=username, skip=offset, limit=limit_count).all()
-        if len(xforms) == 0:
-            break
-        limit_count += 100
-        for form in xforms:
-            try:
-                xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
-                temp_xml.write(xml_str)
-                temp_xml.write("\n")
-            except ResourceNotFound:
-                logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
-        offset += limit_count
-
+    xforms = XFormInstance.view("pactcarehq/all_submits", key=username).all()
+    for form in xforms:
+        try:
+            xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+            temp_xml.write(xml_str)
+            temp_xml.write("\n")
+            total_count += 1
+        except ResourceNotFound:
+            logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
+    print total_count
     temp_xml.write("</restoredata>")
     length = temp_xml.tell()
     temp_xml.seek(0)
