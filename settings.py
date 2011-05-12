@@ -101,7 +101,7 @@ AUDIT_VIEWS = [
 
 DIGEST_ENFORCE_NONCE_COUNT = False
 
-ROOT_URLCONF = 'ashand.urls'
+ROOT_URLCONF = 'carehq.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
