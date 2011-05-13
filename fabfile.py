@@ -63,7 +63,7 @@ def deploy():
         sudo('git submodule update', user=env.sudo_user)
         with enter_virtualenv():
             sudo('python manage.py syncdb --noinput', user=env.sudo_user)
-            sudo('python manage.py migrate --noinput', user=env.sudo_user)
+            #sudo('python manage.py migrate --noinput', user=env.sudo_user)
             sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
     service_restart()
 
