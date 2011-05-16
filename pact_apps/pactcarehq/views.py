@@ -412,6 +412,7 @@ def get_caselist(request):
 
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
+    response['Content-Length'] = len(resp_text)
     return response
 
 
@@ -1129,8 +1130,7 @@ def file_download(request, download_id,template="dots/file_download.html" ):
         return render_to_response(template, context_instance=context)
 @httpdigest()
 def xml_download(request):
-    #username = request.user.username
-    username = 'lm723'
+    username = request.user.username
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
@@ -1152,8 +1152,7 @@ def xml_download(request):
     temp_xml.seek(0)
     wrapper = FileWrapper(temp_xml)
     response = HttpResponse(wrapper, mimetype='text/xml')
-    #response['Content-Length'] = length
-    response['Transfer-Encoding'] = 'chunked'
+    response['Content-Length'] = length
     return response
 
 
