@@ -1,5 +1,4 @@
 #Determine the schedule for a CHW for a given date.
-from patient.models.couchmodels import CPatient
 
 
 #interval trees:
@@ -13,6 +12,7 @@ from datetime import datetime, timedelta, timedelta
 import time
 from quicksect import IntervalNode
 import simplejson
+from pactpatient.models.pactmodels import PactPatient
 
 cached_schedules = {}
 
@@ -51,7 +51,7 @@ def get_schedule(chw_username, override_date = None):
         nowdate = datetime.now()
     else:
         nowdate = override_date
-    db = CPatient.get_db()
+    db = PactPatient.get_db()
     chw_schedules = db.view('pactcarehq/chw_dot_schedule_condensed', key=chw_username).all()
     day_intervaltree = {}
 

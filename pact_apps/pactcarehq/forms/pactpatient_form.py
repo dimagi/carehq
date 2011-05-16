@@ -1,10 +1,9 @@
 from django import forms
 
 from couchdbkit.ext.django.forms import DocumentForm
-from patient.models.couchmodels import CAddress, CPatient
 #from the models, we have this, (couchmodels.py)
 #flipping to tuple
-from django.contrib.auth.models import User
+from pactpatient.models.pactmodels import PactPatient
 from .weekly_schedule_form import hack_pact_usernames
 from django.forms import widgets
 
@@ -33,7 +32,7 @@ ARM_CHOICES = (
 #    '': '' ,
 #}
 
-class CPatientForm(DocumentForm):
+class PactPatientForm(DocumentForm):
     """
     DocumentForm
     """
@@ -45,7 +44,7 @@ class CPatientForm(DocumentForm):
     notes = forms.CharField(widget = widgets.Textarea(attrs={'cols':80,'rows':5}))
 
     def __init__(self, mode, *args, **kwargs):
-        super(CPatientForm, self).__init__(*args, **kwargs)
+        super(PactPatientForm, self).__init__(*args, **kwargs)
         includes = []
         if mode == "regimen":
             includes = ['art_regimen','non_art_regimen',]
@@ -57,7 +56,7 @@ class CPatientForm(DocumentForm):
             includes = ['primary_hp',]
         elif mode == "notes":
             includes = ['notes',]
-        all_fields = CPatient._properties.keys()
+        all_fields = PactPatient._properties.keys()
 
         for field in all_fields:
             if includes.count(field) > 0:
@@ -70,7 +69,7 @@ class CPatientForm(DocumentForm):
                     pass
 
     class Meta:
-        document = CPatient
+        document = PactPatient
 
 #
 #    def clean(self):

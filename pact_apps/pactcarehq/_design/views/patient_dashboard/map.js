@@ -82,7 +82,7 @@ function(doc) {
         emit(pact_id, ret_dict);
     }
 
-    else if (doc.doc_type == "CPatient") {
+    else if (doc.base_type == "BasePatient") {
         //map 2:  patient information to reduce lookup costs on the patient dashbaord
         var ret_dict = {};
         var pat_dict = {};

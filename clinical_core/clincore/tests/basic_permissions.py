@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from actors.models.roles import PatientLink
-from clinical_core.actors.models import Role, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
+from actors.models.roles import CareTeamMember
+from clinical_core.actors.models import Actor, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
 from clinical_core.patient.models import Patient
 
 from clinical_core.clincore.utils import generator
@@ -27,7 +27,7 @@ class BasicPermissionsTest(TestCase):
     def setUp(self):
         #print "Doctors:"  + str(Doctor.objects.all().count())
         User.objects.all().delete()
-        Role.objects.all().delete()
+        Actor.objects.all().delete()
         Actor.objects.all().delete()
         PatientActorLink.objects.all().delete()
         Patient.objects.all().delete()
@@ -113,7 +113,7 @@ class BasicPermissionsTest(TestCase):
             user = self._createUser()
             if r != None:
                 role = generator.generate_role(user, r)
-                pal = PatientLink(patient=patient, role=role, active=True)
+                pal = CareTeamMember(patient=patient, role=role, active=True)
                 pal.save()
 
             if r == 'caregiver':                

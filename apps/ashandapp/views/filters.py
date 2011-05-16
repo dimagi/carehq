@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from ashandapp.models import FilterProfile
 from django.db.models import Q
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 
 
 def process_filter_change(request):

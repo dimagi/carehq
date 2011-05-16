@@ -1,5 +1,5 @@
 function(doc) {
     //key = doc id
-    if (doc.doc_type == "CPatient") 
+    if (doc.base_type == "BasePatient")
         emit(doc._id, null); 
 }

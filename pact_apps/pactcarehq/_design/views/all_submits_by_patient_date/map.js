@@ -10,7 +10,7 @@ function(doc) {
         return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
     }
 
-    if (doc.doc_type == "XFormInstance"  && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form") {
+    if (doc.doc_type == "XFormInstance") {//  && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form") {
         if (doc.form.encounter_date) {
             var edate = parse_date(doc.form.encounter_date);
         } else if (doc.form.note && doc.form.note.encounter_date) {

@@ -1,12 +1,13 @@
 import urllib
+from couchdbkit.exceptions import ResourceNotFound
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
-from patient.models.couchmodels import CPatient, CSimpleComment,CDotWeeklySchedule, CPhone, CActivityDashboard, CAddress
-from patient.models.djangomodels import Patient
-from couchexport.export import export
+from pactpatient.models import PactPatient, CDotWeeklySchedule
+from pactpatient.models.pactmodels import CActivityDashboard
+from patient.models import CAddress, CPhone, CSimpleComment
+from patient.models import Patient
 from django.http import   Http404
-from StringIO import StringIO
 import uuid
 from django.http import HttpResponse, HttpResponseRedirect
 from django_digest.decorators import httpdigest
@@ -20,22 +21,20 @@ from django.shortcuts import render_to_response
 from pactcarehq.models import trial1mapping
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
 from django.core.urlresolvers import reverse
-from couchforms.signals import xform_saved
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta, time
 import logging
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.cache import cache
 import hashlib
 import simplejson
 from django.views.decorators.cache import cache_page
 from pactcarehq.forms.address_form import AddressForm
 from pactcarehq.forms.phone_form import PhoneForm
-from pactcarehq.forms.pactpatient_form import CPatientForm
-from threading import Thread
+from pactcarehq.forms.pactpatient_form import PactPatientForm
 from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
+import tempfile
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -157,13 +156,13 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     if new_address:
         context['address_form'] = AddressForm()
         context['address_edit'] = True
-        print "new address damn it!"
+        #print "new address damn it!"
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
     if phone_edit:
         context['phone_form'] = PhoneForm()
     if patient_edit:
-        context['patient_form'] = CPatientForm(patient_edit, instance=patient.couchdoc)
+        context['patient_form'] = PactPatientForm(patient_edit, instance=patient.couchdoc)
     if show_all_schedule != None:
         context['past_schedules'] = patient.couchdoc.past_schedules
         
@@ -228,7 +227,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             else:
                 logging.error("Error, invalid phone form data")
         elif patient_edit:
-            form = CPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
+            form = PactPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
             if form.is_valid():
                 instance = form.save(commit=True)
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
@@ -236,90 +235,21 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
 
     return render_to_response(template_name, context_instance=context)
 
-
-
-
-@login_required
-def user_submit_tallies(request,template_name="pactcarehq/user_submits_report.html"):
-    context = RequestContext(request)
-    users = User.objects.all().filter(is_active=True)
-    enddate = datetime.utcnow() - timedelta(days=0)
-    timeval = timedelta(days=1)
-    eval_date = enddate
-    total_interval = 7
-    if request.GET.has_key('interval'):
-        try:
-            total_interval = request.GET['interval']
-            if total_interval == "all":
-                total_interval = 1000
-            else:
-                total_interval = int(total_interval)
-        except:
-            pass
-
-
-    schemas = ['http://dev.commcarehq.org/pact/progress_note', "http://dev.commcarehq.org/pact/dots_form"]
-    submission_dict = {}
-    datestrings = []
-    for offset in range(0,total_interval):
-        eval_date = enddate - timedelta(days=offset)
-        datestrings.append(eval_date.strftime("%m/%d/%Y"))
-    datestrings.reverse()
-        
-    for schema in schemas:
-        submission_dict[schema] = {}
-        for user in users:
-            if user.username.count('_') > 0:
-                continue
-            submission_dict[schema][user.username] = [0 for x in range(total_interval)]
-            keys = []
-            for offset in range(0,total_interval):
-                eval_date = enddate - timedelta(days=offset)
-                datestring = eval_date.strftime("%m/%d/%Y")
-
-                #hack the view is doing zero indexed months
-                startkey = [user.username, eval_date.year, eval_date.month, eval_date.day, schema]
-                keys.append(startkey)
-                #endkey = [str(user.username),  enddate.year, enddate.month, enddate.day, schema,{}]
-
-            reductions = XFormInstance.view('pactcarehq/submit_counts_by_user_date', keys=keys, group=True).all()
-            for reduction in reductions:
-                if len(reduction) > 0:
-                    monthstring = str(reduction['key'][2])
-                    if len(monthstring) == 1:
-                        monthstring = "0" + monthstring
-                    daystring = str(reduction['key'][3])
-                    if len(daystring) == 1:
-                        daystring = "0" + daystring
-                    yearstring = str(reduction['key'][1])
-                    datestring = "%s/%s/%s" % (monthstring, daystring, yearstring)
-                    date_index = datestrings.index(datestring)
-                    submission_dict[schema][user.username][date_index] = reduction['value']
-            #when done let's reverse it so it goes from oldest to youngest left to right
-            submission_dict[schema][user.username]
-
-    context['user_submissions'] = submission_dict
-    context['interval'] = total_interval
-    context['datestrings'] = datestrings
-    return render_to_response(template_name, context_instance=context)
-
-
 def get_ghetto_registration_block(user):
     registration_block = """
-    <registration>
-                <username>%s</username>
-                <password>%s</password>
-                <uuid>%s</uuid>
-                <date>%s</date>
-                <registering_phone_id>%s</registering_phone_id>
-                <user_data>
-                    <data key="promoter_id">%s</data>
-                    <data key="promoter_name">%s</data>
-                    <data key="promoter_member_id">%s</data>
-                </user_data>
-
-           </registration>
-           """
+    <Registration xmlns="http://openrosa.org/user/registration">
+        <username>%s</username>
+        <password>%s</password>
+        <uuid>%s</uuid>
+        <date>%s</date>
+        <registering_phone_id>%s</registering_phone_id>
+        <user_data>
+            <data key="promoter_id">%s</data>
+            <data key="promoter_name">%s</data>
+            <data key="promoter_member_id">%s</data>
+        </user_data>
+   </Registration>
+   """
     #promoter_member_id is the nasty id from the csv, this should be fixed to match the Partners id -->
     resp_txt = ""
     #prov = Provider.objects.filter(user=user)[0] #hacky nasty
@@ -377,7 +307,7 @@ def my_patient_activity_grouped(request, template_name="pactcarehq/patients_dash
 
     chw_patient_dict = {}
     for chw in chw_patient_assignments.keys():
-        chw_patient_dict[chw] = CPatient.view('patient/pact_ids', keys=chw_patient_assignments[chw], include_docs=True).all()
+        chw_patient_dict[chw] = PactPatient.view('pactcarehq/patient_pact_ids ', keys=chw_patient_assignments[chw], include_docs=True).all()
 
     #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
     #keys = [p.couchdoc.pact_id for p in sorted_pts]
@@ -387,8 +317,6 @@ def my_patient_activity_grouped(request, template_name="pactcarehq/patients_dash
     chws = sorted(chw_patient_dict.keys())
     #patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
     context['chw_patients_arr'] = [(x, chw_patient_dict[x]) for x in chws]
-
-    foo
     return render_to_response(template_name, context_instance=context)
 
 
@@ -410,7 +338,7 @@ def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.ht
         pact_id = res['value'].encode('ascii')
         if not chw_patient_dict.has_key(chw):
             chw_patient_dict[chw] = []
-        chw_patient_dict[chw].append(CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first())
+        chw_patient_dict[chw].append(PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first())
 
     #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
     #keys = [p.couchdoc.pact_id for p in sorted_pts]
@@ -451,11 +379,32 @@ def do_submission(instance, attachments={}):
     delta_post =  datetime.utcnow() - start_time
     logging.debug("Submission posted: %d ms, doc_id: %s" % (ms_from_timedelta(delta_post), doc._id))
 
+
+@httpdigest()
+def get_formhistory(request):
+    """Provide a download to send all submitted XForms down to the phone for a given user."""
+    restore_id = request.GET.get('since')
+
+@httpdigest()
+def debug_casexml_new(request):
+    """
+    Use the standard way for dimagi.case casexml generation method to get casexml.  This is case OTA Restore for Pact.
+    """
+    regblock = get_ghetto_registration_block(request.user)
+    patient_blocks = [pt.ghetto_xml() for pt in PactPatient.view('patient/search', include_docs=True).all()]
+    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, '\n'.join(patient_blocks))
+    template_name="pactcarehq/debug_casexml.html"
+    context = RequestContext(request)
+    context['casexml'] = resp_text
+    return render_to_response(template_name, context_instance=context)
+
 @httpdigest()
 def get_caselist(request):
+    """Intermediary/ghetto way of producing casexml, to be deprecated.
+    """
     regblock= get_ghetto_registration_block(request.user)
     patient_block = ""
-    patients = CPatient.view("patient/search", include_docs=True)
+    patients = PactPatient.view("patient/search", include_docs=True)
     for pt in patients:
         patient_block += pt.ghetto_xml()
     resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
@@ -463,12 +412,13 @@ def get_caselist(request):
 
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
+    response['Content-Length'] = len(resp_text)
     return response
 
 
 #@login_required
 #def show_ghetto_patientlist(request, template_name="pactcarehq/ghetto_patient_list.html":
-#    patients = CPatient.view("patient/by_last_name")
+#    patients = PactPatient.view("patient/by_last_name")
 #    context = RequestContext(request)
 
 @login_required
@@ -520,7 +470,7 @@ def getpatient(pact_id):
     if patient_pactid_cache.has_key(pact_id):
         return patient_pactid_cache[pact_id]
     else:
-        pt = CPatient.view('pactcarehq/patient_pactids', key=str(pact_id), include_docs=True).first()
+        pt = PactPatient.view('pactcarehq/patient_pact_ids', key=str(pact_id), include_docs=True).first()
         patient_pactid_cache[pact_id] = pt
         return pt
 
@@ -845,11 +795,12 @@ def _get_submissions_for_patient_by_date(patient, visit_dates, schema='http://de
 
 
 def _get_submissions_for_patient(patient):
-    """Returns a view of all the patients submissions by the patient's case_id (which is their CPatient doc_id, this probably should be altered)
+    """Returns a view of all the patients submissions by the patient's case_id (which is their PactPatient doc_id, this probably should be altered)
     params: patient=Patient (django) object
     returns: array of XFormInstances for a given patient.
     """
-    xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id, include_docs=True)
+    #xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_case', key=patient.doc_id, include_docs=True)
+    xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_patient_date', startkey=[patient.couchdoc.pact_id, 0000], endkey=[patient.couchdoc.pact_id, 9999], include_docs=True)
     submissions = []
     for note in xform_submissions:
         if not note.form.has_key('case'):
@@ -888,7 +839,7 @@ def _get_submissions_for_user(username):
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
         if not patient_case_id_cache.has_key(case_id):
-            patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
+            patient = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
             patient_case_id_cache[case_id]= patient
         patient = patient_case_id_cache[case_id]
         
@@ -996,7 +947,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
     #case_id = _hack_get_old_caseid(case_id)
-    patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
+    patient = PactPatient.view('patient/all', key=case_id, include_docs=True).first()
     if patient == None:
         patient_name = "Unknown"
     else:
@@ -1095,8 +1046,8 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
         raw['non_art_no_details'] = raw['non_art_no_details'].replace("\n", '<br>')
     
 
-    for key, val in raw.items():
-        print "%s: %s" % (key, val)
+    #for key, val in raw.items():
+        #print "%s: %s" % (key, val)
     context['raw_note'] = simplejson.dumps(raw)
     case_id = xform['form']['case']['case_id']
 
@@ -1104,7 +1055,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
     #for dev purposes this needs to be done for testing
     #but this is important still tog et the patient info for display
     #case_id = _hack_get_old_caseid(case_id)
-    patient = CPatient.view('patient/all', key=case_id, include_docs=True).first()
+    patient = PactPatient.view('patient/all', key=case_id, include_docs=True).first()
     if patient == None:
         patient_name = "Unknown"
     else:
@@ -1177,4 +1128,31 @@ def file_download(request, download_id,template="dots/file_download.html" ):
         context = RequestContext(request)
         context['is_ready'] = is_ready
         return render_to_response(template, context_instance=context)
+@httpdigest()
+def xml_download(request):
+    username = request.user.username
+    offset =0
+    limit_count=100
+    temp_xml = tempfile.TemporaryFile()
+    temp_xml.write("<restoredata>\n")
+    total_count = 0
+    db = get_db()
+    xforms = XFormInstance.view("pactcarehq/all_submits", key=username).all()
+    for form in xforms:
+        try:
+            xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+            temp_xml.write(xml_str)
+            temp_xml.write("\n")
+            total_count += 1
+        except ResourceNotFound:
+            logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
+    print total_count
+    temp_xml.write("</restoredata>")
+    length = temp_xml.tell()
+    temp_xml.seek(0)
+    wrapper = FileWrapper(temp_xml)
+    response = HttpResponse(wrapper, mimetype='text/xml')
+    response['Content-Length'] = length
+    return response
+
 

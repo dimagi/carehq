@@ -12,9 +12,8 @@ from dotsview.forms import AddendumForm
 
 from models import *
 from django.contrib.auth.decorators import login_required
-from patient.models.couchmodels import CPatient
 from couchforms.models import XFormInstance
-from patient.models.couchmodels import ghetto_regimen_map
+from pactpatient.models.pactmodels import PactPatient, ghetto_regimen_map
 from django.forms.formsets import formset_factory
 from django.core.cache import cache
 from dotsview.tasks import csv_export
@@ -46,26 +45,23 @@ def get_csv(request):
 
 
 def delete_reconciliation(request):
-    print "entering delete reconciliation"
     if request.method == "POST":
         try:
             doc_id = request.POST['doc_id']
             db = get_db()
-            print "does doc exist"
+            #print "does doc exist"
             if db.doc_exist(doc_id):
-                print "trying to get doc id"
+                #print "trying to get doc id"
                 doc = db.open_doc(doc_id)
-                print "got doc id"
+                #print "got doc id"
                 if doc['doc_type'] == "CObservationAddendum":
-                    print "trying to delete"
                     db.delete_doc(doc)
-                    print "able to delete"
+                    #print "able to delete"
                     return HttpResponse("Success")
                 else:
-                    print "wtf, not an Cobservation?"
+                    #print "wtf, not an Cobservation?"
                     raise
         except Exception, e:
-            print "huh, weird"
             logging.error("Error getting args:" + str(e))
             return HttpResponse("Error")
     else:
@@ -81,7 +77,7 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
     conflict_dict = {} # k, v = doc_id =>
     conflict_check = {} # k,v = (drug_type, dose_number, dose_total) => observation
     datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
-    observations = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
+    observations = CObservation.view('dotsview/dots_observations', key=datekey).all()
     total_doses_set = set([obs.total_doses for obs in observations])
 
     has_reconciled = False
@@ -112,7 +108,7 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
             time_label = ob.get_time_label()
         except IndexError:
             logging.error("Error, observation time label index not found, DOT data generation error")
-#            hack_patient = CPatient.view('patient/pact_ids', key=pact_id, include_docs=True).first()
+#            hack_patient = PactPatient.view('pactcarehq/patient_pact_ids ', key=pact_id, include_docs=True).first()
 #            if ob.is_art:
 #                total_doses = hack_patient.art_num
 #            else:
@@ -268,7 +264,7 @@ def debug_case_dots(request, template='dots/debug_dots.html'):
 
     def raw_obs_for_date(date):
         datekey = [patient.couchdoc.pact_id, 'observe_date', date.year, date.month, date.day]
-        raw_obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
+        raw_obs = CObservation.view('dotsview/dots_observations', key=datekey).all()
         raw_obs = sorted(raw_obs, key=lambda x: x.anchor_date, reverse=True)
         artmatrix = {}
         nonartmatrix = {}
@@ -332,11 +328,11 @@ def get_couchdata(request):
 
     if view_doc_id != None:
         #we want to see a direct single instance display. override the display times
-        observations = CObservation.view('pactcarehq/dots_observations', key=['doc_id', view_doc_id]).all()
+        observations = CObservation.view('dotsview/dots_observations', key=['doc_id', view_doc_id]).all()
     else:
         startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
         endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
-        observations = CObservation.view('pactcarehq/dots_observations', startkey=startkey, endkey=endkey).all()
+        observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
 
     total_doses_set = set([obs.total_doses for obs in observations])
     observed_dates = list(set([s.observed_date for s in observations]))
@@ -387,7 +383,7 @@ def get_couchdata(request):
 
         if date:
             datekey = [pact_id, 'observe_date', date.year, date.month, date.day]
-            obs = CObservation.view('pactcarehq/dots_observations', key=datekey).all()
+            obs = CObservation.view('dotsview/dots_observations', key=datekey).all()
             for ob in obs:
                 if view_doc_id != None and ob.doc_id != view_doc_id:
                     #print "\tSkip:Is ART: %s: %d/%d %s:%s" % (ob.is_art, ob.dose_number, ob.total_doses, ob.adherence, ob.method)
@@ -407,15 +403,11 @@ def get_couchdata(request):
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:
                     day_notes.append(ob.day_note)
-                    print date
-                    print ob.doc_id
-                    print ob.day_note
                     #pre-check
                 if ob.is_reconciliation == True:
                     #it's a reconciled entry.  Trump all
                     grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
                     found_reconcile = True
-                    print "found reconciliation: %s" % (ob.doc_id)
                     continue
                 else:
                     #base case if it's never been seen before, add it as the key
@@ -471,7 +463,7 @@ def get_couchdata(request):
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 
-    dots_pts = CPatient.view('patient/all_dots', include_docs=True).all()
+    dots_pts = PactPatient.view('pactcarehq/all_dots', include_docs=True).all()
     dots_ids = [pt._id for pt in dots_pts]
     patients = Patient.objects.filter(doc_id__in=dots_ids)
 

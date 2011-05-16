@@ -74,16 +74,16 @@ MIDDLEWARE_CLASSES = (
     #'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
+    #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
-    'breadcrumbs.middleware.BreadcrumbsMiddleware',
+    #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
     #'carehqapp.middleware.identity.AshandIdentityMiddleware',
 )
@@ -101,7 +101,7 @@ AUDIT_VIEWS = [
 
 DIGEST_ENFORCE_NONCE_COUNT = False
 
-ROOT_URLCONF = 'ashand.urls'
+ROOT_URLCONF = 'carehq.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -130,11 +130,14 @@ INSTALLED_APPS = (
     'couchexport',
     'couchlog',
     'dimagi.utils',
+    'case',
+    'permissions',
+    'django.contrib.flatpages',
+    'touchforms.formplayer',
 
     #####################
     #'casetracker',
     'patient',
-    'actors',
 #    'clincore', #just a library, no app
     #'auditcare',
     #end clinical_core
@@ -147,7 +150,6 @@ INSTALLED_APPS = (
     #'autofixture',
     #'reversion',
     'staticfiles',
-    'django_extensions',
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
@@ -156,7 +158,6 @@ INSTALLED_APPS = (
 
     ###########################
     #Apps for production use
-    #'haystack',
     #'johnny',
 
     ####################
@@ -164,11 +165,6 @@ INSTALLED_APPS = (
     #'gunicorn',
     #'devserver',
 )
-
-#haystack
-HAYSTACK_SITECONF = 'ashand.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'solr'
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 
 INTERNAL_IPS = ('127.0.0.1',)
 JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_myproj'
@@ -205,14 +201,33 @@ AUDITABLE_MODELS = [
 
 TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
 
-#DEV_APPS are the apps in which you care about for unit testing.
-DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors',]
 
 #have sessions expire at browser close for security reasons
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 #celery config
 CARROT_BACKEND = "django"
+
+
+#DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
+DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors','case', 'touchforms.formsplayer',]
+#to be overrided by localsettings if need be.  These are the BARE MINIMUM
+COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','case',]
+
+
+import os
+
+XFORMS_PATH = "data/xforms"
+XFORMS_BOOTSTRAP_PATH = "data/bootstrap_xforms"
+XFORMS_PLAYER_URL = "http://localhost:4444/"
+TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
+
+
+AUTH_PROFILE_MODULE = 'actors.models.ClinicalUserProfile'
+AUTHENTICATION_BACKENDS = (
+            'django.contrib.auth.backends.ModelBackend',
+            'permissions.backend.ObjectPermissionsBackend',
+        )
 
 # import local settings if we find them
 try:

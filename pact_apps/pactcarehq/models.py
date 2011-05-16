@@ -1,8 +1,8 @@
 from django.db import models
-from patient.models.couchmodels import CPatient
 from couchdbkit.ext.django.schema import *
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from datetime import datetime
+from pactpatient.models import PactPatient
 
 
 class trial1mapping(models.Model):
@@ -17,7 +17,7 @@ class trial1mapping(models.Model):
 
 
     def get_new_patient_doc_id(self):
-        pts = CPatient.view('patient/name_search_id', key=self.last_name.lower() + "_" + self.first_name.lower(), include_docs=True).all()
+        pts = PactPatient.view('patient/name_search_id', key=self.last_name.lower() + "_" + self.first_name.lower(), include_docs=True).all()
         for pt in pts:
             pact_id = str(pt.pact_id)
             new_id = pt._id

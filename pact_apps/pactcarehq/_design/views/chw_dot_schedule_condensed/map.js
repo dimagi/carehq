@@ -1,6 +1,6 @@
 function(doc) {
 	var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-	if (doc.doc_type == "CPatient") {
+	if (doc.base_type == "BasePatient") {
 		var schedules = doc.weekly_schedule;
 		for (var i = 0; i < schedules.length; i++) {
 			var schedule = schedules[i];

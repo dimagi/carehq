@@ -1,13 +1,13 @@
 from django import template
-from patient.models.couchmodels import CPatient
-from patient.models.djangomodels import Patient
+from pactpatient.models.pactmodels import PactPatient
+from patient.models import Patient
 from django.core.urlresolvers import reverse
 
 register = template.Library()
 
 @register.simple_tag
 def name_from_pactid(xforminstance):
-    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id'], include_docs=True).all()
+    pt = PactPatient.view('pactcarehq/patient_pact_ids', key=xforminstance.form['pact_id'], include_docs=True).all()
     if len(pt) == 0:
         return "[Unknown Patient]"
     else:
@@ -15,7 +15,7 @@ def name_from_pactid(xforminstance):
 
 @register.simple_tag
 def patient_url_from_form(xforminstance):
-    pt = CPatient.view('pactcarehq/patient_pactids', key=xforminstance.form['pact_id'], include_docs=True).all()
+    pt = PactPatient.view('pactcarehq/patient_pact_ids', key=xforminstance.form['pact_id'], include_docs=True).all()
     if len(pt) == 0:
         return "#"
 

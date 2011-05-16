@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-from clinical_core.actors.models.roles import Role
+from permissions.models import Actor
 
 
 class FeedEvent(models.Model):
     # Examples:
     # subject = patient, actor = doctor, action = "Edited care plan"
-    subject = models.ForeignKey(Role, related_name="feed_subject")
-    actor = models.ForeignKey(Role, related_name="feed_actor")
+    subject = models.ForeignKey(Actor, related_name="feed_subject")
+    actor = models.ForeignKey(Actor, related_name="feed_actor")
     action = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)

@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from ashandapp.models import FilterProfile
 
 from ashandapp.templatetags.filter_tags import case_column_plain
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 
 
 @login_required

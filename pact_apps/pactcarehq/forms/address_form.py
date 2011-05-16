@@ -1,7 +1,7 @@
 from django import forms
 
 from couchdbkit.ext.django.forms import DocumentForm
-from patient.models.couchmodels import CAddress
+from patient.models import CAddress
 
 
 class AddressForm(forms.Form):

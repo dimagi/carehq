@@ -1,54 +1,27 @@
-# Create your views here.
-from django.contrib.auth.decorators import  login_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponse
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from patient.forms import PactPatientForm
-from patient.models.djangomodels import Patient
-import urllib
-from patient.models.couchmodels import CPhone
-from datetime import datetime, datetime
+# To manage patient views for create/view/update you need to implement them directly in your patient app
+from datetime import datetime
 import logging
-from django.contrib import messages
-
-@login_required
-def new_patient(request, template_name="patient/new_patient.html"):
-    context = RequestContext(request)
-    if request.method == 'POST':
-        form = PactPatientForm(data=request.POST)
-        #make patient
-        if form.is_valid():
-            newpatient = Patient()
-            newpatient.cset_pact_id(form.cleaned_data['pact_id'])
-            newpatient.cset_arm(form.cleaned_data['arm'])
-            newpatient.cset_gender(form.cleaned_data['gender'])
-            newpatient.cset_birthdate(form.cleaned_data['birthdate'])
-            newpatient.cset_art_regimen(form.cleaned_data['art_regimen'])
-            newpatient.cset_non_art_regimen(form.cleaned_data['non_art_regimen'])
-            newpatient.cset_primary_hp(form.cleaned_data['primary_hp'])
-            newpatient.cset_first_name(form.cleaned_data['first_name'])
-            newpatient.cset_last_name(form.cleaned_data['last_name'])
-            newpatient.save()
-            messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
-            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':newpatient.id}))
-        else:
-            messages.add_message(request, messages.ERROR, "Failed to add patient!")
-            context['patient_form'] = form
-    else:
-        context['patient_form'] = PactPatientForm()
-    return render_to_response(template_name, context_instance=context)
-
+import urllib
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from patient.models import Patient
+from datetime import datetime
+from django.core.urlresolvers import reverse
 
 @login_required
 def remove_phone(request):
     if request.method == "POST":
         print "got the post for remove_phone"
         try:
+            print "trying"
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            print "got patient_id"
             patient = Patient.objects.get(id=patient_id)
+            print "got patient: %s" % (patient)
             phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
             for i, p in enumerate(patient.couchdoc.phones):
+                print "iterating through phones: %d: %s" % (i, p)
                 if p.phone_id == phone_id:
                     p.deprecated=True
                     p.ended=datetime.utcnow()
@@ -79,4 +52,3 @@ def remove_address(request):
             #return HttpResponse("Error: %s" % (e))
     else:
         pass
-

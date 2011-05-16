@@ -1,2 +1,1 @@
-from djangomodels import *
-from couchmodels import *
+from .patientmodels import *

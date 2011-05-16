@@ -1,5 +1,5 @@
 from dotsview.models import Observation
-from patient.models.djangomodels import Patient
+from patient.models import Patient
 from couchforms.models import XFormInstance
 from datetime import datetime
 

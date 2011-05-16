@@ -88,7 +88,7 @@ class AshandIdentityMiddleware(object):
         try:
             request.provider = Doctor.objects.get(user=request.user)
             is_provider = True                        
-            primary_careteams = PatientLink.objects.filter(role__user=request.user)
+            primary_careteams = CareTeamMember.objects.filter(role__user=request.user)
             if primary_careteams.count() > 0:
                 is_primary = True        
         except ObjectDoesNotExist:

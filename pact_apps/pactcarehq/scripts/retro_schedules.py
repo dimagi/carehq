@@ -1,5 +1,5 @@
-from patient.models.djangomodels import Patient
-from patient.models.couchmodels import CPatient, CDotWeeklySchedule
+from pactpatient.models.pactmodels import CDotWeeklySchedule
+from patient.models import Patient
 from datetime import datetime, timedelta
 
 days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
