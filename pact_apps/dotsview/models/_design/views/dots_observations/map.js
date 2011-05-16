@@ -145,7 +145,7 @@ function(doc) {
     else if (doc.doc_type == "CObservationAddendum") {
        //if it's a reconciliation object, then unpack the internal individual entries and emit them one by one.
         for (var i = 0; i < doc.art_observations.length; i++) {
-            var obs = doc.art_observations[i];
+            var obs = eval(uneval(doc.art_observations[i])); //we will be mutating this object to emit it.  couchdb 1.0.2 seems to be really strict about non mutation of things you emit.
             var anchor_date = parse_date(obs.anchor_date);
             var observe_date = parse_date(obs.observed_date);
             obs['doc_id'] = doc._id;
@@ -155,9 +155,10 @@ function(doc) {
             emit([observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
         }
         for (var i = 0; i < doc.nonart_observations.length; i++) {
-            var obs = doc.nonart_observations[i];
+            var obs = eval(uneval(doc.nonart_observations[i]));
             var anchor_date = parse_date(obs.anchor_date);
             var observe_date = parse_date(obs.observed_date);
+            obs['doc_id'] = doc._id;
 
             emit([obs.pact_id, 'anchor_date', anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs);
             emit([obs.pact_id, 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs)));
