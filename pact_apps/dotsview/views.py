@@ -55,7 +55,6 @@ def delete_reconciliation(request):
                 doc = db.open_doc(doc_id)
                 #print "got doc id"
                 if doc['doc_type'] == "CObservationAddendum":
-                    print "trying to delete"
                     db.delete_doc(doc)
                     #print "able to delete"
                     return HttpResponse("Success")

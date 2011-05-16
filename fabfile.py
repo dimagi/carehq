@@ -38,7 +38,6 @@ def enter_virtualenv():
 
         with enter_virtualenv():
             run('python script.py')
-
     """
     return prefix('PATH=%(virtualenv_root)s/bin/:PATH' % env)
 

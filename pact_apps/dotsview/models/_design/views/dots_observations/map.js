@@ -143,8 +143,8 @@ function(doc) {
         }
 	}
     else if (doc.doc_type == "CObservationAddendum") {
-        //if it's a reconciliation object, then unpack the internal individual entries and emit them one by one.
-       for (var i = 0; i < doc.art_observations.length; i++) {
+       //if it's a reconciliation object, then unpack the internal individual entries and emit them one by one.
+        for (var i = 0; i < doc.art_observations.length; i++) {
             var obs = doc.art_observations[i];
             var anchor_date = parse_date(obs.anchor_date);
             var observe_date = parse_date(obs.observed_date);
