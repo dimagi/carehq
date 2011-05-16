@@ -22,7 +22,7 @@ def _setup_path():
 
 def production():
     """ use production environment on remote host"""
-    env.code_branch = 'casepatientfix'
+    env.code_branch = 'develop'
     env.sudo_user = 'pact'
     env.hosts = ['10.84.168.247']
     env.environment = 'production'
