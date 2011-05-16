@@ -8,9 +8,9 @@ def process_dots_submission(sender, xform, **kwargs):
         if xform.xmlns != "http://dev.commcarehq.org/pact/dots_form":
             return
         try:
+            dots_json = xform['form']['case']['update']['dots']
             if isinstance(dots_json, str) or isinstance(dots_json, unicode):
-                dots_json_str = xform['form']['case']['update']['dots']
-                json_data = simplejson.loads(dots_json_str)
+                json_data = simplejson.loads(dots_json)
                 xform['pact_data'] = {}
                 xform['pact_data']['dots'] = json_data
                 xform.save()

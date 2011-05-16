@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from clincore.utils import ms_from_timedelta
 from couchforms.signals import xform_saved
 from couchforms.util import post_xform_to_couch
+import logging
 
 
 class SubmitParsingTests(TestCase):
@@ -18,10 +19,8 @@ class SubmitParsingTests(TestCase):
             xml_string = fin.read()
             fin.close()
 
-            start_time = datetime.utcnow()
             doc = post_xform_to_couch(xml_string)
-            delta_post =  datetime.utcnow() - start_time
-            #xform_saved.send(sender="post", xform=doc) #ghetto way of signalling a submission signal
+            xform_saved.send(sender="post", xform=doc) #ghetto way of signalling a submission signal
             #delta_signal = datetime.utcnow() - (start_time + delta_post)
             #print "Signal emitted: %d ms" % (ms_from_timedelta(delta_signal))
 
