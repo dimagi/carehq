@@ -532,7 +532,7 @@ def _get_schedule_tally(username, total_interval, override_date=None):
     where visit = XFormInstance
     """
     if override_date == None:
-        nowdate = datetime.utcnow()
+        nowdate = datetime.now()
         chw_schedule = schedule.get_schedule(username)
     else:
         nowdate = override_date
@@ -620,7 +620,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
             pass
 
     ret, patients, total_scheduled, total_visited= _get_schedule_tally(username, total_interval)
-    nowdate = datetime.utcnow()
+    nowdate = datetime.now()
 
     context['date_arr'] = ret
     context['total_scheduled'] = total_scheduled
@@ -666,7 +666,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
 
         resp = HttpResponse()
 
-        resp['Content-Disposition'] = 'attachment; filename=chw_schedule_%s-%s_to_%s.csv' % (username, datetime.utcnow().strftime("%Y-%m-%d"),  (nowdate - timedelta(days=total_interval)).strftime("%Y-%m-%d"))
+        resp['Content-Disposition'] = 'attachment; filename=chw_schedule_%s-%s_to_%s.csv' % (username, datetime.now().strftime("%Y-%m-%d"),  (nowdate - timedelta(days=total_interval)).strftime("%Y-%m-%d"))
         resp.write('\n'.join(csvdata))
         return resp
 
