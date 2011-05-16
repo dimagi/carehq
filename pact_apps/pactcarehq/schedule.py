@@ -45,10 +45,10 @@ class CHWPatientSchedule(object):
 
 def get_schedule(chw_username, override_date = None):
     #print "doing schedule lookup for %s" % (chw_username)
-    if cached_schedules.has_key(chw_username):
-        return cached_schedules[chw_username]
+    #if cached_schedules.has_key(chw_username):
+        #return cached_schedules[chw_username]
     if override_date == None:
-        nowdate = datetime.utcnow()
+        nowdate = datetime.now()
     else:
         nowdate = override_date
     db = CPatient.get_db()
@@ -57,11 +57,11 @@ def get_schedule(chw_username, override_date = None):
 
     for item in chw_schedules:
         single_sched = item['value']
-        #print "Iterating single schedule %s" % (single_sched)
         day_of_week = int(single_sched['day_of_week'])
         if day_intervaltree.has_key(day_of_week):
             daytree = day_intervaltree[day_of_week]
         else:
+            #if there's no day of week indication for this, then it's just a null interval node.  to ensure that it's not checked, we make it REALLY old.
             daytree = IntervalNode(get_seconds(datetime.min), get_seconds(nowdate + timedelta(days=10)))
 
         if single_sched['ended_date'] == None:
@@ -77,7 +77,7 @@ def get_schedule(chw_username, override_date = None):
         daytree.insert(get_seconds(startdate), get_seconds(enddate), other=pact_id)
         day_intervaltree[day_of_week] = daytree
 
-
-    cached_schedules[chw_username] = CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
-    return cached_schedules[chw_username]
+    #cached_schedules[chw_username] = CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
+    #return cached_schedules[chw_username]
+    return CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
 
