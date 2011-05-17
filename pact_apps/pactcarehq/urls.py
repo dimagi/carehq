@@ -1,10 +1,12 @@
 from django.conf.urls.defaults import *
-
+from django.conf import settings
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('',
     (r'^$', 'pactcarehq.views.my_patient_activity'),
     (r'^uptime$', 'pactcarehq.views.uptime'),
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '%spactcarehq/img/favicon.png' % (settings.STATIC_URL)}),
+
 
     (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),
     (r'^reduce$', 'pactcarehq.views.my_patient_activity_reduce'),
