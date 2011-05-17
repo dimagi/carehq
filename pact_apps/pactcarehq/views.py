@@ -791,6 +791,9 @@ def _get_submissions_for_patient_by_date(patient, visit_dates, schema='http://de
     return ret
 
 
+def uptime(request):
+    response = HttpResponse("success")
+    return response
 
 
 
