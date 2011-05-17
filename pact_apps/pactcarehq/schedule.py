@@ -11,6 +11,7 @@
 from datetime import datetime, timedelta, timedelta
 import time
 from quicksect import IntervalNode
+from django.core.cache import cache
 import simplejson
 from pactpatient.models.pactmodels import PactPatient
 
@@ -45,39 +46,48 @@ class CHWPatientSchedule(object):
 
 def get_schedule(chw_username, override_date = None):
     #print "doing schedule lookup for %s" % (chw_username)
-    #if cached_schedules.has_key(chw_username):
-        #return cached_schedules[chw_username]
+    cached_schedules = cache.get("%s_schedule" % (chw_username), None)
+
     if override_date == None:
         nowdate = datetime.now()
     else:
         nowdate = override_date
-    db = PactPatient.get_db()
-    chw_schedules = db.view('pactcarehq/chw_dot_schedule_condensed', key=chw_username).all()
-    day_intervaltree = {}
 
-    for item in chw_schedules:
-        single_sched = item['value']
+    day_intervaltree = {}
+    if cached_schedules == None:
+        #no documents, then we need to load them up
+        db = PactPatient.get_db()
+        chw_schedules = db.view('pactcarehq/chw_dot_schedule_condensed', key=chw_username).all()
+        to_cache = []
+        for item in chw_schedules:
+            single_sched = item['value']
+            to_cache.append(single_sched)
+        cache.set("%s_schedule" % (chw_username), simplejson.dumps(to_cache), 3600)
+        cached_arr = to_cache
+    else:
+        cached_arr = simplejson.loads(cached_schedules)
+
+    for single_sched in cached_arr:
         day_of_week = int(single_sched['day_of_week'])
         if day_intervaltree.has_key(day_of_week):
             daytree = day_intervaltree[day_of_week]
         else:
-            #if there's no day of week indication for this, then it's just a null interval node.  to ensure that it's not checked, we make it REALLY old.
+            #if there's no day of week indication for this, then it's just a null interval node.  To start this node, we make it REALLY old.
             daytree = IntervalNode(get_seconds(datetime.min), get_seconds(nowdate + timedelta(days=10)))
-
         if single_sched['ended_date'] == None:
             enddate = nowdate+timedelta(days=9)
         else:
             enddate = datetime.strptime(single_sched['ended_date'], "%Y-%m-%dT%H:%M:%SZ")
-            #enddate = single_sched['ended_date']
 
         startdate = datetime.strptime(single_sched['active_date'], "%Y-%m-%dT%H:%M:%SZ")
-        #startdate = single_sched['active_date']
         pact_id = single_sched['pact_id']
-        
+
         daytree.insert(get_seconds(startdate), get_seconds(enddate), other=pact_id)
         day_intervaltree[day_of_week] = daytree
 
+
+
     #cached_schedules[chw_username] = CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
     #return cached_schedules[chw_username]
-    return CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
+    return CHWPatientSchedule(chw_username, day_intervaltree, cached_arr)
 
