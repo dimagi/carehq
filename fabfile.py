@@ -41,20 +41,16 @@ def enter_virtualenv():
     """
     return prefix('PATH=%(virtualenv_root)s/bin/:PATH' % env)
 
-
-def deploy():
-    """ deploy code to remote host by checking out the latest via git """
+def get_code():
     require('root', provided_by=('staging', 'production'))
-    if env.environment == 'production':
-        if not console.confirm('Are you sure you want to deploy production?', default=False):
-            utils.abort('Production deployment aborted.')
-    
-    if files.exists(env.code_root) == False:
-        with cd(env.src_root):
-            sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
-            sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/')
-            sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/')
-            sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
+    with cd(env.src_root):
+        sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/')
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/')
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
+
+def update():
+    require('root', provided_by=('staging', 'production'))
     with cd(env.code_root):
         sudo('git checkout %(code_branch)s' % env, user=env.sudo_user)
         sudo('git pull', user=env.sudo_user)
@@ -64,23 +60,43 @@ def deploy():
             sudo('python manage.py syncdb --noinput', user=env.sudo_user)
             #sudo('python manage.py migrate --noinput', user=env.sudo_user)
             sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
-    service_restart()
+
+def deploy_all():
+    """ deploy code to remote host by checking out the latest via git """
+    require('root', provided_by=('staging', 'production'))
+    if env.environment == 'production':
+        if not console.confirm('Are you sure you want to deploy production?', default=False):
+            utils.abort('Production deployment aborted.')
+    
+    if files.exists(env.code_root) == False:
+        get_code()
+    update_code()
+    restart_all()
+
+def restart_django():
+    require('root', provided_by=('staging', 'production'))
+    with settings(sudo_user="root"):
+        sudo('stop carehq_django;initctl reload-configuration;start carehq_django', user=env.sudo_user)
+
+def restart_celery():
+    require('root', provided_by=('staging', 'production'))
+    with settings(sudo_user="root"):
+        sudo('stop carehq_celery;initctl reload-configuration;start carehq_celery', user=env.sudo_user)
+
+
+def restart_formsplayer():
+    require('root', provided_by=('staging', 'production'))
+    with settings(sudo_user="root"):
+        sudo('stop carehq_celery;initctl reload-configuration;start carehq_formsplayer', user=env.sudo_user)
 
 
 
-def service_restart():
+def restart_all():
     """ restart cchq_www service on remote host.  This will call a stop, reload the initctl to
     have any config file updates be reloaded into intictl, then start carehq again.
     """
     require('root', provided_by=('staging', 'production'))
-    with settings(sudo_user="root"):
-        sudo('stop carehq_django', user=env.sudo_user)
-        sudo('stop carehq_formsplayer', user=env.sudo_user)
-        sudo('stop carehq_celery', user=env.sudo_user)
-
-        sudo('initctl reload-configuration', user=env.sudo_user)
-
-        sudo('start carehq_django', user=env.sudo_user)
-        sudo('start carehq_celery', user=env.sudo_user)
-        sudo('start carehq_formsplayer', user=env.sudo_user)
+    restart_django()
+    restart_celery()
+    restart_formsplayer()
 
