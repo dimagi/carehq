@@ -11,7 +11,7 @@ class BasicPatientForm(forms.Form):
 
 
     first_name = forms.CharField(required=True)
-    middle_name = forms.CharField()
+    middle_name = forms.CharField(required=False)
     last_name = forms.CharField(required=True)
     gender = forms.ChoiceField(choices=GENDER_CHOICES, required=True)
     birthdate = forms.DateField(required=True)
