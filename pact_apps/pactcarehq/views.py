@@ -941,6 +941,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
 
     progress_note['chw'] = xform.form['Meta']['username']
     context['progress_note'] = simplejson.dumps(xform.to_json()['form']['note'])
+    context['xform'] = xform
 
     case_id = xform['form']['case']['case_id']
 
@@ -1051,6 +1052,7 @@ def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.h
 
     #for key, val in raw.items():
         #print "%s: %s" % (key, val)
+    context['xform'] = xform
     context['raw_note'] = simplejson.dumps(raw)
     case_id = xform['form']['case']['case_id']
 
