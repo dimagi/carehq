@@ -49,6 +49,11 @@ def get_code():
         sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/')
         sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
 
+def pip_update():
+    with cd(env.code_root):
+        with enter_virtualenv():
+            run('pip install -r requirements.txt')
+
 def update():
     require('root', provided_by=('staging', 'production'))
     with cd(env.code_root):
