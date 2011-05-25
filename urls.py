@@ -47,6 +47,10 @@ for module_name in settings.INSTALLED_APPS:
     # http path), and we are running in DEBUG mode, we will also serve
     # the media for this app via this development server. in production,
     # these files should be served directly
-if settings.DEBUG:
-    urlpatterns += patterns('staticfiles.views', url(r'^static/(?P<path>.*)$', 'serve'), )
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
+
+#if settings.DEBUG:
+#    urlpatterns += patterns('staticfiles.views', url(r'^static/(?P<path>.*)$', 'serve'), )
 

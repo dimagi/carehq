@@ -115,7 +115,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.i18n', 
                                'django.core.context_processors.media',                               
                                'django.core.context_processors.request',
-                               'staticfiles.context_processors.static',
+                               #'staticfiles.context_processors.static',
+                               'django.core.context_processors.static',
                                )
 
 INSTALLED_APPS = (
@@ -124,6 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.staticfiles',
     'couchdbkit.ext.django',
     'django.contrib.webdesign',
     'couchforms',
@@ -149,7 +151,7 @@ INSTALLED_APPS = (
     #third party apps
     #'autofixture',
     #'reversion',
-    'staticfiles',
+    #'staticfiles',
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
