@@ -25,3 +25,6 @@
 [submodule "submodules/djactor-permissions"]
 	path = submodules/djactor-permissions
 	url = git://github.com/dimagi/djactor-permissions.git
+[submodule "submodules/djangocouch-src"]
+	path = submodules/djangocouch-src
+	url = git://github.com/dimagi/djangocouch.git
