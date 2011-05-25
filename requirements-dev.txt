@@ -3,5 +3,7 @@ django-devserver
 django-extensions
 git+git://github.com/dimagi/couchdbkit-debugpanel.git
 guppy
+virtualenv
+virtualenvwrapper
 
 
