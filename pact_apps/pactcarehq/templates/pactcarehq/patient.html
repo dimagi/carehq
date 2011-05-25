@@ -1,6 +1,17 @@
 {%  extends "base.html" %}
 {% load i18n %}
 {% block extrahead %}
+
+<script>
+	$(function() {
+		$( "#id_birthdate" ).datepicker( {
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "+0M +0D +0Y"
+            }
+        );
+	});
+</script>
 <script type="text/javascript">
 //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
 function post_phone_delete(patient_id, phone_id) {
@@ -117,8 +128,8 @@ $(function() {
                 </div>
                 <div class="span-8 last">
                     <small>
-                        <strong>Age</strong>: {{pdoc.birthdate|timesince }}<br>
-                        <strong>Sex</strong>: {{pdoc.gender|title }}
+                        <strong>Age</strong>: {{pdoc.birthdate|timesince }} &nbsp; <a href="{{ request.path }}?edit_patient=birthdate">Edit</a><br>
+                        <strong>Sex</strong>: {{pdoc.gender|title }} &nbsp;  <a href="{{ request.path }}?edit_patient=gender">Edit</a> <br>
                     </small>
                 </div>
                 <div class="span-18 last">

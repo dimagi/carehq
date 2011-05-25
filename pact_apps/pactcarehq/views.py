@@ -1136,6 +1136,9 @@ def file_download(request, download_id,template="dots/file_download.html" ):
 @httpdigest()
 def xml_download(request):
     username = request.user.username
+
+    if username == "ctsims":
+        username = 'cs783'
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
