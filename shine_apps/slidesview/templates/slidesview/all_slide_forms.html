@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% include render_json_tags %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
+{% endblock %}
+{% block content %}
+<h3>Slide Form Submissions</h3>
+<a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+    {% if submits %}
+    <table id="submits-table" class="tablesorter">
+    <thead>
+        <tr>
+            <th class="span-4">Submit Time</th>
+            <th class="span-2">ID</th>
+            <th class="span-4">Form</th>
+            <th class="span-4">Started</th>
+            <th class="span-4">Finish Time</th>
+            <th class="span-4">Images</th>
+        </tr>
+    </thead>
+    {% for submit in submits %}
+        <tr>
+            <td> <a href="{% url slidesview.views.slideform submit.get_id %}">{{ submit.received_on|date:"Y-m-d H:i"}}</a> </td>
+            <td> {{ submit.form.pact_id }}</td>
+            <td> {{ submit.xmlns }}</td>
+            <td> {{ submit.form.Meta.TimeStart|date:"Y-m-d H:i" }}</td>
+            <td> {{ submit.form.Meta.TimeEnd|date:"Y-m-d H:i" }}</td>
+            <td>
+{#                {% for k, v in submit._attachments.items %}#}
+{#                    {% if k != "form.xml "%}#}
+{#                        <p>{{ v }}</p>#}
+{#                    {% endif %}#}
+{#                {% endfor %}#}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+        <div class="notice">No Submissions</div>
+    {% endif %} {#if there are any submits at all #}
+{% endblock %}

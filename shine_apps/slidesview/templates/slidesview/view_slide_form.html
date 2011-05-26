@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{ STATIC_URL }}slidesview/js/pixastic.custom.js"></script>
+
+
+    <script type="text/javascript">
+    function reset_all(div_id) {
+        Pixastic.revert(document.getElementById(div_id));
+    }
+
+    function histogram(div_id) {
+        Pixastic.process(document.getElementById(div_id), "histogram", {
+                average : false, paint:true,color:"rgba(255,255,255,0.5)",
+            });
+    }
+
+    function remove_noise(div_id) {
+        Pixastic.process(document.getElementById(div_id), "removenoise");
+    }
+
+    function usm(div_id) {
+        Pixastic.process(document.getElementById(div_id), "unsharpmask", {
+                amount : 150,
+                radius : 1.25,
+                threshold : 12,
+            });
+
+    }
+
+
+    function color_histogram(div_id) {
+        Pixastic.process(document.getElementById(div_id), "colorhistogram", {
+                paint:true,
+            });
+    }
+
+    function laplace(div_id) {
+        Pixastic.process(document.getElementById(div_id), "laplace", {
+                edgeStrength : 0.9,
+                greyLevel : 4,
+                invert : false,
+            })
+
+    }
+
+    function edge_detection(div_id) {
+        Pixastic.process(document.getElementById(div_id), "edges", {
+                mono : false,
+                invert : false
+            });
+    }
+
+    function edge_detection2(div_id) {
+        Pixastic.process(document.getElementById(div_id), "edges2");
+    }
+
+    function emboss(div_id) {
+        Pixastic.process(document.getElementById(div_id), "emboss", {
+                strength : 2.5,
+                greyLevel : 166,
+                direction : 'topleft',
+                blend : false
+            });
+    }
+    
+
+
+    
+
+    </script>
+{% endblock extrahead %}
+{% block content %}
+<h2>View Slide Form</h2>
+{{ case }}
+
+<hr>
+    <h3>Thumbs</h3>
+{% for im in thumbs %}
+    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" id="img_{{ im.key }}">
+    <br>
+    <input type="button" onclick="edge_detection('img_{{ im.key }}');" value="Edge detection">
+    <input type="button" onclick="edge_detection2('img_{{ im.key }}');" value="Edge detection 2">
+    <input type="button" onclick="emboss('img_{{ im.key }}');" value="Emboss">
+    <input type="button" onclick="color_histogram('img_{{ im.key }}');" value="Color Histogram">
+    <input type="button" onclick="histogram('img_{{ im.key }}');" value="Histogram">
+    <input type="button" onclick="laplace('img_{{ im.key }}');" value="Laplace Edge Detection">
+    <input type="button" onclick="remove_noise('img_{{ im.key }}');" value="Remove Noise">
+    <input type="button" onclick="usm('img_{{ im.key }}');" value="Unsharp Mask">
+    <input type="button" onclick="reset_all('img_{{ im.key }}');" value="Reset">
+{% endfor %}
+
+<hr>
+<h4>attachment method</h4>
+
+{% for attach in image_attachments %}
+    {% thumbnail attach.image "200x200" crop="center" as im %}
+        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}
+{% endfor %}
+{%  endblock content %}
