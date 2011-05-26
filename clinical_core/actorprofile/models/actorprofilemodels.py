@@ -3,12 +3,17 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, DictP
 from couchdbkit.schema.properties_proxy import SchemaDictProperty
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.db import models
+from dimagi.utils import make_uuid
 
 
 class BaseActorProfileDocument(Document):
     actor_id = StringProperty() # the key to access the dict
     base_type = StringProperty(default="BaseActorProfileDocument")
     name = StringProperty() #the actor name
+
+    class Meta:
+        app_label='actorprofile'
 
 
 class ProfileDocument(Document):
@@ -18,7 +23,7 @@ class ProfileDocument(Document):
     actors = SchemaDictProperty(BaseActorProfileDocument) #keyed by actor_id, the django uuid of the actor object.
 
     class Meta:
-        app_label='actors'
+        app_label='actorprofile'
 
 
 class ClinicalUserProfile(models.Model):
@@ -31,7 +36,7 @@ class ClinicalUserProfile(models.Model):
     profile_doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
 
     class Meta:
-        app_label='actors'
+        app_label='actorprofile'
 
 
 

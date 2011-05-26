@@ -225,7 +225,7 @@ XFORMS_PLAYER_URL = "http://localhost:4444/"
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 
 
-AUTH_PROFILE_MODULE = 'actors.models.ClinicalUserProfile'
+#AUTH_PROFILE_MODULE = 'actorprofile.models.ClinicalUserProfile'
 AUTHENTICATION_BACKENDS = (
             'django.contrib.auth.backends.ModelBackend',
             'permissions.backend.ObjectPermissionsBackend',
