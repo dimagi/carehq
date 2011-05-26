@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(filedir,'clinical_core'))
 sys.path.insert(0, os.path.join(filedir,'apps'))
 sys.path.insert(0, os.path.join(filedir,'lib'))
 sys.path.insert(0, os.path.join(filedir,'pact_apps'))
+sys.path.insert(0, os.path.join(filedir,'shine_apps'))
 
 sys.path.insert(0, os.path.join(filedir,'submodules','couchforms'))
 sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
