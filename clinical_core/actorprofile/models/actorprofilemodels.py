@@ -39,6 +39,12 @@ class ClinicalUserProfile(models.Model):
         app_label='actorprofile'
 
 
+    @property
+    def profiles(self):
+        if self.couchdoc == None:
+            return "No profile document"
+        else:
+            return self.couchdoc.actors
 
     def get_profiledoc(self, profile_key):
         if not self.couchdoc:
@@ -49,7 +55,9 @@ class ClinicalUserProfile(models.Model):
     @property
     def couchdoc(self):
         if self._couchdoc == None:
-            self._couchdoc = BaseProfileDocument.view('actors/all_profiles', key=self.profile_doc_id, include_docs=True).first()
+            couchdoc = ProfileDocument.view('actors/all_profiles', key=self.profile_doc_id, include_docs=True).first()
+            if couchdoc != None:
+                self._couchdoc = couchdoc
         return self._couchdoc
 
     def __unicode__(self):
