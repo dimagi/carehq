@@ -109,3 +109,45 @@ def new_progress_note(request, patient_id): #patient_id
                }
     }
     return play(request, new_form.id, callback, preloader_data)
+
+@login_required
+def new_bloodwork(request, patient_id): #patient_id
+    """
+    Fill out a NEW bloodwork
+    """
+
+    patient = Patient.objects.get(id=patient_id)
+    pact_id = patient.couchdoc.pact_id
+    case_id = patient.couchdoc.case_id
+    def callback(xform, doc):
+        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        return HttpResponseRedirect(reverse_back)
+
+    url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_bw_entry.xml')
+    #url_resp = open('/home/dmyung/workspaces/pycharm/ashand-project/carehq/pact_bw_entry.xml')
+    print "opening from the filesystem"
+    xform_str = url_resp.read()
+    try:
+        tmp_file_handle, tmp_file_path = tempfile.mkstemp()
+        tmp_file = os.fdopen(tmp_file_handle, 'w')
+        tmp_file.write(xform_str.decode('utf-8').encode('utf-8'))
+        tmp_file.close()
+        new_form = XForm.from_file(tmp_file_path, str(file))
+        notice = "Created form: %s " % file
+    except Exception, e:
+        logging.error("Problem creating xform from %s: %s" % (file, e))
+        success = False
+        notice = "Problem creating xform from %s: %s" % (file, e)
+        raise e
+
+    preloader_data = {
+        "case": {"case-id": case_id,
+                 "pactid": pact_id,
+                 },
+        "property": { "DeviceID": "touchforms"},
+        "meta": {
+               "UserID": '%d' % (request.user.id),
+               "UserName": request.user.username,
+               }
+    }
+    return play(request, new_form.id, callback, preloader_data)

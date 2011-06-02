@@ -28,3 +28,6 @@
 [submodule "submodules/djangocouch-src"]
 	path = submodules/djangocouch-src
 	url = git://github.com/dimagi/djangocouch.git
+[submodule "submodules/casexml-src"]
+	path = submodules/casexml-src
+	url = git://github.com/dimagi/casexml.git

@@ -132,7 +132,7 @@ INSTALLED_APPS = (
     'couchexport',
     'couchlog',
     'dimagi.utils',
-    'case',
+    'casexml.apps.case',
     'permissions',
     'django.contrib.flatpages',
     'touchforms.formplayer',

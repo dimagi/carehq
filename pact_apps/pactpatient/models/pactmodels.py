@@ -236,9 +236,9 @@ class PactPatient(BasePatient):
     @property
     def last_bloodwork(self):
         """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """
-        if hasattr(self, '_prior_bloodwork'):
-            #in memory lookup
-            return self._prior_bloodwork
+#        if hasattr(self, '_prior_bloodwork'):
+#            #in memory lookup
+#            return self._prior_bloodwork
 
         #memcached lookup
         last_bw = cache.get('%s_bloodwork' % (self._id), None)
@@ -249,24 +249,25 @@ class PactPatient(BasePatient):
         elif last_bw == '[##Null##]':
             return None
         else:
-            self._prior_bloodwork = CBloodwork.wrap(simplejson.loads(last_bw))
-            return self._prior_bloodwork
+            #self._prior_bloodwork = CBloodwork.wrap(simplejson.loads(last_bw))
+            #return self._prior_bloodwork
+            pass
 
 
         #requery
         bw_docs = CBloodwork.view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
-        bw_docs = sorted(bw_docs, key=lambda x: x['test_date'])
+        bw_docs = sorted(bw_docs, key=lambda x: x['test_date'], reverse=True)
         if len(bw_docs) > 0:
-            self._prior_bloodwork = bw_docs[0]
-            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
+            #self._prior_bloodwork = bw_docs[0]
+            #cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
             return bw_docs[0]
         if self.prior_bloodwork.test_date == None:
             #this is a bit hacky, it should really be null, but since this is an added on object, to PactPatient, it doesn't show up as None
             #so we need to do an explicit check for the
-            cache.set('%s_bloodwork' % (self._id), '[##Null##]')
+            #cache.set('%s_bloodwork' % (self._id), '[##Null##]')
             pass
         else:
-            self._prior_bloodwork = self.prior_bloodwork
+            #self._prior_bloodwork = self.prior_bloodwork
             return self.prior_bloodwork
         return None
 
