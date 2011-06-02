@@ -81,19 +81,24 @@ def deploy_all():
 def restart_django():
     require('root', provided_by=('staging', 'production'))
     with settings(sudo_user="root"):
-        sudo('stop carehq_django;initctl reload-configuration;start carehq_django', user=env.sudo_user)
+        sudo('stop carehq_django', user=env.sudo_user, shell=False)
+        sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
+        sudo('start carehq_django', user=env.sudo_user, shell=False)
 
 def restart_celery():
     require('root', provided_by=('staging', 'production'))
     with settings(sudo_user="root"):
-        sudo('stop carehq_celery;initctl reload-configuration;start carehq_celery', user=env.sudo_user)
+        sudo('stop carehq_celery', user=env.sudo_user, shell=False)
+        sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
+        sudo('start carehq_celery', user=env.sudo_user, shell=False)
 
 
 def restart_formsplayer():
     require('root', provided_by=('staging', 'production'))
     with settings(sudo_user="root"):
-        sudo('stop carehq_celery;initctl reload-configuration;start carehq_formsplayer', user=env.sudo_user)
-
+        sudo('stop carehq_formsplayer', user=env.sudo_user, shell=False)
+        sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
+        sudo('start carehq_formsplayer', user=env.sudo_user, shell=False)
 
 
 def restart_all():
