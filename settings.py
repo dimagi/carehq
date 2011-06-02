@@ -126,32 +126,25 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.staticfiles',
-    'couchdbkit.ext.django',
     'django.contrib.webdesign',
+    'couchdbkit.ext.django',
+
+    # Core clinical apps #####################
+    'actorprofile',
+    'permissions',
     'couchforms',
     'couchexport',
     'couchlog',
     'dimagi.utils',
-    'casexml.apps.case',
-    'permissions',
     'django.contrib.flatpages',
     'touchforms.formplayer',
-
-    #####################
-    #'casetracker',
     'patient',
-#    'clincore', #just a library, no app
-    #'auditcare',
+    'auditcare',
+    'casexml.apps.case',
     #end clinical_core
-
-    ######################
-    #pact specific apps
 
     #########################
     #third party apps
-    #'autofixture',
-    #'reversion',
-    #'staticfiles',
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
@@ -166,7 +159,15 @@ INSTALLED_APPS = (
     #Dev helper apps
     #'gunicorn',
     #'devserver',
+    'django_cpserver',
 )
+
+
+#DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
+DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'touchforms.formsplayer',]
+#to be overrided by localsettings if need be.  These are the BARE MINIMUM
+COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case',]
+
 
 INTERNAL_IPS = ('127.0.0.1',)
 JOHNNY_MIDDLEWARE_KEY_PREFIX='jc_myproj'
@@ -187,12 +188,6 @@ LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
 
-CASE_CATEGORIES = (
-                   'carehqapp.caseregistry.issue',
-                   'carehqapp.caseregistry.system',
-                   'carehqapp.caseregistry.question',
-                   )
-
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
                     #'casetracker.models.Case',
@@ -211,10 +206,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CARROT_BACKEND = "django"
 
 
-#DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
-DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors','case', 'touchforms.formsplayer',]
-#to be overrided by localsettings if need be.  These are the BARE MINIMUM
-COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case',]
 
 
 import os
@@ -231,6 +222,9 @@ AUTHENTICATION_BACKENDS = (
             'permissions.backend.ObjectPermissionsBackend',
         )
 
+LOCAL_APPS = ()
+LOCAL_COUCHDB_APPS = []
+
 # import local settings if we find them
 try:
     #try to see if there's an environmental variable set for local_settings
@@ -244,9 +238,9 @@ except ImportError, e:
     from settings_default import *
 
 #### Add local apps where specified
-INSTALLED_APPS += LOCAL_APPS
-    
-    
+INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
+COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
+
 ###devserver settings ###
 DEVSERVER_MODULES = (
     #'devserver.modules.sql.SQLRealTimeModule',
