@@ -4,7 +4,7 @@ from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
 from pactpatient.models import PactPatient, CDotWeeklySchedule
-from pactpatient.models.pactmodels import CActivityDashboard
+from pactpatient.models import CActivityDashboard
 from patient.models import CAddress, CPhone, CSimpleComment
 from patient.models import Patient
 from django.http import   Http404
