@@ -7,9 +7,6 @@
 [submodule "submodules/dimagi-utils"]
 	path = submodules/dimagi-utils
 	url = git://github.com/dimagi/dimagi-utils.git
-[submodule "submodules/core-hq"]
-	path = submodules/core-hq
-	url = git://github.com/dimagi/core-hq.git
 [submodule "submodules/auditcare"]
 	path = submodules/auditcare
 	url = git://github.com/dimagi/auditcare.git
