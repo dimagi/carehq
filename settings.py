@@ -214,7 +214,7 @@ CARROT_BACKEND = "django"
 #DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
 DEV_APPS=['couchlog', 'couchforms','couchexport','patient','actors','case', 'touchforms.formsplayer',]
 #to be overrided by localsettings if need be.  These are the BARE MINIMUM
-COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','case',]
+COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case',]
 
 
 import os
