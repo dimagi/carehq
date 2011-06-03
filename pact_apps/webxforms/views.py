@@ -14,6 +14,7 @@ from patient.models.patientmodels import Patient
 import settings
 import uuid
 from touchforms.formplayer.models import XForm, PlaySession
+from touchforms.formplayer.views import playkb
 
 try:
     import simplejson as json
@@ -83,7 +84,6 @@ def new_progress_note(request, patient_id): #patient_id
         return HttpResponseRedirect(reverse_back)
 
     url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_progress_note.xml')
-    #url_resp = urllib2.urlopen('http://xforms.dimagi.com/download/48')
     xform_str = url_resp.read()
     try:
         tmp_file_handle, tmp_file_path = tempfile.mkstemp()
@@ -108,7 +108,7 @@ def new_progress_note(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
-    return play(request, new_form.id, callback, preloader_data)
+    return playkb(request, new_form.id, callback, preloader_data)
 
 @login_required
 def new_bloodwork(request, patient_id): #patient_id
@@ -124,8 +124,6 @@ def new_bloodwork(request, patient_id): #patient_id
         return HttpResponseRedirect(reverse_back)
 
     url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_bw_entry.xml')
-    #url_resp = open('/home/dmyung/workspaces/pycharm/ashand-project/carehq/pact_bw_entry.xml')
-    print "opening from the filesystem"
     xform_str = url_resp.read()
     try:
         tmp_file_handle, tmp_file_path = tempfile.mkstemp()
@@ -150,4 +148,4 @@ def new_bloodwork(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
-    return play(request, new_form.id, callback, preloader_data)
+    return playkb(request, new_form.id, callback, preloader_data)
