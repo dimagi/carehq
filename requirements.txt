@@ -14,7 +14,6 @@ BeautifulSoup
 python-digest
 hg+https://bitbucket.org/akoha/django-digest
 cherrypy
-git+git://github.com/lincolnloop/django-cpserver.git
 git+git://github.com/dimagi/django-cpserver.git
 django-kombu
 djkombu
@@ -24,5 +23,4 @@ fabric
 django-breadcrumbs
 south
 celery
-
-
+sorl-thumbnail
