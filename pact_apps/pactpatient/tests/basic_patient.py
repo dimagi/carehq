@@ -1,10 +1,39 @@
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import TestCase, Client
 from django.contrib.webdesign import lorem_ipsum
 import random
 from datetime import timedelta, datetime
 from pactpatient.models import PactPatient
 from patient.models import Patient, DuplicateIdentifierException
 import settings
+
+class patientViewTests(TestCase):
+    def setUp(self):
+        User.objects.all().delete()
+        self.client = Client()
+        self._createUser()
+
+    def _createUser(self):
+        usr = User()
+        usr.username = 'mockmock@mockmock.com'
+        usr.set_password('mockmock')
+        usr.first_name='mocky'
+        usr.last_name = 'mock'
+        usr.save()
+    def testCreatePatientView(self):
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+
+        response = self.client.post('/patient/new', {'first_name':'foo',
+                                                      'last_name': 'bar',
+                                                      'gender':'m',
+                                                      'birthdate': datetime.now().date(),
+                                                      'pact_id': 'mockmock',
+                                                      'arm': 'DOT',
+                                                      'art_regimen': 'qd',
+                                                      'non_art_regimen': 'bid',
+                                                      'primary_hp': 'foo'
+                                                    })
+        self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
 
 class basicPatientTest(TestCase):
     def setUp(self):
