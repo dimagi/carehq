@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.contrib.webdesign import lorem_ipsum
@@ -10,6 +11,7 @@ import settings
 class patientViewTests(TestCase):
     def setUp(self):
         User.objects.all().delete()
+        Patient.objects.all().delete()
         self.client = Client()
         self._createUser()
 
@@ -34,6 +36,49 @@ class patientViewTests(TestCase):
                                                       'primary_hp': 'foo'
                                                     })
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
+    def testCreatePatientViewFailed(self):
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+
+        response = self.client.post('/patient/new', {'first_name':'foo',
+                                                      'last_name': 'bar',
+                                                      'gender':'m',
+                                                      'birthdate': datetime.now().date(),
+                                                      'pact_id': 'mockmock',
+                                                      'arm': 'DOT',
+                                                      'art_regimen': 'qd',
+                                                      'non_art_regimen': 'bid',
+                                                    })
+        self.assertEquals(response.status_code, 200) #if it's failed, it'll still register a false
+        self.assertTrue(response.content.index("<ul class=\"errorlist\">") > 0)
+
+    def testCreatePatientViewDupe(self):
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+
+        pact_id = uuid.uuid1().hex
+        #create first one, should worok
+        response = self.client.post('/patient/new', {'first_name':'foo',
+                                                      'last_name': 'bar',
+                                                      'gender':'m',
+                                                      'birthdate': datetime.now().date(),
+                                                      'pact_id': pact_id,
+                                                      'arm': 'DOT',
+                                                      'art_regimen': 'qd',
+                                                      'non_art_regimen': 'bid',
+                                                      'primary_hp': 'foo'
+                                                    })
+        self.assertEquals(response.status_code, 302) #if it's failed, it'll still register a false
+        response = self.client.post('/patient/new', {'first_name':'foo',
+                                              'last_name': 'bar',
+                                              'gender':'m',
+                                              'birthdate': datetime.now().date(),
+                                              'pact_id': pact_id,
+                                              'arm': 'DOT',
+                                              'art_regimen': 'qd',
+                                              'non_art_regimen': 'bid',
+                                              'primary_hp': 'foo'
+                                            })
+        self.assertEquals(response.status_code, 200) #failure at 200
+        self.assertTrue(response.content.index("<li>Error, pact id must be unique</li>") > 0)
 
 class basicPatientTest(TestCase):
     def setUp(self):
