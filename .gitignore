@@ -5,6 +5,7 @@ local.ini
 rapidsms-django.log*
 rapidsms.log*
 settings_local.py
+settings_local_*.py
 *.py~
 .tmp_*
 .json~
