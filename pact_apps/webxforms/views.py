@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import os
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -11,10 +10,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template.context import RequestContext
 from couchforms.util import post_xform_to_couch
 from patient.models.patientmodels import Patient
-import settings
-import uuid
-from touchforms.formplayer.models import XForm, PlaySession
-from touchforms.formplayer.views import playkb
+from touchforms.formplayer.models import XForm
+from touchforms.formplayer.views import enter_form
 
 try:
     import simplejson as json
@@ -69,6 +66,11 @@ def play(request, xform_id, callback=None, preloader_data={}):
                                "mode": 'xform',
                                "preloader_data": preloader_data_js},
                               context_instance=RequestContext(request))
+def do_save_xform(xform):
+    """
+    Actually do a submission
+    """
+
 
 @login_required
 def new_progress_note(request, patient_id): #patient_id
@@ -80,6 +82,7 @@ def new_progress_note(request, patient_id): #patient_id
     pact_id = patient.couchdoc.pact_id
     case_id = patient.couchdoc.case_id
     def callback(xform, doc):
+        post_xform_to_couch(doc)
         reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
         return HttpResponseRedirect(reverse_back)
 
@@ -108,7 +111,7 @@ def new_progress_note(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
-    return playkb(request, new_form.id, callback, preloader_data)
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
 
 @login_required
 def new_bloodwork(request, patient_id): #patient_id
@@ -120,6 +123,7 @@ def new_bloodwork(request, patient_id): #patient_id
     pact_id = patient.couchdoc.pact_id
     case_id = patient.couchdoc.case_id
     def callback(xform, doc):
+        post_xform_to_couch(doc)
         reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
         return HttpResponseRedirect(reverse_back)
 
@@ -148,4 +152,5 @@ def new_bloodwork(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
-    return playkb(request, new_form.id, callback, preloader_data)
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
+

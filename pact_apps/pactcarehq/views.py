@@ -373,7 +373,6 @@ def ms_from_timedelta(td):
 
 def do_submission(instance, attachments={}):
     start_time = datetime.utcnow()
-    logging.debug("Begin threaded submission")
     doc = post_xform_to_couch(instance, attachments=attachments)
     delta_post =  datetime.utcnow() - start_time
     logging.debug("Submission posted: %d ms, doc_id: %s" % (ms_from_timedelta(delta_post), doc._id))
