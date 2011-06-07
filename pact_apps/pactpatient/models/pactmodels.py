@@ -10,6 +10,7 @@ import logging
 from dimagi.utils import make_uuid
 
 ghetto_regimen_map = {
+    "none":'0',
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
@@ -214,10 +215,10 @@ class PactPatient(BasePatient):
         schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO
 
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self._set_schedule_dates()
         self.date_modified = datetime.utcnow()
-        super(PactPatient, self).save()
+        super(PactPatient, self).save(*args, **kwargs)
 
     @classmethod
     def check_pact_id(cls, pact_id):

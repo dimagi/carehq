@@ -1,6 +1,5 @@
 import permissions.utils
-
-
+hack_pact_usernames = ['-- unassigned --', u'ac381', u'an907', u'ao970', u'cm326', u'cs783', u'godfrey', u'ink', u'ink2', u'isaac', u'lm723', u'lnb9', u'ma651', u'nc903', u'rachel', u'ss524','gj093']
 APP_PREFIX = 'Pact'
 
 

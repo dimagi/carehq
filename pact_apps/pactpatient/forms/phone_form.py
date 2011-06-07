@@ -1,9 +1,4 @@
 from django import forms
-from django.forms.util import ValidationError
-from django.forms import widgets
-
-from casetracker import constants
-from patient.models import CPhone
 
 class PhoneForm(forms.Form):
     """

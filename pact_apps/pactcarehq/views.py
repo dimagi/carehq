@@ -3,6 +3,8 @@ from couchdbkit.exceptions import ResourceNotFound
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
+from pactpatient.forms import PactPatientEditForm
+from pactpatient.forms import PhoneForm, AddressForm
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from pactpatient.models import CActivityDashboard
 from patient.models import CAddress, CPhone, CSimpleComment
@@ -29,9 +31,6 @@ from django.core.cache import cache
 import hashlib
 import simplejson
 from django.views.decorators.cache import cache_page
-from pactcarehq.forms.address_form import AddressForm
-from pactcarehq.forms.phone_form import PhoneForm
-from pactcarehq.forms.pactpatient_form import PactPatientForm
 from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
 import tempfile
@@ -162,7 +161,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     if phone_edit:
         context['phone_form'] = PhoneForm()
     if patient_edit:
-        context['patient_form'] = PactPatientForm(patient_edit, instance=patient.couchdoc)
+        context['patient_form'] = PactPatientEditForm(patient_edit, instance=patient.couchdoc)
     if show_all_schedule != None:
         context['past_schedules'] = patient.couchdoc.past_schedules
         
@@ -227,7 +226,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             else:
                 logging.error("Error, invalid phone form data")
         elif patient_edit:
-            form = PactPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
+            form = PactPatientEditForm(patient_edit, instance=patient.couchdoc, data=request.POST)
             if form.is_valid():
                 instance = form.save(commit=True)
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))

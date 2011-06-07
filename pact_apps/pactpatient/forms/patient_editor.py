@@ -4,17 +4,18 @@ from couchdbkit.ext.django.forms import DocumentForm
 #from the models, we have this, (couchmodels.py)
 #flipping to tuple
 from pactpatient.models.pactmodels import PactPatient
-from .weekly_schedule_form import hack_pact_usernames
 from django.forms import widgets
-
-REGIMEN_CHOICES = (
-    ('QD', "QD"),
-    ('BID', "BID"),
-    ('QD-AM', "QD-AM"),
-    ('QD-PM', "QD-PM"),
-    ('TID', "TID"),
-    ('QID', "QID"),
-)
+from pactconfig.constants import hack_pact_usernames
+from .patient_creator import REGIMEN_CHOICES
+#
+#REGIMEN_CHOICES = (
+#    ('QD', "QD"),
+#    ('BID', "BID"),
+#    ('QD-AM', "QD-AM"),
+#    ('QD-PM', "QD-PM"),
+#    ('TID', "TID"),
+#    ('QID', "QID"),
+#)
 
 ARM_CHOICES = (
     ('HP', 'HP'),
@@ -31,17 +32,7 @@ GENDER_CHOICES = (
    )
 
 
-#ghetto_regimen_map = {
-#    "qd": '1',
-#    "bid": '2',
-#    "qd-am": '1',
-#    "qd-pm": '1',
-#    "tid": '3',
-#    "qid": '4',
-#    '': '' ,
-#}
-
-class PactPatientForm(DocumentForm):
+class PactPatientEditForm(DocumentForm):
     """
     DocumentForm
     """
@@ -58,7 +49,7 @@ class PactPatientForm(DocumentForm):
 
 
     def __init__(self, mode, *args, **kwargs):
-        super(PactPatientForm, self).__init__(*args, **kwargs)
+        super(PactPatientEditForm, self).__init__(*args, **kwargs)
         includes = []
         if mode == "regimen":
             includes = ['art_regimen','non_art_regimen',]
@@ -86,6 +77,7 @@ class PactPatientForm(DocumentForm):
 
     class Meta:
         document = PactPatient
+
 
 #
 #    def clean(self):

@@ -8,10 +8,36 @@ from pactpatient.models import PactPatient
 from patient.models import Patient, DuplicateIdentifierException
 import settings
 
+def delete_all(couchmodel, view_name, key=None, startkey=None, endkey=None):
+    """Helper function to help delete/clear documents from the database of a certain type.
+    Will call the view function opon a given couchdbkit model you specify (couchmodel), on the given view.  It will do an include_docs on the view request
+    to get the entire document, it must return the actual couchmodel instances for the view for this to work.
+
+    After that, it'll iterate through all the elements to delete the items in the resultset.
+    """
+    params = {}
+    if key != None:
+        params['key'] = key
+    if startkey != None and endkey != None:
+        params['startkey'] = startkey
+        params['endkey'] = endkey
+    params['include_docs'] = True
+    data = couchmodel.view(view_name, **params).all()
+    total_rows = len(data)
+
+    for dat in data:
+        try:
+            dat.delete()
+        except:
+            pass
+    return total_rows
+
+
 class patientViewTests(TestCase):
     def setUp(self):
         User.objects.all().delete()
         Patient.objects.all().delete()
+        delete_all(PactPatient, 'patient/all')
         self.client = Client()
         self._createUser()
 
@@ -31,8 +57,8 @@ class patientViewTests(TestCase):
                                                       'birthdate': datetime.now().date(),
                                                       'pact_id': 'mockmock',
                                                       'arm': 'DOT',
-                                                      'art_regimen': 'qd',
-                                                      'non_art_regimen': 'bid',
+                                                      'art_regimen': 'QD',
+                                                      'non_art_regimen': 'BID',
                                                       'primary_hp': 'foo'
                                                     })
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
@@ -45,8 +71,8 @@ class patientViewTests(TestCase):
                                                       'birthdate': datetime.now().date(),
                                                       'pact_id': 'mockmock',
                                                       'arm': 'DOT',
-                                                      'art_regimen': 'qd',
-                                                      'non_art_regimen': 'bid',
+                                                      'art_regimen': 'QD',
+                                                      'non_art_regimen': 'BID',
                                                     })
         self.assertEquals(response.status_code, 200) #if it's failed, it'll still register a false
         self.assertTrue(response.content.index("<ul class=\"errorlist\">") > 0)
@@ -62,8 +88,8 @@ class patientViewTests(TestCase):
                                                       'birthdate': datetime.now().date(),
                                                       'pact_id': pact_id,
                                                       'arm': 'DOT',
-                                                      'art_regimen': 'qd',
-                                                      'non_art_regimen': 'bid',
+                                                      'art_regimen': 'QD',
+                                                      'non_art_regimen': 'BID',
                                                       'primary_hp': 'foo'
                                                     })
         self.assertEquals(response.status_code, 302) #if it's failed, it'll still register a false
@@ -73,21 +99,33 @@ class patientViewTests(TestCase):
                                               'birthdate': datetime.now().date(),
                                               'pact_id': pact_id,
                                               'arm': 'DOT',
-                                              'art_regimen': 'qd',
-                                              'non_art_regimen': 'bid',
+                                              'art_regimen': 'QD',
+                                              'non_art_regimen': 'BID',
                                               'primary_hp': 'foo'
                                             })
         self.assertEquals(response.status_code, 200) #failure at 200
         self.assertTrue(response.content.index("<li>Error, pact id must be unique</li>") > 0)
 
 class basicPatientTest(TestCase):
+    def _createUser(self):
+        usr = User()
+        usr.username = 'mockmock@mockmock.com'
+        usr.set_password('mockmock')
+        usr.first_name='mocky'
+        usr.last_name = 'mock'
+        usr.save()
+
     def setUp(self):
+        User.objects.all().delete()
         Patient.objects.all().delete()
+        delete_all(PactPatient, 'patient/all')
+        self.client = Client()
+        self._createUser()
 
 
     def testCreatePatient(self):
-        oldptcount = Patient.objects.all().count()
-        oldcptcount = PactPatient.view('patient/all').count()
+        old_django_count = Patient.objects.all().count()
+        old_couch_count = PactPatient.view('patient/all').count()
         
         newpatient = PactPatient()
         newpatient.first_name = 'mock'
@@ -98,11 +136,12 @@ class basicPatientTest(TestCase):
         newpatient.gender = 'f'
         newpatient.save()
 
-        newptcount = Patient.objects.all().count()
-        newcptcount = PactPatient.view('patient/all').count()
+        new_django_count = Patient.objects.all().count()
 
-        self.assertEquals(oldptcount+1, newptcount)
-        self.assertEquals(oldcptcount+1, newcptcount)
+        new_couch_count = PactPatient.view('patient/all').count()
+
+        self.assertEquals(old_django_count+1, new_django_count)
+        self.assertEquals(old_couch_count+1, new_couch_count)
         return newpatient
 
     def testDeletePatientFromDjango(self):

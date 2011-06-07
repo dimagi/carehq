@@ -32,8 +32,8 @@ def patient_post_delete(sender, instance, *args, **kwargs):
     if instance.couchdoc != None:
         doc = instance.couchdoc
         #delete manually
-        doc.doc_type = "Deleted%s" % (doc._get_my_type())
-        doc.base_type = "DeletedBasePatient"
-        doc.save()
+        doc._deprecate_data()
+    else:
+        print "weird, couchdoc is null"
 
 post_delete.connect(patient_post_delete, sender=Patient )

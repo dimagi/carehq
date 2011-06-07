@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
-from pactpatient.forms import PactPatientForm
+from pactpatient.forms import NewPactPatientForm
 from pactpatient.models.pactmodels import PactPatient
 from patient.models import Patient
 import urllib
@@ -19,7 +19,7 @@ from django.contrib import messages
 def new_patient(request, template_name="patient/new_patient.html"):
     context = RequestContext(request)
     if request.method == 'POST':
-        form = PactPatientForm(data=request.POST)
+        form = NewPactPatientForm(data=request.POST)
         #make patient
         if form.is_valid():
             newptdoc = PactPatient()
@@ -40,5 +40,5 @@ def new_patient(request, template_name="patient/new_patient.html"):
             messages.add_message(request, messages.ERROR, "Failed to add patient!")
             context['patient_form'] = form
     else:
-        context['patient_form'] = PactPatientForm()
+        context['patient_form'] = NewPactPatientForm()
     return render_to_response(template_name, context_instance=context)

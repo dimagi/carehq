@@ -59,7 +59,10 @@ class Patient(models.Model):
             try:
                 self._couchdoc = BasePatient.get_typed_from_id(self.doc_id)
                 couchjson = simplejson.dumps(self._couchdoc.to_json())
-                cache.set('%s_couchdoc' % (self.id), couchjson)
+                try:
+                    cache.set('%s_couchdoc' % (self.id), couchjson)
+                except:
+                    logging.error("Error, caching framework unavailable")
             except Exception, ex:
                 self._couchdoc = None
         else:
@@ -85,6 +88,12 @@ class Patient(models.Model):
             doc[propertyname] = setvalue
             if do_save:
                 doc.save()
+
+    def delete(self, *args, **kwargs):
+        """
+        Delete is handled by a signal to check the couchdoc's deletion/deprecation as well
+        """
+        super(Patient, self).delete(*args, **kwargs)
 
     def save(self, django_uuid=None, doc_id=None, *args, **kwargs):
         """
@@ -256,7 +265,7 @@ class BasePatient(Document):
         Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
         """
         #todo this is hacky in a multitenant environment
-        db = get_db()
+        db = cls.get_db()
         doc_dict = db.open_doc(doc_id)
         return cls.get_typed_from_dict(doc_dict)
 
@@ -271,21 +280,25 @@ class BasePatient(Document):
     def __init__(self, *args, **kwargs):
         super(BasePatient, self).__init__(*args, **kwargs)
 
+
+    def _deprecate_data(self):
+        self.doc_type = "Deleted%s" % (self._get_my_type().__name__)
+        self.base_type = "DeletedBasePatient"
+        self.save()
+
     def delete(self):
         """
         Overriding delete for a patient, by setting base_type and doc_type to DeletedFOO
         Do not delete in the patient context, only deprecate.
         """
-#        self.doc_type = "Deleted%s" % (self._get_my_type())
-#        self.base_type = "DeletedBasePatient"
-#        self.save()
+        self._deprecate_data()
         django_model = Patient.objects.get(id=self.django_uuid)
         django_model.delete()
 
 
 
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.django_uuid == None:
             #this is a new instance
             #first check global uniqueness
@@ -298,14 +311,16 @@ class BasePatient(Document):
             self.django_uuid = django_uuid
             self._id = doc_id
             try:
+                super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)
-                super(BasePatient, self).save()
             except PatientCreationException, ex:
                 logging.error("Error creating patient: %s" % ex)
                 raise ex
         else:
             #it's not new
-            super(BasePatient, self).save()
+            super(BasePatient, self).save(*args, **kwargs)
+
+
         #Invalidate the cache entry of this instance
         cache.delete('%s_couchdoc' % (self.django_uuid))
         try:

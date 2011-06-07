@@ -1,4 +1,18 @@
 {% extends "base.html" %}
+{% block extrahead %}
+    <script>
+	$(function() {
+		$( "#id_birthdate" ).datepicker( {
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "+0M +0D +0Y",
+                yearRange: "-100:+0"
+
+            }
+        );
+	});
+</script>
+{% endblock %}
 {% block content %}
 <div class="container">
 <h2>Enroll New Patient</h2>

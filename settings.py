@@ -164,7 +164,7 @@ INSTALLED_APPS = (
 
 
 #DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
-DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'touchforms.formsplayer',]
+#DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'touchforms.formsplayer',]
 #to be overrided by localsettings if need be.  These are the BARE MINIMUM
 COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case',]
 
@@ -240,20 +240,6 @@ except ImportError, e:
 #### Add local apps where specified
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
-
-###devserver settings ###
-DEVSERVER_MODULES = (
-    #'devserver.modules.sql.SQLRealTimeModule',
-    'devserver.modules.sql.SQLSummaryModule',
-#    'devserver.modules.profile.ProfileSummaryModule',
-
-    # Modules not enabled by default
-    'devserver.modules.ajax.AjaxDumpModule',
-#    'devserver.modules.profile.MemoryUseModule',
-#    'devserver.modules.cache.CacheSummaryModule',
-)
-
-
 
 
 ####### Couch Forms & Couch DB Kit Settings #######
