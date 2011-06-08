@@ -7,10 +7,16 @@
 
 {% block content %}
 <div class="span-14">
-<h2>View progress note</h2>
-<h3>{{ patient_name }}</h3>
-    <div>{% render_form_data xform %}</div>
+<h2>View {{ form_type }} Submission</h2>
+{% if form_type == "Bloodwork" %}
+    <a href="{% url webxforms.views.edit_bloodwork xform.get_id %}">Edit</a>
+{% endif %}
 
+{% if form_type == "Progress Note" %}
+    <a href="{% url webxforms.views.edit_progress_note xform.get_id %}">Edit</a>
+{% endif %}
+
+<div>{% render_form_data xform %}</div>
 
 </div>
 <div class="span-10 last">

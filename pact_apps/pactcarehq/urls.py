@@ -16,11 +16,11 @@ urlpatterns = patterns ('',
 
 
 
+    #where the xforms get submitted to
     (r'^submit$', 'pactcarehq.views.post'),
     (r'^submit/$', 'pactcarehq.views.post'),
     (r'^receiver/submit/.*$', 'pactcarehq.views.post'),
     (r'^receiver/submit$', 'pactcarehq.views.post'),
-
     (r'^receiver/submit2/.*', 'couchforms.views.post'), #generic post receiver
 
 
@@ -45,9 +45,11 @@ urlpatterns = patterns ('',
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
-    url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
-    url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
-    #url(r'^progress_notes/(?P<doc_id>[0-9a-f]{32})/edit$', 'pactcarehq.views.show_progress_note', name='edit_progress_note'),
-    #(r'^dots/', include('dotsview.urls')),
+
+    url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
+
+    #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
+    #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
+
     url(r'^download/(?P<download_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.file_download'),
 )
