@@ -1,4 +1,4 @@
-from corehq.apps.case.models.couch import CommCareCase
+from casexml.apps.case.models.couch import CommCareCase
 from dimagi.utils.couch.database import get_db
 
 

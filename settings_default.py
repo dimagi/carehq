@@ -121,6 +121,7 @@ LOCAL_APP_URLS = patterns('',
     (r'', include('couchdebugpanel.urls')),
     (r'', include('slidesview.urls')),
     (r'^couchlog/', include('couchlog.urls')),
+    (r'^phone/', include('casexml.apps.phone.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'^webxforms/', include('webxforms.urls')),
 
