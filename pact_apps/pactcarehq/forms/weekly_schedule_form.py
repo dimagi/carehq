@@ -1,13 +1,9 @@
-from datetime import datetime
 from django import forms
-from django.forms.util import ValidationError
 from django.forms import widgets
-
-from casetracker import constants
 from django.contrib.auth.models import User
 days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
-hack_pact_usernames = ['-- unassigned --', u'ac381', u'an907', u'ao970', u'cm326', u'cs783', u'godfrey', u'ink', u'ink2', u'isaac', u'lm723', u'lnb9', u'ma651', u'nc903', u'rachel', u'ss524','gj093']
 
+from pactconfig.constants import hack_pact_usernames
 
 
 class ScheduleForm(forms.Form):

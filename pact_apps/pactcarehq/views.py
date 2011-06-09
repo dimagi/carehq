@@ -3,6 +3,8 @@ from couchdbkit.exceptions import ResourceNotFound
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
+from pactpatient.forms import PactPatientEditForm
+from pactpatient.forms import PhoneForm, AddressForm
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from pactpatient.models import CActivityDashboard
 from patient.models import CAddress, CPhone, CSimpleComment
@@ -29,9 +31,6 @@ from django.core.cache import cache
 import hashlib
 import simplejson
 from django.views.decorators.cache import cache_page
-from pactcarehq.forms.address_form import AddressForm
-from pactcarehq.forms.phone_form import PhoneForm
-from pactcarehq.forms.pactpatient_form import PactPatientForm
 from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
 import tempfile
@@ -156,13 +155,12 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     if new_address:
         context['address_form'] = AddressForm()
         context['address_edit'] = True
-        #print "new address damn it!"
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
     if phone_edit:
         context['phone_form'] = PhoneForm()
     if patient_edit:
-        context['patient_form'] = PactPatientForm(patient_edit, instance=patient.couchdoc)
+        context['patient_form'] = PactPatientEditForm(patient_edit, instance=patient.couchdoc)
     if show_all_schedule != None:
         context['past_schedules'] = patient.couchdoc.past_schedules
         
@@ -227,7 +225,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             else:
                 logging.error("Error, invalid phone form data")
         elif patient_edit:
-            form = PactPatientForm(patient_edit, instance=patient.couchdoc, data=request.POST)
+            form = PactPatientEditForm(patient_edit, instance=patient.couchdoc, data=request.POST)
             if form.is_valid():
                 instance = form.save(commit=True)
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
@@ -374,7 +372,6 @@ def ms_from_timedelta(td):
 
 def do_submission(instance, attachments={}):
     start_time = datetime.utcnow()
-    logging.debug("Begin threaded submission")
     doc = post_xform_to_couch(instance, attachments=attachments)
     delta_post =  datetime.utcnow() - start_time
     logging.debug("Submission posted: %d ms, doc_id: %s" % (ms_from_timedelta(delta_post), doc._id))
@@ -796,6 +793,13 @@ def uptime(request):
     return response
 
 
+form_xmlns_to_names = {
+    'http://dev.commcarehq.org/pact/dots_form': "DOTS",
+    'http://dev.commcarehq.org/pact/progress_note': "Progress Note",
+    'http://dev.commcarehq.org/pact/bloodwork': "Bloodwork",
+    'http://dev.commcarehq.org/pact/mileage': "Mileage",
+    'http://dev.commcarehq.org/pact/patientupdate': "Patient Update",
+}
 
 def _get_submissions_for_patient(patient):
     """Returns a view of all the patients submissions by the patient's case_id (which is their PactPatient doc_id, this probably should be altered)
@@ -806,23 +810,22 @@ def _get_submissions_for_patient(patient):
     xform_submissions = XFormInstance.view('pactcarehq/all_submits_by_patient_date', startkey=[patient.couchdoc.pact_id, 0000], endkey=[patient.couchdoc.pact_id, 9999], include_docs=True)
     submissions = []
     for note in xform_submissions:
-        if not note.form.has_key('case'):
-            continue
         xmlns = note['xmlns']
-        if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
-            formtype = "DOTS"
-            date = note['form']['encounter_date']
-        elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
-            formtype = "Progress Note"
-            date = note['form']['note']['encounter_date']
-            #commenting out patientupdate until submissions get fixed, and handling is done correctly for case data
-#        elif xmlns == "http://dev.commcarehq.org/pact/patientupdate":
-#            formtype = "Patient Update"
-#            date = note['form']
-        else:
+        displayname = form_xmlns_to_names.get(xmlns, None)
+        if displayname == None:
             logging.debug("Skipping these namespaces until they are handled correctly %s" % (xmlns))
             continue
-        submissions.append([note._id, date, note.form['Meta']['username'] , formtype])
+        
+        if xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+            date = note['form']['encounter_date']
+        elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
+            date = note['form']['note']['encounter_date']
+        else:
+            try:
+                date = note['form']['Meta']['TimeStart'].date()
+            except:
+                date = datetime.min.date()
+        submissions.append([note._id, date, note.form['Meta']['username'] , displayname])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 
@@ -915,51 +918,14 @@ def my_submits(request, template_name="pactcarehq/submits_by_chw.html"):
     context['submit_dict'] = submit_dict
     return render_to_response(template_name, context_instance=context)
 
+
 @login_required
-def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_submit.html"):
+def show_submission(request, doc_id, template_name="pactcarehq/view_submission.html"):
     context = RequestContext(request)
     xform = XFormInstance.get(doc_id)
-    progress_note = xform['form']['note']
-    progress_note['memo'] = progress_note['memo'].replace('"', '&quot;')
-    progress_note['memo'] = progress_note['memo'].replace("'", '&apos;')
-    progress_note['memo'] = progress_note['memo'].replace("\n", '<br>')
-    progress_note['memo'] = progress_note['memo'].replace("\t", '&nbsp;')
-
-    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace('"', '&quot;')
-    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("\n", '<br>')
-    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("\t", '&nbsp;')
-    progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("'", '&apos;')
-
-    try:
-        progress_note['times']['other_location'] = progress_note['times']['other_location'].replace("'", "&quot;")
-    except:
-        pass
-    try:
-        progress_note['adherence']['freetext'] = progress_note['adherence']['freetext'].replace("'", "&quot;")
-    except:
-        pass
-
-    progress_note['chw'] = xform.form['Meta']['username']
-    context['progress_note'] = simplejson.dumps(xform.to_json()['form']['note'])
+    form_data = xform['form']
+    context['form_type'] = form_xmlns_to_names.get(xform.xmlns, "Unknown")
     context['xform'] = xform
-
-    case_id = xform['form']['case']['case_id']
-
-
-
-    ###########################################################
-    #for dev purposes this needs to be done for testing
-    #but this is important still tog et the patient info for display
-    #case_id = _hack_get_old_caseid(case_id)
-    patient = PactPatient.view('patient/all', key=case_id, include_docs=True).first()
-    if patient == None:
-        patient_name = "Unknown"
-    else:
-        patient_name = patient.first_name + " " + patient.last_name
-    context['patient_name'] = patient_name
-    ##############################################################
-
-
 
     comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
     comment_arr = []
@@ -968,6 +934,7 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
             continue
         comment_arr.append([cdoc, cdoc.created])
 
+    #comment handling
     comment_arr = sorted(comment_arr, key=lambda x: x[1], reverse=True)
     context['comments'] = comment_arr
 
@@ -990,113 +957,6 @@ def show_progress_note(request, doc_id, template_name="pactcarehq/view_progress_
     return render_to_response(template_name, context_instance=context)
 
 
-@login_required
-def show_dots_note(request, doc_id, template_name="pactcarehq/view_dots_submit.html"):
-    context = RequestContext(request)
-    xform = XFormInstance.get(doc_id)
-    dots_note = {}
-    raw = xform.to_json()['form']
-
-
-
-    dots_note['chw'] = raw['Meta']['username']
-    dots_note['encounter_date'] = raw['encounter_date']
-    dots_note['schedued'] = raw['scheduled']
-    dots_note['visit_type'] = raw['visit_type']
-    dots_note['visit_kept'] = raw['visit_kept']
-    dots_note['contact_type'] = raw['contact_type']
-    
-    if raw.has_key('observed_art'):
-        dots_note['observed_art'] = raw['observed_art']
-    else:
-        dots_note['observed_art'] = 'No'
-
-    if raw.has_key('observed_art_dose'):
-        dots_note['observed_art_dose'] = raw['observed_art_dose']
-    else:
-        dots_note['observed_art_dose'] = 'No'
-    if raw.has_key('observed_non_art_dose'):
-        dots_note['observed_non_art_dose'] = raw['observed_non_art_dose']
-    else:
-        dots_note['observed_non_art_dose'] = 'No'
-
-    if raw.has_key('observed_non_art'):
-        dots_note['observed_non_art'] = raw['observed_non_art']
-    else:
-        dots_note['observed_non_art'] = 'No'
-    try:
-        raw['notes'] = raw['notes'].replace("'", "&quot;")
-        raw['notes'] = raw['notes'].replace('"', "&quot;")
-        raw['notes'] = raw['notes'].replace("\n", "<br>")
-    except:
-        raw['notes'] = ''
-
-
-
-    context['dots_note'] = dots_note
-    raw['pillbox_check']['check'] = ''
-    raw['pillbox_check']['artnow'] = ''
-    raw['pillbox_check']['nonartnow'] = ''
-    raw['static'] = ''
-
-    if raw.has_key('art_no_details'):
-        raw['art_no_details'] = raw['art_no_details'].replace('"', "&quot;")
-        raw['art_no_details'] = raw['art_no_details'].replace("'", '&apos;')
-        raw['art_no_details'] = raw['art_no_details'].replace("\n", '<br>')
-
-    if raw.has_key('non_art_no_details'):
-        raw['non_art_no_details'] = raw['non_art_no_details'].replace('"', "&quot;")
-        raw['non_art_no_details'] = raw['non_art_no_details'].replace("'", '&apos;')
-        raw['non_art_no_details'] = raw['non_art_no_details'].replace("\n", '<br>')
-    
-
-    #for key, val in raw.items():
-        #print "%s: %s" % (key, val)
-    context['xform'] = xform
-    context['raw_note'] = simplejson.dumps(raw)
-    case_id = xform['form']['case']['case_id']
-
-    ###########################################################
-    #for dev purposes this needs to be done for testing
-    #but this is important still tog et the patient info for display
-    #case_id = _hack_get_old_caseid(case_id)
-    patient = PactPatient.view('patient/all', key=case_id, include_docs=True).first()
-    if patient == None:
-        patient_name = "Unknown"
-    else:
-        patient_name = patient.first_name + " " + patient.last_name
-    context['patient_name'] = patient_name
-    ##############################################################
-
-
-
-    comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
-    comment_arr = []
-    for cdoc in comment_docs:
-        if cdoc.deprecated:
-            continue
-        comment_arr.append([cdoc, cdoc.created])
-
-    comment_arr = sorted(comment_arr, key=lambda x: x[1], reverse=True)
-    context['comments'] = comment_arr
-
-    if request.method == 'POST':
-            form = ProgressNoteComment(data=request.POST)
-            context['form'] = form
-            if form.is_valid():
-                edit_comment = form.cleaned_data["comment"]
-                ccomment = CSimpleComment()
-                ccomment.doc_fk_id = doc_id
-                ccomment.comment = edit_comment
-                ccomment.created_by = request.user.username
-                ccomment.created = datetime.utcnow()
-                ccomment.save()
-                return HttpResponseRedirect(request.path)
-    else:
-        #it's a GET, get the default form
-        if request.GET.has_key('comment'):
-            context['form'] = ProgressNoteComment()
-    return render_to_response(template_name, context_instance=context)
 
 @login_required
 def file_download(request, download_id,template="dots/file_download.html" ):
@@ -1154,7 +1014,6 @@ def xml_download(request):
             total_count += 1
         except ResourceNotFound:
             logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
-    print total_count
     temp_xml.write("</restoredata>")
     length = temp_xml.tell()
     temp_xml.seek(0)

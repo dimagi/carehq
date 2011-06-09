@@ -32,12 +32,7 @@
     </thead>
     {% for submission in submit_arr %}
         <tr>
-            {% if submission.3 == "DOTS" %}
-                {#ghetto hacky way to differentiate between the submission types#}
-                <td> <a href="{% url show_dots_note submission.0 %}">{{ submission.1|date }}</a> </td>
-            {% else %}
-                <td> <a href="{% url show_progress_note submission.0 %}">{{ submission.1|date }}</a> </td>
-            {% endif %}
+            <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a> </td>
             <td> {{ submission.2 }}</td>
             <td> {{ submission.3 }}</td>
         </tr>

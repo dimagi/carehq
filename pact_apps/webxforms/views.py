@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import os
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 import urllib2
 import tempfile
 import logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template.context import RequestContext
 from couchforms.util import post_xform_to_couch
+from pactpatient.models import PactPatient
 from patient.models.patientmodels import Patient
-import settings
-import uuid
-from touchforms.formplayer.models import XForm, PlaySession
-from touchforms.formplayer.views import playkb
+from touchforms.formplayer.models import XForm
+from touchforms.formplayer.views import enter_form
+from couchforms.models import XFormInstance
 
 try:
     import simplejson as json
@@ -27,48 +26,48 @@ def temp_landing(request):
     return resp
     
 
-def play(request, xform_id, callback=None, preloader_data={}):
+def do_save_xform(xform):
     """
-    Play an XForm.
-
-    If you specify callback, instead of returning a response this view
-    will call back to your method upon completion (POST).  This allows
-    you to call the view from your own view, but specify a callback
-    method afterwards to do custom processing and responding.
-
-    The callback method should have the following signature:
-        response = <method>(xform, document)
-    where:
-        xform = the django model of the form
-        document = the couch object created by the instance data
-        response = a valid http response
+    Actually do a submission
     """
-    xform = get_object_or_404(XForm, id=xform_id)
-    if request.method == "POST":
-        if request.POST["type"] == 'form-complete':
-            # get the instance
-            instance = request.POST["output"]
+    pass
 
-            # post to couch
-            doc = post_xform_to_couch(instance)
-        else:
-            doc = None
+@login_required
+def edit_progress_note(request, doc_id):
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
+    new_form = fetch_xform_def(xform_url)
+    orig_doc = XFormInstance.get(doc_id)
+    pact_id = orig_doc['form']['note']['pact_id']
+    patient_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['django_uuid']
+    def callback(xform, doc):
+        post_xform_to_couch(doc)
+        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        return HttpResponseRedirect(reverse_back)
 
-        # call the callback, if there, otherwise route back to the
-        # xforms list
-        if callback:
-            return callback(xform, doc)
-        else:
-            return HttpResponseRedirect(reverse("webxforms.views.temp_landing"))
+    try:
+        instance_data = XFormInstance.get_db().fetch_attachment(doc_id,"form.xml")
+    except:
+        raise Http404
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, instance_xml=instance_data, input_mode='type')
 
-    preloader_data_js = json.dumps(preloader_data)
+@login_required
+def edit_bloodwork(request, doc_id):
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
+    new_form = fetch_xform_def(xform_url)
 
+    orig_doc = XFormInstance.get(doc_id)
+    pact_id = orig_doc['form']['pact_id']
+    patient_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['django_uuid']
+    def callback(xform, doc):
+        post_xform_to_couch(doc)
+        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        return HttpResponseRedirect(reverse_back)
 
-    return render_to_response("touchforms/touchscreen.html",
-                              {"form": xform,
-                               "mode": 'xform',
-                               "preloader_data": preloader_data_js},
-                              context_instance=RequestContext(request))
+    try:
+        instance_data = XFormInstance.get_db().fetch_attachment(doc_id,"form.xml")
+    except:
+        raise Http404
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, instance_xml=instance_data, input_mode='type')
 
 @login_required
 def new_progress_note(request, patient_id): #patient_id
@@ -79,11 +78,32 @@ def new_progress_note(request, patient_id): #patient_id
     patient = Patient.objects.get(id=patient_id)
     pact_id = patient.couchdoc.pact_id
     case_id = patient.couchdoc.case_id
+
     def callback(xform, doc):
+        post_xform_to_couch(doc)
         reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
         return HttpResponseRedirect(reverse_back)
 
-    url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_progress_note.xml')
+
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
+    new_form = fetch_xform_def(xform_url)
+
+    preloader_data = {
+        "case": {"case-id": case_id,
+                 "pactid": pact_id,
+                 },
+        "property": { "DeviceID": "touchforms"},
+        "meta": {
+               "UserID": '%d' % (request.user.id),
+               "UserName": request.user.username,
+               }
+    }
+
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
+
+
+def fetch_xform_def(xform_url):
+    url_resp = urllib2.urlopen(xform_url)
     xform_str = url_resp.read()
     try:
         tmp_file_handle, tmp_file_path = tempfile.mkstemp()
@@ -97,18 +117,8 @@ def new_progress_note(request, patient_id): #patient_id
         success = False
         notice = "Problem creating xform from %s: %s" % (file, e)
         raise e
+    return new_form
 
-    preloader_data = {
-        "case": {"case-id": case_id,
-                 "pactid": pact_id,
-                 },
-        "property": { "DeviceID": "touchforms"},
-        "meta": {
-               "UserID": '%d' % (request.user.id),
-               "UserName": request.user.username,
-               }
-    }
-    return playkb(request, new_form.id, callback, preloader_data)
 
 @login_required
 def new_bloodwork(request, patient_id): #patient_id
@@ -120,23 +130,12 @@ def new_bloodwork(request, patient_id): #patient_id
     pact_id = patient.couchdoc.pact_id
     case_id = patient.couchdoc.case_id
     def callback(xform, doc):
+        post_xform_to_couch(doc)
         reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
         return HttpResponseRedirect(reverse_back)
 
-    url_resp = urllib2.urlopen('http://build.dimagi.com/commcare/pact/pact_bw_entry.xml')
-    xform_str = url_resp.read()
-    try:
-        tmp_file_handle, tmp_file_path = tempfile.mkstemp()
-        tmp_file = os.fdopen(tmp_file_handle, 'w')
-        tmp_file.write(xform_str.decode('utf-8').encode('utf-8'))
-        tmp_file.close()
-        new_form = XForm.from_file(tmp_file_path, str(file))
-        notice = "Created form: %s " % file
-    except Exception, e:
-        logging.error("Problem creating xform from %s: %s" % (file, e))
-        success = False
-        notice = "Problem creating xform from %s: %s" % (file, e)
-        raise e
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
+    new_form = fetch_xform_def(xform_url)
 
     preloader_data = {
         "case": {"case-id": case_id,
@@ -148,4 +147,6 @@ def new_bloodwork(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
-    return playkb(request, new_form.id, callback, preloader_data)
+    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
+
+

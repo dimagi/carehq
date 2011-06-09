@@ -10,6 +10,7 @@ import logging
 from dimagi.utils import make_uuid
 
 ghetto_regimen_map = {
+    "none":'0',
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
@@ -214,10 +215,10 @@ class PactPatient(BasePatient):
         schedule.cached_schedules = {} #reinitialize the cache EVERY time the schedule is changed, not efficient, a major TODO
 
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self._set_schedule_dates()
         self.date_modified = datetime.utcnow()
-        super(PactPatient, self).save()
+        super(PactPatient, self).save(*args, **kwargs)
 
     @classmethod
     def check_pact_id(cls, pact_id):
@@ -521,9 +522,17 @@ class PactPatient(BasePatient):
         """
         Returns DOT regimens as well as DOT adherence information
         """
+        art_regimen = ghetto_regimen_map[self.art_regimen.lower()]
+        if art_regimen == '0':
+            art_regimen = ''
+
+        nonart_regimen = ghetto_regimen_map[self.non_art_regimen.lower()]
+        if nonart_regimen == '0':
+            nonart_regimen = ''
+
         ret = ''
-        ret += "<artregimen>%s</artregimen>" % (ghetto_regimen_map[self.art_regimen.lower()])
-        ret += "<nonartregimen>%s</nonartregimen>" % (ghetto_regimen_map[self.non_art_regimen.lower()])
+        ret += "<artregimen>%s</artregimen>" % (art_regimen)
+        ret += "<nonartregimen>%s</nonartregimen>" % (nonart_regimen)
         ret += "<dots>%s</dots>" % (simplejson.dumps(self.get_dots_data()))
         return ret
 
