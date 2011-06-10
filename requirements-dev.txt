@@ -6,5 +6,6 @@ guppy
 virtualenv
 werkzeug
 virtualenvwrapper
+unittest-xml-reporting
 
 
