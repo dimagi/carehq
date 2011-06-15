@@ -1,4 +1,4 @@
-from corehq.apps.case import signals
+from casexml.apps.case import signals
 from couchforms.models import XFormInstance
 
 

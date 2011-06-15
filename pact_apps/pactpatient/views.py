@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
+from casexml.apps.case.models import CommCareCase
 from pactpatient.forms import NewPactPatientForm
 from pactpatient.models.pactmodels import PactPatient
 from patient.models import Patient
@@ -32,8 +33,14 @@ def new_patient(request, template_name="patient/new_patient.html"):
             newptdoc.primary_hp = form.cleaned_data['primary_hp']
             newptdoc.first_name = form.cleaned_data['first_name']
             newptdoc.last_name = form.cleaned_data['last_name']
-            newptdoc.case_id = uuid.uuid1().hex
+            newptdoc.case_id = uuid.uuid4().hex
             newptdoc.save()
+            #now create a case for this
+            case = CommCareCase()
+            case._id = newptdoc.case_id
+            case.start_date = datetime.utcnow().date()
+            case.external_id = newptdoc.pact_id
+            case.save()
             messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
             return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':newptdoc.django_uuid}))
         else:

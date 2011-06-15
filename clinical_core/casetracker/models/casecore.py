@@ -43,7 +43,7 @@ class CaseEvent(models.Model):
 
     def save(self, unsafe=False):
         if self.id == None:
-            self.id = uuid.uuid1().hex
+            self.id = uuid.uuid4().hex
         if unsafe:
             super(CaseEvent, self).save()
             return

@@ -199,6 +199,8 @@ class CAddress(Document):
     state = StringProperty()
     postal_code = StringProperty()
 
+    full_address = StringProperty() #this is a combined address and will be used in replacement of the individual components
+
     deprecated = BooleanProperty(default=False)
 
     started = DateTimeProperty(default=make_time, required=True)
@@ -206,6 +208,9 @@ class CAddress(Document):
 
     created_by = StringProperty() #userid
     edited_by = StringProperty() #userid
+
+    def get_full_address(self):
+        return "%s %s, %s %s" % (self.street, self.city, self.state, self.postal_code)
 
 
     class Meta:
@@ -306,8 +311,8 @@ class BasePatient(Document):
                 raise DuplicateIdentifierException()
 
             djangopt = Patient()
-            django_uuid = uuid.uuid1().hex
-            doc_id = uuid.uuid1().hex
+            django_uuid = uuid.uuid4().hex
+            doc_id = uuid.uuid4().hex
             self.django_uuid = django_uuid
             self._id = doc_id
             try:
