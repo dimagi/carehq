@@ -44,16 +44,11 @@ def new_patient(request):
 @login_required
 def remove_phone(request):
     if request.method == "POST":
-        print "got the post for remove_phone"
         try:
-            print "trying"
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
-            print "got patient_id"
             patient = Patient.objects.get(id=patient_id)
-            print "got patient: %s" % (patient)
             phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
             for i, p in enumerate(patient.couchdoc.phones):
-                print "iterating through phones: %d: %s" % (i, p)
                 if p.phone_id == phone_id:
                     p.deprecated=True
                     p.ended=datetime.utcnow()
@@ -72,7 +67,6 @@ def remove_phone(request):
 @login_required
 def remove_address(request):
     if request.method == "POST":
-        print request.POST
         try:
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
             patient = Patient.objects.get(id=patient_id)
