@@ -42,6 +42,12 @@ def new_patient(request):
     return render_to_response("patient/new_patient.html", context_instance=context)
 
 @login_required
+def single_patient(request, patient_id):
+    pat = BasePatient.get(patient_id)
+    return render_to_response("patient/single_patient.html", {"patient": pat},
+                              context_instance=RequestContext(request))
+
+@login_required
 def remove_phone(request):
     if request.method == "POST":
         try:

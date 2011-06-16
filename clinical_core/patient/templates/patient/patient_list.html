@@ -31,8 +31,8 @@
     {% for patient in patients %}
         <tr>
             <td><h4>{{ patient.patient_id }}</h4></td>
-            <td><h4><a href="#">{{ patient.first_name}}</a></h4></td>
-            <td><h4><a href="#">{{patient.last_name}}</a></h4></td>
+            <td><h4><a href="{% url single_patient patient.get_id %}">{{ patient.first_name}}</a></h4></td>
+            <td><h4><a href="{% url single_patient patient.get_id %}">{{patient.last_name}}</a></h4></td>
         </tr>
     {% endfor %}
     </tbody>
