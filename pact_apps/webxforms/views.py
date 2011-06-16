@@ -36,6 +36,8 @@ def do_save_xform(xform):
 def edit_progress_note(request, doc_id):
     xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
     new_form = fetch_xform_def(xform_url)
+    
+    
     orig_doc = XFormInstance.get(doc_id)
     pact_id = orig_doc['form']['note']['pact_id']
     patient_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['django_uuid']
@@ -69,25 +71,10 @@ def edit_bloodwork(request, doc_id):
         raise Http404
     return enter_form(request, xform_id=new_form.id, onsubmit=callback, instance_xml=instance_data, input_mode='type')
 
-@login_required
-def new_progress_note(request, patient_id): #patient_id
-    """
-    Fill out a NEW progress note
-    """
-
+def _new_form(request, patient_id, form):
     patient = Patient.objects.get(id=patient_id)
     pact_id = patient.couchdoc.pact_id
     case_id = patient.couchdoc.case_id
-
-    def callback(xform, doc):
-        post_xform_to_couch(doc)
-        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
-        return HttpResponseRedirect(reverse_back)
-
-
-    xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
-    new_form = fetch_xform_def(xform_url)
-
     preloader_data = {
         "case": {"case-id": case_id,
                  "pactid": pact_id,
@@ -98,9 +85,33 @@ def new_progress_note(request, patient_id): #patient_id
                "UserName": request.user.username,
                }
     }
+    
+    def post_and_back_to_patient(xform, doc):
+        post_xform_to_couch(doc)
+        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        return HttpResponseRedirect(reverse_back)
 
-    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
-
+    return enter_form(request, xform_id=form.id, onsubmit=post_and_back_to_patient, 
+                      preloader_data=preloader_data, input_mode='type')
+    
+@login_required
+def new_progress_note(request, patient_id): 
+    """
+    Fill out a NEW progress note
+    """
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
+    new_form = fetch_xform_def(xform_url)
+    return _new_form(request, patient_id, new_form)
+    
+@login_required
+def new_bloodwork(request, patient_id): 
+    """
+    Fill out a NEW bloodwork
+    """
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
+    new_form = fetch_xform_def(xform_url)
+    return _new_form(request, patient_id, new_form)
+    
 
 def fetch_xform_def(xform_url):
     url_resp = urllib2.urlopen(xform_url)
@@ -118,35 +129,5 @@ def fetch_xform_def(xform_url):
         notice = "Problem creating xform from %s: %s" % (file, e)
         raise e
     return new_form
-
-
-@login_required
-def new_bloodwork(request, patient_id): #patient_id
-    """
-    Fill out a NEW bloodwork
-    """
-
-    patient = Patient.objects.get(id=patient_id)
-    pact_id = patient.couchdoc.pact_id
-    case_id = patient.couchdoc.case_id
-    def callback(xform, doc):
-        post_xform_to_couch(doc)
-        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
-        return HttpResponseRedirect(reverse_back)
-
-    xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
-    new_form = fetch_xform_def(xform_url)
-
-    preloader_data = {
-        "case": {"case-id": case_id,
-                 "pactid": pact_id,
-                 },
-        "property": { "DeviceID": "touchforms"},
-        "meta": {
-               "UserID": '%d' % (request.user.id),
-               "UserName": request.user.username,
-               }
-    }
-    return enter_form(request, xform_id=new_form.id, onsubmit=callback, preloader_data=preloader_data, input_mode='type')
 
 
