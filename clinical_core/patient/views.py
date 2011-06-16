@@ -3,11 +3,43 @@ from datetime import datetime
 import logging
 import urllib
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from patient.models import Patient
-from datetime import datetime
 from django.core.urlresolvers import reverse
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+from patient.models import BasePatient
+from patient.forms import BasicPatientForm
+from django.contrib import messages
+from patient.models.patientmodels import SimplePatient
+
+@login_required
+def list_patients(request):
+    pats = BasePatient.view("patient/all", include_docs=True).all()
+    return render_to_response("patient/patient_list.html", {"patients": pats},
+                              context_instance=RequestContext(request))
+@login_required
+def new_patient(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        form = BasicPatientForm(data=request.POST)
+        # make patient
+        if form.is_valid():
+            newptdoc = SimplePatient()
+            newptdoc.patient_id = form.cleaned_data['patient_id']
+            newptdoc.gender = form.cleaned_data['gender']
+            newptdoc.birthdate = form.cleaned_data['birthdate']
+            newptdoc.first_name = form.cleaned_data['first_name']
+            newptdoc.last_name = form.cleaned_data['last_name']
+            newptdoc.save()
+            messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
+            return HttpResponseRedirect(reverse('patient.views.list_patients'))
+        else:
+            messages.add_message(request, messages.ERROR, "Failed to add patient!")
+            context['patient_form'] = form
+    else:
+        context['patient_form'] = BasicPatientForm()
+    return render_to_response("patient/new_patient.html", context_instance=context)
 
 @login_required
 def remove_phone(request):

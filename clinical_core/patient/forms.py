@@ -9,7 +9,7 @@ class BasicPatientForm(forms.Form):
         ('f', 'Female')
     )
 
-
+    patient_id = forms.CharField(required=True)
     first_name = forms.CharField(required=True)
     middle_name = forms.CharField(required=False)
     last_name = forms.CharField(required=True)

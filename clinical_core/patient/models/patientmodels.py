@@ -334,6 +334,21 @@ class BasePatient(Document):
         app_label = 'patient'
 
 
+class SimplePatient(BasePatient):
+    """
+    A stub implementation of the Patient model
+    """
+    def is_unique(self):
+        return True
+
+    def __getattr__(self, key):
+        # this hack allows this to be used in templates that expect it
+        # to behave like a normal python object.
+        try:
+            super(BasePatient, self).__getattr__(key)
+        except KeyError:
+            raise AttributeError
+
 class CSimpleComment(Document):
     doc_fk_id = StringProperty() #is there a fk in couchdbkit
     deprecated = BooleanProperty(default=False)
