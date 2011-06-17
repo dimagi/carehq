@@ -122,11 +122,8 @@ def fetch_xform_def(xform_url):
         tmp_file.write(xform_str.decode('utf-8').encode('utf-8'))
         tmp_file.close()
         new_form = XForm.from_file(tmp_file_path, str(file))
-        notice = "Created form: %s " % file
     except Exception, e:
         logging.error("Problem creating xform from %s: %s" % (file, e))
-        success = False
-        notice = "Problem creating xform from %s: %s" % (file, e)
         raise e
     return new_form
 
