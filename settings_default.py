@@ -96,19 +96,21 @@ LOCAL_APPS = (
                 'dotsview',
                 'pactpatient',
                 'webxforms',
-
+                
                 #shine
                 'sorl.thumbnail',
                 'slidesview',
-
-
+                'shineforms',
+                'shinepatient',
 )
+
 COUCH_SERVER_ROOT = 'localhost:5984'
 COUCH_USERNAME = ''
 COUCH_PASSWORD = ''
 COUCH_DATABASE_NAME = 'carehq'
 
-LOCAL_COUCHDB_APPS = [  'pactpatient', 'touchforms.formplayer', 'actorprofile','dotsview', 'pactcarehq', 'slidesview' ]
+LOCAL_COUCHDB_APPS = ['pactpatient', 'touchforms.formplayer', 'actorprofile',
+                      'dotsview', 'pactcarehq', 'slidesview', "shinepatient" ]
 
 #local settings does this to make this a lot easeir
 LOCAL_APP_URLS = patterns('',
@@ -120,8 +122,11 @@ LOCAL_APP_URLS = patterns('',
     (r'', include('auditcare.urls')),
     (r'', include('couchdebugpanel.urls')),
     (r'', include('slidesview.urls')),
+    (r'', include('shineforms.urls')),
+    (r'', include('shinepatient.urls')),
     (r'^couchlog/', include('couchlog.urls')),
     (r'^phone/', include('casexml.apps.phone.urls')),
+    (r'^receiver/', include('receiver.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'^webxforms/', include('webxforms.urls')),
 

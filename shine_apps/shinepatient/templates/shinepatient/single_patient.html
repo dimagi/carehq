@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% load shinepatient_tags %}
+
+{% block content %}
+<div class="container">
+<h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+<p>There's really not much here at the moment</p>
+<a href="{% url new_item patient.get_id %}">add demo item!</a>
+{% render_cases patient %}
+</div>
+{% endblock content %}

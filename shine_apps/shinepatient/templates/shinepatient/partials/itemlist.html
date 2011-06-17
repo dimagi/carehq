@@ -1,0 +1,17 @@
+<table>
+<thead>
+    <tr>
+        <td>Name</td><td>Date</td><td>Barcode</td><td>Status?</td>
+    </tr>
+</thead>
+<tbody>
+{% for case in cases %}
+<tr>    
+    <td><a href="{% url shine_case_details case.get_id %}">{{ case.name }}</a></td>
+    <td>{{ case.opened_on }}</td>
+    <td>{{ case.barcode }}</td>
+    <td>{{ case.closed|yesno:"closed,open"}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
