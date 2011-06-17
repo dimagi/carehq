@@ -345,7 +345,7 @@ class SimplePatient(BasePatient):
         # this hack allows this to be used in templates that expect it
         # to behave like a normal python object.
         try:
-            super(BasePatient, self).__getattr__(key)
+            return super(BasePatient, self).__getattr__(key)
         except KeyError:
             raise AttributeError
 
