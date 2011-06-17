@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'couchexport',
     'couchlog',
     'dimagi.utils',
+    'receiver',
     'django.contrib.flatpages',
     'touchforms.formplayer',
     'patient',
@@ -208,7 +209,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CARROT_BACKEND = "django"
 
 
-
+# carehq config
+CAREHQ_CREATE_PATIENT_VIEW_NAME = "create_patient"
 
 import os
 

@@ -12,11 +12,16 @@ from patient.models import BasePatient
 from patient.forms import BasicPatientForm
 from django.contrib import messages
 from patient.models.patientmodels import SimplePatient
+from django.conf import settings
 
 @login_required
-def list_patients(request):
-    pats = BasePatient.view("patient/all", include_docs=True).all()
-    return render_to_response("patient/patient_list.html", {"patients": pats},
+def list_patients(request, template="patient/patient_list.html"):
+    view_results = BasePatient.get_db().view("patient/all", include_docs=True).all()
+    pats = [BasePatient.get_typed_from_dict(row["doc"]) for row in view_results]
+    create_patient_url = reverse(settings.CAREHQ_CREATE_PATIENT_VIEW_NAME)
+    return render_to_response("patient/patient_list.html", 
+                              {"patients": pats, 
+                               "create_patient_url": create_patient_url},
                               context_instance=RequestContext(request))
 @login_required
 def new_patient(request):
@@ -42,9 +47,9 @@ def new_patient(request):
     return render_to_response("patient/new_patient.html", context_instance=context)
 
 @login_required
-def single_patient(request, patient_id):
-    pat = BasePatient.get(patient_id)
-    return render_to_response("patient/single_patient.html", {"patient": pat},
+def single_patient(request, patient_id, template="patient/single_patient.html"):
+    pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_id))
+    return render_to_response(template, {"patient": pat},
                               context_instance=RequestContext(request))
 
 @login_required
