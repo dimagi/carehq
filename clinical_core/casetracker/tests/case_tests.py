@@ -78,7 +78,7 @@ class EventActivityVerificationTest(TestCase):
         newcase = Case.objects.new_case(constants.CATEGORY_CHOICES[0][0],
                               role1,
                               description,
-                              "mock body %s" % (uuid.uuid1().hex),
+                              "mock body %s" % (uuid.uuid4().hex),
                               constants.PRIORITY_MEDIUM,
                               status=constants.CASE_STATE_OPEN,
                               activity=constants.CASE_EVENT_OPEN
@@ -100,7 +100,7 @@ class EventActivityVerificationTest(TestCase):
 
 
     def testCaseModifyDescriptionApi(self):
-        desc= uuid.uuid1().hex
+        desc= uuid.uuid4().hex
         self.testCreateCaseApi(description=desc)
 
         user1 = generator.get_or_create_user()
@@ -136,7 +136,7 @@ class EventActivityVerificationTest(TestCase):
         case = Case.objects.all().get(description =INITIAL_DESCRIPTION)
         CHILD_CASES=10
         for num in range(0,CHILD_CASES):
-            desc = uuid.uuid1().hex
+            desc = uuid.uuid4().hex
             newcase = self.testCreateCaseApi(description=desc)
             newcase.parent_case = case
             newcase.last_edit_by = role1

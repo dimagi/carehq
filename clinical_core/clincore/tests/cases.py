@@ -40,7 +40,7 @@ class CasePermissionsTest(TestCase):
         if priority == None:
             priority=Priority.objects.all()[0]
         if description == None:
-            description = "mock body %s" % (uuid.uuid1().hex),
+            description = "mock body %s" % (uuid.uuid4().hex),
 
         newcase = Case.objects.new_case(Category.objects.all()[0],
                               actor,
@@ -63,13 +63,13 @@ class CasePermissionsTest(TestCase):
 
         total_cases = 12
         for i in range(total_cases):
-            case = self._create_case(actor_creator, uuid.uuid1().hex)
+            case = self._create_case(actor_creator, uuid.uuid4().hex)
             case.patient = pt1
             if i%2 == 0:
                 case.last_edit_by = actor_editor1
             else:
                 case.last_edit_by = actor_editor2
-            case.description = "edited, foolio: " + str(uuid.uuid1().hex)
+            case.description = "edited, foolio: " + str(uuid.uuid4().hex)
             activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
 
@@ -102,7 +102,7 @@ class CasePermissionsTest(TestCase):
 
         for i in range(num_case1):
             actor = prov1[0]
-            case = self._create_case(actor, uuid.uuid1().hex)
+            case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt1
             activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
@@ -110,7 +110,7 @@ class CasePermissionsTest(TestCase):
 
         for i in range(num_case2):
             actor = prov2[0]
-            case = self._create_case(actor, uuid.uuid1().hex)
+            case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt2
             activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)

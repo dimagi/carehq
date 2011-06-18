@@ -4,6 +4,10 @@ import streets
 import names
 import random
 
+
+ADDR_DESCRIPTIONS = ['Home Address', 'Work', 'Friend', 'Mother', 'Parent', "Son's house", "Daugter's", "Friend's house"]
+PHONE_DESCRIPTIONS = ['Home', 'Office Phone', 'Cell', 'mobile', "Mom's phone", "Next door neighbor", 'Parent', "Son's phone", "Daugter's", "Friend's house"]
+
 def rzero():
     return str(random.randint(0,9))
 
@@ -16,6 +20,22 @@ def make_phone():
 
 def raddress():
     return random.choice(streets.descriptors) + " " + random.choice(streets.streetname) + " " + random.choice(streets.suffix)
+
+
+def make_random_caddress():
+    addr = CAddress()
+    addr.description = random.choice(ADDR_DESCRIPTIONS)
+    addr.street = "%d %s" % (random.randint(1,5000), raddress())
+    addr.city = "Metropolis"
+    addr.postal_code = "00000"
+    addr.state = "MA"
+    return addr
+
+def make_random_cphone():
+    phone = CPhone()
+    phone.description = random.choice(PHONE_DESCRIPTIONS)
+    phone.number = make_phone()
+    return phone
 
 def run():
     patients = Patient.objects.all()
@@ -30,19 +50,12 @@ def run():
         phone_count = len(c.phones)
         new_addr = []
         for n in range(0,addr_count):
-            addr = CAddress()
-            addr.description = c.address[n].description
-            addr.street = "%d %s" % (random.randint(1,5000), raddress())
-            addr.city = "Metropolis"
-            addr.postal_code = "00000"
-            addr.state = "MA"
+            addr = make_random_caddress()
             new_addr.append(addr)
             print addr.street
         new_phone = []
         for p in range(0,phone_count):
-            phone = CPhone()
-            phone.description = c.phones[p].description
-            phone.number = make_phone()
+            phone = make_random_cphone()
             print phone.number
             new_phone.append(phone)
 

@@ -62,7 +62,7 @@ def get_or_create_patient(user=None, first_name=None, last_name=None, gender=Non
     pt = Patient()
     cpt = pt.couchdoc
     cpt.birthdate = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
-    cpt.pact_id = uuid.uuid1().hex
+    cpt.pact_id = uuid.uuid4().hex
     cpt.primary_hp = random_word(length=10)
 
     if first_name == None:
@@ -71,7 +71,7 @@ def get_or_create_patient(user=None, first_name=None, last_name=None, gender=Non
         cpt.first_name = first_name
 
     if last_name == None:
-        cpt.last_name = "mock-%s" % (uuid.uuid1().hex[0:10])
+        cpt.last_name = "mock-%s" % (uuid.uuid4().hex[0:10])
     else:
         cpt.last_name = last_name
 
@@ -120,12 +120,12 @@ def get_or_create_user(first_name=None, last_name=None, always_new=True):
     user = User()
 
     if first_name == None:
-        user.first_name = uuid.uuid1().hex[0:20]
+        user.first_name = uuid.uuid4().hex[0:20]
     else:
         user.first_name = first_name
 
     if last_name == None:
-        user.last_name = uuid.uuid1().hex[0:20]
+        user.last_name = uuid.uuid4().hex[0:20]
     else:
         user.last_name = last_name
 
@@ -298,7 +298,7 @@ def create_case(self, description, actor, priority, status=None, body=None):
     """Create a case for testing purposes
     """
     if body == None:
-        body = "mock body %s" % (uuid.uuid1().hex),
+        body = "mock body %s" % (uuid.uuid4().hex),
     newcase = Case.objects.new_case(Category.objects.all()[0],
                           actor,
                           description,

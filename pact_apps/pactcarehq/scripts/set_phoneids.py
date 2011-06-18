@@ -8,7 +8,7 @@ days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','sat
 def run():
     for pt in Patient.objects.all():
         for i in range(0, len(pt.couchdoc.phones)):
-            pt.couchdoc.phones[i].phone_id = uuid.uuid1().hex
+            pt.couchdoc.phones[i].phone_id = uuid.uuid4().hex
         pt.couchdoc.save()
         print "Set patient phone %s" % (pt.id)
 
