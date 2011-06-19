@@ -27,7 +27,7 @@ class SubmitParsingTests(TestCase):
             payload.name = f
             doc_id = uid_re.search(body).group('doc_id')
 
-            client.post('/receiver2/', data={'xml_submission_file': payload})
+            client.post('/receiver/submit', data={'xml_submission_file': payload})
             doc = XFormInstance.get(doc_id)
             xform_saved.send(sender="post", xform=doc) #ghetto way of signalling a submission signal
             #delta_signal = datetime.utcnow() - (start_time + delta_post)
@@ -35,7 +35,6 @@ class SubmitParsingTests(TestCase):
 
             self.assertTrue(isinstance(doc['pact_data']['dots'], dict))
             XFormInstance.get_db().delete_doc(doc._id)
-        print "foo"
 
     def testSubmitAndVerifyParseReceiver(self):
         sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sampledata')
@@ -49,7 +48,7 @@ class SubmitParsingTests(TestCase):
         f = StringIO(body.encode('utf-8'))
         f.name = 'dots1.xml'
 
-        client.post('/receiver2/', data={'xml_submission_file': f})
+        client.post('/receiver/submit', data={'xml_submission_file': f})
         doc = XFormInstance.get('8da7bc705b0111e0bca3cae4957bd0b3')
 
         XFormInstance.get_db().delete_doc('8da7bc705b0111e0bca3cae4957bd0b3')
