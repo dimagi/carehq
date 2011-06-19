@@ -4,6 +4,7 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, Boole
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
+from casexml.apps.case.models import CommCareCase
 from dimagi.utils.couch.database import get_db
 from patient.models import BasePatient
 import logging
@@ -495,6 +496,13 @@ class PactPatient(BasePatient):
 
     @property
     def active_phones(self):
+        """
+        Get casexml phones
+        """
+        casedoc = CommCareCase.get(self.case_id)
+        phone_properties = sorted(filter(lambda x: x.startswith("Phone"), casedoc._dynamic_properties.keys()))
+        #iterate through all phones properties and make an array of [ {description, number}, etc ]
+        foo
         ret = []
         for phone in self.phones:
             if phone.deprecated:
@@ -502,7 +510,14 @@ class PactPatient(BasePatient):
             else:
                 ret.append(phone)
         return ret
-
+    @property
+    def active_addresses(self):
+        """
+        Get casexml address info
+        """
+        casedoc = CommCareCase.get(self.case_id)
+        #iterate through all address properties and make an array of [ {description, address_string}, etc ]
+        pass
 
     def get_ghetto_phone_xml(self):
         ret = ''

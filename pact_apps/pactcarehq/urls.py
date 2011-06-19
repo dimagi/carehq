@@ -21,7 +21,10 @@ urlpatterns = patterns ('',
     (r'^submit/$', 'pactcarehq.views.post'),
     (r'^receiver/submit/.*$', 'pactcarehq.views.post'),
     (r'^receiver/submit$', 'pactcarehq.views.post'),
-    (r'^receiver/submit2/.*', 'couchforms.views.post'), #generic post receiver
+
+    (r'^receiver2/submit/.*$', 'receiver.views.post'),
+    (r'^receiver2/submit$', 'receiver.views.post'),
+    (r'^receiver2/$', 'receiver.views.post'),
 
 
     (r'^submits/mine$', 'pactcarehq.views.my_submits'),

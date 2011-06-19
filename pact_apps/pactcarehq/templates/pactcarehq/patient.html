@@ -238,7 +238,7 @@ $(function() {
                 <div class="span-12">
                 </div>
                 <div class="span-11 prepend-1 last">
-                    {% for patient_address in pdoc.address %}
+                    {% for patient_address in pdoc.active_addresses %}
                             <div class="span-11">
                                 {% if patient_address.description %}
                                 <strong>{{ patient_address.description|title }}</strong> &nbsp;

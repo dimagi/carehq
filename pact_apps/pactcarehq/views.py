@@ -4,7 +4,7 @@ from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
 from pactpatient.forms import PactPatientEditForm
-from pactpatient.forms import PhoneForm, AddressForm
+from pactpatient.forms import PhoneForm, AddressForm, SimpleAddressForm
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from pactpatient.models import CActivityDashboard
 from patient.models import CAddress, CPhone, CSimpleComment
@@ -49,7 +49,7 @@ def export_excel_file(request):
     docs = get_docs(namespace)
     if not docs:
         return HttpResponse("Error, no documents for that schema exist")
-    download_id = uuid.uuid1().hex
+    download_id = uuid.uuid4().hex
     schema_export.delay(namespace, download_id)
     return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
 
@@ -149,11 +149,11 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     if address_edit and not new_address:
         if len(patient.couchdoc.address) > 0:
             #if there's an existing address out there, then use it, else, make a new one
-            context['address_form'] = AddressForm(instance=patient.couchdoc.get_address(address_edit_id))
+            context['address_form'] = SimpleAddressForm(instance=patient.couchdoc.get_address(address_edit_id))
         else:
-            context['address_form'] = AddressForm()
+            context['address_form'] = SimpleAddressForm()
     if new_address:
-        context['address_form'] = AddressForm()
+        context['address_form'] = SimpleAddressForm()
         context['address_edit'] = True
     if schedule_edit:
         context['schedule_form'] = ScheduleForm()
@@ -184,7 +184,7 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
             else:
                 context['schedule_form'] = form
         elif address_edit or new_address:
-            form = AddressForm(data=request.POST)
+            form = SimpleAddressForm(data=request.POST)
             if form.is_valid():
                 is_new_addr = False
                 if form.cleaned_data['address_id'] != '':
@@ -196,10 +196,13 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                     instance=CAddress()
                     instance.created_by = request.user.username
                 instance.description = form.cleaned_data['description']
-                instance.street = form.cleaned_data['street']
-                instance.city = form.cleaned_data['city']
-                instance.state = form.cleaned_data['state']
-                instance.postal_code = form.cleaned_data['postal_code']
+                instance.full_address = form.cleaned_data['address']
+#                instance.street = form.cleaned_data['street']
+#                instance.city = form.cleaned_data['city']
+#                instance.state = form.cleaned_data['state']
+#                instance.postal_code = form.cleaned_data['postal_code']
+                print instance.description
+                print instance.full_address
 
                 if is_new_addr == False:
                     index = patient.couchdoc.address_index(address_edit_id)
@@ -207,7 +210,8 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                 else:
                     patient.couchdoc.set_address(instance)
 
-                patient.couchdoc.save()
+                #patient.couchdoc.save()
+                #do patient xml submit
                 return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
             else:
                 context['address_form'] = form
@@ -251,7 +255,7 @@ def get_ghetto_registration_block(user):
     #promoter_member_id is the nasty id from the csv, this should be fixed to match the Partners id -->
     resp_txt = ""
     #prov = Provider.objects.filter(user=user)[0] #hacky nasty
-    return registration_block % (user.username, user.password, user.id, user.date_joined.strftime("%Y-%m-%dT%H:%M:%S.000"), uuid.uuid1().hex, user.id, user.username, "blah")
+    return registration_block % (user.username, user.password, user.id, user.date_joined.strftime("%Y-%m-%dT%H:%M:%S.000"), uuid.uuid4().hex, user.id, user.username, "blah")
 
 @require_POST
 @csrf_exempt
@@ -538,7 +542,7 @@ def _get_schedule_tally(username, total_interval, override_date=None):
 
 @login_required
 def chw_calendar_submit_report_all(request):
-    download_id = uuid.uuid1().hex
+    download_id = uuid.uuid4().hex
     total_interval = 7
     if request.GET.has_key('interval'):
         try:
