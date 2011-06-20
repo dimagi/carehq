@@ -39,6 +39,18 @@ def new_patient(request):
     return render_to_response("patient/new_patient.html", context_instance=context)
 
 @login_required
+def list_cases(request):
+    """
+    Full case list
+    """
+    cases = CommCareCase.view("shinepatient/cases_by_patient_id", include_docs=True).all()
+    for case in cases:
+        pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
+        case.patient_name = "%s %s" % (pat.first_name, pat.last_name)
+    return render_to_response("shinepatient/case_list.html", {"cases": cases},
+                              context_instance=RequestContext(request))
+
+@login_required
 def single_case(request, case_id):
     case = CommCareCase.get(case_id)
     pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))

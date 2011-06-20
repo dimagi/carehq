@@ -1,7 +1,8 @@
+{% load patient_tags %}
 <table>
 <thead>
     <tr>
-        <td>Name</td><td>Date</td><td>Barcode</td><td>Status?</td>
+        <th>Name</th><th>Date</th><th>Barcode</th>{% if not patient %}<th>Patient</th>{% endif %}<th>Status?</th>
     </tr>
 </thead>
 <tbody>
@@ -10,6 +11,7 @@
     <td><a href="{% url shine_case_details case.get_id %}">{{ case.name }}</a></td>
     <td>{{ case.opened_on }}</td>
     <td>{{ case.barcode }}</td>
+{% if not patient %}<td><a href="{% patient_url case.patient_id %}">{{ case.patient_name }}</a></td>{% endif %}    
     <td>{{ case.closed|yesno:"closed,open"}}</td>
 </tr>
 {% endfor %}
