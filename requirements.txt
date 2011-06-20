@@ -5,6 +5,7 @@ pyasn1
 django
 restkit==2.3.3
 couchdbkit==0.5.1
+pygooglechart
 psycopg2
 pycurl
 python-dateutil

@@ -9,5 +9,8 @@
 {% block content %}
 <div class="container">
 <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+{% if case.barcode %}
+{% render_barcode case.barcode %}
+{% endif %}
 {% render_case case %}
 {% endblock content %}
