@@ -117,6 +117,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.request',
                                #'staticfiles.context_processors.static',
                                'django.core.context_processors.static',
+                               'context_processors.base_template',
                                )
 
 INSTALLED_APPS = (
@@ -190,6 +191,7 @@ USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
+BASE_TEMPLATE = "base.html"
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',

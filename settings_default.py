@@ -13,6 +13,9 @@ from django.conf.urls.defaults import patterns, include
 XFORMS_PLAYER_URL = "http://localhost:4444/"
 AUTH_PROFILE_MODULE = 'actorprofile.ClinicalUserProfile'
 
+# shine
+#BASE_TEMPLATE = "shinepatient/shine_base.html"
+
 #####
 #Shared Settings
 #####
