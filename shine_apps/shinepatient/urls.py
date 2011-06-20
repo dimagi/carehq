@@ -1,8 +1,10 @@
 #URLS for your patient management should be managed by the app that subclasses the patient model.
 
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('',
+    url(r'^shine/$', 'patient.views.list_patients', name='shine_home'),
     url(r'^shine/patient/new$', 'shinepatient.views.new_patient', name='shine_create_patient'),
     url(r'^shine/patient/list$', 'patient.views.list_patients', name='shine_patient_list'), 
     url(r'^shine/patient/single/(?P<patient_id>[0-9a-fA-Z]{25,32})/$', 'patient.views.single_patient', 
