@@ -129,6 +129,7 @@ LOCAL_APP_URLS = patterns('',
     (r'^receiver/', include('receiver.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'^webxforms/', include('webxforms.urls')),
+    (r'^couchforms/', include('couchforms.urls')),
 
     #these are the static media for fomsplayer since it's not using the django staticfiles app
     (r'^%s/formplayer/(?P<path>.*)$' % 'media', 'django.views.static.serve', {'document_root': os.path.join(filepath, 'submodules','touchforms','touchforms','formplayer','static') }),

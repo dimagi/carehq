@@ -1,27 +1,13 @@
 {% extends "base.html" %}
 
 {% load shinepatient_tags %}
+{% load case_tags %}
 
 {% block extrahead %}
-    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/json2html/parse.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        $().ready(function(){
-            var jsondata = {{ json_case|safe }};
-            var result = parseValue(jsondata, '{{case.name}}', null);
-            if(result != null) {
-                $('#case_deets').append(result);
-            } 
-        });
-    </script>
-    <style>
-        .hideshow { color: blue; font-weight: bold; cursor:pointer; }
-    </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
 <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
-<p>Full Case Details for {{ case.name }}</p>
-<div id="case_deets"></div>
-</div>
+{% render_case case %}
 {% endblock content %}
