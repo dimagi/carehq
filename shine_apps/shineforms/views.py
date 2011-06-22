@@ -41,8 +41,9 @@ def new_item_registration(request, patient_id):
     playsettings = defaultdict(lambda: "")
     playsettings["xform"] = get_form("item_register.xml")
     playsettings["next"] = reverse('shineforms_callback', kwargs={'patient_id': patient_id})
-    playsettings["data"] = json.dumps(preloaders) 
-    return play_remote(request, input_mode="type", playsettings=playsettings)
+    playsettings["data"] = json.dumps(preloaders)
+    playsettings["input_mode"] = "type"
+    return play_remote(request, playsettings=playsettings)
     
 @httpdigest
 def ota_restore(request):

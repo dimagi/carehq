@@ -118,6 +118,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                #'staticfiles.context_processors.static',
                                'django.core.context_processors.static',
                                'context_processors.base_template',
+                               #'touchforms.context_processors.static_workaround',
                                )
 
 INSTALLED_APPS = (
