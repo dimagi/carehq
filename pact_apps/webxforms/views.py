@@ -14,6 +14,7 @@ from patient.models.patientmodels import Patient
 from touchforms.formplayer.models import XForm
 from touchforms.formplayer.views import enter_form
 from couchforms.models import XFormInstance
+from webentry.util import get_remote_form
 
 try:
     import simplejson as json
@@ -114,8 +115,7 @@ def new_bloodwork(request, patient_id):
     
 
 def fetch_xform_def(xform_url):
-    url_resp = urllib2.urlopen(xform_url)
-    xform_str = url_resp.read()
+    xform_str = get_remote_form(xform_url)
     try:
         tmp_file_handle, tmp_file_path = tempfile.mkstemp()
         tmp_file = os.fdopen(tmp_file_handle, 'w')

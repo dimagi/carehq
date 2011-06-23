@@ -1,4 +1,5 @@
-from webentry.util import shared_preloaders, user_meta_preloaders
+from webentry.util import shared_preloaders, user_meta_preloaders,\
+    get_remote_form
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from touchforms.formplayer.views import play_remote, get_remote_instance
@@ -17,6 +18,7 @@ def get_form(filename):
     with open(path) as f:
         return f.read()
 
+    
 def random_barcode():
     # TODO: do this serially to ensure no conflicts?
     return "%015d" % random.randint(0, 999999999999999)
@@ -39,7 +41,7 @@ def new_item_registration(request, patient_id):
     preloaders["case"] = {"patient_id": patient_id}
     preloaders["shine"] = {"barcode": random_barcode()}
     playsettings = defaultdict(lambda: "")
-    playsettings["xform"] = get_form("item_register.xml")
+    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/create_order.xml")
     playsettings["next"] = reverse('shineforms_callback', kwargs={'patient_id': patient_id})
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
