@@ -57,7 +57,10 @@ def list_cases(request):
 @login_required
 def single_case(request, case_id):
     case = CommCareCase.get(case_id)
-    pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
+    try:
+        pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
+    except ResourceNotFound:
+        pat = None
     return render_to_response("shinepatient/single_case.html",
                               {"patient": pat, "case": case,
                                "json_case": json.dumps(case.to_json())}, 

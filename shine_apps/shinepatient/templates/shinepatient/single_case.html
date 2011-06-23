@@ -8,7 +8,11 @@
 
 {% block content %}
 <div class="container">
+{% if patient %}
 <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+{% else %}
+<h2>UNKNOWN PATIENT</h2>
+{% endif %}
 {% if case.barcode %}
 {% render_barcode case.barcode %}
 {% endif %}
