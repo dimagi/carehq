@@ -50,7 +50,7 @@ def list_cases(request):
             pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
             case.patient_name = "%s %s" % (pat.first_name, pat.last_name)
         except ResourceNotFound:
-            case.patient_name = "NO LINKED PATIENT FOUND"
+            case.patient_name = None
     return render_to_response("shinepatient/case_list.html", {"cases": cases},
                               context_instance=RequestContext(request))
 

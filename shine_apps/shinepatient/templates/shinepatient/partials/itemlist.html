@@ -11,7 +11,7 @@
     <td><a href="{% url shine_case_details case.get_id %}">{{ case.name }}</a></td>
     <td>{{ case.opened_on }}</td>
     <td>{{ case.barcode }}</td>
-{% if not patient %}<td><a href="{% patient_url case.patient_id %}">{{ case.patient_name }}</a></td>{% endif %}    
+{% if not patient %}<td>{% if case.patient_name %}<a href="{% patient_url case.patient_id %}">{{ case.patient_name }}</a>{% else %}NO LINKED PATIENT{% endif %}</td>{% endif %}    
     <td>{{ case.closed|yesno:"closed,open"}}</td>
 </tr>
 {% endfor %}
