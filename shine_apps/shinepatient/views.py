@@ -14,6 +14,7 @@ from django.contrib import messages
 from shinepatient.models import ShinePatient
 from casexml.apps.case.models import CommCareCase
 import json
+from couchdbkit.resource import ResourceNotFound
 
 @login_required
 def new_patient(request):
@@ -45,8 +46,11 @@ def list_cases(request):
     """
     cases = CommCareCase.view("shinepatient/cases_by_patient_id", include_docs=True).all()
     for case in cases:
-        pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
-        case.patient_name = "%s %s" % (pat.first_name, pat.last_name)
+        try:
+            pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
+            case.patient_name = "%s %s" % (pat.first_name, pat.last_name)
+        except ResourceNotFound:
+            case.patient_name = "NO LINKED PATIENT FOUND"
     return render_to_response("shinepatient/case_list.html", {"cases": cases},
                               context_instance=RequestContext(request))
 
