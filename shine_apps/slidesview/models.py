@@ -13,3 +13,7 @@ class ImageAttachment(models.Model):
     image = ImageField(upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
 
 
+    def __unicode__(self):
+        return "%s (Filename: %s, Content-Type: %s, Size: %d)" % (self.xform_id, self.attachment_key, self.content_type, self.content_length)
+
+

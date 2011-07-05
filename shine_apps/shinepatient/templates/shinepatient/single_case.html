@@ -1,20 +1,86 @@
 {% extends base_template %}
-
 {% load shinepatient_tags %}
 {% load case_tags %}
 
 {% block extrahead %}
+    <script>
+        $(function() {
+            $( "#casetabs" ).tabs();
+        });
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}slidesview/js/pixastic.custom.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/js/basic_enhancements.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container">
 {% if patient %}
-<h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+<h2>Case Information</h2>
+<h3>Patient: {{ patient.first_name }} {{ patient.last_name }}</h3>
 {% else %}
 <h2>UNKNOWN PATIENT</h2>
 {% endif %}
 {% if case.barcode %}
-{% render_barcode case.barcode %}
+    <div id="qrcode"></div>
+    <script type="text/javascript">
+        function updateQRCode(text) {
+        var element = document.getElementById("qrcode");
+        var bodyElement = document.body;
+        if(element.lastChild)
+          element.replaceChild(showQRCode(text), element.lastChild);
+        else
+          element.appendChild(showQRCode(text));
+      }
+        updateQRCode("{{ case.barcode }}");
+    </script>
 {% endif %}
-{% render_case case %}
+<hr>
+<div id="casetabs">
+    <ul>
+        <li><a href="#casetabs-imaging">Bloodwork Imaging</a></li>
+        <li><a href="#casetabs-raw">Summary</a></li>
+    </ul>
+    <div id="casetabs-imaging">
+        {% for action, thumbs in image_actions.items %}
+
+            <div class="span-24">
+                <div class="span-8">
+                    <strong>Date Performed:</strong> {{ action.date }}<br>
+                    <strong>Result: </strong> {{ action.result|title }}<br>
+
+                </div>
+                <div class="span-14 last">
+                    {% for im in thumbs %}
+                         <div class="span-11">
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" id="img_{{ im.key }}"><br>
+                        </div>
+                        <div class="span-3 last">
+                            <strong>Simple Enhancements</strong><br>
+                            <input type="button" onclick="edge_detection('img_{{ im.key }}');" value="Edge detection"><br>
+                            <input type="button" onclick="edge_detection2('img_{{ im.key }}');" value="Edge detection 2"><br>
+                            <input type="button" onclick="emboss('img_{{ im.key }}');" value="Emboss"><br>
+                            <input type="button" onclick="color_histogram('img_{{ im.key }}');" value="Color Histogram"><br>
+                            <input type="button" onclick="histogram('img_{{ im.key }}');" value="Histogram"><br>
+                            <input type="button" onclick="laplace('img_{{ im.key }}');" value="Laplace Edge Detection"><br>
+                            <input type="button" onclick="remove_noise('img_{{ im.key }}');" value="Remove Noise"><br>
+                            <input type="button" onclick="usm('img_{{ im.key }}');" value="Unsharp Mask"><br>
+                            <input type="button" onclick="reset_all('img_{{ im.key }}');" value="Reset"><br>
+                        </div>
+
+
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <img src="http://placekitten.com/200/300"><br>
+        <img src="http://placekitten.com/g/400/300"><br>
+        <img src="http://placekitten.com/300/300">
+
+    </div>
+    <div id="casetabs-raw">
+    {% render_case case %}
+    </div>
+</div>
 {% endblock content %}

@@ -6,7 +6,7 @@
 <div class="container">
 <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
 <p>There's really not much here at the moment</p>
-<a href="{% url new_item patient.get_id %}">add demo item!</a>
+<a href="{% url new_bloodwork_order patient.get_id %}">New Bloodwork Order</a>
 {% render_cases patient %}
 </div>
 {% endblock content %}

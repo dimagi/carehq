@@ -23,30 +23,29 @@ def random_barcode():
     # TODO: do this serially to ensure no conflicts?
     return "%015d" % random.randint(0, 999999999999999)
 
-def touchforms_callback(request, patient_id):
+def new_bloodwork_order_cb(request, patient_guid):
     formsession = request.GET.get("session_id")
     if formsession:
         instance_xml = get_remote_instance(request, formsession).content
         resp = spoof_submission(reverse("receiver_post"), instance_xml, hqsubmission=False)
         # TODO: communicate anything here?
            
-    reverse_back = reverse('shine_single_patient', kwargs={'patient_id': patient_id})
+    reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid })
     return HttpResponseRedirect(reverse_back)
-        
 
-def new_item_registration(request, patient_id):
-    
+def new_bloodwork_order(request, patient_guid):
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
-    preloaders["case"] = {"patient_id": patient_id}
+    preloaders["case"] = {"patient_guid": patient_guid}
     preloaders["shine"] = {"barcode": random_barcode()}
     playsettings = defaultdict(lambda: "")
     playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/create_order.xml")
-    playsettings["next"] = reverse('shineforms_callback', kwargs={'patient_id': patient_id})
+    playsettings["next"] = reverse('new_bloodwork_order_cb', kwargs={'patient_guid': patient_guid})
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
-    
+
+
 @httpdigest
 def ota_restore(request):
     user = ShineUser.from_django_user(request.user)
