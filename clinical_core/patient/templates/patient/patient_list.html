@@ -28,6 +28,7 @@
         <th>Patient ID</th>
         <th>First Name</th>
         <th>Last Name</th>
+        <th>Patient Type</th>
     </thead>
     
     <tbody>
@@ -36,7 +37,8 @@
 		    <td><h4>{{ patient.patient_id }}</h4></td>
 		    <td><h4><a href="{% patient_url patient %}">{{ patient.first_name}}</a></h4></td>
 		    <td><h4><a href="{% patient_url patient %}">{{patient.last_name}}</a></h4></td>
-        </tr>   
+            <td><h4><a href="{% patient_url patient %}">{{patient.doc_type}}</a></h4></td>
+        </tr>
     {% endfor %}
     </tbody>
     </table>

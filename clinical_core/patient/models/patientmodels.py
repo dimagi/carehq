@@ -307,9 +307,12 @@ class BasePatient(Document):
 
             djangopt = Patient()
             django_uuid = uuid.uuid1().hex
-            doc_id = uuid.uuid1().hex
+            if self._id == None and self.new_document:
+                doc_id = uuid.uuid1().hex
+                self._id = doc_id
+            else:
+                doc_id = self._id
             self.django_uuid = django_uuid
-            self._id = doc_id
             try:
                 super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)

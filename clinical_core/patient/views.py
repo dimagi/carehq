@@ -4,6 +4,8 @@ import logging
 import urllib
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView
 from patient.models import Patient
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
@@ -13,6 +15,47 @@ from patient.forms import BasicPatientForm
 from django.contrib import messages
 from patient.models.patientmodels import SimplePatient
 from django.conf import settings
+
+
+
+class PatientSingleView(TemplateView):
+    template_name = 'patient/single_patient.html'
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PatientSingleView,self).dispatch(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super(PatientSingleView, self).get_context_data(**kwargs)
+        params = context['params']
+        patient_guid =  params['patient_guid']
+        pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+        context['patient'] = pat
+        return context
+
+
+
+class PatientListView(TemplateView):
+    """
+    Generic class based view for viewing the patient list.
+    """
+    template_name="patient/patient_list.html"
+    patient_type=None
+    create_patient_viewname = settings.CAREHQ_CREATE_PATIENT_VIEW_NAME
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PatientListView,self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(PatientListView, self).get_context_data(**kwargs)
+        view_results = BasePatient.get_db().view("patient/all", include_docs=True).all()
+        pats = [BasePatient.get_typed_from_dict(row["doc"]) for row in view_results]
+
+        if self.patient_type != None:
+            pats = filter(lambda x: isinstance(x, self.patient_type), pats)
+        context['patients'] = pats
+        context['create_patient_url'] = reverse(self.create_patient_viewname)
+        return context
+
 
 @login_required
 def list_patients(request, template="patient/patient_list.html"):
@@ -48,7 +91,9 @@ def new_patient(request):
 
 @login_required
 def single_patient(request, patient_id, template="patient/single_patient.html"):
-    pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_id))
+    """Where patient_guid is the doc_id of the patient.
+    """
+    pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
     return render_to_response(template, {"patient": pat},
                               context_instance=RequestContext(request))
 
