@@ -58,6 +58,8 @@ def enter_virtualenv():
     return prefix('PATH=%(virtualenv_root)s/bin/:PATH' % env)
 
 def get_code():
+    """Get code for the first time
+    """
     require('root', provided_by=('staging', 'production'))
     with cd(env.src_root):
         sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
@@ -66,11 +68,17 @@ def get_code():
         sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
 
 def pip_update():
+    """
+    Do a pip update off the requirements file
+    """
     with cd(env.code_root):
         with enter_virtualenv():
             run('pip install -r requirements.txt')
 
 def update():
+    """
+    Update codebase and submodules (git pull)
+    """
     require('root', provided_by=('staging', 'production'))
     with cd(env.code_root):
         sudo('git checkout %(code_branch)s' % env, user=env.sudo_user)
