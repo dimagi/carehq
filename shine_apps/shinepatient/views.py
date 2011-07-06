@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from sorl.thumbnail.shortcuts import get_thumbnail
 from clinical_core.webentry.util import get_remote_form, user_meta_preloaders, shared_preloaders
 from couchforms.models import XFormInstance
+from couchforms.util import post_xform_to_couch
 from patient.models import Patient
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
@@ -45,36 +46,14 @@ def newpatient_callback(request):
     patient_id=None
     if formsession:
         instance_xml = get_remote_instance(request, formsession).content
-        print instance_xml
-
-        case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
-        case_id = case_id_re.search(instance_xml).group('case_id')
-
         uid_re = re.compile('<uid>(?P<doc_id>\w+)<\/uid>')
         doc_id = uid_re.search(instance_xml).group('doc_id')
-
-        patient_guid_re = re.compile('<patient_guid>(?P<patient_guid>\w+)<\/patient_guid>')
-        patient_guid = patient_guid_re.search(instance_xml).group('patient_guid')
-
-        external_id_re = re.compile('<external_id>(?P<external_id>\w+)<\/external_id>') #external_id  = patient_id
-        external_id = external_id_re.search(instance_xml).group('external_id')
-
         resp = spoof_submission(reverse("receiver_post"), instance_xml, hqsubmission=False)
-
+        #post_xform_to_couch(instance_xml)
         xform_doc = XFormInstance.get(doc_id)
+        case_id = xform_doc['form']['case']['case_id']
         case_doc = CommCareCase.get(case_id)
-        # TODO: communicate anything here?
-        newptdoc = ShinePatient()
-        newptdoc._id = patient_guid
-        newptdoc.external_id = external_id
-        newptdoc.first_name = case_doc['first_name']
-        newptdoc.last_name = case_doc['last_name']
-        #newptdoc.middle_name = case_doc['middle_name']
-        newptdoc.gender = case_doc['sex']
-        newptdoc.birthdate = case_doc['dob']
-        newptdoc.save()
-        print case_id
-
+        patient_guid = case_doc['patient_guid']
 
     if doc_id != None:
         reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid})

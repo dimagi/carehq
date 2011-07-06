@@ -23,3 +23,5 @@ class ShinePatient(BasePatient):
         else:
             return cases[0].modified_on
 
+
+from signals import *
