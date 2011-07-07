@@ -12,6 +12,9 @@ def process_shinepatient_registration(sender, xform, **kwargs):
         try:
             case_id = xform['form']['case']['case_id']
             case_doc = CommCareCase.get(case_id)
+            case_doc.barcode = ''
+            case_doc.save()
+
             patient_guid = case_doc['patient_guid']
             external_id = case_doc['external_id']
             # TODO: communicate anything here?

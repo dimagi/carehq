@@ -1,6 +1,10 @@
 {% extends base_template %}
 
 {% load shinepatient_tags %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
+{% endblock %}
 
 {% block content %}
 <div class="container">

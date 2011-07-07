@@ -12,6 +12,8 @@ import random
 from casexml.apps.phone.models import User
 from shineforms.models import ShineUser
 from casexml.apps.phone.restore import generate_restore_payload
+import string
+from datetime import datetime
 
 def get_form(filename):
     path = os.path.join(os.path.dirname(__file__),"xforms", filename) 
@@ -21,7 +23,8 @@ def get_form(filename):
     
 def random_barcode():
     # TODO: do this serially to ensure no conflicts?
-    return "%015d" % random.randint(0, 999999999999999)
+    return datetime.now().strftime('%Y%m%d') + ''.join([random.choice(string.ascii_uppercase+string.digits) for i in range(8)])
+    #return "%015d" % random.randint(0, 999999999999999)
 
 def new_bloodwork_order_cb(request, patient_guid):
     formsession = request.GET.get("session_id")
