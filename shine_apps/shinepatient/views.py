@@ -92,7 +92,7 @@ def list_cases(request):
     cases = CommCareCase.view("shinepatient/cases_by_patient_guid", include_docs=True).all()
     for case in cases:
         try:
-            pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_id))
+            pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_guid))
             case.patient_name = "%s %s" % (pat.first_name, pat.last_name)
         except ResourceNotFound:
             case.patient_name = None
