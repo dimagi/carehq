@@ -112,7 +112,7 @@ def single_case(request, case_id):
             attach = ImageAttachment.objects.get(xform_id=doc_id, attachment_key=k)
             im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
             return im
-        except ImageAttachment.DoesNoteExist:
+        except ImageAttachment.DoesNotExist:
             logging.error("Error retrieving image attachment %s for submission %s" % (k,doc_id))
             return None
     image_action_dict = {}
