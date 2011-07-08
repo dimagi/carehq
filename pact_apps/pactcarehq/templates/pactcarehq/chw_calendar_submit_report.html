@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends base_template %}
 {% load patient_lookup %}
 {% block content %}
 <div class="span-10"><span style="font-size: 125%;">CHW Submission Schedule for {{ username }} </span><br>{{ end_date|date:"m/d/Y" }}-{{ start_date|date:"m/d/Y" }}</div>
