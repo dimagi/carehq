@@ -1,1 +1,1 @@
-from restore_tests import *
+from shinepatient_tests import *
