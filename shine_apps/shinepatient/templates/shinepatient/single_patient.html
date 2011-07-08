@@ -4,13 +4,34 @@
 {% block extrahead %}
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#pt_{{ patient.get_id }}_case_table").addClass("tablesorter");
+            $("#pt_{{ patient.get_id }}_case_table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-<h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+<h2>Patient Info: {{ patient.first_name }} {{ patient.last_name }}</h2>
 <p>There's really not much here at the moment</p>
-<a href="{% url new_bloodwork_order patient.get_id %}">New Bloodwork Order</a>
+<div class="span-24">
+    <div class="span-12">
+    <dl>
+        <dt>DOB</dt><dd>{{ patient.birthdate }}</dd>
+        <dt>Sex</dt><dd>{{ patient.gender|title }}</dd>
+    </dl>
+    </div>
+    <div class="span-12 last">
+        <h3>Actions</h3>
+        <a href="{% url new_bloodwork_order patient.get_id %}">New Bloodwork Order</a>
+    </div>
+</div>
+
+<h3>Active Case History</h3>
 {% render_cases patient %}
 </div>
 {% endblock content %}

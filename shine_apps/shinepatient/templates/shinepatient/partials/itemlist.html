@@ -1,5 +1,5 @@
 {% load patient_tags %}
-<table>
+<table id="pt_{{ patient.get_id }}_case_table">
 <thead>
     <tr>
         <th>Name</th><th>Date</th><th>Barcode</th>{% if not patient %}<th>Patient</th>{% endif %}<th>Status</th>
@@ -29,7 +29,7 @@
             No Barcode Set
         {% endif %}
 {% if not patient %}<td>{% if case.patient_name %}<a href="{% patient_url case.patient_guid %}">{{ case.patient_name }}</a>{% else %}NO LINKED PATIENT{% endif %}</td>{% endif %}
-    <td>{{ case.closed|yesno:"closed,open"}}</td>
+    <td>{{ case.closed|yesno:"Closed,Open"}}</td>
 </tr>
 {% endfor %}
 </tbody>
