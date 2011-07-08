@@ -108,9 +108,13 @@ def single_case(request, case_id):
     crop = request.GET.get('crop','center')
 
     def mk_thumbnail(doc_id, k):
-        attach = ImageAttachment.objects.get(xform_id=doc_id, attachment_key=k)
-        im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
-        return im
+        try:
+            attach = ImageAttachment.objects.get(xform_id=doc_id, attachment_key=k)
+            im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
+            return im
+        except ImageAttachment.DoesNoteExist:
+            logging.error("Error retrieving image attachment %s for submission %s" % (k,doc_id))
+            return None
     image_action_dict = {}
     for ima in image_actions:
         #this assumes that a single submission can only have 1 image attachment!
