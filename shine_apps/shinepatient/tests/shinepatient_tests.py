@@ -1,11 +1,13 @@
 import base64
 import uuid
+import Image, ImageDraw
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from quicksect import IntervalNode
 from datetime import datetime, timedelta
 import os
+import random
 import re
 from casexml.apps.case.models import CommCareCase
 from receiver.util import spoof_submission
@@ -77,6 +79,36 @@ image_submit_xml = """
 """
 
 
+
+generated_image_xml = """
+<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://shine.commcarehq.org/bloodwork/entry" uiVersion="1" version="1">
+  <Meta>
+    <DeviceID>354957030960291</DeviceID>
+    <TimeStart>%(timestart)s</TimeStart>
+    <TimeEnd>%(timeend)s</TimeEnd>
+    <username>shine</username>
+    <chw_id>2</chw_id>
+    <uid>%(uid)s</uid>
+  </Meta>
+  <case>
+    <case_id>%(case_id)s</case_id>
+    <date_modified>%(datemodified)s</date_modified>
+    <update>
+      <performed>Yes</performed>
+      <image tag="attachment">%(imagename)s</image>
+      <result>positive</result>
+    </update>
+    <close/>
+  </case>
+  <performed>Yes</performed>
+  <outcome>
+    <image>%(imagename)s</image>
+    <result>%(result)s</result>
+  </outcome>
+</data>
+"""
+
+
 #http auth with django client, source: http://stackoverflow.com/questions/6068674/django-test-client-http-basic-auth-for-post-request
 def http_auth(username, password):
     credentials = base64.encodestring('%s:%s' % (username, password)).strip()
@@ -93,9 +125,9 @@ class ShinePatienteTests(TestCase):
         }
 
     def tearDown(self):
-        if self.patient != None:
+        if hasattr(self, 'patient') and self.patient != None:
             self.patient.delete()
-        if self.casedoc != None:
+        if hasattr(self, 'casedoc') and self.casedoc != None:
             self.casedoc.delete()
 
     def _createUser(self):
@@ -180,4 +212,74 @@ class ShinePatienteTests(TestCase):
 
         images = ImageAttachment.objects.filter(xform_id=uid, attachment_key=testimage)
         self.assertEqual(len(images), 1)
+
+    def _random_td(self):
+        return timedelta(days=random.randint(0,365))
+
+    def testSubmitAttachments(self):
+        #self.testCreatePatient()
+        def create_image(filename, x, y, n):
+            """
+            Return a buffer of a jpeg image
+            """
+            im = Image.new("RGB",(x,y))
+            drtext = ImageDraw.Draw(im)
+            drtext.text((10,10), str(n),fill="white")
+
+            buf = StringIO()
+            im.save(buf,"JPEG")
+            buf.seek(0)
+            return buf
+
+        for x in range(10,60):
+            print "Creating and submitting image %d" % (x)
+            #generate image
+            #attach and submit
+            #verify image exists.
+
+            startdate = datetime.utcnow() - self._random_td()
+
+            uid = uuid.uuid1().hex
+            case_id = uuid.uuid1().hex
+
+            submit_dict = {}
+            submit_dict['uid'] = uid
+            submit_dict['case_id'] = case_id
+            submit_dict['timestart'] = startdate.strftime("%Y-%m-%dT%H:%M:%SZ")
+            submit_dict['timeend'] = (startdate + timedelta(seconds=random.randint(1,1000))).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            submit_dict['datemodified'] = startdate.strftime("%Y-%m-%dT%H:%M:%SZ")
+            submit_dict['result'] = random.choice(['positive', 'negative','inconclusive'])
+
+            filename = uuid.uuid1().hex + ".jpg"
+            submit_dict['imagename'] = filename
+
+
+            final_xml = generated_image_xml % (submit_dict)
+            xml_f = StringIO(final_xml.encode('utf-8'))
+            xml_f.name = 'form.xml'
+
+            image_f = create_image(filename, x*100, x*100, x )
+            image_f.name = filename
+
+            client = Client()
+            response = client.post(reverse('receiver_post'), {
+                'xml_submission_file': xml_f,
+                filename: image_f,
+                })
+
+            try:
+                xform = XFormInstance.get(uid)
+                self.assertTrue(xform._attachments.has_key(filename))
+            except Exception, ex:
+                self.fail("Error, submission not retrieved: %s" % ex)
+
+
+            #images = ImageAttachment.objects.filter(xform_id=uid, attachment_key=filename)
+            #self.assertEqual(len(images), 1)
+
+
+
+
+
 
