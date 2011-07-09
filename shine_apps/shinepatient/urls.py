@@ -7,7 +7,7 @@ from shinepatient.models import ShinePatient
 
 urlpatterns = patterns('',
     #url(r'^shine/$', 'patient.views.list_patients', name='shine_home'),
-    url(r'^/$', PatientListView.as_view(template_name='shinepatient/patient_list.html', patient_type=ShinePatient, create_patient_viewname='shine_create_patient_touch'), name='shine_home'),
+    url(r'^$', PatientListView.as_view(template_name='shinepatient/patient_list.html', patient_type=ShinePatient, create_patient_viewname='shine_create_patient_touch'), name='shine_home_root'),
     url(r'^shine/$', PatientListView.as_view(template_name='shinepatient/patient_list.html', patient_type=ShinePatient, create_patient_viewname='shine_create_patient_touch'), name='shine_home'),
 
 
