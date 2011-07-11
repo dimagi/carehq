@@ -132,7 +132,7 @@ def schedule_coverage_tally_report():
 
 
     body = '\n'.join([subject, '', 'Scheduled Today:\n', '\n'.join(scheduled), '\nNot Scheduled Today:\n', '\n'.join(unscheduled)])
-    send_mail(subject, body, 'notifications@dimagi.com', ['dmyung@dimagi.com', 'CMCBEE@partners.org'], fail_silently=False)
+    send_mail(subject, body, 'notifications@dimagi.com', ['pact-ops@dimagi.com'], fail_silently=True)
 
 
 @periodic_task(run_every=crontab(minute=00, hour=15))
