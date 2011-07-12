@@ -157,5 +157,5 @@ def schedule_coverage_tally_report_sms():
                 else:
                     message_text = "Today you have submitted %d of your %d scheduled patient visits." % (total_visited, total_scheduled)
                 message_text += " To see your full schedule visit https://pact.dimagi.com/schedules/chw/%s" % (user.username.lower())
-                send_mail('', message_text, 'notifications@dimagi.com', [hack_chw_username_phones[user.username.lower()]], fail_silently=False)
+                send_mail('', message_text, 'notifications@dimagi.com', [hack_chw_username_phones[user.username.lower()]], fail_silently=True)
 
