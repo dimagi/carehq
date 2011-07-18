@@ -81,6 +81,7 @@
 					{% if user.is_authenticated %}
                     <div id="menu" style="z-index:-1;">
                      <ul>
+                        {% block nav_list %}
                          <li>
                              <span class="head_menu">
                                <a href="{% url pactcarehq.views.my_patient_activity %}">Dashboard</a>
@@ -110,6 +111,7 @@
 {#                                <a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a>#}
                             </div>
                         </li>
+                        {% endblock %}
                      </ul>
 					{% endif %} {# end autenticated if#}
                     </div> {# div id=menu #}

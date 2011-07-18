@@ -117,6 +117,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.request',
                                #'staticfiles.context_processors.static',
                                'django.core.context_processors.static',
+                               'context_processors.base_template',
+                               #'touchforms.context_processors.static_workaround',
                                )
 
 INSTALLED_APPS = (
@@ -136,11 +138,13 @@ INSTALLED_APPS = (
     'couchexport',
     'couchlog',
     'dimagi.utils',
+    'receiver',
     'django.contrib.flatpages',
     'touchforms.formplayer',
     'patient',
     'auditcare',
     'casexml.apps.case',
+    'casexml.apps.phone',
     #end clinical_core
 
     #########################
@@ -164,9 +168,10 @@ INSTALLED_APPS = (
 
 
 #DEV_APPS are the apps in which you care about for unit testing.  These are the BARE MINIMUM
-#DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'touchforms.formsplayer',]
+#DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'casexml.apps.phone', 'touchforms.formsplayer',]
+
 #to be overrided by localsettings if need be.  These are the BARE MINIMUM
-COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case',]
+COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case', 'casexml.apps.phone']
 
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -187,6 +192,7 @@ USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
+BASE_TEMPLATE = "base.html"
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
@@ -196,7 +202,7 @@ AUDITABLE_MODELS = [
                     #'patient.models.PatientIdentifier',
                     ]
 
-TEST_RUNNER = 'dimagi.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
+TEST_RUNNER = 'dimagi.utils.couch.testrunner.DimagiCouchTestSuiteRunner'
 
 
 #have sessions expire at browser close for security reasons
@@ -206,7 +212,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CARROT_BACKEND = "django"
 
 
-
+# carehq config
+CAREHQ_CREATE_PATIENT_VIEW_NAME = "create_patient"
 
 import os
 

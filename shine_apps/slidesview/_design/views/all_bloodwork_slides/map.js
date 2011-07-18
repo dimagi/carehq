@@ -10,7 +10,7 @@ function(doc) {
         return keys;
     }
 
-    if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/bloodwork") {
+    if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://shine.commcarehq.org/bloodwork/entry") {
         //use pact bloodwork for now as the test form while we figure out what else is going on
         var keys = getkeys(doc._attachments);
         if (keys.length > 1) {

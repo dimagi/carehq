@@ -1,0 +1,86 @@
+
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa"> 
+  <h:head> 
+    <h:title>Barcode Reg</h:title> 
+    <model> 
+      <instance> 
+        <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/B095F533-6226-40EE-9045-38EA21D214DB" uiVersion="1" version="1" name="Barcode Demo Item Registration"> 
+          <name/> 
+          <date/> 
+          <barcode/> 
+          <urgency/> 
+          <zone/> 
+          <estimate/> 
+        <case><case_id/><date_modified/><create><case_type_id>cc_bc_demo</case_type_id><case_name/><user_id/><external_id/></create><update><entry_date/><patient_id/><barcode/><finaldate/><urgency/></update></case><orx:meta><orx:deviceID/><orx:timeStart/><orx:timeEnd/><orx:username/><orx:userID/><orx:uid/></orx:meta></data> 
+      </instance> 
+      <bind nodeset="/data/name" type="xsd:string" required="true()"/> 
+      <bind nodeset="/data/date" type="xsd:date" required="true()"/> 
+      <bind nodeset="/data/barcode" jr:preloadParams="barcode" jr:preload="shine" type="xsd:string"/> 
+      <bind nodeset="/data/urgency" type="select1" required="true()"/> 
+      <bind nodeset="/data/zone" type="select1"/> 
+      <bind nodeset="/data/estimate" type="xsd:string" calculate="date(int(/data/date) + (/data/zone div /data/urgency))"/> 
+      <bind nodeset="case/date_modified" jr:preloadParams="end" jr:preload="timestamp" type="dateTime" />
+      <bind relevance="true()" nodeset="case/create" />
+      <bind nodeset="case/case_id" jr:preloadParams="general" jr:preload="uid" />
+      <bind nodeset="case/create/user_id" jr:preloadParams="UserID" jr:preload="meta" type="xsd:string" />
+      <bind nodeset="case/create/case_name" calculate="/data/name" />
+      <bind nodeset="case/create/external_id" calculate="/data/barcode" />
+      <bind nodeset="case/update/entry_date" relevant="count(/data/date) &gt; 0" calculate="/data/date" />
+      <bind nodeset="case/update/patient_id" jr:preloadParams="patient_id" jr:preload="case" type="xsd:string" />
+      <bind nodeset="case/update/barcode" relevant="count(/data/barcode) &gt; 0" calculate="/data/barcode" />
+      <bind nodeset="case/update/finaldate" relevant="count(/data/estimate) &gt; 0" calculate="/data/estimate" />
+      <bind nodeset="case/update/urgency" relevant="count(/data/urgency) &gt; 0" calculate="/data/urgency" />
+      <bind nodeset="meta/deviceID" jr:preloadParams="DeviceID" jr:preload="property" type="xsd:string" id="d767173a5578a19109d88b34be4cf328f6b57769meta1" />
+      <bind nodeset="meta/timeStart" jr:preloadParams="start" jr:preload="timestamp" type="xsd:dateTime" id="d767173a5578a19109d88b34be4cf328f6b57769meta2" />
+      <bind nodeset="meta/timeEnd" jr:preloadParams="end" jr:preload="timestamp" type="xsd:dateTime" id="d767173a5578a19109d88b34be4cf328f6b57769meta3" />
+      <bind nodeset="meta/username" jr:preloadParams="UserName" jr:preload="meta" type="xsd:string" id="d767173a5578a19109d88b34be4cf328f6b57769meta4" />
+      <bind nodeset="meta/userID" jr:preloadParams="UserID" jr:preload="meta" type="xsd:string" id="d767173a5578a19109d88b34be4cf328f6b57769meta5" />
+      <bind nodeset="meta/uid" jr:preloadParams="general" jr:preload="uid" type="xsd:string" id="d767173a5578a19109d88b34be4cf328f6b57769meta6" />
+  </model> 
+  </h:head> 
+  <h:body> 
+    <input ref="/data/name"> 
+      <label>What is the item being tracked?</label> 
+    </input> 
+    <input ref="/data/date"> 
+      <label>What is the date of Entry?</label> 
+    </input> 
+    <input ref="/data/barcode"> 
+      <label>Please enter the item's barcode</label> 
+    </input> 
+    <select1 ref="/data/urgency"> 
+      <label>Rate Urgency</label> 
+      <item> 
+        <label>High</label> 
+        <value>4</value> 
+      </item> 
+      <item> 
+        <label>Standard</label> 
+        <value>2</value> 
+      </item> 
+      <item> 
+        <label>Low</label> 
+        <value>1</value> 
+      </item> 
+    </select1> 
+    <select1 ref="/data/zone"> 
+      <label>Which delivery zone is the item in?</label> 
+      <item> 
+        <label>Zone One</label> 
+        <value>8</value> 
+      </item> 
+      <item> 
+        <label>Zone Two</label> 
+        <value>12</value> 
+      </item> 
+      <item> 
+        <label>Zone Three</label> 
+        <value>4</value> 
+      </item> 
+      <item> 
+        <label>Zone Four</label> 
+        <value>8</value> 
+      </item> 
+    </select1> 
+  </h:body> 
+</h:html>

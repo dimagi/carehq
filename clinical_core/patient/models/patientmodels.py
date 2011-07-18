@@ -313,8 +313,14 @@ class BasePatient(Document):
             djangopt = Patient()
             django_uuid = uuid.uuid4().hex
             doc_id = uuid.uuid4().hex
+            if self._id == None and self.new_document:
+                doc_id = uuid.uuid4().hex
+                self._id = doc_id
+            else:
+                doc_id = self._id
+
             self.django_uuid = django_uuid
-            self._id = doc_id
+
             try:
                 super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)
@@ -338,6 +344,21 @@ class BasePatient(Document):
     class Meta:
         app_label = 'patient'
 
+
+class SimplePatient(BasePatient):
+    """
+    A stub implementation of the Patient model
+    """
+    def is_unique(self):
+        return True
+
+    def __getattr__(self, key):
+        # this hack allows this to be used in templates that expect it
+        # to behave like a normal python object.
+        try:
+            return super(BasePatient, self).__getattr__(key)
+        except KeyError:
+            raise AttributeError
 
 class CSimpleComment(Document):
     doc_fk_id = StringProperty() #is there a fk in couchdbkit
