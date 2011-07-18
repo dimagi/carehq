@@ -208,7 +208,7 @@ class CarePlanItem(models.Model):
         save = do we save this to db before returning?
         """
         new_item = CarePlanItem()
-        new_item.id = uuid.uuid1().hex
+        new_item.id = uuid.uuid4().hex
         new_item.category.add(*list(base_item.category.all()))
         new_item.tags.add(*list(base_item.tags.all()))
         new_item.description = base_item.description        
@@ -264,7 +264,7 @@ class CarePlan(models.Model):
                 raise Exception("Error, if you are saving this on creation from a template, you must enter a user")
         
         new_plan = CarePlan()
-        new_plan.id = uuid.uuid1().hex
+        new_plan.id = uuid.uuid4().hex
         new_plan.from_template = base_plan
         new_plan.version = 1
         new_plan.patient = patient

@@ -22,7 +22,7 @@ def run():
 
         #establish the updated ids and get them separated out
         real_case_id = p.doc_id + "" #the doc_id had been used as the case_id which in real casexml, that's bad.
-        new_doc_id = uuid.uuid1().hex #now make a new doc_id for the patient document.
+        new_doc_id = uuid.uuid4().hex #now make a new doc_id for the patient document.
 
         couchdoc = db.open_doc(p.doc_id)
 
