@@ -26,7 +26,7 @@ hack_chw_username_phones = {
     'ao970': '6178168507@vtext.com',
     'nc903': '6173788671@vtext.com',
     'isaac': '6174597765@vtext.com',
-    'clare': '6175298471@vtext.com',
+    #'clare': '6175298471@vtext.com',
 }
 
 
@@ -201,6 +201,7 @@ def schedule_coverage_tally_report_sms():
             if total_scheduled > 0:
                 if total_visited == total_scheduled:
                     message_text = "You have submitted data for all %d of your patients today, great!" % (total_scheduled)
+                    continue
                 else:
                     message_text = "Today you have submitted %d of your %d scheduled patient visits." % (total_visited, total_scheduled)
                 message_text += " To see your full schedule visit https://pact.dimagi.com/schedules/chw/%s" % (user.username.lower())
