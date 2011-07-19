@@ -115,7 +115,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.i18n', 
                                'django.core.context_processors.media',                               
                                'django.core.context_processors.request',
-                               #'staticfiles.context_processors.static',
                                'django.core.context_processors.static',
                                )
 
@@ -140,6 +139,7 @@ INSTALLED_APPS = (
     'touchforms.formplayer',
     'patient',
     'auditcare',
+    'downloader',
     'casexml.apps.case',
     #end clinical_core
 

@@ -39,7 +39,7 @@ def get_csv(request):
     patient_id = request.GET.get('patient', None)
 
     csv_export.delay(csv_mode, end_date.strftime('%Y-%m-%d'), start_date.strftime('%Y-%m-%d'), patient_id, download_id)
-    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('retrieve_download', kwargs={'download_id': download_id}))
     #return HttpResponse('<html><body>Task for csv download generated<br><br><a href="%s">Download Link</a></body></html>' % (reverse('dotsview.views.file_download', kwargs={'download_id':download_id})))
 
 

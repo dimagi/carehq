@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Bulk Exports</h2>
+    <h3>Progress Note Bulk Export (All Data)</h3>
+    <a href="{% url pactcarehq.views.export_excel_file %}?export_tag=http://dev.commcarehq.org/pact/progress_note">Export and wait for download here</a><br>
+    or<br>
+    Retrieve an email with a download link:<br>
+    {% if form %}
+    <form method="POST" action="">
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/></td>
+    <input type="hidden" name="next" value="{{ request.path }}" />
+    </form>
+    {% else %}
+        Your request has been submitted, you will receive an email at {{ email }} when it is ready for download. <br>
+        To wait in the browser, you can visit <a href="{% url retrieve_download download_id%}">this link</a>
+    {% endif %}
+
+{% endblock content %}
+

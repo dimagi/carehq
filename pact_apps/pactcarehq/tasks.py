@@ -2,18 +2,37 @@ from datetime import timedelta, datetime
 from celery.schedules import crontab
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 import simplejson
 from celery.decorators import task, periodic_task
 import tempfile
 import zipfile
 import csv
+import logging
 from couchexport.export import export, Format
+from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
 from django.core.mail import send_mail
 
+hack_chw_username_phones = {
+    'ss524': '6178168512@vtext.com',
+    'lm723': '6175434561@vtext.com',
+    'an907': '6178941127@vtext.com',
+    'lnb9':  '6178944627@vtext.com',
+    'ma651': '6176509230@vtext.com',
+    'ac381': '6179218161@vtext.com',
+    'cs783': '6178168506@vtext.com',
+    'ao970': '6178168507@vtext.com',
+    'nc903': '6173788671@vtext.com',
+    'isaac': '6174597765@vtext.com',
+    'clare': '6175298471@vtext.com',
+}
+
+
+
 @task
-def schema_export(namespace, download_id):
+def schema_export(namespace, download_id, email=None):
     cache_container = {}
     tmp = tempfile.NamedTemporaryFile(suffix='.xls', delete=False)
     if export(namespace, tmp, format=Format.XLS):
@@ -27,6 +46,12 @@ def schema_export(namespace, download_id):
         cache_container['location'] = None
         cache_container['message'] = "No data due to an error generating the file"
     cache.set(download_id, simplejson.dumps(cache_container), 86400)
+
+    if email != None:
+        subject = "[CareHQ] Your requested file download is ready"
+        url = "https://pact.dimagi.com" + reverse('retrieve_download', kwargs={'download_id': download_id})
+        body = '\n'.join(['To retrieve your document log into CareHQ and visit the URL below.', url])
+        send_mail(subject, body, 'notifications@dimagi.com', [email], fail_silently=True)
 
 
 @task
@@ -93,20 +118,42 @@ def all_chw_submit_report(total_interval, download_id):
     cache.set(download_id, simplejson.dumps(cache_container), 86400)
 
 
+@periodic_task(run_every=crontab(hour=23, minute=59))
+def prime_views():
+    """
+    Cheater function to hit certain key views in pact so as to keep the view index refreshes low.
+    """
+    db = XFormInstance.get_db()
+    schema_index = "http://dev.commcarehq.org/pact/progress_note"
+    db.view("couchexport/schema_index", key=schema_index, include_docs=True, limit=5).all()
+    logging.debug("Primed couchexport/schema_index")
 
-hack_chw_username_phones = {
-    'ss524': '6178168512@vtext.com',
-    'lm723': '6175434561@vtext.com',
-    'an907': '6178941127@vtext.com',
-    'lnb9':  '6178944627@vtext.com',
-    'ma651': '6176509230@vtext.com',
-    'ac381': '6179218161@vtext.com',
-    'cs783': '6178168506@vtext.com',
-    'ao970': '6178168507@vtext.com',
-    'nc903': '6173788671@vtext.com',
-    'isaac': '6174597765@vtext.com',
-    'clare': '6175298471@vtext.com',
-}
+    db.view("dotsview/dots_observations", limit=5).all()
+    logging.debug("Primed dotsview/dots_observations")
+
+    db.view("pactcarehq/all_dots", limit=5).all()
+    logging.debug("Primed pactcarehq views")
+
+    db.view("pactcarehq/all_dots", limit=5).all()
+    logging.debug("Primed pactcarehq views")
+
+    db.view("pactpatient/by_case_id", limit=5).all()
+    logging.debug("Primed pactpatient views")
+
+    db.view("pactpatient/by_case_id", limit=5).all()
+    logging.debug("Primed pactpatient views")
+
+    db.view("patient/all", limit=5).all()
+    logging.debug("Primed patient views")
+
+    db.view("case/by_last_date", limit=5).all()
+    logging.debug("Primed case views")
+
+    db.view("auditcare/by_date", limit=5).all()
+    logging.debug("Primed auditcare views")
+
+
+
 
 @periodic_task(run_every=crontab(minute=30, hour=15))
 #@periodic_task(run_every=crontab(hour="*", minute="*", day_of_week="*"))
