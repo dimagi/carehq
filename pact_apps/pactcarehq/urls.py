@@ -36,6 +36,8 @@ urlpatterns = patterns ('',
 
     (r'^submits/submits/bychw$', 'pactcarehq.views.all_submits_by_user'), #to be deprecated
     (r'^submits/patient/all$', 'pactcarehq.views.all_submits_by_patient'),
+
+    (r'^exporter/$', 'pactcarehq.views.export_landing'),
     (r'^export/$', 'pactcarehq.views.export_excel_file'),
 
     (r'^schedules/chw/(?P<username>.*)$', 'pactcarehq.views.chw_calendar_submit_report'),
@@ -54,5 +56,5 @@ urlpatterns = patterns ('',
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
 
-    url(r'^download/(?P<download_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.file_download'),
+    #url(r'^download/(?P<download_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.file_download'),
 )

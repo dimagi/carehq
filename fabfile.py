@@ -116,6 +116,10 @@ def restart_celery():
         sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
         sudo('start carehq_celery', user=env.sudo_user, shell=False)
 
+        sudo('stop carehq_celerymon', user=env.sudo_user, shell=False)
+        sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
+        sudo('start carehq_celerymon', user=env.sudo_user, shell=False)
+
 
 def restart_formsplayer():
     require('root', provided_by=('staging', 'production'))

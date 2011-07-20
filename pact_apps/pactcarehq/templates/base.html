@@ -104,6 +104,9 @@
                                 <img src="{{ STATIC_URL }}pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
                             </span>
                             <div class="sub_menu">
+                                {% if user.is_superuser %}
+                                <a href="{% url pactcarehq.views.export_landing %}">Data Exports</a>
+                                {% endif %}
                                 <a href="{% url pactcarehq.views.chw_list %}">CHW List</a>
                                 <a href="{% url pactcarehq.views.patient_list%}">Patient List</a>
 {#                                <a href="{% url clinical_core.actors.views.providerSearch %}">Provider List</a>#}

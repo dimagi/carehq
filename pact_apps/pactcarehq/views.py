@@ -1,5 +1,6 @@
 import urllib
 from couchdbkit.exceptions import ResourceNotFound
+from django import forms
 from django.core.servers.basehttp import FileWrapper
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
@@ -34,6 +35,7 @@ from django.views.decorators.cache import cache_page
 from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
 import tempfile
+from django import forms
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -51,8 +53,33 @@ def export_excel_file(request):
         return HttpResponse("Error, no documents for that schema exist")
     download_id = uuid.uuid4().hex
     schema_export.delay(namespace, download_id)
-    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('downloader.downloaderviews.retrieve', kwargs={'download_id': download_id}))
 
+@login_required()
+def export_landing(request, template_name="pactcarehq/export_landing.html"):
+
+    class RequestDownloadForm(forms.Form):
+        email_address = forms.CharField(error_messages = {'required':
+                                                'You must enter an email'})
+
+    context = RequestContext(request)
+    if request.method == "POST":
+        form = RequestDownloadForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email_address']
+            download_id = uuid.uuid4().hex
+            namespace = "http://dev.commcarehq.org/pact/progress_note"
+            context['email'] = email
+            context['download_id'] = download_id
+
+            schema_export.delay(namespace, download_id, email=email)
+
+        else:
+            context['form'] = form
+    else:
+        context['form'] = RequestDownloadForm()
+
+    return render_to_response(template_name, context_instance=context)
 
 
     
@@ -962,41 +989,6 @@ def show_submission(request, doc_id, template_name="pactcarehq/view_submission.h
 
 
 
-@login_required
-def file_download(request, download_id,template="dots/file_download.html" ):
-    do_download = request.GET.has_key('get_file')
-    if do_download:
-        download_data = cache.get(download_id, None)
-        if download_data == None:
-            logging.error("Download file request for expired/nonexistent file requested")
-            raise Http404
-        else:
-            download_json = simplejson.loads(download_data)
-
-            if download_json['location'] == None:
-                #there's no data, likely an error
-                response = HttpResponse(mimetype=download_json['mimetype'])
-                if download_json.has_key('message'):
-                    response.write(download_json['message'])
-                else:
-                    response.write("No data")
-                return response
-
-            f = file(download_json['location'], 'rb')
-            wrapper = FileWrapper(f)
-            response = HttpResponse(wrapper, mimetype=download_json['mimetype'])
-            response['Transfer-Encoding'] = 'chunked'
-            response['Content-Disposition'] = download_json['Content-Disposition']
-            return response
-    else:
-        download_data = cache.get(download_id, None)
-        if download_data == None:
-            is_ready = False
-        else:
-            is_ready=True
-        context = RequestContext(request)
-        context['is_ready'] = is_ready
-        return render_to_response(template, context_instance=context)
 @httpdigest()
 def xml_download(request):
     username = request.user.username
