@@ -2,7 +2,7 @@ decorator
 xlwt
 pycrypto
 pyasn1
-django
+django>=1.3
 restkit==2.3.3
 couchdbkit==0.5.1
 pygooglechart
