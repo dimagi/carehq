@@ -221,7 +221,7 @@ $(function() {
 	<div class="span-24">
 		<div class="span-12">
             {# #################### Address view/edit ################### #}
-            <strong><span style="font-size:125%">Address Information</span></strong> <small>(<a href="{{ request.path }}?new_address=True">Add new</a>)</small>
+            <strong><span style="font-size:125%">Patient Doc Address Information</span></strong> <small>(<a href="{{ request.path }}?new_address=True">Add new</a>)</small><br>
             {% if address_edit %}
                 <fieldset>
                     <legend>Change Address</legend>
@@ -238,7 +238,7 @@ $(function() {
                 <div class="span-12">
                 </div>
                 <div class="span-11 prepend-1 last">
-                    {% for patient_address in pdoc.active_addresses %}
+                    {% for patient_address in pdoc.address%}
                             <div class="span-11">
                                 {% if patient_address.description %}
                                 <strong>{{ patient_address.description|title }}</strong> &nbsp;
@@ -251,10 +251,14 @@ $(function() {
                     </div>
             {% endif %}
             {# ######################## End address editing #################### #}
+            <strong>Patient Case Address Data</strong><br>
+            {% for p in pdoc.active_addresses %}
+                {{ p.description }}: {{ p.address }}<br>
+            {% endfor %}
         </div>
         <div class="span-12 last">
             {# ####################### Phone Display/Edit ###################### #}
-            <strong><span style="font-size:125%">Phone Contact</span></strong> <small>(<a href="{{ request.path }}?edit_phone=True">Add new</a>)</small>
+            <strong><span style="font-size:125%">Patient Doc Phone Contact</span></strong> <small>(<a href="{{ request.path }}?edit_phone=True">Add new</a>)</small><br>
             {% if phone_edit %}
             <div class="span-8">
                 <fieldset>
@@ -271,7 +275,7 @@ $(function() {
             </div>
             {% endif %}
 
-            {% for phone in pdoc.active_phones %}
+            {% for phone in pdoc.phones %}
                 <div class="span-12">
                     <div class="span-3" align="right">
                         <strong>{{ phone.description|title }}</strong>
@@ -282,7 +286,14 @@ $(function() {
                     </div>
                 </div>
             {% endfor %}
+
+        
+
             {# ########################### End Phone Display/Edit ####################### #}
+            <strong>Patient Case Phone Data</strong><br>
+            {% for p in pdoc.active_phones %}
+            {{ p.description }}: {{ p.number }}<br>
+            {% endfor %}
         </div>
     </div>
     <hr>

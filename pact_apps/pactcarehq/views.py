@@ -2,6 +2,7 @@ import urllib
 from couchdbkit.exceptions import ResourceNotFound
 from django import forms
 from django.core.servers.basehttp import FileWrapper
+from casexml.apps.case.models import CommCareCase
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
 from pactpatient.forms import PactPatientEditForm
@@ -135,14 +136,14 @@ def remove_schedule(request):
 
 @login_required
 def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
+    """
+    Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
+    """
 
     schedule_show = request.GET.get("schedule", "active")
-
     schedule_edit = request.GET.get("edit_schedule", False)
     address_edit = request.GET.get("edit_address", False)
     address_edit_id = request.GET.get("address_id", None)
-
-
     new_address = True if request.GET.get("new_address", False) == "True" else False
     phone_edit = request.GET.get("edit_phone", False)
     patient_edit = request.GET.get('edit_patient', None)
@@ -159,9 +160,13 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
     context['address_edit'] = address_edit
     context['patient_edit'] = patient_edit
     context['submit_arr'] = _get_submissions_for_patient(patient)
+    context['casedoc'] = CommCareCase.get(patient.couchdoc.case_id)
 
     last_bw = patient.couchdoc.last_bloodwork
     context['last_bloodwork'] = last_bw
+
+
+
     if last_bw == None:
         context['bloodwork_missing']  = True
     else:
@@ -224,12 +229,6 @@ def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
                     instance.created_by = request.user.username
                 instance.description = form.cleaned_data['description']
                 instance.full_address = form.cleaned_data['address']
-#                instance.street = form.cleaned_data['street']
-#                instance.city = form.cleaned_data['city']
-#                instance.state = form.cleaned_data['state']
-#                instance.postal_code = form.cleaned_data['postal_code']
-                print instance.description
-                print instance.full_address
 
                 if is_new_addr == False:
                     index = patient.couchdoc.address_index(address_edit_id)
@@ -538,7 +537,6 @@ def _get_schedule_tally(username, total_interval, override_date=None):
 #                patients.append(Patient.objects.get(id=cpatient.django_uuid))
                 patients.append(cpatient)
             except:
-                #print "skipping patient %s: %s, %s" % (cpatient.pact_id, cpatient.last_name, cpatient.first_name)
                 continue
 
         #inefficient, but we need to get the patients in alpha order
@@ -546,9 +544,7 @@ def _get_schedule_tally(username, total_interval, override_date=None):
         for patient in patients:
             pact_id = patient.pact_id
             searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
-            #print searchkey
             submissions = XFormInstance.view('pactcarehq/submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
-            #print len(submissions)
             if len(submissions) > 0:
                 visited.append(submissions[0])
                 total_visited+= 1
@@ -561,7 +557,6 @@ def _get_schedule_tally(username, total_interval, override_date=None):
                 else:
                     visited.append(None)
 
-        #print (visit_date, patients, visited)
         ret.append((visit_date, zip(patients, visited)))
     return ret, patients, total_scheduled, total_visited
 
@@ -728,7 +723,6 @@ def _hack_get_old_caseid(new_case_id):
         old_case_id = oldpt.get_new_patient_doc_id()
     except:
         old_case_id=None
-        #print "can't find that patient/case: %s" % (new_case_id)
     return old_case_id
 
 

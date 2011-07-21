@@ -502,14 +502,25 @@ class PactPatient(BasePatient):
         casedoc = CommCareCase.get(self.case_id)
         phone_properties = sorted(filter(lambda x: x.startswith("Phone"), casedoc._dynamic_properties.keys()))
         #iterate through all phones properties and make an array of [ {description, number}, etc ]
-        foo
         ret = []
-        for phone in self.phones:
-            if phone.deprecated:
-                continue
+
+        for n, x in enumerate(phone_properties, start=1):
+            p = {}
+            if hasattr(casedoc, 'Phone%d' % n):
+                pnum = getattr(casedoc, 'Phone%d' % n)
+                if pnum != None and pnum != '':
+                    p['number'] = pnum
+            if hasattr(casedoc, 'Phone%dType' % n):
+                p['description'] = getattr(casedoc, 'Phone%dType' % n)
             else:
-                ret.append(phone)
+                p['description'] = 'Other'
+            if p.has_key('number'):
+                ret.append(p)
+            if p == {}:
+                break
         return ret
+
+
     @property
     def active_addresses(self):
         """
@@ -517,7 +528,22 @@ class PactPatient(BasePatient):
         """
         casedoc = CommCareCase.get(self.case_id)
         #iterate through all address properties and make an array of [ {description, address_string}, etc ]
-        pass
+        address_props = sorted(filter(lambda x: x.startswith("address"), casedoc._dynamic_properties.keys()))
+        ret = []
+
+        for n, x in enumerate(address_props, start=1):
+            p = {}
+            if hasattr(casedoc, 'address%d' % n):
+                pnum = getattr(casedoc, 'address%d' % n)
+                if pnum != None and pnum != '':
+                    p['address'] = pnum
+            if hasattr(casedoc, 'address%dtype' % n):
+                p['description'] = getattr(casedoc, 'address%dtype' % n)
+            if p.has_key('address'):
+                ret.append(p)
+            if p == {}:
+                break
+        return ret
 
     def get_ghetto_phone_xml(self):
         ret = ''

@@ -1,4 +1,5 @@
 from StringIO import StringIO
+import uuid
 import re
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -17,6 +18,8 @@ from pactcarehq.scripts.scrambler import make_random_cphone, make_random_caddres
 from pactpatient.updater import generate_update_xml
 import receiver.views as receiver_views
 
+from django_digest.test import Client as DigestClient
+
 class patientCaseUpdateTests(TestCase):
     NUM_PHONES=5
     NUM_ADDRESSES = 2
@@ -30,13 +33,34 @@ class patientCaseUpdateTests(TestCase):
         self._createUser()
 
     def _createUser(self):
-        usr = User()
-        usr.username = 'mockmock@mockmock.com'
-        usr.set_password('mockmock')
-        usr.first_name='mocky'
-        usr.last_name = 'mock'
-        usr.save()
+        self.user = User()
+        self.user.username = 'mockmock@mockmock.com'
+        self.user.set_password('mockmock')
+        self.user.first_name='mocky'
+        self.user.last_name = 'mock'
+        self.user.save()
 
+    def testOTARestore(self):
+        """
+        For a given patient created, ensure that it shows up in the OTA restore.
+        Ensure also that changes in phone and addresses also show up in OTA restore.
+        This test also uses django_digest to authenticate to the OTA restore URL.
+
+
+        Verify all the phone and address information
+        """
+        patient = self.test0CreatePatient()
+
+        client = DigestClient()
+        client.set_authorization(self.user.username, 'mockmock', 'Digest')
+        restore_payload = client.get('/provider/caselist')
+
+        case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
+        case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
+
+        casedoc = CommCareCase.get(patient.couchdoc.case_id)
+        
+        self.assertEqual(case_id_xml, casedoc._id)
 
     def test3PushPhonesIteratively(self):
         """
@@ -175,8 +199,12 @@ class patientCaseUpdateTests(TestCase):
                                                       'arm': 'DOT',
                                                       'art_regimen': 'QD',
                                                       'non_art_regimen': 'BID',
-                                                      'primary_hp': 'foo'
+                                                      'primary_hp': 'foo',
+                                                      'patient_id': uuid.uuid4().hex,
                                                     })
+        f = open('response.html', 'w')
+        f.write(response.content)
+        f.close()
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
         self.assertEqual(1, Patient.objects.all().count())
         patient = Patient.objects.all()[0]

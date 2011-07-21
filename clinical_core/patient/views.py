@@ -68,6 +68,9 @@ def list_patients(request, template="patient/patient_list.html"):
                               context_instance=RequestContext(request))
 @login_required
 def new_patient(request):
+    """
+    Basic patient view for creating a new patient, very barebones.
+    """
     context = RequestContext(request)
     if request.method == 'POST':
         form = BasicPatientForm(data=request.POST)
