@@ -25,7 +25,7 @@
         {% for cpatient in patients %}
             <tr>
                 <td><h4>{{cpatient.pact_id}}</h4></td>
-                <td><h4><a href="{% url pactcarehq.views.patient_view cpatient.django_uuid %}">{{cpatient.last_name}}, {{cpatient.first_name}}</a></h4></td>
+                <td><h4><a href="{% url view_pactpatient cpatient.get_id %}">{{cpatient.last_name}}, {{cpatient.first_name}}</a></h4></td>
                 <td>{{cpatient.arm}}</td>
                 <td>{{cpatient.primary_hp}}</td>
                 <td>

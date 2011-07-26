@@ -42,7 +42,7 @@ def new_patient(request, template_name="patient/new_patient.html"):
             case.external_id = newptdoc.pact_id
             case.save()
             messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
-            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':newptdoc.django_uuid}))
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':newptdoc.django_uuid}))
         else:
             messages.add_message(request, messages.ERROR, "Failed to add patient!")
             context['patient_form'] = form

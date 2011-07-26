@@ -19,7 +19,8 @@ from django.conf import settings
 
 
 class PatientSingleView(TemplateView):
-    template_name = 'patient/single_patient.html'
+    template_name = 'patient/base_patient.html'
+    patient_list_url = '/patient/list' #hardcoded from urls, because you can't do a reverse due to the urls not being bootstrapped yet.
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(PatientSingleView,self).dispatch(*args, **kwargs)
@@ -28,7 +29,9 @@ class PatientSingleView(TemplateView):
         params = context['params']
         patient_guid =  params['patient_guid']
         pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
-        context['patient'] = pat
+        context['patient_doc'] = pat
+        context['patient_django'] = Patient.objects.get(doc_id=pat._id)
+        context['patient_list_url'] = self.patient_list_url
         return context
 
 
@@ -67,13 +70,13 @@ def list_patients(request, template="patient/patient_list.html"):
                                "create_patient_url": create_patient_url},
                               context_instance=RequestContext(request))
 @login_required
-def new_patient(request):
+def new_patient(request, form_class=BasicPatientForm, validate_callback=None):
     """
     Basic patient view for creating a new patient, very barebones.
     """
     context = RequestContext(request)
     if request.method == 'POST':
-        form = BasicPatientForm(data=request.POST)
+        form = form_class(data=request.POST)
         # make patient
         if form.is_valid():
             newptdoc = SimplePatient()
@@ -92,48 +95,4 @@ def new_patient(request):
         context['patient_form'] = BasicPatientForm()
     return render_to_response("patient/new_patient.html", context_instance=context)
 
-@login_required
-def single_patient(request, patient_id, template="patient/single_patient.html"):
-    """Where patient_guid is the doc_id of the patient.
-    """
-    pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
-    return render_to_response(template, {"patient": pat},
-                              context_instance=RequestContext(request))
 
-@login_required
-def remove_phone(request):
-    if request.method == "POST":
-        try:
-            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
-            patient = Patient.objects.get(id=patient_id)
-            phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
-            for i, p in enumerate(patient.couchdoc.phones):
-                if p.phone_id == phone_id:
-                    p.deprecated=True
-                    p.ended=datetime.utcnow()
-                    p.edited_by = request.user.username
-                    patient.couchdoc.phones[i] = p
-                    patient.couchdoc.save()
-            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
-        except Exception, e:
-            logging.error("Error getting args:" + str(e))
-            #return HttpResponse("Error: %s" % (e))
-    else:
-        pass
-
-
-
-@login_required
-def remove_address(request):
-    if request.method == "POST":
-        try:
-            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
-            patient = Patient.objects.get(id=patient_id)
-            address_id = urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore')
-            patient.couchdoc.remove_address(address_id)
-            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
-        except Exception, e:
-            logging.error("Error getting args:" + str(e))
-            #return HttpResponse("Error: %s" % (e))
-    else:
-        pass

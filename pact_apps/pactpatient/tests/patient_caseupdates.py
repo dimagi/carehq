@@ -110,7 +110,7 @@ class patientCaseUpdateTests(TestCase):
         patient, phones, addresses = self.test1CreatePatientVerifyAddressAPI()
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
-        response = self.client.get(reverse('pactcarehq.views.patient_view', kwargs={'patient_id': patient.id}))
+        response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient.id}))
 
 
         phone_indices = []

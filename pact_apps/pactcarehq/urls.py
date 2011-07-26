@@ -1,5 +1,8 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from pactcarehq.views import PactPatientSingleView
+from patient.views import PatientListView
+from pactpatient.models import PactPatient
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('',
@@ -44,10 +47,18 @@ urlpatterns = patterns ('',
     (r'^reports/chw/schedule/all/$', 'pactcarehq.views.chw_calendar_submit_report_all'),
     (r'^schedules/patient/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_schedule_report'),
 
-    #(r'^patients/mine$', 'pactcarehq.views.my_patients'),
-    (r'^patients/all$', 'pactcarehq.views.patient_list'),
-    url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_patient'),
+    #(r'^patients/all$', 'pactcarehq.views/patient_list'),
+    url(r'^patients/all$', PatientListView.as_view(template_name='pactcarehq/patient_list.html', patient_type=PactPatient, create_patient_viewname='pactpatient.views.new_patient'), name='pactpatient_list'),
+
+    #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
+    url(r'^patients/single/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
+    url(r'^ajax/getform/$', 'pactcarehq.views.ajax_get_form', name='ajax_get_form'),
+    url(r'^ajax/postform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_form', name='ajax_post_form'),
+
+
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),
+    url(r'^patient/phone/rm$', 'pactcarehq.views.remove_phone', name='remove_phone'),
+    url(r'^patient/address/rm$', 'pactcarehq.views.remove_address', name='remove_address'),
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
 
@@ -55,6 +66,5 @@ urlpatterns = patterns ('',
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
-
     #url(r'^download/(?P<download_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.file_download'),
 )

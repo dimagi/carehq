@@ -1,7 +1,11 @@
-<strong><span style="font-size: 125%;">Visit Schedules</span></strong> <small><a href="{{ request.path }}?allschedules">Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a></small>
-<hr>
-
 {% if past_schedules %}
+        <small>
+   		<a id="btn_show_all_schedules"
+              href="javascript:toggle_schedule('prior_schedules')"
+              class="fg-button ui-state-default ui-corner-all"> Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a>
+        </small>
+    <hr>
+<div id="prior_schedules" class="toggler"></div>
     <strong><span style="font-size: 125%;">Prior Schedules</span></strong>
     <table>
         <thead>
@@ -45,8 +49,8 @@
         {% endfor %}
 
     </table>
-    {% endif %} {# past_schedules #}
-
+</div>
+{% endif %}
 
 {% if patient_doc.current_schedule %}
 {# Section current schedule #}
@@ -86,7 +90,7 @@
         </tr>
         <tr>
             <td colspan="7">
-                <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Add Future Schedule</a>
+                <a href="{% url view_pactpatient patient_doc.get_id %}?edit_schedule=True">Add Future Schedule</a>
             </td>
         </tr>
 </table>
@@ -133,5 +137,5 @@
 {% else %}
 <br>
 <strong>No Current Schedule Set</strong> <br>
-<a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Create Schedule</a>
+<a href="{% url view_pactpatient patient_doc.get_id %}?edit_schedule=True">Create Schedule</a>
 {%endif %}

@@ -37,6 +37,8 @@ from pactcarehq import schedule
 from pactcarehq.tasks import all_chw_submit_report, schema_export
 import tempfile
 from django import forms
+from patient.models.patientmodels import BasePatient
+from patient.views import PatientSingleView
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -83,22 +85,21 @@ def export_landing(request, template_name="pactcarehq/export_landing.html"):
     return render_to_response(template_name, context_instance=context)
 
 
-    
-
-@login_required
-def patient_list(request, template_name="pactcarehq/patient_list.html"):
-    """Return a list of all the patients in the system"""
-    patients = Patient.objects.all()
-    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
-
-    #if there's a mismatch of the patients in django and in couch (eg dev environment)
-    #patients = filter(lambda x: x.couchdoc !=None, patients)
-    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
-
-    context= RequestContext(request)
-    context['patients'] = sorted_pts
-    return render_to_response(template_name, context_instance=context)
-
+#
+#
+#@login_required
+#def patient_list(request, template_name="pactcarehq/patient_list.html"):
+#    """Return a list of all the patients in the system"""
+#    patients = Patient.objects.all()
+#    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+#
+#    #if there's a mismatch of the patients in django and in couch (eg dev environment)
+#    #patients = filter(lambda x: x.couchdoc !=None, patients)
+#    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
+#
+#    context= RequestContext(request)
+#    context['patients'] = sorted_pts
+#    return render_to_response(template_name, context_instance=context)
 
 @login_required
 def remove_schedule(request):
@@ -126,7 +127,7 @@ def remove_schedule(request):
 
                 couchdoc.weekly_schedule = new_schedules
                 couchdoc.save()
-            return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
         except Exception, e:
             logging.error("Error getting args:" + str(e))
             return HttpResponse("Error: %s" % (e))
@@ -134,134 +135,217 @@ def remove_schedule(request):
         pass
 
 
+
 @login_required
-def patient_view(request, patient_id, template_name="pactcarehq/patient.html"):
-    """
-    Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
-    """
-
-    schedule_show = request.GET.get("schedule", "active")
-    schedule_edit = request.GET.get("edit_schedule", False)
-    address_edit = request.GET.get("edit_address", False)
-    address_edit_id = request.GET.get("address_id", None)
-    new_address = True if request.GET.get("new_address", False) == "True" else False
-    phone_edit = request.GET.get("edit_phone", False)
-    patient_edit = request.GET.get('edit_patient', None)
-    show_all_schedule = request.GET.get('allschedules', None)
-
-
-    patient = Patient.objects.get(id=patient_id)
-    context = RequestContext(request)
-    context['patient']=patient
-    context['pdoc']=patient.couchdoc
-    context['schedule_show'] = schedule_show
-    context['schedule_edit'] = schedule_edit
-    context['phone_edit'] = phone_edit
-    context['address_edit'] = address_edit
-    context['patient_edit'] = patient_edit
-    context['submit_arr'] = _get_submissions_for_patient(patient)
-    context['casedoc'] = CommCareCase.get(patient.couchdoc.case_id)
-
-    last_bw = patient.couchdoc.last_bloodwork
-    context['last_bloodwork'] = last_bw
-
-
-
-    if last_bw == None:
-        context['bloodwork_missing']  = True
+def remove_phone(request):
+    if request.method == "POST":
+        try:
+            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            patient = Patient.objects.get(id=patient_id)
+            phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
+            for i, p in enumerate(patient.couchdoc.phones):
+                if p.phone_id == phone_id:
+                    p.deprecated=True
+                    p.ended=datetime.utcnow()
+                    p.edited_by = request.user.username
+                    patient.couchdoc.phones[i] = p
+                    patient.couchdoc.save()
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
+        except Exception, e:
+            logging.error("Error getting args:" + str(e))
+            #return HttpResponse("Error: %s" % (e))
     else:
-        context['since_bw'] = (datetime.utcnow() - last_bw.get_date).days
+        pass
 
-        if (datetime.utcnow() - last_bw.get_date).days > 90:
-            context['bloodwork_overdue'] = True
+
+
+@login_required
+def remove_address(request):
+    if request.method == "POST":
+        try:
+            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
+            patient = Patient.objects.get(id=patient_id)
+            address_id = urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore')
+            patient.couchdoc.remove_address(address_id)
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
+        except Exception, e:
+            logging.error("Error getting args:" + str(e))
+            #return HttpResponse("Error: %s" % (e))
+    else:
+        pass
+
+
+@login_required
+def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
+    patient_guid = request.GET.get('patient_guid', None)
+    form_name = request.GET.get('form_name', None)
+    pdoc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+
+    context = RequestContext(request)
+
+    context['patient_guid'] = patient_guid
+    context['form_name'] = form_name
+    title = "New Form"
+
+    idx = request.GET.get('id', None)
+
+    if form_name == 'address':
+        form = SimpleAddressForm()
+        title = "New Address"
+        #if idx, pull instance and preopoulate
+    elif form_name == 'phone':
+        form = PhoneForm()
+        title = "New Phone"
+    elif form_name == 'schedule':
+        form = ScheduleForm()
+        title = "New Schedule"
+    elif form_name == 'edit':
+        title = "Edit Patient Info"
+        form = PactPatientEditForm('arm')
+
+    context['form'] = form
+    context['title'] = title
+    return render_to_response(template, context_instance=context)
+
+@login_required
+@require_POST
+def ajax_post_form(request, patient_guid, form_name):
+    print request.POST
+
+
+
+class PactPatientSingleView(PatientSingleView):
+    def get_context_data(self, **kwargs):
+        """
+        Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
+        """
+
+        request = self.request
+        patient_guid = self.kwargs['patient_guid']
+
+        schedule_show = request.GET.get("schedule", "active")
+        schedule_edit = request.GET.get("edit_schedule", False)
+        address_edit = request.GET.get("edit_address", False)
+        address_edit_id = request.GET.get("address_id", None)
+        new_address = True if request.GET.get("new_address", False) == "True" else False
+        phone_edit = request.GET.get("edit_phone", False)
+        patient_edit = request.GET.get('edit_patient', None)
+        show_all_schedule = request.GET.get('allschedules', None)
+
+
+        context = super(PactPatientSingleView, self).get_context_data(**kwargs)
+        pdoc = context['patient_doc']
+        dj_patient = context['patient_django']
+        context['patient_list_url'] = reverse('pactpatient_list')
+        context['schedule_show'] = schedule_show
+        context['schedule_edit'] = schedule_edit
+        context['phone_edit'] = phone_edit
+        context['address_edit'] = address_edit
+        context['patient_edit'] = patient_edit
+        context['submit_arr'] = _get_submissions_for_patient(dj_patient)
+        context['casedoc'] = CommCareCase.get(pdoc.case_id)
+
+        last_bw = pdoc.last_bloodwork
+        context['last_bloodwork'] = last_bw
+
+
+
+        if last_bw == None:
+            context['bloodwork_missing']  = True
         else:
-            context['bloodwork_overdue'] = False
+            context['since_bw'] = (datetime.utcnow() - last_bw.get_date).days
+
+            if (datetime.utcnow() - last_bw.get_date).days > 90:
+                context['bloodwork_overdue'] = True
+            else:
+                context['bloodwork_overdue'] = False
 
 
-    if address_edit and not new_address:
-        if len(patient.couchdoc.address) > 0:
-            #if there's an existing address out there, then use it, else, make a new one
-            context['address_form'] = SimpleAddressForm(instance=patient.couchdoc.get_address(address_edit_id))
-        else:
+        if address_edit and not new_address:
+            if len(pdoc.address) > 0:
+                #if there's an existing address out there, then use it, else, make a new one
+                context['address_form'] = SimpleAddressForm(instance=pdoc.get_address(address_edit_id))
+            else:
+                context['address_form'] = SimpleAddressForm()
+        if new_address:
             context['address_form'] = SimpleAddressForm()
-    if new_address:
-        context['address_form'] = SimpleAddressForm()
-        context['address_edit'] = True
-    if schedule_edit:
-        context['schedule_form'] = ScheduleForm()
-    if phone_edit:
-        context['phone_form'] = PhoneForm()
-    if patient_edit:
-        context['patient_form'] = PactPatientEditForm(patient_edit, instance=patient.couchdoc)
-    if show_all_schedule != None:
-        context['past_schedules'] = patient.couchdoc.past_schedules
-        
-    if request.method == 'POST':
+            context['address_edit'] = True
         if schedule_edit:
-            form = ScheduleForm(data=request.POST)
-            if form.is_valid():
-                sched = CDotWeeklySchedule()
-                for day in DAYS_OF_WEEK:
-                    if form.cleaned_data[day] != None:
-                        setattr(sched, day, form.cleaned_data[day].username)
-                if form.cleaned_data['active_date'] == None:
-                    sched.started=datetime.utcnow()
+            context['schedule_form'] = ScheduleForm()
+        if phone_edit:
+            context['phone_form'] = PhoneForm()
+        if patient_edit:
+            context['patient_form'] = PactPatientEditForm(patient_edit, instance=pdoc)
+        if show_all_schedule != None:
+            context['past_schedules'] = pdoc.past_schedules
+
+        if request.method == 'POST':
+            if schedule_edit:
+                form = ScheduleForm(data=request.POST)
+                if form.is_valid():
+                    sched = CDotWeeklySchedule()
+                    for day in DAYS_OF_WEEK:
+                        if form.cleaned_data[day] != None:
+                            setattr(sched, day, form.cleaned_data[day].username)
+                    if form.cleaned_data['active_date'] == None:
+                        sched.started=datetime.utcnow()
+                    else:
+                        sched.started = datetime.combine(form.cleaned_data['active_date'], time.min)
+                    sched.comment=form.cleaned_data['comment']
+                    sched.created_by = request.user.username
+                    sched.deprecated=False
+                    pdoc.set_schedule(sched)
+                    return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_guid}))
                 else:
-                    sched.started = datetime.combine(form.cleaned_data['active_date'], time.min)
-                sched.comment=form.cleaned_data['comment']
-                sched.created_by = request.user.username
-                sched.deprecated=False
-                patient.couchdoc.set_schedule(sched)
-                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
-            else:
-                context['schedule_form'] = form
-        elif address_edit or new_address:
-            form = SimpleAddressForm(data=request.POST)
-            if form.is_valid():
-                is_new_addr = False
-                if form.cleaned_data['address_id'] != '':
-                    is_new_addr=False
-                    address_edit_id = form.cleaned_data['address_id']
-                    instance = patient.couchdoc.get_address(address_edit_id)
+                    context['schedule_form'] = form
+            elif address_edit or new_address:
+                form = SimpleAddressForm(data=request.POST)
+                if form.is_valid():
+                    is_new_addr = False
+                    if form.cleaned_data['address_id'] != '':
+                        is_new_addr=False
+                        address_edit_id = form.cleaned_data['address_id']
+                        instance = pdoc.get_address(address_edit_id)
+                    else:
+                        is_new_addr=True
+                        instance=CAddress()
+                        instance.created_by = request.user.username
+                    instance.description = form.cleaned_data['description']
+                    instance.full_address = form.cleaned_data['address']
+
+                    if is_new_addr == False:
+                        index = pdoc.address_index(address_edit_id)
+                        pdoc.address[index] = instance
+                    else:
+                        pdoc.set_address(instance)
+
+                    #patient.couchdoc.save()
+                    #do patient xml submit
+                    return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_guid}))
                 else:
-                    is_new_addr=True
-                    instance=CAddress()
-                    instance.created_by = request.user.username
-                instance.description = form.cleaned_data['description']
-                instance.full_address = form.cleaned_data['address']
-
-                if is_new_addr == False:
-                    index = patient.couchdoc.address_index(address_edit_id)
-                    patient.couchdoc.address[index] = instance
+                    context['address_form'] = form
+            elif phone_edit:
+                form = PhoneForm(data=request.POST)
+                if form.is_valid():
+                    new_phone = CPhone()
+                    new_phone.description = form.cleaned_data['description']
+                    new_phone.number = form.cleaned_data['number']
+                    new_phone.notes = form.cleaned_data['notes']
+                    new_phone.created_by = request.user.username
+                    pdoc.phones.append(new_phone)
+                    pdoc.save()
+                    return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_guid}))
                 else:
-                    patient.couchdoc.set_address(instance)
-
-                #patient.couchdoc.save()
-                #do patient xml submit
-                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
-            else:
-                context['address_form'] = form
-        elif phone_edit:
-            form = PhoneForm(data=request.POST)
-            if form.is_valid():
-                new_phone = CPhone()
-                new_phone.description = form.cleaned_data['description']
-                new_phone.number = form.cleaned_data['number']
-                new_phone.notes = form.cleaned_data['notes']
-                new_phone.created_by = request.user.username
-                patient.couchdoc.phones.append(new_phone)
-                patient.couchdoc.save()
-                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
-            else:
-                logging.error("Error, invalid phone form data")
-        elif patient_edit:
-            form = PactPatientEditForm(patient_edit, instance=patient.couchdoc, data=request.POST)
-            if form.is_valid():
-                instance = form.save(commit=True)
-                return HttpResponseRedirect(reverse('pactcarehq.views.patient_view', kwargs={'patient_id':patient_id}))
+                    logging.error("Error, invalid phone form data")
+            elif patient_edit:
+                form = PactPatientEditForm(patient_edit, instance=pdoc, data=request.POST)
+                if form.is_valid():
+                    instance = form.save(commit=True)
+                    return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_guid}))
 
 
-    return render_to_response(template_name, context_instance=context)
+        return context
+        #return render_to_response(template_name, context_instance=context)
 
 def get_ghetto_registration_block(user):
     registration_block = """

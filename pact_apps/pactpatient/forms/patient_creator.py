@@ -19,12 +19,24 @@ class NewPactPatientForm(BasicPatientForm):
         ('HP', 'HP - Health Promoter'),
         ('DOT', 'DOT - Directly Observed Therapy'),
         ('Discharged', 'Discharged'),
+        #todo: more choices
     )
+
+    PACT_RACE_CHOICES = ()
+    PACT_LANGUAGE_CHOICES = ()
+    PACT_HIV_CLINIC_CHOICES = ()
 
     pact_id = forms.CharField(required=True, label="PACT ID")
     arm = forms.ChoiceField(choices=PACT_ARM_CHOICES, required=True)
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
+
+    race = forms.ChoiceField(choices=PACT_RACE_CHOICES, required=True)
+    is_latino = forms.BooleanField()
+    preferred_language = forms.ChoiceField(choices=PACT_LANGUAGE_CHOICES)
+    mass_health_expiration = forms.DateField()
+    hiv_care_clinic = forms.ChoiceField(choices=PACT_HIV_CLINIC_CHOICES)
+    ssn = forms.CharField()
 
     def clean_pact_id(self):
         if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:

@@ -1,0 +1,351 @@
+{% extends "patient/base_patient.html" %}
+{% load i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        $(function() {
+            $("#id_birthdate").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        maxDate: "+0M +0D +0Y",
+                        yearRange: "-100:+0"
+                    }
+            );
+        });
+    </script>
+    <script type="text/javascript">
+        //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
+        function ajax_get_form(patient_guid, form_name, target_div) {
+            $.get("{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name, function(data) {
+                $("#" + target_div).html(data);
+            });
+        }
+        function post_phone_delete(patient_id, phone_id) {
+            //method = method || "post"; // Set method to post by default, if not specified.
+            method = "post";
+
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = document.createElement("form");
+            form.setAttribute("method", method);
+            form.setAttribute("action", '{% url remove_phone %}');
+
+            var csrf = document.createElement("input");
+            csrf.setAttribute("type", "hidden");
+            csrf.setAttribute("name", "csrfmiddlewaretoken");
+            csrf.setAttribute("value", "{{ csrf_token }}");
+            form.appendChild(csrf);
+
+            var patientIDField = document.createElement("input");
+            patientIDField.setAttribute("type", "hidden");
+            patientIDField.setAttribute("name", "patient_id");
+            patientIDField.setAttribute("value", patient_id);
+            form.appendChild(patientIDField);
+
+            var phoneIDField = document.createElement("input");
+            phoneIDField.setAttribute("type", "hidden");
+            phoneIDField.setAttribute("name", "phone_id");
+            phoneIDField.setAttribute("value", phone_id);
+            form.appendChild(phoneIDField);
+
+            document.body.appendChild(form);    // Not entirely sure if this is necessary
+            form.submit();
+        }
+
+        function post_address_delete(patient_id, address_id) {
+            //method = method || "post"; // Set method to post by default, if not specified.
+            method = "post";
+
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = document.createElement("form");
+            form.setAttribute("method", method);
+            form.setAttribute("action", '{% url remove_address %}');
+
+            var csrf = document.createElement("input");
+            csrf.setAttribute("type", "hidden");
+            csrf.setAttribute("name", "csrfmiddlewaretoken");
+            csrf.setAttribute("value", "{{ csrf_token }}");
+            form.appendChild(csrf);
+
+            var patientIDField = document.createElement("input");
+            patientIDField.setAttribute("type", "hidden");
+            patientIDField.setAttribute("name", "patient_id");
+            patientIDField.setAttribute("value", patient_id);
+            form.appendChild(patientIDField);
+
+            var phoneIDField = document.createElement("input");
+            phoneIDField.setAttribute("type", "hidden");
+            phoneIDField.setAttribute("name", "address_id");
+            phoneIDField.setAttribute("value", address_id);
+            form.appendChild(phoneIDField);
+
+            document.body.appendChild(form);    // Not entirely sure if this is necessary
+            form.submit();
+        }
+        function post_schedule_delete(patient_id, schedule_id) {
+            //method = method || "post"; // Set method to post by default, if not specified.
+            method = "post";
+
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = document.createElement("form");
+            form.setAttribute("method", method);
+            form.setAttribute("action", '{% url remove_schedule %}');
+
+            var csrf = document.createElement("input");
+            csrf.setAttribute("type", "hidden");
+            csrf.setAttribute("name", "csrfmiddlewaretoken");
+            csrf.setAttribute("value", "{{ csrf_token }}");
+            form.appendChild(csrf);
+
+            var patientIDField = document.createElement("input");
+            patientIDField.setAttribute("type", "hidden");
+            patientIDField.setAttribute("name", "patient_id");
+            patientIDField.setAttribute("value", patient_id);
+            form.appendChild(patientIDField);
+
+            var scheduleIDField = document.createElement("input");
+            scheduleIDField.setAttribute("type", "hidden");
+            scheduleIDField.setAttribute("name", "schedule_id");
+            scheduleIDField.setAttribute("value", schedule_id);
+            form.appendChild(scheduleIDField);
+
+            document.body.appendChild(form);    // Not entirely sure if this is necessary
+            form.submit();
+        }
+        $(function() {
+            $("#id_active_date").datepicker({ showAnim: 'fadeIn' });
+        });
+    </script>
+{% endblock extrahead %}
+        {% block hat_actions %}
+            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">New Progress Note</a>
+            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">New Bloodwork</a>
+    {% endblock %}
+    {% block patient_badge %}
+        {{ block.super }}
+        <dt>{% trans "PACT ID" %}</dt>
+            <dd>{{ patient_doc.pact_id }}</dd>
+        <dt>{% trans "ARM" %}</dt>
+            <dd>{{ patient_doc.arm }}</dd>
+        <dt>{% trans "Primary HP" %}</dt>
+            <dd>{{ patient_doc.primary_hp }}</dd>
+        <dt>{% trans "ART Regimen" %}</dt>
+            <dd>{{ patient_doc.art_regimen }}</dd>
+        <dt>{% trans "Non ART Regimen" %}</dt>
+            <dd>{{ patient_doc.non_art_regimen }}</dd>
+        <dt>{% trans "Last Bloodwork" %}</dt>
+        <dd>
+        {% if bloodwork_missing %}
+            <div class="error">
+                Missing
+            </div>
+            {% else %}
+            {% if bloodwork_overdue %}
+                {{ last_bloodwork.get_date|date:"m/d/Y" }}
+                    <span style="color:red;"><strong>Overdue</strong></span>
+
+            {% else %}
+                {{ last_bloodwork.get_date|date:"m/d/Y" }}
+            {% endif %}
+        {% endif %}
+        </dd>
+    {% endblock patient_badge %}
+
+    {% block patient-tab-controller %}
+            <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
+            <li><a href="#patient-schedule-tab">{% trans "Visit Schedule" %}</a></li>
+            <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
+            <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
+            <li><a href="#patient-case-tab">{% trans "Case Debug" %}</a></li>
+            <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
+    {% endblock patient-tab-controller %}
+    {% block patient-tab-container %}
+        <div id="patient-info-tab" class="ui-tabs-hide">
+            <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">Race</th>
+                    <td>Some Race</td>
+                </tr>
+                <tr>
+                    <th class="span-4">Latino</th>
+                    <td>Yes/No</td>
+                </tr>
+                <tr>
+                    <th class="span-4">Language</th>
+                    <td>English/Spanish/Haitian Creole/French Dropdown</td>
+                </tr>
+                <tr>
+                    <th class="span-4">MassHealth Expiration</th>
+                    <td>1/2/2011</td>
+                </tr>
+                <tr>
+                    <th>HIV Care Clinic</th>
+                    <td>Some Dropdown</td>
+                </tr>
+                <tr>
+                    <th>SSN</th>
+                    <td>000-11-2222</td>
+                </tr>
+            </table>
+
+
+            <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">
+                        PDoc Address(es)
+                    </th>
+                    <td>
+                        {% for patient_address in patient_doc.address %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ patient_address.street }}<br>
+                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
+                                <small><a
+                                        href="{{ request.path }}?edit_address=True&address_id={{ patient_address.address_id }}">Change</a>
+                                </small> &nbsp;
+                                <small><a
+                                        href="javascript:post_address_delete('{{phone.id }}', '{{ patient_address.address_id }}')">Remove</a>
+                                </small><br>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th class="span-4">
+                        PDoc Phone(s)<br>
+                        <input type="button" onclick="ajax_get_form('{{ patient_doc.get_id }}','phone', 'phoneform');" value="+ Add">
+                    </th>
+                    <td>
+                        <div id="phoneform"></div>
+                        {% for phone in patient_doc.phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                                <small><a
+                                        href="{{ request.path }}?edit_address=True&address_id=">Change</a>
+                                </small> &nbsp;
+                                <small><a
+                                        href="javascript:post_address_delete('', '')">Remove</a>
+                                </small><br>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <th class="span-4">
+                        Case Address(es)<br>
+                        + Add
+                    </th>
+                    <td>
+                        {% for patient_address in patient_doc.active_addresses %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ patient_address.address }}<br>
+                                <small><a
+                                        href="{{ request.path }}?edit_address=True&address_id={{ patient_address.address_id }}">Change</a>
+                                </small> &nbsp;
+                                <small><a
+                                        href="javascript:post_address_delete('{{phone.id }}', '{{ patient_address.address_id }}')">Remove</a>
+                                </small><br>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th class="span-4">
+                        Case Phone(s)
+                    </th>
+                    <td>
+                        {% for phone in patient_doc.active_phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                                <small><a href="{{ request.path }}?edit_phone=True&address_id={{ phone.number }}">Change</a>
+                                </small> &nbsp;
+                                <small><a href="javascript:post_phone_delete('')">Remove</a>
+                                </small><br>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+            </table>
+            <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+        </div>
+
+        <div id="patient-schedule-tab">
+            {% if schedule_edit %}
+                <strong><span style="font-size: 125%;"> Set Visit Schedule</span></strong>
+                <form action="{{request.path}}?edit_schedule=True" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ schedule_form.as_table }}
+                    </table>
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location = '{{request.path}}'"
+                           class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+            {% else %}
+                 {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+            {% endif %}
+        </div>
+
+        <div id="patient-careteam-tab">
+            <div class="span-20">
+                <div class="span-20">
+                    Search: <input type="text">
+                </div>
+                <div class="span-5" style="border: 1px solid black;padding: 8px;">
+                    <div class="span-5 last careteam_name">Casey Caregiver</div>
+                    <div class="span-5 last">Emergency Contact</div>
+                </div>
+            </div>
+            &nbsp;
+        </div>
+
+        <div id="patient-submissions-tab">
+            {% if submit_arr %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="span-4">Date</th>
+                        <th class="span-4">CHW</th>
+                        <th class="span-4">Form</th>
+                    </tr>
+                    </thead>
+                    {% for submission in submit_arr %}
+                        <tr>
+                            <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
+                            <td> {{ submission.2 }}</td>
+                            <td> {{ submission.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h4>No Recent Activity</h4>
+            {% endif %}
+        </div>
+
+        <div id="patient-case-tab">
+            Raw Case stuff
+        </div>
+        <div id="patient-log-tab">
+            Auditcare/edit history?
+        </div>
+    {% endblock patient-tab-container %}

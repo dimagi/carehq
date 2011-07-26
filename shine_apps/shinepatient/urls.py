@@ -16,11 +16,11 @@ urlpatterns = patterns('',
     url(r'^shine/patient/new/callback$', 'shinepatient.views.newpatient_callback', name="newshinepatient_callback"),
 
 #    url(r'^shine/patient/single/(?P<patient_id>[0-9a-fA-Z]{25,32})/$', 'patient.views.single_patient',
-#        name='shine_single_patient', kwargs={"template": "shinepatient/single_patient.html"}),
+#        name='shine_single_patient', kwargs={"template": "shinepatient/base_patient.html"}),
 
 
     url(r'^shine/patient/single/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$',
-            PatientSingleView.as_view(template_name='shinepatient/single_patient.html'), name='shine_single_patient'),
+            PatientSingleView.as_view(template_name='shinepatient/base_patient.html'), name='shine_single_patient'),
 
     url(r'^shine/case/list$', 'shinepatient.views.list_cases', name='shine_case_list'), 
     url(r'^shine/case/(?P<case_id>[0-9a-fA-Z]{25,32})/$', 'shinepatient.views.single_case', 

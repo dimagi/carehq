@@ -19,7 +19,7 @@
 	{% for preduce in reduces %}
 	<tr>
             <td><h4>{{preduce.patient_doc.pact_id}}</h4></td>
-			<td><h4><a href="{% url pactcarehq.views.patient_view preduce.patient_doc.django_uuid %}">{{preduce.patient_doc.last_name}}, {{preduce.patient_doc.first_name}}{#</a>#}</h4></td>
+			<td><h4><a href="{% url view_pactpatient preduce.patient_doc.django_uuid %}">{{preduce.patient_doc.last_name}}, {{preduce.patient_doc.first_name}}{#</a>#}</h4></td>
 			<td>{{preduce.patient_doc.arm}}</td>
 			<td>{{preduce.patient_doc.primary_hp}}</td>
 			<td>

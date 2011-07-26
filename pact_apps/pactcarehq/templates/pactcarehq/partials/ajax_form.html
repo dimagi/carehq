@@ -1,0 +1,12 @@
+<div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
+<h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
+<form action="{% url ajax_post_form patient_guid form_name %}" method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+    <input type="button" name="cancel" value="Cancel" onclick="window.location = '{{request.path}}'"
+           class="fg-button ui-state-default ui-corner-all"/>
+</form>
+</div>

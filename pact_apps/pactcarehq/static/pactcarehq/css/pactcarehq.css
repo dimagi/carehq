@@ -11,13 +11,13 @@ body {
 	background:none repeat scroll 0 0 #062854;
 	color:#FFFFFF;
 	font-family:Arial,Helvetica,sans-serif;
-	font-size:13px;
+	font-size:16px;
 	width:100%;
 }
 #tophat a {
 	color:#FFFFFF;
 	font-family:Arial,Helvetica,sans-serif;
-	font-size:13px;
+	font-size:14px;
 }
 #tophat > #breadcrumbs {
 	font-family:Arial,Helvetica,sans-serif;
@@ -49,6 +49,15 @@ body {
 	padding:34px 0 20px 5px;
 	width:705px;
 }
+
+.ptpage_fn {
+    font-size:2em;
+}
+
+.careteam_name {
+    font-size:1.25em;
+}
+
 nav {
 	float:left;
 	font-size:125%;
