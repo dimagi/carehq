@@ -44,6 +44,10 @@ body {
 	padding-right:8px;
 }
 
+.pt_hat_actions_bar {
+    text-align:right;
+}
+
 #SO style menus #hmenus {
 	float:left;
 	padding:34px 0 20px 5px;
