@@ -63,7 +63,7 @@ def csv_export(csv_mode, end_date_str, start_date_str, patient_id, download_id):
         dict_obj = obs.to_json()
         if num == 0:
             csv_writer.writerow(csv_keys)
-        csv_writer.writerow([dict_obj[x] for x in csv_keys])
+        csv_writer.writerow([dict_obj[x].encode('utf-8') if isinstance(dict_obj[x], unicode) else dict_obj[x] for x in csv_keys])
     temp_csv.seek(0)
     temp_zip = tempfile.NamedTemporaryFile(suffix='.zip', delete=False)
 
