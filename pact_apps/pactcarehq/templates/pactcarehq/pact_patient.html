@@ -17,7 +17,15 @@
         //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
         function ajax_get_form(patient_guid, form_name, target_div) {
             $.get("{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name, function(data) {
-                $("#" + target_div).html(data);
+                var context=$(data);
+                context.find('save attribute').click(function () {});
+                $("#" + target_div).html(data).show("blind", {}, 300);
+            });
+        }
+        function ajax_patient_edit(patient_guid) {
+            $.get("{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=edit", function(data) {
+//                $("#patient-info-display").hide(100);
+                $("#patienteditform").html(data).toggle("blind", {}, 300);
             });
         }
         function post_phone_delete(patient_id, phone_id) {
@@ -120,8 +128,23 @@
     </script>
 {% endblock extrahead %}
         {% block hat_actions %}
-            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">New Progress Note</a>
-            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">New Bloodwork</a>
+{#            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">New Progress Note</a>#}
+            <div style="float:right;">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                New Progress Note
+            </a>
+            </div>
+
+            <div style="float:right;">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                New Bloodwork
+            </a>
+            </div>
+            {#            <a class="fg-button ui-state-default ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">New Bloodwork</a>#}
+{#            <input type="button" class="fg-button ui-state-default ui-corner-all" onclick="ajax_edit_patient('{{ patient_doc.get_id }}');" value="New Progress Note">#}
+{#            <input type="button" class="fg-button ui-state-default ui-corner-all" onclick="ajax_edit_patient('{{ patient_doc.get_id }}');" value="New Bloodwork">#}
     {% endblock %}
     {% block patient_badge %}
         {{ block.super }}
@@ -163,6 +186,8 @@
     {% endblock patient-tab-controller %}
     {% block patient-tab-container %}
         <div id="patient-info-tab" class="ui-tabs-hide">
+            <div id="patienteditform"></div>
+            <div id="patient-info-display">
             <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
             <table>
                 <tr>
@@ -190,8 +215,16 @@
                     <td>000-11-2222</td>
                 </tr>
             </table>
-
-
+                        <div style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#"
+                               onclick="ajax_patient_edit('{{ patient_doc.get_id }}');">
+                                <span class="ui-icon ui-icon-wrench"></span>
+                                Edit Info
+                            </a>
+                        </div>
+            </div> <!-- end patient info display-->
+            <br>
+            <br>
             <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
             <table>
                 <tr>
@@ -218,12 +251,10 @@
                 </tr>
 
                 <tr>
-                    <th class="span-4">
-                        PDoc Phone(s)<br>
-                        <input type="button" onclick="ajax_get_form('{{ patient_doc.get_id }}','phone', 'phoneform');" value="+ Add">
+                    <th lass="span-4">
+                        PDoc Phone(s)
                     </th>
                     <td>
-                        <div id="phoneform"></div>
                         {% for phone in patient_doc.phones %}
                             <div class="ptprofile_phone">
                                 {% if phone.description %}
@@ -245,9 +276,9 @@
                 <tr>
                     <th class="span-4">
                         Case Address(es)<br>
-                        + Add
                     </th>
                     <td>
+                        <div id="addressform"></div>
                         {% for patient_address in patient_doc.active_addresses %}
                             <div class="ptprofile_address">
                                 {% if patient_address.description %}
@@ -262,6 +293,13 @@
                                 </small><br>
                             </div>
                         {% endfor %}
+                        <div style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#"
+                               onclick="ajax_get_form('{{ patient_doc.get_id }}','address', 'addressform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Address
+                            </a>
+                        </div>
                     </td>
                 </tr>
 
@@ -270,6 +308,7 @@
                         Case Phone(s)
                     </th>
                     <td>
+                        <div id="phoneform"></div>
                         {% for phone in patient_doc.active_phones %}
                             <div class="ptprofile_phone">
                                 {% if phone.description %}
@@ -282,6 +321,13 @@
                                 </small><br>
                             </div>
                         {% endfor %}
+                        <div style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#"
+                               onclick="ajax_get_form('{{ patient_doc.get_id }}','phone', 'phoneform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Phone
+                            </a>
+                        </div>
                     </td>
                 </tr>
 
@@ -291,7 +337,7 @@
 
         <div id="patient-schedule-tab">
             {% if schedule_edit %}
-                <strong><span style="font-size: 125%;"> Set Visit Schedule</span></strong>
+                <strong><span style="font-size: 125%;">Set Visit Schedule</span></strong>
                 <form action="{{request.path}}?edit_schedule=True" method="POST">
                     {% csrf_token %}
                     <table>
@@ -302,7 +348,17 @@
                            class="fg-button ui-state-default ui-corner-all"/>
                 </form>
             {% else %}
-                 {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+                {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+                <div id="scheduleform"></div>
+                    <div style="float:right;">
+                        <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#"
+                           onclick="ajax_get_form('{{ patient_doc.get_id }}','schedule', 'scheduleform');">
+                            <span class="ui-icon ui-icon-circle-plus"></span>
+                            Add Schedule
+                        </a>
+                    </div>
+                &nbsp;
+
             {% endif %}
         </div>
 

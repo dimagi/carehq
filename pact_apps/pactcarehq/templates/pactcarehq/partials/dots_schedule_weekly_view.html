@@ -5,7 +5,7 @@
               class="fg-button ui-state-default ui-corner-all"> Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a>
         </small>
     <hr>
-<div id="prior_schedules" class="toggler"></div>
+<div id="prior_schedules" class="toggler">
     <strong><span style="font-size: 125%;">Prior Schedules</span></strong>
     <table>
         <thead>
@@ -22,7 +22,6 @@
         </thead>
 
         {% for pschedule in past_schedules %}
-
             <tr>
                 <td> {{pschedule.sunday}}</td>
                 <td> {{pschedule.monday}}</td>
@@ -34,7 +33,7 @@
                 <td> {{pschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="7" class="prepend-1">
+                <td colspan="8" class="prepend-1">
                     <small><em>
                         Applied {{ pschedule.started|date }} -
                         {% if pschedule.ended %}
@@ -47,7 +46,6 @@
                 </td>
             </tr>
         {% endfor %}
-
     </table>
 </div>
 {% endif %}
@@ -65,7 +63,7 @@
             <th>Thursday</th>
             <th>Friday</th>
             <th>Saturday</th>
-            <th>Notes</th>
+            <th></th>
         </tr>
     </thead>
     	<tr>
@@ -79,18 +77,13 @@
             <td> {{patient_doc.current_schedule.comment}}</td>
         </tr>
         <tr>
-            <td colspan="7" class="prepend-1">
+            <td colspan="8" class="prepend-1">
                 <small><em>
                     Active {{ patient_doc.current_schedule.started|date }}
                     {% if patient_doc.current_schedule.ended %}
                         - {{ patient_doc.current_schedule.ended|date }}
                     {% endif %}
                 </em></small>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="7">
-                <a href="{% url view_pactpatient patient_doc.get_id %}?edit_schedule=True">Add Future Schedule</a>
             </td>
         </tr>
 </table>
@@ -106,6 +99,7 @@
             <th>Thursday</th>
             <th>Friday</th>
             <th>Saturday</th>
+            <th></th>
         </tr>
     </thead>
 
@@ -119,9 +113,10 @@
                 <td> {{fschedule.thursday}}</td>
                 <td> {{fschedule.friday}}</td>
                 <td> {{fschedule.saturday}}</td>
+                <td> {{fschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="7" class="prepend-1">
+                <td colspan="8" class="prepend-1">
                     <small><em>
                         Applies {{ fschedule.started|date }}
                         {% if fschedule.ended %}
@@ -134,8 +129,8 @@
         {% endfor %}
     </table>
     {% endif %}
+
 {% else %}
 <br>
 <strong>No Current Schedule Set</strong> <br>
-<a href="{% url view_pactpatient patient_doc.get_id %}?edit_schedule=True">Create Schedule</a>
 {%endif %}

@@ -1,12 +1,39 @@
 <div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
 <h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
-<form action="{% url ajax_post_form patient_guid form_name %}" method="POST">
+<form id="id_{{ form_name }}" action="{% url ajax_post_form patient_guid form_name %}" method="POST">
     {% csrf_token %}
     <table>
         {{ form.as_table }}
     </table>
-    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
-    <input type="button" name="cancel" value="Cancel" onclick="window.location = '{{request.path}}'"
+    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />
+    <input type="button" name="cancel" value="Cancel" onclick="$(this).parent().parent().parent().hide('blind',{},300);$(this).parent().parent().parent().html('');"
            class="fg-button ui-state-default ui-corner-all"/>
 </form>
+
+<script>
+  /* attach a submit handler to the form */
+  $("#id_{{ form_name }}").submit(function(event) {
+
+    /* stop form from submitting normally */
+    event.preventDefault();
+
+    /* get some values from elements on the page: */
+    var $form = $( this );
+    var url = $form.attr('action');
+    var values = $form.serializeArray();
+    var submit_dict = {};
+    for (var i=0; i < values.length; i++) {
+        submit_dict[values[i]['name']] = values[i]['value'];
+    }
+    console.log(submit_dict);
+    /* Send the data using post and put the results in a div */
+    $.post( url, submit_dict,
+      function( data ) {
+//          var content = $( data ).find( '#content' );
+//          $( "#result" ).empty().append( content );
+          console.log(data);
+      }
+    );
+  });
+</script>
 </div>

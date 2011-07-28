@@ -91,6 +91,10 @@ def generate_update_xml(user, patient, cphones, caddresses):
 
 
 def get_phone_xml(n, phone, typestring=None):
+    """
+    Generage a singular casexml phone block.
+    
+    """
     dict = {'num': n, 'number': phone,
             'typestring': typestring if typestring is not None or len(typestring) > 0 else ''}
     return phone_template % dict

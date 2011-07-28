@@ -35,7 +35,7 @@ class AddressForm(forms.Form):
     city = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
     state = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
     postal_code = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
-    address_id = forms.CharField(required=False, widget=forms.HiddenInput())
+#    address_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
     def __init__(self, instance=None, *args, **kwargs):

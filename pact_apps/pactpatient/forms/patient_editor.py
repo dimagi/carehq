@@ -51,7 +51,10 @@ class PactPatientEditForm(DocumentForm):
     def __init__(self, mode, *args, **kwargs):
         super(PactPatientEditForm, self).__init__(*args, **kwargs)
         includes = []
-        if mode == "regimen":
+        if mode == 'all':
+            includes = ['first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'notes', 'primary_hp', 'arm',
+                        'art_regimen', 'non_art_regimen',]
+        elif mode == "regimen":
             includes = ['art_regimen','non_art_regimen',]
         elif mode == "birthdate":
             includes = ['birthdate',]
