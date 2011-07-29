@@ -665,7 +665,7 @@ def chw_calendar_submit_report_all(request):
         except:
             pass
     all_chw_submit_report.delay(total_interval, download_id)
-    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('retrieve_download', kwargs={'download_id': download_id}))
 
 @login_required
 def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_calendar_submit_report.html"):
