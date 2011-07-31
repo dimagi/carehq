@@ -3,7 +3,25 @@
 {% block extrahead %}
     <script>
         $(function() {
-//            $("#patient-content-tabs").tabs();
+                 $('.editctrl').each(function() {
+                    $(this).hide();
+                });
+        });
+        function toggle_edit() {
+            if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
+            } else {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
+            }
+        }
+
+        $(function() {
             // The "tab widgets" to handle.
             var tabs = $('.tabs'),
 
@@ -46,7 +64,7 @@
                     // instead of $.bbq.getState(). The second, 'true' argument coerces the
                     // string value to a number.
 //                    var idx = $.bbq.getState(this.id, true) || 0;
-                    var hash = $.bbq.getState(this.id, true) || 0;
+                    var hash = $.bbq.getState(this.id, true) || "patient-info-tab";
                    // alert(hash); //todo, push a state here
 
                     // Select the appropriate tab for this tab widget by triggering the custom
@@ -80,6 +98,10 @@
             </div>
             <div class="span-12 last right pt_hat_actions_bar">
             {% block hat_actions %}
+                <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:toggle_edit()">
+                <span class="ui-icon ui-icon-gear"></span>
+                <span class="edit_btn_txt">Edit Patient</span>
+                </a>
             {% endblock hat_actions %}
             </div>
             <hr>

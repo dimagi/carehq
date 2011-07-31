@@ -4,10 +4,11 @@ from django.core.servers.basehttp import FileWrapper
 from casexml.apps.case.models import CommCareCase
 from couchexport.schema import get_docs
 from dimagi.utils.couch.database import get_db
-from pactpatient.forms import PactPatientEditForm
+from pactpatient.forms import PactPatientForm
 from pactpatient.forms import PhoneForm, SimpleAddressForm
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from pactpatient.models import CActivityDashboard
+from pactpatient.updater import update_patient_casexml
 from patient.models import CAddress, CPhone, CSimpleComment
 from patient.models import Patient
 import uuid
@@ -37,6 +38,7 @@ import tempfile
 from django import forms
 from patient.models.patientmodels import BasePatient
 from patient.views import PatientSingleView
+from receiver.util import spoof_submission
 
 DAYS_OF_WEEK = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
@@ -83,21 +85,6 @@ def export_landing(request, template_name="pactcarehq/export_landing.html"):
     return render_to_response(template_name, context_instance=context)
 
 
-#
-#
-#@login_required
-#def patient_list(request, template_name="pactcarehq/patient_list.html"):
-#    """Return a list of all the patients in the system"""
-#    patients = Patient.objects.all()
-#    sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
-#
-#    #if there's a mismatch of the patients in django and in couch (eg dev environment)
-#    #patients = filter(lambda x: x.couchdoc !=None, patients)
-#    #sorted_pts = sorted(patients, key=lambda p: p.couchdoc.last_name)
-#
-#    context= RequestContext(request)
-#    context['patients'] = sorted_pts
-#    return render_to_response(template_name, context_instance=context)
 
 @login_required
 def remove_schedule(request):
@@ -135,47 +122,52 @@ def remove_schedule(request):
 
 
 @login_required
+@require_POST
 def remove_phone(request):
-    if request.method == "POST":
-        try:
-            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
-            patient = Patient.objects.get(id=patient_id)
-            phone_id = urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore')
-            for i, p in enumerate(patient.couchdoc.phones):
-                if p.phone_id == phone_id:
-                    p.deprecated=True
-                    p.ended=datetime.utcnow()
-                    p.edited_by = request.user.username
-                    patient.couchdoc.phones[i] = p
-                    patient.couchdoc.save()
-            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
-        except Exception, e:
-            logging.error("Error getting args:" + str(e))
-            #return HttpResponse("Error: %s" % (e))
-    else:
-        pass
+    resp = HttpResponse()
+    try:
+        patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
+        pdoc = PactPatient.get(patient_guid)
+        phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
+        new_phones = pdoc.active_phones
+        new_phones[phone_id] = {'phone':'', 'description': ''}
+
+        xml_body = update_patient_casexml(request.user, pdoc, new_phones, pdoc.active_addresses)
+        spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        resp.status_code = 204
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
 
 
 
 @login_required
+@require_POST
 def remove_address(request):
-    if request.method == "POST":
-        try:
-            patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
-            patient = Patient.objects.get(id=patient_id)
-            address_id = urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore')
-            patient.couchdoc.remove_address(address_id)
-            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
-        except Exception, e:
-            logging.error("Error getting args:" + str(e))
-    else:
-        pass
+    resp = HttpResponse()
+    try:
+        patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
+        pdoc = PactPatient.get(patient_guid)
+        address_id = int(urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore'))
+        new_addrs = pdoc.active_addresses
+        new_addrs[address_id] = {'address': '', 'description': ''}
+#        new_addrs.pop(address_id)
+
+        xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, new_addrs)
+        spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        resp.status_code = 204
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        raise
+    return resp
 
 
 @login_required
 def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
     patient_guid = request.GET.get('patient_guid', None)
     form_name = request.GET.get('form_name', None)
+    edit_id = request.GET.get('edit_id', None)
     pdoc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
 
     context = RequestContext(request)
@@ -184,21 +176,32 @@ def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
     context['form_name'] = form_name
     title = "New Form"
 
-    idx = request.GET.get('id', None)
+    if not edit_id:
+        #no edit id, just return a pristine form
+        if form_name == 'address':
+            form = SimpleAddressForm()
+            title = "New Address"
+        elif form_name == 'phone':
+            form = PhoneForm()
+            title = "New Phone"
+        elif form_name == 'schedule':
+            form = ScheduleForm()
+            title = "New Schedule"
+        elif form_name == 'ptedit':
+            title = "Edit Patient Info"
+            form = PactPatientForm('edit', instance=pdoc)
+            template='pactcarehq/partials/ajax_pactpatient_uni_form.html'
+    else:
+        #this really is only just for phones and addresses
+        if form_name == 'address':
+            addr = pdoc.active_addresses[int(edit_id)]
+            form = SimpleAddressForm(initial=addr)
+            title = "Change Address"
+        elif form_name == 'phone':
+            p = pdoc.active_phones[int(edit_id)]
+            form = PhoneForm(initial=p)
+            title = "New Phone"
 
-    if form_name == 'address':
-        form = SimpleAddressForm()
-        title = "New Address"
-        #if idx, pull instance and preopoulate
-    elif form_name == 'phone':
-        form = PhoneForm()
-        title = "New Phone"
-    elif form_name == 'schedule':
-        form = ScheduleForm()
-        title = "New Schedule"
-    elif form_name == 'edit':
-        title = "Edit Patient Info"
-        form = PactPatientEditForm('all')
 
     context['form'] = form
     context['title'] = title
@@ -210,7 +213,19 @@ def ajax_post_form(request, patient_guid, form_name):
     context=RequestContext(request)
     resp = HttpResponse()
     pdoc = PactPatient.get(patient_guid)
-#    resp.write(str(request.POST))
+    context['patient_guid'] = patient_guid
+    context['form_name'] = form_name
+
+    if form_name == 'address':
+        title = "New Address"
+        #if idx, pull instance and preopoulate
+    elif form_name == 'phone':
+        title = "New Phone"
+    elif form_name == 'schedule':
+        title = "New Schedule"
+    elif form_name == 'ptedit':
+        title = "Edit Patient Info"
+    context['title'] = title
 
     if form_name == "schedule":
         form = ScheduleForm(data=request.POST)
@@ -230,54 +245,70 @@ def ajax_post_form(request, patient_guid, form_name):
             resp.status_code = 204
             return resp
         else:
-            context['schedule_form'] = form
+            context['form'] = form
     elif form_name == 'address':
         form = SimpleAddressForm(data=request.POST)
         if form.is_valid():
-            is_new_addr = False
-            if form.cleaned_data['address_id'] != '':
-                is_new_addr=False
-                address_edit_id = form.cleaned_data['address_id']
-                instance = pdoc.get_address(address_edit_id)
-            else:
-                is_new_addr=True
-                instance=CAddress()
-                instance.created_by = request.user.username
-            instance.description = form.cleaned_data['description']
-            instance.full_address = form.cleaned_data['address']
+            addr_dict = {}
+            address_edit_id = form.cleaned_data['address_id']
+            addr_dict['description'] = form.cleaned_data['description']
+            addr_dict['address'] = form.cleaned_data['address']
 
-            if is_new_addr == False:
-                index = pdoc.address_index(address_edit_id)
-                pdoc.address[index] = instance
+            if address_edit_id == '':
+                is_new_addr=True
             else:
-                pdoc.set_address(instance)
-            #patient.couchdoc.save()
-            #do patient xml submit
+                is_new_addr=False
+
+            active_addresses = pdoc.active_addresses
+            if is_new_addr:
+                active_addresses.append(addr_dict)
+            else:
+                active_addresses[int(address_edit_id)-1] = addr_dict
+
+            xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, active_addresses)
+            spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            print xml_body
+
             resp.status_code = 204
             return resp
         else:
-            context['address_form'] = form
+            context['form'] = form
     elif form_name == "phone":
         form = PhoneForm(data=request.POST)
         if form.is_valid():
             new_phone = CPhone()
-            new_phone.description = form.cleaned_data['description']
-            new_phone.number = form.cleaned_data['number']
-            new_phone.notes = form.cleaned_data['notes']
-            new_phone.created_by = request.user.username
-            pdoc.phones.append(new_phone)
-            pdoc.save()
+            phone_dict = {}
+            phone_edit_id = form.cleaned_data['phone_id']
+            phone_dict['number'] = form.cleaned_data['number']
+            phone_dict['description'] = form.cleaned_data['description']
+
+            if phone_edit_id == '':
+                is_new_phone = True
+            else:
+                is_new_phone = False
+
+            active_phones = pdoc.active_phones
+            if is_new_phone:
+                active_phones.append(phone_dict)
+            else:
+                active_phones[int(phone_edit_id)-1] = phone_dict
+
+            xml_body = update_patient_casexml(request.user, pdoc, active_phones, pdoc.active_addresses)
+            spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
             resp.status_code = 204
             return resp
         else:
-            logging.error("Error, invalid phone form data")
-    elif patient_edit:
-        form = PactPatientEditForm(patient_edit, instance=pdoc, data=request.POST)
+            context['form'] = form
+    elif form_name=="ptedit":
+        form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
             instance = form.save(commit=True)
             resp.status_code=204
             return resp
-    return render_to_response("pactcarehq/partials/ajax_form.html", context_instance=context)
+        else:
+            context['form']=form
+    resp.write(context['form'].as_table())
+    return resp
 
 
 
@@ -342,7 +373,7 @@ class PactPatientSingleView(PatientSingleView):
         if phone_edit:
             context['phone_form'] = PhoneForm()
         if patient_edit:
-            context['patient_form'] = PactPatientEditForm(patient_edit, instance=pdoc)
+            context['patient_form'] = PactPatientForm(patient_edit, instance=pdoc)
         if show_all_schedule != None:
             context['past_schedules'] = pdoc.past_schedules
 

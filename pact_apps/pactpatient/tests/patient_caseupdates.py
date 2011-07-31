@@ -15,7 +15,7 @@ from pactpatient.models import PactPatient
 from patient.models import Patient
 from .pactpatient_test_utils import delete_all
 from pactcarehq.scripts.scrambler import make_random_cphone, make_random_caddress
-from pactpatient.updater import generate_update_xml
+from pactpatient.updater import generate_update_xml_old
 import receiver.views as receiver_views
 
 from django_digest.test import Client as DigestClient
@@ -49,7 +49,7 @@ class patientCaseUpdateTests(TestCase):
 
         Verify all the phone and address information
         """
-        patient = self.test0CreatePatient()
+        patient_doc = self.test0CreatePatient()
 
         client = DigestClient()
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
@@ -58,7 +58,7 @@ class patientCaseUpdateTests(TestCase):
         case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
         case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
 
-        casedoc = CommCareCase.get(patient.couchdoc.case_id)
+        casedoc = CommCareCase.get(patient_doc.case_id)
         
         self.assertEqual(case_id_xml, casedoc._id)
 
@@ -66,7 +66,7 @@ class patientCaseUpdateTests(TestCase):
         """
         Check to see if transactional single updates can do it vs. doing all each time
         """
-        patient = self.test0CreatePatient()
+        patient_doc = self.test0CreatePatient()
         allphones = []
         addresses = []
         for n in range(0,self.NUM_PHONES):
@@ -78,7 +78,7 @@ class patientCaseUpdateTests(TestCase):
             to_send.append(newphone)
 
             #now, submit the xml.
-            xml_body = generate_update_xml(User.objects.all()[0], patient, to_send, addresses)
+            xml_body = generate_update_xml_old(User.objects.all()[0], patient_doc, to_send, addresses)
             xml_stream = StringIO(xml_body.encode('utf-8'))
             xml_stream.name = "xml_submission_file"
 
@@ -93,7 +93,7 @@ class patientCaseUpdateTests(TestCase):
                 self.fail("XForm submit failed")
 
             #verify casexml updated
-            casedoc_updated = CommCareCase.get(patient.couchdoc.case_id)
+            casedoc_updated = CommCareCase.get(patient_doc.case_id)
 
             for i, p in enumerate(allphones, start=1):
                 self.assertTrue(hasattr(casedoc_updated, 'Phone%d' % i))
@@ -110,7 +110,8 @@ class patientCaseUpdateTests(TestCase):
         patient, phones, addresses = self.test1CreatePatientVerifyAddressAPI()
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
-        response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient.id}))
+        response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient._id}))
+
 
 
         phone_indices = []
@@ -127,7 +128,7 @@ class patientCaseUpdateTests(TestCase):
         Test create phone and addresses, submit via casexml and verify casexml gets updated with latest from patient model.
         This does it via API
         """
-        patient = self.test0CreatePatient()
+        patient_doc = self.test0CreatePatient()
         phones = []
         addresses = []
         for n in range(0,self.NUM_PHONES):
@@ -138,9 +139,9 @@ class patientCaseUpdateTests(TestCase):
             newaddress = make_random_caddress()
             newaddress.description += "%s" % str(n+1)
             addresses.append(newaddress)
-        patient.couchdoc.save()
+        patient_doc.save()
         #first verify that the case got nothing
-        casedoc_blank = CommCareCase.get(patient.couchdoc.case_id)
+        casedoc_blank = CommCareCase.get(patient_doc.case_id)
         for n in range(1, self.NUM_PHONES+1):
             self.assertFalse(hasattr(casedoc_blank, 'Phone%d' % n))
             self.assertFalse(hasattr(casedoc_blank, 'Phone%dType' % n))
@@ -151,7 +152,7 @@ class patientCaseUpdateTests(TestCase):
 
 
         #now, submit the xml.
-        xml_body = generate_update_xml(User.objects.all()[0], patient, phones, addresses)
+        xml_body = generate_update_xml_old(User.objects.all()[0], patient_doc, phones, addresses)
         xml_stream = StringIO(xml_body.encode('utf-8'))
         xml_stream.name = "xml_submission_file"
 
@@ -167,7 +168,7 @@ class patientCaseUpdateTests(TestCase):
 
         #verify casexml updated
 
-        casedoc_updated = CommCareCase.get(patient.couchdoc.case_id)
+        casedoc_updated = CommCareCase.get(patient_doc.case_id)
 
         for n in range(1, self.NUM_PHONES+1):
             p = phones[n-1]
@@ -184,34 +185,42 @@ class patientCaseUpdateTests(TestCase):
             self.assertEquals(address.description, getattr(casedoc_updated,'address%dtype' % n))
 
 
-        return patient, phones, addresses
+        return patient_doc, phones, addresses
 
     def test0CreatePatient(self):
         """
         Test creates new patients and verify casexml is made alongside them
+        Returns a patient couchdoc.
         """
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
         response = self.client.post('/patient/new', {'first_name':'foo',
                                                       'last_name': 'bar',
                                                       'gender':'m',
-                                                      'birthdate': datetime.now().date(),
+                                                      'birthdate': '1/1/2000',
                                                       'pact_id': 'mockmock',
                                                       'arm': 'DOT',
                                                       'art_regimen': 'QD',
                                                       'non_art_regimen': 'BID',
-                                                      'primary_hp': 'foo',
+                                                      'primary_hp': 'isaac',
                                                       'patient_id': uuid.uuid4().hex,
+                                                      'race': 'asian',
+                                                      'is_latino': 'yes',
+                                                      'mass_health_expiration': '1/1/2020',
+                                                      'hiv_care_clinic': 'brigham_and_womens_hospital',
+                                                      'ssn': '1112223333',
+                                                      'preferred_language': 'english',
+#                                                      'notes': 'foo'
                                                     })
-        f = open('response.html', 'w')
-        f.write(response.content)
-        f.close()
+#        f = open('response.html', 'w')
+#        f.write(response.content)
+#        f.close()
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
         self.assertEqual(1, Patient.objects.all().count())
         patient = Patient.objects.all()[0]
 
         casedoc = CommCareCase.get(patient.couchdoc.case_id)
         self.assertEquals(casedoc.external_id, patient.couchdoc.pact_id)
-        return patient
+        return patient.couchdoc
 
 
 

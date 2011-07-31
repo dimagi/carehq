@@ -44,8 +44,14 @@ phone_template = """
 <Phone%(num)sType>%(typestring)s</Phone%(num)sType>
 """
 
-address_template = """
+address_template_full = """
 <address%(num)s>%(street)s %(city)s %(state)s %(postal_code)s</address%(num)s>
+<address%(num)stype>%(typestring)s</address%(num)stype>
+"""
+
+
+address_template = """
+<address%(num)s>%(address)s</address%(num)s>
 <address%(num)stype>%(typestring)s</address%(num)stype>
 """
 
@@ -56,10 +62,42 @@ def generate_submission_from_cpatient(couchdoc):
     """
     pass
 
+def update_patient_casexml(user, patient_doc, active_phones, active_addresses):
+    """
+    Update casexml
+    """
+    data_dict = {}
+    data_dict['time_start'] = datetime.utcnow()#.isoformat()
+    phone_xml = []
+    for i, p in enumerate(active_phones, start=1):
+        if p == None:
+            continue
+        phone_xml.append(get_phone_xml(i, p['number'], typestring=p['description']))
 
-def generate_update_xml(user, patient, cphones, caddresses):
+    address_xml = []
+    for i, a in enumerate(active_addresses, start=1):
+        if a == None:
+            continue
+        address_xml.append(get_address_xml(i, a['address'], typestring=a['description']))
+
+
+
+    case = CommCareCase.get(patient_doc.case_id)
+    data_dict['update_block'] = ''.join(phone_xml + address_xml)
+    data_dict['uid'] = uuid.uuid4().hex
+    data_dict['case_id'] = case._id
+    data_dict['username'] = user.username
+    data_dict['chw_id'] = user.id
+    data_dict['date_modified'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") # this is != to isoformat()!!!
+    data_dict['pact_id'] = patient_doc.pact_id
+    data_dict['time_end'] = datetime.utcnow() #datetime.utcnow().isoformat() + "Z"
+    return xml_template % data_dict
+
+
+def generate_update_xml_old(user, patient_doc, cphones, caddresses):
     """
     For a given patient and in memory phone and address objects, generate the xml.
+    This is using the old cphone and cpatient models. This is a migration method.
     """
 
     data_dict = {}
@@ -74,18 +112,18 @@ def generate_update_xml(user, patient, cphones, caddresses):
     for i, a in enumerate(caddresses, start=1):
         if a == None:
             continue
-        address_xml.append(get_address_xml(i, a.street, a.city, a.state, a.postal_code, typestring=a.description))
+        address_xml.append(get_address_xml_full(i, a.street, a.city, a.state, a.postal_code, typestring=a.description))
 
 
 
-    case = CommCareCase.get(patient.couchdoc.case_id)
+    case = CommCareCase.get(patient_doc.case_id)
     data_dict['update_block'] = ''.join(phone_xml + address_xml)
     data_dict['uid'] = uuid.uuid4().hex
     data_dict['case_id'] = case._id
     data_dict['username'] = user.username
     data_dict['chw_id'] = user.id
     data_dict['date_modified'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") # this is != to isoformat()!!!
-    data_dict['pact_id'] = patient.couchdoc.pact_id
+    data_dict['pact_id'] = patient_doc.pact_id
     data_dict['time_end'] = datetime.utcnow() #datetime.utcnow().isoformat() + "Z"
     return xml_template % data_dict
 
@@ -99,11 +137,17 @@ def get_phone_xml(n, phone, typestring=None):
             'typestring': typestring if typestring is not None or len(typestring) > 0 else ''}
     return phone_template % dict
 
+def get_address_xml(n, address, typestring=None):
+    dict = { 'num': n, 'address': address,
+             'typestring': typestring if typestring is not None or len(typestring) > 0 else ''}
+    return address_template % dict
 
-def get_address_xml(n, street, city, state, postal_code, typestring=None):
+
+
+def get_address_xml_full(n, street, city, state, postal_code, typestring=None):
     dict = {'num': n, 'street': street, 'city': city, 'state': state, 'postal_code': postal_code,
             'typestring': typestring if typestring is not None or len(typestring) > 0 else ''}
-    return address_template % dict
+    return address_template_full % dict
 
 
 def get_blank_phone_xml(n):

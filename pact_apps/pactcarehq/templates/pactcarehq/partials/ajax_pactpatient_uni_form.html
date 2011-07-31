@@ -1,9 +1,10 @@
+{% load uni_form_tags %}
 <div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
 <h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
-<form id="id_{{ form_name }}" action="{% url ajax_post_form patient_guid form_name %}" class="uniForm" method="POST">
+<form id="id_{{ form_name }}" action="{% url ajax_post_form patient_guid form_name %}" method="POST">
     {% csrf_token %}
     <table id="tbl_{{ form_name }}">
-        {{ form.as_table }}
+       {% uni_form form form.helper %}
     </table>
     <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />
     <input type="button" name="cancel" value="Cancel" onclick="$(this).parent().parent().parent().hide('blind',{},300);$(this).parent().parent().parent().html('');"
@@ -11,14 +12,19 @@
 </form>
 <script>
 	$(function() {
-		$( "#id_active_date" ).datepicker( {
+		$( "#id_mass_health_expiration" ).datepicker( {
                 changeMonth: true,
-                mindate: "+0",
-
+                changeYear: true,
+            }
+        );
+        $( "#id_birthdate" ).datepicker( {
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "+0M +0D +0Y",
+                yearRange: "-100:+0"
             }
         );
 	});
-</script>
-    
 
+</script>
 </div>

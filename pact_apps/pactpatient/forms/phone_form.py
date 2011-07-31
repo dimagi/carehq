@@ -14,6 +14,5 @@ class PhoneForm(forms.Form):
 #    )
     description = forms.CharField(required=True)
     number = forms.CharField(required=True)
-    notes = forms.CharField(required=False)
     phone_id = forms.CharField(required=False, widget=forms.HiddenInput()) #integer
 

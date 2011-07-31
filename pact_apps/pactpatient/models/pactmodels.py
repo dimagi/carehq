@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from couchdbkit.ext.django.schema import Document
-from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty
+from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty, DateProperty
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
 from casexml.apps.case.models import CommCareCase
 from dimagi.utils.couch.database import get_db
+from pactpatient.enums import PACT_ARM_CHOICES, PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
 from patient.models import BasePatient
 import logging
 from dimagi.utils import make_uuid
@@ -174,6 +175,48 @@ class PactPatient(BasePatient):
     last_dot = StringProperty() #will be a timestamp
     dots_schedule = SchemaListProperty(CDotSchedule) #deprecated
     weekly_schedule = SchemaListProperty(CDotWeeklySchedule)
+
+    race = StringProperty()
+    is_latino = BooleanProperty()
+    preferred_language = StringProperty()
+    mass_health_expiration = DateProperty()
+    hiv_care_clinic = StringProperty()
+    ssn = StringProperty()
+
+    @property
+    def get_race(self):
+        if hasattr(self, '_race'):
+            return self._race
+        else:
+            self._race = None
+            for x in PACT_RACE_CHOICES:
+                if x[0] == self.race:
+                    self._race = x[1]
+                    break
+            return self._race
+
+    @property
+    def get_hiv_care_clinic(self):
+        if hasattr(self, '_hiv_care_clinic'):
+            return self._hiv_care_clinic
+        else:
+            self._hiv_care_clinic = None
+            for x in PACT_HIV_CLINIC_CHOICES:
+                if x[0] == self.hiv_care_clinic:
+                    self._hiv_care_clinic = x[1]
+                    break
+            return self._hiv_care_clinic
+    @property
+    def get_preferred_language(self):
+        if hasattr(self, '_preferred_language'):
+            return self._preferred_language
+        else:
+            self._preferred_language = None
+            for x in PACT_LANGUAGE_CHOICES:
+                if x[0] == self.preferred_language:
+                    self._preferred_language = x[1]
+                    break
+            return self._preferred_language
 
     @property
     def art_num(self):
@@ -506,6 +549,7 @@ class PactPatient(BasePatient):
 
         for n, x in enumerate(phone_properties, start=1):
             p = {}
+            p['phone_id'] = n
             if hasattr(casedoc, 'Phone%d' % n):
                 pnum = getattr(casedoc, 'Phone%d' % n)
                 if pnum != None and pnum != '':
@@ -532,13 +576,18 @@ class PactPatient(BasePatient):
         ret = []
 
         for n, x in enumerate(address_props, start=1):
+            print "Enumerating addr: %s : %s" % (n, x)
             p = {}
+            p['address_id'] = n
             if hasattr(casedoc, 'address%d' % n):
                 pnum = getattr(casedoc, 'address%d' % n)
                 if pnum != None and pnum != '':
                     p['address'] = pnum
             if hasattr(casedoc, 'address%dtype' % n):
+                print "got description"
                 p['description'] = getattr(casedoc, 'address%dtype' % n)
+                print p['description']
+
             if p.has_key('address'):
                 ret.append(p)
             if p == {}:
