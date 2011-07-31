@@ -152,6 +152,8 @@ INSTALLED_APPS = (
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
+
+    'uni_form',
     #'south',
     #end third party apps
 
