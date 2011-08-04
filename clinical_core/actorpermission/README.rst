@@ -1,0 +1,1 @@
+This app REQUIRES the djactor-permissions app to run

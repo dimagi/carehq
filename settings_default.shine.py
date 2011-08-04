@@ -11,7 +11,7 @@ from django.conf.urls.defaults import patterns, include
 
 
 XFORMS_PLAYER_URL = "http://localhost:4444/"
-AUTH_PROFILE_MODULE = 'actorprofile.ClinicalUserProfile'
+AUTH_PROFILE_MODULE = 'actorpermission.ClinicalUserProfile'
 
 # shine
 #BASE_TEMPLATE = "shinepatient/shine_base.html"
@@ -110,7 +110,7 @@ COUCH_USERNAME = ''
 COUCH_PASSWORD = ''
 COUCH_DATABASE_NAME = 'carehq'
 
-LOCAL_COUCHDB_APPS = ['pactpatient', 'touchforms.formplayer', 'actorprofile',
+LOCAL_COUCHDB_APPS = ['pactpatient', 'touchforms.formplayer', 'actorpermission',
                       'dotsview', 'pactcarehq', 'slidesview', "shinepatient" ]
 
 #local settings does this to make this a lot easeir

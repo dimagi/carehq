@@ -19,15 +19,17 @@ urlpatterns = patterns ('',
 
 
 
-    #where the xforms get submitted to
-    (r'^submit$', 'pactcarehq.views.post'),
-    (r'^submit/$', 'pactcarehq.views.post'),
-    (r'^receiver/submit/.*$', 'pactcarehq.views.post'),
-    (r'^receiver/submit$', 'pactcarehq.views.post'),
 
-    (r'^receiver2/submit/.*$', 'receiver.views.post'),
-    (r'^receiver2/submit$', 'receiver.views.post'),
-    (r'^receiver2/$', 'receiver.views.post'),
+    #where the xforms get submitted to
+#    (r'^submit$', 'pactcarehq.views.post'),
+#    (r'^submit/$', 'pactcarehq.views.post'),
+#    (r'^receiver/submit/.*$', 'pactcarehq.views.post'),
+#    (r'^receiver/submit$', 'pactcarehq.views.post'),
+
+    (r'^submit$', 'receiver.views.post'),
+    (r'^submit/$', 'receiver.views.post'),
+    (r'^receiver/submit/.*$', 'receiver.views.post'),
+    (r'^receiver/submit$', 'receiver.views.post'),
 
 
     (r'^submits/mine$', 'pactcarehq.views.my_submits'),

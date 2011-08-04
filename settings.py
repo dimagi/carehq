@@ -131,7 +131,8 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
 
     # Core clinical apps #####################
-    'actorprofile',
+    'tenant',
+    'clinical_core.actorpermission',
     'permissions',
     'couchforms',
     'couchexport',
@@ -145,6 +146,8 @@ INSTALLED_APPS = (
     'downloader',
     'casexml.apps.case',
     'casexml.apps.phone',
+    'account',
+    'clinical_core.carehqadmin',
     #end clinical_core
 
     #########################
@@ -154,7 +157,7 @@ INSTALLED_APPS = (
     'djkombu',     # pip install django-kombu
 
     'uni_form',
-    #'south',
+    'south',
     #end third party apps
 
     ###########################
@@ -225,7 +228,7 @@ XFORMS_PLAYER_URL = "http://localhost:4444/"
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 
 
-#AUTH_PROFILE_MODULE = 'actorprofile.models.ClinicalUserProfile'
+#AUTH_PROFILE_MODULE = 'actorpermission.models.ClinicalUserProfile'
 AUTHENTICATION_BACKENDS = (
             'django.contrib.auth.backends.ModelBackend',
             'permissions.backend.ObjectPermissionsBackend',

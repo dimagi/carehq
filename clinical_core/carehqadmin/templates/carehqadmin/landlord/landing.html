@@ -1,0 +1,13 @@
+{% extends base_template %}
+{% load i18n %}
+{% block content %}
+    <h2>CareHQ :: Landlord Adminstration</h2>
+    <h3>Current Tenants</h3>
+    <ul>
+    {% for t in tenants %}
+        <li>
+            <a href="{% url manage_tenant t.id %}">{{ t.name }}: {{ t.full_name }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock content %}

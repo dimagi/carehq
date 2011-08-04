@@ -1,0 +1,15 @@
+{% extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+<div class="container">
+<h2>Create New Actor</h2>
+      <form action="" method="POST" class="uniForm">
+       {% csrf_token %}
+       <table>
+            {{ form|as_uni_form}}
+       </table>
+       <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+       <input type="button" name="cancel" value="Cancel"  onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+   </form>
+</div>
+{% endblock content %}
