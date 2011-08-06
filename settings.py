@@ -197,7 +197,7 @@ USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
-BASE_TEMPLATE = "base.html"
+BASE_TEMPLATE = 'base.html'
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',

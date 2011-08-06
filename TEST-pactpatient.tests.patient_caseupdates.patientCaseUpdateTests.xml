@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<testsuite errors="1" failures="0" name="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" tests="5" time="2.854">
+	<testcase classname="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" name="test0CreatePatient" time="0.571"/>
+	<testcase classname="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" name="test1CreatePatientVerifyAddressAPI" time="0.571"/>
+	<testcase classname="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" name="test3PushPhonesIteratively" time="0.571"/>
+	<testcase classname="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" name="testOTARestore" time="0.571"/>
+	<testcase classname="pactpatient.tests.patient_caseupdates.patientCaseUpdateTests" name="test2PushNewPhone" time="0.571">
+		<error message="substring not found" type="ValueError">
+<![CDATA[Traceback (most recent call last):
+  File "pact_apps/pactpatient/tests/patient_caseupdates.py", line 119, in test2PushNewPhone
+    phone_indices.append(response.content.index(p.description))
+ValueError: substring not found
+]]>		</error>
+	</testcase>
+	<system-out>
+<![CDATA[Enumerating addr: 1 : address1
+got description
+Home Address1
+Enumerating addr: 2 : address1type
+got description
+Daugter's2
+Enumerating addr: 3 : address2
+Enumerating addr: 4 : address2type
+]]>	</system-out>
+	<system-err>
+<![CDATA[]]>	</system-err>
+</testsuite>
