@@ -37,6 +37,7 @@ def manage_tenant(request, tenant_id, template="carehqadmin/tenants/manage_tenan
 
     actor_tenants = TenantActor.objects.all().filter(tenant=tenant)
     actor_roles = PrincipalRoleRelation.objects.all().filter(actor__in=actor_tenants.values_list('actor__id'))
+    print actor_roles
     context['actor_roles'] = actor_roles
 
     for pt in Patient.objects.all():

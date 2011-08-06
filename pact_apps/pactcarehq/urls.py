@@ -53,7 +53,7 @@ urlpatterns = patterns ('',
     url(r'^patients/all$', PatientListView.as_view(template_name='pactcarehq/patient_list.html', patient_type=PactPatient, create_patient_viewname='pactpatient.views.new_patient'), name='pactpatient_list'),
 
     #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
-    url(r'^patients/single/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
+    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
     url(r'^ajax/getform/$', 'pactcarehq.views.ajax_get_form', name='ajax_get_form'),
     url(r'^ajax/postform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_form', name='ajax_post_form'),
 
@@ -65,6 +65,7 @@ urlpatterns = patterns ('',
 
 
     url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
+    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_add_provider', name='pt_add_provider'),
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),

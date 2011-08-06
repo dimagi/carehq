@@ -277,6 +277,17 @@ class BasePatient(Document):
         doc_dict = db.open_doc(doc_id)
         return cls.get_typed_from_dict(doc_dict)
 
+
+    @property
+    def django_patient(self):
+        if not hasattr(self, '_django_patient'):
+            try:
+                djpt = Patient.objects.get(id=self.django_uuid)
+            except Actor.DoesNotExist:
+                djpt = None
+            self._django_patient = djpt
+        return self._django_patient
+
     @property
     def age_string(self):
         """

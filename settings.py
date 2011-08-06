@@ -157,7 +157,7 @@ INSTALLED_APPS = (
     'djkombu',     # pip install django-kombu
 
     'uni_form',
-    'south',
+    #'south',
     #end third party apps
 
     ###########################

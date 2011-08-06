@@ -40,13 +40,14 @@ class BaseActorDocument(Document):
 
             django_actor = Actor()
             actor_uuid = uuid.uuid4().hex
-            doc_id = uuid.uuid4().hex
+            #doc_id = uuid.uuid4().hex
             if self._id == None and self.new_document:
                 doc_id = uuid.uuid4().hex
                 self._id = doc_id
             else:
                 doc_id = self._id
 
+            self.actor_uuid = actor_uuid
             django_actor.id = actor_uuid
             django_actor.doc_id=doc_id
 
@@ -55,9 +56,7 @@ class BaseActorDocument(Document):
             try:
                 super(BaseActorDocument, self).save(*args, **kwargs)
                 django_actor.save()
-                ta = TenantActor()
-                ta.actor = django_actor
-                ta.tenant = tenant
+                ta = TenantActor(actor=django_actor, tenant=tenant)
                 ta.save()
                 self._django_actor = django_actor
 

@@ -70,6 +70,7 @@
 
     <script type="text/javascript">
         //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
+
         function ajax_get_form(patient_guid, form_name, target_div, edit_id) {
             console.log(edit_id);
             if (edit_id === undefined) {
@@ -347,7 +348,7 @@
         <div id="patient-schedule-tab">
             {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
             <div id="scheduleform"></div>
-            <div style="float:right;">
+            <div style="float:right;" class="editctrl">
                 <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:ajax_get_form('{{ patient_doc.get_id }}','schedule', 'scheduleform');">
                     <span class="ui-icon ui-icon-circle-plus"></span>
                     Add Schedule
@@ -358,9 +359,25 @@
 
         <div id="patient-careteam-tab">
             <div class="span-20">
+                    <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                       href="{% url pt_add_provider patient_doc.get_id %}">
+                    <span class="ui-icon ui-icon-circle-plus"></span>
+                    Add Provider </a>
                 <div class="span-20">
                     Search: <input type="text">
                 </div>
+
+                <h3>CareTeam</h3>
+                {% for role, actors in careteam_dict.items %}
+                    <h4>{{ role.name }}</h4>
+                    <ul>
+                    {% for actor in actors %}
+                        <li>{{ actor.name }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+
+                <h4>Dummy Data</h4>
                 <div class="span-5" style="border: 1px solid black;padding: 8px;">
                     <div class="span-5 last careteam_name">Casey Caregiver</div>
                     <div class="span-5 last">Emergency Contact</div>

@@ -125,10 +125,6 @@ class PactPatientForm(DocumentForm):
         )
 
         helper.add_layout(layout)
-
-#        submit = Submit('add','Add this contact')
-#        helper.add_input(submit)
-
         return helper
 
 

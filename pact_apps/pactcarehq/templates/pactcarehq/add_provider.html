@@ -1,0 +1,46 @@
+{%  extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<div class="container">
+<h2>Add Provider for patient {{ patient.get_id }}</h2>
+    <h2>New Provider</h2>
+<form action="" method="POST" class="uniForm">
+    {% csrf_token %}
+    <table>
+        {% uni_form form form.helper %}
+    </table>
+    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />
+    <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
+</form>
+
+<hr>
+
+{% if all_providers %}
+    <h3>Choose from existing providers</h3>
+	<table id="patient-table" class="tablesorter span-24 last">
+	<thead>
+		<tr>
+        <th class="span-2">Name</th>
+        <th class="span-4">Title</th>
+        <th class="span-4">Email</th>
+		<th class="span-4">Phone Number</th>
+		<th class="span-2">Facility</th>
+	</thead>
+	
+	<tbody>
+	{% for prov in all_providers %}
+        <tr>
+            <td>{{ prov.name }}</td>
+            <td>{{ prov.title }}</td>
+            <td>{{ prov.email }}</td>
+            <td>{{ prov.phone_number }}</td>
+            <td>{{ prov.facility }}</td>
+        </tr>
+	{% endfor %}
+	</tbody>
+	</table>
+{% endif %}
+</div>
+{% endblock content %}

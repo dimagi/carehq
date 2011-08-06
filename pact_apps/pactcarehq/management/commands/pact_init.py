@@ -21,12 +21,6 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-
-        Permission.objects.all().delete()
-        Tenant.objects.all().delete()
-        Role.objects.all().delete()
-        ObjectPermission.objects.all().delete()
-
         # Register roles
         role_suspended = permissions.utils.register_role(constants.role_suspended)
         role_chw = permissions.utils.register_role(constants.role_chw)
@@ -48,7 +42,7 @@ class Command(BaseCommand):
         ctype = ContentType.objects.get_for_model(Tenant)
 
         # Create domain
-        tenant = Tenant.objects.get_or_create(name="PACT", prefix='pact', full_name="Prevention and Access to Care and Treatment")[0]
+        tenant = Tenant.objects.get_or_create(name=constants.TENANT_NAME, prefix=constants.TENANT_PREFIX, full_name=constants.TENANT_FULL_NAME)[0]
 
         # Set permissions for tenant
         permissions.utils.grant_permission(tenant, role_chw, perm_patient_view)

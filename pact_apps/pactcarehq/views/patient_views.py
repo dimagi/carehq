@@ -6,6 +6,7 @@ from django.template.context import RequestContext
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
+from patient import careteam_api
 from .util import form_xmlns_to_names
 from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
@@ -56,6 +57,11 @@ class PactPatientSingleView(PatientSingleView):
 
         last_bw = pdoc.last_bloodwork
         context['last_bloodwork'] = last_bw
+
+        role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
+        context['careteam_dict'] = role_actor_dict
+
+
 
 
 
