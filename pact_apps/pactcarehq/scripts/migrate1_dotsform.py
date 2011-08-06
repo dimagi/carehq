@@ -8,6 +8,8 @@ def run():
     offset = 0
     block_size = 250
 
+    print "This migration has already been completed in production"
+    return
     while True:
         docs = XFormInstance.view('pactcarehq/all_dots_forms', include_docs=True, skip=offset, limit=block_size).all()
         if len(docs) == 0:

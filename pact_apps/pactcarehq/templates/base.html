@@ -6,28 +6,15 @@
         <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
         <link rel="shortcut icon" href="{{ STATIC_URL }}pactcarehq/img/favicon.png" />
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        {% block stylesheets %}
-			<!-- stylesheets -->
-	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/screen.css" type="text/css" media="screen, projection">
-	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/print.css" type="text/css" media="print">
-	        <!--[if lt IE 8]>
-	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/ie.css" type="text/css" media="screen, projection">
-	        <![endif]-->
-	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/pactcarehq.css" type="text/css">
-            <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/jquery-ui-1.8.custom.css" type="text/css">
-			<link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/flickr-menu-style.css" type="text/css">
-
-	        {% block page_stylesheets %}{% endblock %}
-        {% endblock %} {# stylesheets #}
 
         {% block javascripts %}
         <!-- javascripts (global, app, page) -->
-        <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery-ui-1.8.custom.min.js"></script>
-
+        <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery-ui-1.8.14.custom.min.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery.flickrmenu.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery.cookie.yc.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery.timeago.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/js/jquery.ba-bbq.min.js"></script>
 
         <script type="text/javascript" charset="utf-8">
             $().ready(function(){
@@ -35,6 +22,22 @@
             });
         </script>
         {% endblock javascripts %}
+        {% block stylesheets %}
+			<!-- stylesheets -->
+            {% include "uni_form/includes.html" %}
+	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/screen.css" type="text/css" media="screen, projection">
+	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/print.css" type="text/css" media="print">
+	        <!--[if lt IE 8]>
+	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/blueprint/ie.css" type="text/css" media="screen, projection">
+	        <![endif]-->
+	        <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/pactcarehq.css" type="text/css">
+            <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/jquery-ui-1.8.14.custom.css" type="text/css">
+{#            <link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/jquery-ui-aristo.css" type="text/css">#}
+			<link rel="stylesheet" href="{{STATIC_URL}}pactcarehq/css/flickr-menu-style.css" type="text/css">
+
+	        {% block page_stylesheets %}{% endblock %}
+        {% endblock %} {# stylesheets #}
+
         {% block extrahead %}{% endblock %}
     </head>
     <body>
@@ -52,12 +55,19 @@
 			{% endblock searchbar %}
 			{% block auth %}
 			<div id="identityblock">
-				{% if user.is_superuser %}
-				<a href="/admin">Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
-				{% endif %}
+
 
 		        {% if user.is_authenticated %}
-		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp;  <a href="#">{%trans "My Account" %}</a>&nbsp;|&nbsp;<a href="/accounts/logout/">{% trans "Log out" %} </a>
+		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp;
+                    <a href="{% url account_landing %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;
+
+                    {% if user.is_superuser %}
+                        <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
+                    {% endif %}
+                    &nbsp;
+                    &nbsp;
+
+                    <a href="/accounts/logout/">{% trans "Log out" %} </a>
 		        {% else %}
 		            {#<a href="/accounts/login/">{% trans "Log in" %}</a>#}
 		        {% endif %}
@@ -81,6 +91,7 @@
 					{% if user.is_authenticated %}
                     <div id="menu" style="z-index:-1;">
                      <ul>
+                        {% block nav_list %}
                          <li>
                              <span class="head_menu">
                                <a href="{% url pactcarehq.views.my_patient_activity %}">Dashboard</a>
@@ -103,13 +114,20 @@
                                 <img src="{{ STATIC_URL }}pactcarehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
                             </span>
                             <div class="sub_menu">
+                                {% if user.is_superuser %}
+                                    <a href="{% url carehqadmin.views.landing %}">System Admin</a>
+                                {% endif %}
                                 <a href="{% url pactcarehq.views.chw_list %}">CHW List</a>
-                                <a href="{% url pactcarehq.views.patient_list%}">Patient List</a>
+                                <a href="{% url pactpatient_list %}">Patient List</a>
+                                {% if user.is_superuser %}
+                                    <a href="{% url pactcarehq.views.export_landing %}">Data Exports</a>
+                                {% endif %}
 {#                                <a href="{% url clinical_core.actors.views.providerSearch %}">Provider List</a>#}
 {#                                <a href="{% url pactcarehq.views.all_submits_by_user %}">Submissions By CHW</a>#}
 {#                                <a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a>#}
                             </div>
                         </li>
+                        {% endblock %}
                      </ul>
 					{% endif %} {# end autenticated if#}
                     </div> {# div id=menu #}

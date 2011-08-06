@@ -1,0 +1,56 @@
+{% extends base_template %}
+{% load i18n %}
+{% block content %}
+    <h2>CareHQ :: Manage Tenant {{ tenant.name }}</h2>
+    <h3>Roles and Permissions</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>
+                Role
+            </th>
+            {% for p in all_permissions %}
+            <th>
+               {{ p.name }}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        {% for role, permissions in role_permission_matrix %}
+        <tr>
+            <td>
+                {{ role.name }}
+            </td>
+            {% for has_perm in permissions %}
+                    {% if has_perm %}
+                        <td bgcolor="GREEN">
+                    {% else %}
+                        <td bgcolor="RED">
+                    {% endif %}
+                &nbsp;
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Actor Roles and Permissions</h3>
+    <a href="{% url new_actor tenant.id %}?type=chw">Add CHW</a> &nbsp;
+    <a href="{% url new_actor tenant.id %}?type=provider">Add Provider</a> &nbsp;
+    <a href="{% url new_actor tenant.id %}?type=caregiver">Add Caregiver</a> &nbsp;
+    {# this will tell you if this actor has any roles in which it is the principal of #}
+    <h4>Actor Roles</h4>
+    <ul>
+    {% for arole in actor_roles %}
+        <li><strong>{{ arole.principal }}</strong> :: {{ arole.role }}
+        {% if arole.content %}
+                -> {{ arole.content }}
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+    <h4>Get roles</h4>
+
+
+
+{% endblock content %}

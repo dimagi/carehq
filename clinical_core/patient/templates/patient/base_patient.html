@@ -1,0 +1,151 @@
+{% extends base_template %}
+{% load i18n %}
+{% block extrahead %}
+    <script>
+        $(function() {
+                 $('.editctrl').each(function() {
+                    $(this).hide();
+                });
+        });
+        function toggle_edit() {
+            if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
+            } else {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
+            }
+        }
+
+        $(function() {
+            // The "tab widgets" to handle.
+            var tabs = $('.tabs'),
+
+            // This selector will be reused when selecting actual tab widget A elements.
+            tab_a_selector = 'ul.ui-tabs-nav a';
+
+            // Enable tabs on all tab widgets. The `event` property must be overridden so
+            // that the tabs aren't changed on click, and any custom event name can be
+            // specified. Note that if you define a callback for the 'select' event, it
+            // will be executed for the selected tab whenever the hash changes.
+            tabs.tabs({ event: 'change' });
+
+            // Define our own click handler for the tabs, overriding the default.
+            tabs.find(tab_a_selector).click(function() {
+                var state = {},
+
+                // Get the id of this tab widget.
+                id = $(this).closest('.tabs').attr('id'),
+
+                // Get the index of this tab.
+                idx = $(this).parent().prevAll().length;
+
+                //get the ID of the selected tab
+                var href = ($(this).filter('a').attr('href'));
+
+                // Set the state!
+                //state[ id ] = idx; //rather than by index, let's do it by id
+                state[id] = href.substring(1,href.length);
+                $.bbq.pushState(state);
+            });
+
+            // Bind an event to window.onhashchange that, when the history state changes,
+            // iterates over all tab widgets, changing the current tab as necessary.
+            $(window).bind('hashchange', function(e) {
+
+                // Iterate over all tab widgets.
+                tabs.each(function() {
+                    // Get the index for this tab widget from the hash, based on the
+                    // appropriate id property. In jQuery 1.4, you should use e.getState()
+                    // instead of $.bbq.getState(). The second, 'true' argument coerces the
+                    // string value to a number.
+//                    var idx = $.bbq.getState(this.id, true) || 0;
+                    var hash = $.bbq.getState(this.id, true) || "patient-info-tab";
+                   // alert(hash); //todo, push a state here
+
+                    // Select the appropriate tab for this tab widget by triggering the custom
+                    // event specified in the .tabs() init above (you could keep track of what
+                    // tab each widget is on using .data, and only select a tab if it has
+                    // changed).
+//                    $(this).find(tab_a_selector).eq(idx).triggerHandler('change');
+                    $(this).find('a[hash=#'+ hash + ']').triggerHandler('change');
+                });
+
+
+
+
+            });
+
+            // Since the event is only triggered when the hash changes, we need to trigger
+            // the event now, to handle the hash the page may have loaded with.
+            $(window).trigger('hashchange');
+
+
+        });
+    </script>
+{% endblock extrahead %}
+{% block content %}
+<div class="container">
+	<div class="span-24">
+        <div class="span-24"> <!-- patient hat -->
+        {% block patient_hat %}
+            <div class="span-12">
+                <span class="ptpage_fn"><a href="{{ patient_list_url }}">Patients</a> / {{patient_doc.first_name}} {{patient_doc.last_name}}</span>
+            </div>
+            <div class="span-12 last right pt_hat_actions_bar">
+            {% block hat_actions %}
+                <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:toggle_edit()">
+                <span class="ui-icon ui-icon-gear"></span>
+                <span class="edit_btn_txt">Edit Patient</span>
+                </a>
+            {% endblock hat_actions %}
+            </div>
+            <hr>
+        {% endblock %}
+        </div> <!-- end patient hat -->
+        <div class="span-4"> <!-- patient badge -->
+        <dl>
+        {% block patient_badge %}
+            <dt>{% trans "Age" %}</dt>
+                <dd>{{patient_doc.age_string}}</dd>
+            <dt>{% trans "Sex" %}</dt>
+                <dd>{{patient_doc.gender|title }}</dd>
+        {% endblock patient_badge %}
+        </dl>
+        </div> <!-- end patient badge -->
+        <div class="span-20 last">
+            {% block patient-content-tabs %}
+            <div id="ptabs" class="tabs">
+                <ul>
+                {% block patient-tab-controller %}
+                    <li><a href="#patient-info-tab" name="info">{% trans "Info" %}</a></li>
+                    <li><a href="#messages-tab">{% trans "Messages" %}</a></li>
+                    <li><a href="#case-tab">{% trans "Case" %}</a></li>
+                    <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
+                {% endblock patient-tab-controller %}
+                </ul>
+                {% block patient-tab-container %}
+                <div id="patient-info-tab"  class="ui-tabs-hide">
+                    Notes: {{ patient_doc.notes }}<br>
+                    Last Modified: {{ patient_doc.date_modified|timesince }} ago
+                </div>
+                <div id="messages-tab" class="ui-tabs-hide">
+                    Message info goes here!
+                </div>
+                <div id="case-tab" class="ui-tabs-hide">
+                    Case info goes here
+                </div>
+                <div id="submissions-tab" class="ui-tabs-hide">
+                    Submissions go here
+                </div>
+                {% endblock patient-tab-container %}
+            </div>  <!-- "patient-content-tabs" -->
+            {% endblock patient-content-tabs %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

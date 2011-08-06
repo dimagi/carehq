@@ -9,6 +9,10 @@ def run():
     """Script to flip CPatient to PactPatient (subclass of BasePatient), then switch doc_id to a new id, and assign a case_id fromt he original doc_id
     """
 
+
+    print "This migration has already been completed in production"
+    return
+
     #django patient -> django_uuid = new
     #cpatient-> doc_id = case_id, doc_id = new, == to djpatient.django_uuid
 
@@ -22,7 +26,7 @@ def run():
 
         #establish the updated ids and get them separated out
         real_case_id = p.doc_id + "" #the doc_id had been used as the case_id which in real casexml, that's bad.
-        new_doc_id = uuid.uuid1().hex #now make a new doc_id for the patient document.
+        new_doc_id = uuid.uuid4().hex #now make a new doc_id for the patient document.
 
         couchdoc = db.open_doc(p.doc_id)
 

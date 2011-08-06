@@ -14,7 +14,7 @@ def _join(*args):
     return '/'.join(args)
 
 
-def _setup_path():
+def _setup_path_production():
     env.virtualenv_root = '/home/pact/.virtualenvs/carehq'
     env.src_root       = _join(env.root, 'src')
     env.code_root       = _join(env.root, 'src/carehq')
@@ -27,8 +27,24 @@ def production():
     env.hosts = ['10.84.168.247']
     env.environment = 'production'
     env.user = prompt("Username: ", default=env.user)
-    _setup_path()
+    _setup_path_production()
 
+def _setup_path_shine_staging():
+    env.virtualenv_root = '/home/dimagivm/.virtualenvs/carehq_shine'
+    env.root = '/home/dimagivm/'
+    env.src_root       = _join(env.root, 'src')
+    env.code_root       = _join(env.root, 'src/carehq')
+    env.project_root    = _join(env.root, 'src/carehq')
+
+def shine_staging():
+    """Staging environment within local network
+    """
+    env.code_branch = 'shine'
+    env.sudo_user = 'dimagivm'
+    env.hosts = ['192.168.7.224']
+    env.environment = 'shine_staging'
+    env.user = prompt("Username: ", default='dimagivm')
+    _setup_path_shine_staging()
 
 def enter_virtualenv():
     """
@@ -42,6 +58,8 @@ def enter_virtualenv():
     return prefix('PATH=%(virtualenv_root)s/bin/:PATH' % env)
 
 def get_code():
+    """Get code for the first time
+    """
     require('root', provided_by=('staging', 'production'))
     with cd(env.src_root):
         sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
@@ -50,11 +68,17 @@ def get_code():
         sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
 
 def pip_update():
+    """
+    Do a pip update off the requirements file
+    """
     with cd(env.code_root):
         with enter_virtualenv():
             run('pip install -r requirements.txt')
 
 def update():
+    """
+    Update codebase and submodules (git pull)
+    """
     require('root', provided_by=('staging', 'production'))
     with cd(env.code_root):
         sudo('git checkout %(code_branch)s' % env, user=env.sudo_user)
@@ -91,6 +115,10 @@ def restart_celery():
         sudo('stop carehq_celery', user=env.sudo_user, shell=False)
         sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
         sudo('start carehq_celery', user=env.sudo_user, shell=False)
+
+        sudo('stop carehq_celerymon', user=env.sudo_user, shell=False)
+        sudo('initctl reload-configuration', user=env.sudo_user, shell=False)
+        sudo('start carehq_celerymon', user=env.sudo_user, shell=False)
 
 
 def restart_formsplayer():

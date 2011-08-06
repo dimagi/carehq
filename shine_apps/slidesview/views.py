@@ -18,6 +18,9 @@ from .models import ImageAttachment
 
 @login_required
 def image_proxy(request, doc_id, attachment_key):
+    """Simple image proxy to view an image straight from couch.  This does not work with sorl-thumbnail as a viable means to
+    dynamically generate image thumbnails.
+    """
     db = get_db()
     attach = db.fetch_attachment(doc_id, attachment_key, stream=True)
     wrapper = FileWrapper(attach)
@@ -26,6 +29,10 @@ def image_proxy(request, doc_id, attachment_key):
 
 @login_required
 def slideform(request, doc_id, template_name="slidesview/view_slide_form.html"):
+    """
+    View an actual slideform, this default view currently includes some client side eye candy.
+    To dynamically manage the images in the browser, use the thumbsize url param or the crop param.
+    """
 
     thumbsize = int(request.GET.get('thumbsize', 100))
     crop = request.GET.get('crop','center')
@@ -35,23 +42,12 @@ def slideform(request, doc_id, template_name="slidesview/view_slide_form.html"):
         im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
         return im
 
-
-#    def attachment_getter(x, k):
-#        f =  x.fetch_attachment(k, stream=True)
-#        tmp = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
-#        tmp.write(f.read())
-#        tmp.close()
-#        im = get_thumbnail(tmp, '100x100', crop='center', quality=99)
-#        return im
-
     context = RequestContext(request)
     xform = XFormInstance.get(doc_id)
     case = xform.form['case']
     thumbs = [mk_thumbnail(xform, k) for k, v in xform._attachments.iteritems() if k != 'form.xml']
-    #attachments = ImageAttachment.objects.all().filter(xform_id=doc_id)
 
     context['thumbs'] = thumbs
-    #context['image_attachments'] = attachments
     context['case'] = case
     return render_to_response(template_name, context_instance=context)
 

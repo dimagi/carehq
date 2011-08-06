@@ -1,14 +1,27 @@
-{% extends "base.html" %}
+{% extends base_template %}
+{% block extrahead %}
+<script>
+	$(function() {
+		$( "#id_birthdate" ).datepicker( {
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "+0M +0D +0Y",
+                yearRange: "-100:+0"
+            }
+        );
+	});
+</script>
+{% endblock %}
 {% block content %}
 <div class="container">
 <h2>Enroll New Patient</h2>
-      <form action="" method="POST"> 
+      <form action="" method="POST">
        {% csrf_token %}
        <table>
        {{ patient_form.as_table }}
        </table>
        <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
-       <input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+       <input type="button" name="cancel" value="Cancel"  onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
    </form>
 </div>
 {% endblock content %}

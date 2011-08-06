@@ -31,7 +31,7 @@ def _parse_date(string):
 
 @login_required
 def get_csv(request):
-    download_id = uuid.uuid1().hex
+    download_id = uuid.uuid4().hex
 
     csv_mode = request.GET.get('csv', None)
     end_date = _parse_date(request.GET.get('end', datetime.utcnow()))
@@ -39,7 +39,7 @@ def get_csv(request):
     patient_id = request.GET.get('patient', None)
 
     csv_export.delay(csv_mode, end_date.strftime('%Y-%m-%d'), start_date.strftime('%Y-%m-%d'), patient_id, download_id)
-    return HttpResponseRedirect(reverse('pactcarehq.views.file_download', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('retrieve_download', kwargs={'download_id': download_id}))
     #return HttpResponse('<html><body>Task for csv download generated<br><br><a href="%s">Download Link</a></body></html>' % (reverse('dotsview.views.file_download', kwargs={'download_id':download_id})))
 
 
@@ -176,7 +176,7 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
         if formset.is_valid():
             #iterate through all the forms in the formset, create CObservation and put it into CObservationAddendum
             addendum = CObservationAddendum()
-            addendum._id = uuid.uuid1().hex
+            addendum._id = uuid.uuid4().hex
             addendum.observed_date = addendum_date.date()
             addendum.created_date = datetime.utcnow()
             addendum.created_by = request.user.username

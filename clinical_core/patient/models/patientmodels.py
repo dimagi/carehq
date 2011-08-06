@@ -1,11 +1,12 @@
 import uuid
 from couchdbkit.ext.django.schema import Document
-from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty
+from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty
+from django.utils.timesince import timesince
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import datetime
+from datetime import datetime, time
 import simplejson
 from dimagi.utils.couch.database import get_db
 
@@ -59,7 +60,10 @@ class Patient(models.Model):
             try:
                 self._couchdoc = BasePatient.get_typed_from_id(self.doc_id)
                 couchjson = simplejson.dumps(self._couchdoc.to_json())
-                cache.set('%s_couchdoc' % (self.id), couchjson)
+                try:
+                    cache.set('%s_couchdoc' % (self.id), couchjson)
+                except:
+                    logging.error("Error, caching framework unavailable")
             except Exception, ex:
                 self._couchdoc = None
         else:
@@ -85,6 +89,12 @@ class Patient(models.Model):
             doc[propertyname] = setvalue
             if do_save:
                 doc.save()
+
+    def delete(self, *args, **kwargs):
+        """
+        Delete is handled by a signal to check the couchdoc's deletion/deprecation as well
+        """
+        super(Patient, self).delete(*args, **kwargs)
 
     def save(self, django_uuid=None, doc_id=None, *args, **kwargs):
         """
@@ -190,6 +200,8 @@ class CAddress(Document):
     state = StringProperty()
     postal_code = StringProperty()
 
+    full_address = StringProperty() #this is a combined address and will be used in replacement of the individual components
+
     deprecated = BooleanProperty(default=False)
 
     started = DateTimeProperty(default=make_time, required=True)
@@ -197,6 +209,9 @@ class CAddress(Document):
 
     created_by = StringProperty() #userid
     edited_by = StringProperty() #userid
+
+    def get_full_address(self):
+        return "%s %s, %s %s" % (self.street, self.city, self.state, self.postal_code)
 
 
     class Meta:
@@ -223,13 +238,15 @@ class BasePatient(Document):
     gender = StringProperty(required=True)
     birthdate = DateProperty()
     patient_id = StringProperty() #particular identifiers will likley be defined in the subclass. - this is a placeholder for nothing actually used.
+
     address = SchemaListProperty(CAddress)
     phones = SchemaListProperty(CPhone)
+
     date_modified = DateTimeProperty(default=datetime.utcnow)
     notes = StringProperty()
 
     base_type = StringProperty(default="BasePatient")
-
+    poly_types = StringListProperty() #if the document is assumed as multiple patient types (by multi tenancy), store the different types here.  it's left up to the tenant's querying method to retreive the document.
 
     _subclass_dict = {}
     @classmethod
@@ -256,10 +273,28 @@ class BasePatient(Document):
         Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
         """
         #todo this is hacky in a multitenant environment
-        db = get_db()
+        db = cls.get_db()
         doc_dict = db.open_doc(doc_id)
         return cls.get_typed_from_dict(doc_dict)
 
+
+    @property
+    def django_patient(self):
+        if not hasattr(self, '_django_patient'):
+            try:
+                djpt = Patient.objects.get(id=self.django_uuid)
+            except Actor.DoesNotExist:
+                djpt = None
+            self._django_patient = djpt
+        return self._django_patient
+
+    @property
+    def age_string(self):
+        """
+        Return the age in only one maximal unit (since the timesince template tag adds a secondary unit)
+        """
+        tsince_string = timesince(datetime.combine(self.birthdate, time(0)))
+        return tsince_string.split(',')[0]
 
     def is_unique(self):
         raise NotImplementedError("Error, subclass for patient document type must have a uniqueness check for its own instance.  %s" % (self.__class__()))
@@ -271,21 +306,32 @@ class BasePatient(Document):
     def __init__(self, *args, **kwargs):
         super(BasePatient, self).__init__(*args, **kwargs)
 
+
+    def _deprecate_data(self):
+        self.doc_type = "Deleted%s" % (self._get_my_type().__name__)
+        self.base_type = "DeletedBasePatient"
+        self.save()
+
     def delete(self):
         """
         Overriding delete for a patient, by setting base_type and doc_type to DeletedFOO
         Do not delete in the patient context, only deprecate.
         """
-#        self.doc_type = "Deleted%s" % (self._get_my_type())
-#        self.base_type = "DeletedBasePatient"
-#        self.save()
+        self._deprecate_data()
         django_model = Patient.objects.get(id=self.django_uuid)
         django_model.delete()
 
 
 
 
-    def save(self):
+    def save(self, *args, **kwargs):
+        if self.poly_types == None:
+            self.poly_types = []
+
+        if self.__class__.__name__ not in self.poly_types:
+            self.poly_types.append(self.__class__.__name__)
+
+
         if self.django_uuid == None:
             #this is a new instance
             #first check global uniqueness
@@ -293,19 +339,27 @@ class BasePatient(Document):
                 raise DuplicateIdentifierException()
 
             djangopt = Patient()
-            django_uuid = uuid.uuid1().hex
-            doc_id = uuid.uuid1().hex
+            django_uuid = uuid.uuid4().hex
+            doc_id = uuid.uuid4().hex
+            if self._id == None and self.new_document:
+                doc_id = uuid.uuid4().hex
+                self._id = doc_id
+            else:
+                doc_id = self._id
+
             self.django_uuid = django_uuid
-            self._id = doc_id
+
             try:
+                super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)
-                super(BasePatient, self).save()
             except PatientCreationException, ex:
                 logging.error("Error creating patient: %s" % ex)
                 raise ex
         else:
             #it's not new
-            super(BasePatient, self).save()
+            super(BasePatient, self).save(*args, **kwargs)
+
+
         #Invalidate the cache entry of this instance
         cache.delete('%s_couchdoc' % (self.django_uuid))
         try:
@@ -318,6 +372,21 @@ class BasePatient(Document):
     class Meta:
         app_label = 'patient'
 
+
+class SimplePatient(BasePatient):
+    """
+    A stub implementation of the Patient model
+    """
+    def is_unique(self):
+        return True
+
+    def __getattr__(self, key):
+        # this hack allows this to be used in templates that expect it
+        # to behave like a normal python object.
+        try:
+            return super(BasePatient, self).__getattr__(key)
+        except KeyError:
+            raise AttributeError
 
 class CSimpleComment(Document):
     doc_fk_id = StringProperty() #is there a fk in couchdbkit

@@ -1,0 +1,418 @@
+{% extends "patient/base_patient.html" %}
+{% load i18n %}
+{% block extrahead %}
+    {{ block.super }}
+
+    <script>
+
+
+        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
+            function getCookie(name) {
+                //basic get cookie, to facilitate getting the csrf token
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var payload = {
+                        'csrfmiddlewaretoken': getCookie("csrftoken"),
+                        'patient_guid': patient_guid,
+            };
+
+            var remove_url = '';
+            if (phone_addr == "phone") {
+                remove_url = "{% url remove_phone %}";
+                payload['phone_id'] = item_idx;
+            } else if (phone_addr == "address") {
+                attr_name = 'address_id';
+                var remove_url = "{% url remove_address %}";
+                payload['address_id'] = item_idx;
+            }
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  remove_url,
+                    "data":payload,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+    </script>
+
+
+    <script>
+        $(function() {
+            $("#id_birthdate").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        maxDate: "+0M +0D +0Y",
+                        yearRange: "-100:+0"
+                    }
+            );
+        });
+    </script>
+
+
+
+    <script type="text/javascript">
+        //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
+
+        function ajax_get_form(patient_guid, form_name, target_div, edit_id) {
+            console.log(edit_id);
+            if (edit_id === undefined) {
+               var form_url = "{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name;
+            } else {
+                var form_url = "{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name + "&edit_id=" + edit_id;
+            }
+            $.get(form_url, function(data) {
+                var context=$(data);
+                context.find('save attribute').click(function () {});
+                $("#" + target_div).html(data).show("blind", {}, 300);
+                /* Override the submit handler to the ajax_form. */
+                $("#id_" + form_name).submit(function(event) {
+
+                    /* stop form from submitting normally */
+                    event.preventDefault();
+
+                    /* get some values from elements on the page: */
+                    var $form = $(this);
+                    var url = $form.attr('action');
+                    var values = $form.serializeArray();
+                    var submit_dict = {};
+                    for (var i = 0; i < values.length; i++) {
+                        submit_dict[values[i]['name']] = values[i]['value'];
+                    }
+                    console.log(submit_dict);
+                    /* Send the data using post and put the results in a div */
+                    $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: submit_dict,
+                                statusCode: {
+                                    404: function () {
+                                    },
+                                    200: function (data) {
+                                        $("#tbl_" + form_name).html(data);
+                                    },
+                                    204: function(data) {
+                                        location.reload();
+                                    },
+                                    500: function(data) {
+                                        $('body').replaceWith(data.responseText);
+                                    }
+
+
+                                },
+                                success: function(data, textStatus, jqXHR) {
+//                                   #alert("in success:" + textStatus);
+//                                    console.log(jqXHR);
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    alert(textStatus);
+                                }
+                            }
+                    );
+            });
+            });
+        }
+
+
+
+        
+
+
+
+        $(function() {
+            $("#id_active_date").datepicker({ showAnim: 'fadeIn' });
+        });
+    </script>
+{% endblock extrahead %}
+        {% block hat_actions %}
+            {{ block.super }}
+            <div style="float:right;">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                New Progress Note
+            </a>
+            </div>
+
+            <div style="float:right;">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                New Bloodwork
+            </a>
+            </div>
+    {% endblock %}
+    {% block patient_badge %}
+        {{ block.super }}
+        <dt>{% trans "PACT ID" %}</dt>
+            <dd>{{ patient_doc.pact_id }}</dd>
+        <dt>{% trans "ARM" %}</dt>
+            <dd>{{ patient_doc.arm }}</dd>
+        <dt>{% trans "Primary HP" %}</dt>
+            <dd>{{ patient_doc.primary_hp }}</dd>
+        <dt>{% trans "ART Regimen" %}</dt>
+            <dd>{{ patient_doc.art_regimen }}</dd>
+        <dt>{% trans "Non ART Regimen" %}</dt>
+            <dd>{{ patient_doc.non_art_regimen }}</dd>
+        <dt>{% trans "Last Bloodwork" %}</dt>
+        <dd>
+        {% if bloodwork_missing %}
+            <div class="error">
+                Missing
+            </div>
+            {% else %}
+            {% if bloodwork_overdue %}
+                {{ last_bloodwork.get_date|date:"m/d/Y" }}
+                    <span style="color:red;"><strong>Overdue</strong></span>
+
+            {% else %}
+                {{ last_bloodwork.get_date|date:"m/d/Y" }}
+            {% endif %}
+        {% endif %}
+        </dd>
+    {% endblock patient_badge %}
+
+    {% block patient-tab-controller %}
+            <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
+            <li><a href="#patient-schedule-tab">{% trans "Visit Schedule" %}</a></li>
+            <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
+            <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
+            <li><a href="#patient-case-tab">{% trans "Case Debug" %}</a></li>
+            <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
+    {% endblock patient-tab-controller %}
+    {% block patient-tab-container %}
+        <div id="patient-info-tab" class="ui-tabs-hide">
+            <div id="patienteditform" class="editctrl"></div>
+            <div id="patient-info-display">
+            <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">Race</th>
+                    <td>{{ patient_doc.get_race }}</td>
+                </tr>
+                <tr>
+                    <th class="span-4">Latino</th>
+                    <td>{% if  patient_doc.is_latino %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th class="span-4">Language</th>
+                    <td>{{ patient_doc.get_preferred_language }}</td>
+                </tr>
+                <tr>
+                    <th class="span-4">MassHealth Expiration</th>
+                    <td>{{ patient_doc.mass_health_expiration }} - {{ patient_doc.mass_health_expiration|timeuntil }}</td>
+                </tr>
+                <tr>
+                    <th>HIV Care Clinic</th>
+                    <td>{{ patient_doc.get_hiv_care_clinic }}</td>
+                </tr>
+                <tr>
+                    <th>SSN</th>
+                    <td>{{ patient_doc.ssn }}</td>
+                </tr>
+                <tr>
+                    <th>Additional Notes</th>
+                    <td>{{ patient_doc.notes }}</td>
+                </tr>
+            </table>
+                        <div class="editctrl" style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                                <span class="ui-icon ui-icon-wrench"></span>
+                                Edit Info
+                            </a>
+                        </div>
+            </div> <!-- end patient info display-->
+            <br>
+            <br>
+            <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">
+                        PDoc Address(es)
+                    </th>
+                    <td>
+                        {% for patient_address in patient_doc.address %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ patient_address.street }}<br>
+                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
+                            <hr>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th lass="span-4">
+                        PDoc Phone(s)
+                    </th>
+                    <td>
+                        {% for phone in patient_doc.phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                            <hr>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <th class="span-4">
+                        Case Address(es)<br>
+                    </th>
+                    <td>
+                        <div id="addressform"></div>
+                        {% for patient_address in patient_doc.active_addresses %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong><br>
+                                {% endif %}
+                                {{ patient_address.address }}<br>
+                            <span class="editctrl">
+                                <a href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
+                                &nbsp;
+                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
+                                </span>
+                            </div>
+                        {% endfor %}
+                        <div style="float:right;">
+                            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}','address', 'addressform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Address
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th class="span-4">
+                        Case Phone(s)
+                    </th>
+                    <td>
+                        <div id="phoneform"></div>
+                        {% for phone in patient_doc.active_phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                                <span class="editctrl">
+                                <a href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
+                                    &nbsp;
+                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>
+                                </span>
+                            </div>
+                        {% endfor %}
+                        <div style="float:right;">
+                            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}','phone', 'phoneform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Phone
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+        </div>
+
+        <div id="patient-schedule-tab">
+            {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
+            <div id="scheduleform"></div>
+            <div style="float:right;" class="editctrl">
+                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:ajax_get_form('{{ patient_doc.get_id }}','schedule', 'scheduleform');">
+                    <span class="ui-icon ui-icon-circle-plus"></span>
+                    Add Schedule
+                </a>
+            </div>
+            &nbsp;
+        </div>
+
+        <div id="patient-careteam-tab">
+            <div class="span-20">
+                    <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                       href="{% url pt_add_provider patient_doc.get_id %}">
+                    <span class="ui-icon ui-icon-circle-plus"></span>
+                    Add Provider </a>
+                <div class="span-20">
+                    Search: <input type="text">
+                </div>
+
+                <h3>CareTeam</h3>
+                {% for role, actors in careteam_dict.items %}
+                    <h4>{{ role.name }}</h4>
+                    <ul>
+                    {% for actor in actors %}
+                        <li>{{ actor.name }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+
+                <h4>Dummy Data</h4>
+                <div class="span-5" style="border: 1px solid black;padding: 8px;">
+                    <div class="span-5 last careteam_name">Casey Caregiver</div>
+                    <div class="span-5 last">Emergency Contact</div>
+                </div>
+            </div>
+            &nbsp;
+        </div>
+
+        <div id="patient-submissions-tab">
+            {% if submit_arr %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="span-4">Date</th>
+                        <th class="span-4">CHW</th>
+                        <th class="span-4">Form</th>
+                    </tr>
+                    </thead>
+                    {% for submission in submit_arr %}
+                        <tr>
+                            <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
+                            <td> {{ submission.2 }}</td>
+                            <td> {{ submission.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h4>No Recent Activity</h4>
+            {% endif %}
+        </div>
+
+        <div id="patient-case-tab">
+            Raw Case stuff
+        </div>
+        <div id="patient-log-tab">
+            Auditcare/edit history?
+        </div>
+    {% endblock patient-tab-container %}

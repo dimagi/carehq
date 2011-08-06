@@ -1,4 +1,4 @@
-{%  extends "base.html" %}
+{%  extends base_template %}
 {% block content %}
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
@@ -15,7 +15,7 @@
             <h2>Patient List</h2>
         </div>
         <div class="prepend-15 span-3 last">
-            <a href="{% url new_patient %}">New Patient</a>
+            <a href="{% url new_pactpatient %}">New Patient</a>
         </div>
     </div>
 <hr>
@@ -34,19 +34,19 @@
 	<tbody>
 	{% for patient in patients %}
         <tr>
-            <td><h4>{{patient.couchdoc.pact_id}}</h4></td>
-            <td><h4><a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.first_name}}</a></h4></td>
-            <td><h4><a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}</a></h4></td>
-            <td>{{patient.couchdoc.arm}}</td>
-            <td>{{patient.couchdoc.primary_hp}}</td>
+            <td><h4>{{patient.pact_id}}</h4></td>
+            <td><h4><a href="{% url view_pactpatient patient.get_id %}">{{patient.first_name}}</a></h4></td>
+            <td><h4><a href="{% url view_pactpatient patient.get_id %}">{{patient.last_name}}</a></h4></td>
+            <td>{{patient.arm}}</td>
+            <td>{{patient.primary_hp}}</td>
             <td>{#Edit Patient | View Schedule#}
-                {% if patient.couchdoc.arm == "DOT"%}
-                    <a href="{% url dots_view %}?patient={{patient.id}}">View DOT Adherence</a>
+                {% if patient.arm == "DOT"%}
+                    <a href="{% url dots_view %}?patient={{patient.get_id}}">View DOT Adherence</a>
                 {% endif %}
-                {% if patient.couchdoc.last_bloodwork %}
+                {% if patient.last_bloodwork %}
                     <br>
-                    <strong>Bloodwork</strong> {{ patient.couchdoc.last_bloodwork.get_date|date }} <small>({{ patient.couchdoc.last_bloodwork.get_date|timesince }} ago)</small>
-                    {% if patient.couchdoc.last_bloodwork.is_overdue %}
+                    <strong>Bloodwork</strong> {{ patient.last_bloodwork.get_date|date }} <small>({{ patient.last_bloodwork.get_date|timesince }} ago)</small>
+                    {% if patient.last_bloodwork.is_overdue %}
                         <strong style="color:red;">Overdue!</strong>
                     {% endif %}
                 {% endif %}
