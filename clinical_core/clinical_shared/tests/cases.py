@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from clinical_core.actors.models import Actor, Actor, PatientActorLink
 from clinical_core.patient.models import Patient
-from clinical_core.clincore.utils import generator
+from clinical_core.clinical_shared.utils import generator
 import random
 from casetracker import constants
 

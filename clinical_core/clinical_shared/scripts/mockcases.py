@@ -1,4 +1,4 @@
-from clincore.utils import generator, ms_from_timedelta
+from clinical_shared.utils import generator, ms_from_timedelta
 from datetime import datetime
 
 def run():

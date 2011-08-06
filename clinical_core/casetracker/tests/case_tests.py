@@ -3,7 +3,7 @@ import hashlib
 import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, CaseEvent
-from clinical_core.clincore.utils import generator
+from clinical_core.clinical_shared.utils import generator
 from casetracker import constants
 from django.core.management import call_command
 

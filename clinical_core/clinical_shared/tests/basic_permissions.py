@@ -4,7 +4,7 @@ from actors.models.roles import CareTeamMember
 from clinical_core.actors.models import Actor, Actor, PatientActorLink, TriageNurse, Doctor, Caregiver
 from clinical_core.patient.models import Patient
 
-from clinical_core.clincore.utils import generator
+from clinical_core.clinical_shared.utils import generator
 MAX_MULTI_PATIENTS = 10
 
 

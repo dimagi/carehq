@@ -81,7 +81,7 @@ MIDDLEWARE_CLASSES = (
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
+    #'clinical_core.clinical_shared.middleware.identity.AshandIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',

@@ -3,7 +3,7 @@ import random_inject
 from casetracker.models import Case
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
-from clincore.utils import generator
+from clinical_shared.utils import generator
 import random
 from django.core.management import call_command
 from casetracker import constants
