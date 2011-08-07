@@ -19,7 +19,7 @@ role_admin_tenant = '%sAdminTenant' % (APP_PREFIX) #global admin for the entire 
 #role_chw_dot = '%sCHWDOT' % (APP_PREFIX)
 #role_chw_hp = '%sCHWHP' % (APP_PREFIX)
 #
-#role_external_provider = '%sExternalProvider' % (APP_PREFIX)
+#role_provider = '%sExternalProvider' % (APP_PREFIX)
 #role_pact_provider = '%sPactProvider' % (APP_PREFIX)
 #role_admin_dot = '%sAdminDot' % (APP_PREFIX)
 #role_admin_hp = '%sAdminHP' % (APP_PREFIX)

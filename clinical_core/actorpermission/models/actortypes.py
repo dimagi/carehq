@@ -5,11 +5,12 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, Boole
 from couchdbkit.schema.properties_proxy import  SchemaListProperty
 import logging
 from django.core.cache import cache
+from clinical_shared.mixins import TypedSubclassMixin
 from permissions.models import Actor
 from tenant.models import TenantActor
 
 
-class BaseActorDocument(Document):
+class BaseActorDocument(Document, TypedSubclassMixin):
     """
     When creating an Actor django model, a corresponding ActorProfileDocument is created for it.
     """
@@ -31,7 +32,7 @@ class BaseActorDocument(Document):
         return self._django_actor
 
 
-    def save(self, tenant, *args, **kwargs):
+    def save(self, tenant, user=None, *args, **kwargs):
         if self.actor_uuid == None:
         #this is a new instance
         #first check global uniqueness
@@ -50,6 +51,8 @@ class BaseActorDocument(Document):
             self.actor_uuid = actor_uuid
             django_actor.id = actor_uuid
             django_actor.doc_id=doc_id
+            if user != None:
+                django_actor.user = user
 
             django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
 

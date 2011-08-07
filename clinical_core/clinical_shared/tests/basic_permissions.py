@@ -48,16 +48,16 @@ class BasicPermissionsTest(TestCase):
         print "===========================\nCreating singular patient with careteam via API"
         pt = generator.get_or_create_patient()
 
-        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        provrole = generator.generate_actor(generator.get_or_create_user(), 'provider')
         pt.add_provider(provoler)
-        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        provrole = generator.generate_actor(generator.get_or_create_user(), 'provider')
         pt.add_provider(provoler)
-        provrole = generator.generate_role(generator.get_or_create_user(), 'provider')
+        provrole = generator.generate_actor(generator.get_or_create_user(), 'provider')
         pt.add_provider(provoler)
 
-        cgrole = generator.generate_role(generator.get_or_create_user(), 'caregiver')
+        cgrole = generator.generate_actor(generator.get_or_create_user(), 'caregiver')
         pt.add_caregiver(cgoler)
-        cgrole = generator.generate_role(generator.get_or_create_user(), 'caregiver')
+        cgrole = generator.generate_actor(generator.get_or_create_user(), 'caregiver')
         pt.add_caregiver(cgoler)
 
         #next, verify single careteam exists via the patient access API.
@@ -112,7 +112,7 @@ class BasicPermissionsTest(TestCase):
         for r in role_possibilities:
             user = self._createUser()
             if r != None:
-                role = generator.generate_role(user, r)
+                role = generator.generate_actor(user, r)
                 pal = CareTeamMember(patient=patient, role=role, active=True)
                 pal.save()
 
@@ -137,7 +137,7 @@ class BasicPermissionsTest(TestCase):
             patient = patients[i]
             role = role_options[i]
             if role != None:
-                actor = generator.generate_role(user, role)
+                actor = generator.generate_actor(user, role)
                 patient.add_actor(actor)
 
         for i in range(0,3):
@@ -161,7 +161,7 @@ class BasicPermissionsTest(TestCase):
         my_patients = 5
 
         user = generator.get_or_create_user()
-        actor = generator.generate_role(user, 'provider')
+        actor = generator.generate_actor(user, 'provider')
 
         patients = [generator.get_or_create_patient() for i in range(num_patients)]
         for i in range(my_patients):

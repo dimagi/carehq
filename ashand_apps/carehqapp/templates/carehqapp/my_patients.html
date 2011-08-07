@@ -4,8 +4,18 @@
 {% block content %}	
 <h2>My Patients</h2>
 <div class="span-24">
-{% for careteam in my_patients %}	
-	{% include "carehqapp/partials/inline_careteam.html" %}
-{%endfor %}
+{% for role, patients in patient_relations.items %}
+    <h3>{{ role.name }}</h3>
+    <ul>
+    {% for djangopt in patients %}
+        <li>
+            <a href="{% url view_ashand_patient djangopt.couchdoc.get_id %}">
+                {{ djangopt.couchdoc.first_name }} {{ djangopt.couchdoc.last_name }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+
 </div>
 {% endblock %}

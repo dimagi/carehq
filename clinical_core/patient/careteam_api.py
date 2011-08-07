@@ -3,11 +3,14 @@
 
 #api functions to abstract the underlying permissions
 from django.contrib.contenttypes.models import ContentType
+import permissions
 from permissions.models import PrincipalRoleRelation
 
-def add_to_careteam(patient, actor, role):
-    pass
-
+def add_to_careteam(django_patient, django_actor, role):
+    """
+    For a given django patient and django actor, assign the given role
+    """
+    permissions.utils.add_local_role(django_patient, django_actor, role)
 
 def remove_from_careteam(patient, actor):
     pass

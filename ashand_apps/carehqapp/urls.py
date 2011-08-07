@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.contrib.auth import authenticate, login
+from carehqapp.views.patient_views import AshandPatientSingleView
 
 urlpatterns = patterns('carehqapp.views',
         url(r'^$', 'home.home_view', name='home'),
@@ -7,8 +7,12 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^profile$', 'account.my_profile', name='my_profile'),
         url(r'^cases$', 'cases.case_list', name='case_list'),
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
-        url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
-        url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
+        #url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
+        #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
+
+
+        url(r'^patients/all$', 'patient_views.my_patients', name='my_patients'),
+        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', AshandPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='view_ashand_patient'),
 
         url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
         url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),

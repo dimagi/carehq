@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime, time
 import simplejson
+from clinical_shared.mixins import TypedSubclassMixin
 from dimagi.utils.couch.database import get_db
 
 import settings
@@ -220,7 +221,7 @@ class CAddress(Document):
 
 
 
-class BasePatient(Document):
+class BasePatient(Document, TypedSubclassMixin):
     """
     Base class for case-able patient model in CareHQ.  Actual implementations of CareHQ ought to subclass this for its own uses. Especially in cases of multi tenancy, or code reuse.
     """
@@ -248,34 +249,7 @@ class BasePatient(Document):
     base_type = StringProperty(default="BasePatient")
     poly_types = StringListProperty() #if the document is assumed as multiple patient types (by multi tenancy), store the different types here.  it's left up to the tenant's querying method to retreive the document.
 
-    _subclass_dict = {}
-    @classmethod
-    def _get_subclass_dict(cls):
-        if len(cls._subclass_dict.keys()) == 0:
-            for c in cls.__subclasses__():
-                cls._subclass_dict[unicode(c.__name__)] = c
-        return cls._subclass_dict
 
-
-    @classmethod
-    def get_typed_from_dict(cls, doc_dict):
-        doc_type = doc_dict['doc_type']
-        if cls._get_subclass_dict().has_key(doc_type):
-            cast_class = cls._get_subclass_dict()[doc_type]
-        else:
-            cast_class = BasePatient
-            logging.error("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
-        return cast_class.wrap(doc_dict)
-
-    @classmethod
-    def get_typed_from_id(cls, doc_id):
-        """
-        Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
-        """
-        #todo this is hacky in a multitenant environment
-        db = cls.get_db()
-        doc_dict = db.open_doc(doc_id)
-        return cls.get_typed_from_dict(doc_dict)
 
 
     @property

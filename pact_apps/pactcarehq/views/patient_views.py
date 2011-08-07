@@ -7,10 +7,10 @@ from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from patient import careteam_api
+from patient.forms.address_form import SimpleAddressForm
+from patient.forms.phone_form import PhoneForm
 from .util import form_xmlns_to_names
-from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
-from pactpatient.forms.phone_form import PhoneForm
 from pactpatient.models.pactmodels import PactPatient, CActivityDashboard
 import logging
 from patient.views import PatientSingleView

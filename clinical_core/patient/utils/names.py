@@ -1,4 +1,4 @@
-names = [
+NAMES = [
 {'firstname':'Aaron',	'lastname':'Hotchner'},
 {'firstname':'Alejandra',	'lastname':'Joshi'},
 {'firstname':'Althea',	'lastname':'Mayton'},

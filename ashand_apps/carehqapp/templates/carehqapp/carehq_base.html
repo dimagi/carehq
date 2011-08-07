@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block branding %}
+    <div class="span-2">
+        <a title="Return to the Dashboard" href="/">
+        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">
+        </a>
+    </div>
+{% endblock branding %}
+{% block navigation_menu %}
+    {% if user.is_authenticated %}
+    <div id="menu" style="z-index:-1;">
+     <ul>
+        {% block nav_list %}
+         <li>
+             <span class="head_menu">
+               <a href="#">Dashboard</a>
+             </span>
+         </li>
+         <li>
+             <span class="head_menu">
+             <a href="#">News Feed</a>
+             </span>
+         </li>
+
+         <li>
+             <span class="head_menu">
+             <a href="#">Case Management</a>
+                 <img src="{{ STATIC_URL }}carehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+             </span>
+             <div class="sub_menu">
+                <a href="#">My Cases</a>
+                <a href="#">Patient Foo's Cases</a>
+                <a href="#">Patient Bar's Cases</a>
+            </div>
+         </li>
+         <li>
+             <span class="head_menu">
+             <a href="{% url my_patients %}">My Patients</a>
+             </span>
+         </li>
+        {% endblock %}
+     </ul>
+    {% endif %} {# end autenticated if#}
+</div>
+{% endblock navigation_menu %}

@@ -1,4 +1,4 @@
-descriptors = [
+STREET_DESCRIPTORS = [
 "",
 "Amber",
 "Blue",
@@ -56,14 +56,19 @@ descriptors = [
 "Umber",
 "Velvet",
 "Wishing",
+"North",
+"South",
+"East",
+"West",
 ]
 
-streetname = [
+STREET_NAMES = [
 "Anchor",
 "Apple",
 "Autumn",
 "Barn",
 "Beacon",
+"Boylston",
 "Bear",
 "Berry",
 "Blossom",
@@ -71,6 +76,7 @@ streetname = [
 "Branch",
 "Brook",
 "Butterfly",
+"Cambridge",
 "Cider",
 "Cloud",
 "Creek",
@@ -84,6 +90,7 @@ streetname = [
 "Gate",
 "Goose",
 "Grove",
+"Harrison",
 "Hickory",
 "Hills",
 "Horse",
@@ -92,8 +99,10 @@ streetname = [
 "Lake",
 "Leaf",
 "Log",
+"Longwood",
 "Mountain",
 "Nectar",
+"Newton",
 "Oak",
 "Panda",
 "Pine",
@@ -110,6 +119,7 @@ streetname = [
 "Sky",
 "Spring",
 "Timber",
+"Tremont",
 "Treasure",
 "View",
 "Wagon",
@@ -118,7 +128,7 @@ streetname = [
 ]
 
 
-suffix = [
+STREET_SUFFIX = [
 "Acres",
 "Arbor",
 "Avenue",
