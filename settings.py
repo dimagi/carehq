@@ -89,13 +89,13 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUDIT_VIEWS = [
-    'pactcarehq.views.my_patient_activity',
-    'pactcarehq.views.get_caselist',
-    'pactcarehq.views.patient_list',
-    'pactcarehq.views.patient_view',
-    'dotsview.views.index_couch',
-    'pactcarehq.views.chw_calendar_submit_report',
-    'dotsview.views.get_csv',
+    #'pactcarehq.views.my_patient_activity',
+#    'pactcarehq.views.get_caselist',
+#    'pactcarehq.views.patient_list',
+#    'pactcarehq.views.patient_view',
+#    'dotsview.views.index_couch',
+#    'pactcarehq.views.chw_calendar_submit_report',
+#    'dotsview.views.get_csv',
 ]
 
 
@@ -147,7 +147,8 @@ INSTALLED_APPS = (
     'casexml.apps.case',
     'casexml.apps.phone',
     'account',
-    'clinical_core.carehqadmin',
+    'carehqadmin',
+    'carehq_core',
     #end clinical_core
 
     #########################
