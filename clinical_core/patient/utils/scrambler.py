@@ -23,7 +23,7 @@ def make_random_caddress():
     addr = CAddress()
     addr.description = random.choice(ADDR_DESCRIPTIONS)
     addr.street = "%d %s" % (random.randint(1,5000), raddress())
-    addr.city = "Metropolis"
+    addr.city = random.choice(["Boston",'Brookline','Cambridge','Somerville','Charlestown','Dorchester','Roxbury','Allston','Brighton','Watertown','Malden','Medford','South Boston','Quincy'])
     addr.postal_code = "00000"
     addr.state = "MA"
     return addr

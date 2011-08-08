@@ -79,13 +79,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'auditcare.middleware.AuditMiddleware',
+    #'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    #'clinical_core.clinical_shared.middleware.identity.AshandIdentityMiddleware',
+    #'clinical_core.clinical_shared.middleware.identity.CareHQIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
-    #'carehqapp.middleware.identity.AshandIdentityMiddleware',
+    #'carehqapp.middleware.identity.CareHQIdentityMiddleware',
 )
 
 AUDIT_VIEWS = [
@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'account',
     'carehqadmin',
     'carehq_core',
+    'casetracker',
     #end clinical_core
 
     #########################

@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends base_template %}
 {% load i18n %}
 {% block title %}{% trans "My Patients" %} {% endblock %}
 {% block content %}	
 <h2>My Patients</h2>
 <div class="span-24">
 {% for role, patients in patient_relations.items %}
-    <h3>{{ role.name }}</h3>
+    <h3>{{ role.display }}</h3>
     <ul>
     {% for djangopt in patients %}
         <li>

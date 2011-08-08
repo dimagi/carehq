@@ -4,6 +4,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 
 from django import forms
 from django.forms import widgets
+from django.forms.models import ModelForm
 from casetracker.models import Case
 from casetracker import constants
 
@@ -44,7 +45,7 @@ class CaseResolveCloseForm(forms.Form):
         self.fields['state'].initial = state_qset[0].id
         
 
-class CaseModelForm(DocumentForm):
+class CaseModelForm(ModelForm):
     """
     A form to modify a case instance.
     The constants below try to establish a way to flip the active fields depending on the context of how to change it.  The idea here is that not all fields should be presentable to the user.
@@ -62,9 +63,7 @@ class CaseModelForm(DocumentForm):
         super(CaseModelForm, self).__init__(*args, **kwargs)
         self.editor_user = editor_user
         self.activity = activity
-        
-        event_activity = activity
-        event_class = activity.event_class
+        #event_class = activity.event_class
         
         
         #These are all the fields in this modelform, both the newly added ones and the ones
@@ -90,7 +89,7 @@ class CaseModelForm(DocumentForm):
                      'parent_case',
                      ]
         
-        if event_class == constants.CASE_EVENT_EDIT:
+        if self.activity == constants.CASE_EVENT_EDIT:
             fields_to_exclude = ['id',
                      'category',
                      'status',
@@ -108,7 +107,7 @@ class CaseModelForm(DocumentForm):
                      ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'           
         
-        elif event_class == constants.CASE_EVENT_ASSIGN:
+        elif self.activity == constants.CASE_EVENT_ASSIGN:
             fields_to_exclude.remove('assigned_to')            
             self.fields['assigned_to'].label = 'Assign to'            
             self.fields['comment'].help_text = 'Please enter a short note'                       

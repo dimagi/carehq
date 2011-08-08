@@ -20,6 +20,11 @@ class BaseActorDocument(Document, TypedSubclassMixin):
 
     notes = StringProperty()
 
+    def get_name(self):
+        return self.name
+
+    def get_display(self):
+        return self.name
 
     @property
     def django_actor(self):
@@ -125,6 +130,14 @@ class CaregiverActor(BaseActorDocument):
     address = StringProperty()
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
 
+    def get_display(self):
+        return self.relation
+
+class PatientActor(BaseActorDocument):
+    patient_doc_id = StringProperty()
+    pass
+
+
 class ProviderActor(BaseActorDocument):
     """
     Health Provider identification.
@@ -138,6 +151,9 @@ class ProviderActor(BaseActorDocument):
     facility_address = StringProperty()
 
     affiliation = StringProperty()
+
+    def get_display(self):
+        return "%s, %s" % (self.title, self.facility_name)
 
 
 

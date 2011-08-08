@@ -17,7 +17,6 @@ from casetracker.managers import CaseManager
 from dimagi.utils import make_uuid
 import uuid
 from django.contrib.contenttypes.models import ContentType
-from model_utils.models import InheritanceCastModel
 from permissions.models import Actor
 
 
@@ -64,6 +63,7 @@ class CaseEvent(models.Model):
         ordering = ['-created_date']
 
 
+
 class Case(models.Model):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
@@ -77,6 +77,7 @@ class Case(models.Model):
     and potentially be the primary key should be a top priority.
     """
     id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    casexml_id = models.CharField(_('CaseXML doc_id'), max_length=32, unique=True, db_index=True, editable=False, null=True) #casexml doc_id if there is one
 
     description = models.CharField(max_length=160)
 
@@ -105,7 +106,6 @@ class Case(models.Model):
     closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
 
     due_date = models.DateTimeField(null=True, blank=True)
-
     parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
 
 
@@ -113,8 +113,8 @@ class Case(models.Model):
     objects = CaseManager()
 
     def get_absolute_url(self):
-        return "/case/%s" % self.id
-        return reverse('manage_case', kwargs={'case_id': self.i})
+        #return "/case/%s" % self.id
+        return reverse('manage_case', kwargs={'case_id': self.id})
 
     @property
     def is_active(self):
@@ -264,3 +264,18 @@ class Case(models.Model):
         verbose_name = "Case"
         verbose_name_plural = "Cases"
         #ordering = ['-opened_date']
+
+
+class ExternalCaseData(models.Model):
+    """
+    External documents attached to a case (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
+    """
+    id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
+    case_id = models.ForeignKey(Case, related_name="external_data")
+    doc_id = models.CharField(_('External Document id'), max_length=32, unique=True, default=make_uuid, db_index=True)
+
+    class Meta:
+        app_label = 'casetracker'
+        verbose_name ="External Case Data"
+        verbose_name_plural= "External Case Data"
+

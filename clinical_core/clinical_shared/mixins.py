@@ -1,13 +1,12 @@
-
+import logging
 
 class TypedSubclassMixin(object):
-    _subclass_dict = {}
     @classmethod
     def _get_subclass_dict(cls):
-        if len(cls._subclass_dict.keys()) == 0:
-            for c in cls.__subclasses__():
-                cls._subclass_dict[unicode(c.__name__)] = c
-        return cls._subclass_dict
+        _subclass_dict = {}
+        for c in cls.__subclasses__():
+            _subclass_dict[unicode(c.__name__)] = c
+        return _subclass_dict
 
 
     @classmethod
@@ -16,7 +15,7 @@ class TypedSubclassMixin(object):
         if cls._get_subclass_dict().has_key(doc_type):
             cast_class = cls._get_subclass_dict()[doc_type]
         else:
-            cast_class = BasePatient
+            cast_class = cls
             logging.error("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
         return cast_class.wrap(doc_dict)
 

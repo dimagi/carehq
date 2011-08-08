@@ -18,7 +18,7 @@ class GridColumn(models.Model):
                           ('case_field', "Case Field"),
                           ('related_field',"Related Field"),
                           ('custom_func',"Custom Function Call"),
-                          )
+                         )
     name = models.SlugField(max_length=32, unique=True)
     display = models.CharField(max_length=64, null=True, blank=True)
     column_type = models.CharField(max_length=16, choices=GRIDCOLUMN_CHOICES, default=GRIDCOLUMN_CHOICES[0][0], null=True, blank=True)

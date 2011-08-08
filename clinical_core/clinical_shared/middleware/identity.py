@@ -1,10 +1,11 @@
 #from provider.models import Provider
+from carehqapp import constants
 from patient.models import Patient
-from actors.models.roles import *
 
 #http://www.djangosnippets.org/snippets/1661/
 #from django.contrib.sessions.middleware import SessionMiddleware 
 from django.core.exceptions import ObjectDoesNotExist
+from permissions.models import Actor, PrincipalRoleRelation, Role
 
 class LazyPatient(object):
     """
@@ -39,7 +40,7 @@ class LazyProvider(object):
 
 #http://www.djangosnippets.org/snippets/1661/
 
-class AshandIdentityMiddleware(object):
+class CareHQIdentityMiddleware(object):
     """
     Middleware for ashand to get identity information surrounding the logged in user.
     
@@ -71,36 +72,43 @@ class AshandIdentityMiddleware(object):
         #if(request.provider):
         #    is_provider = True
         
+        #get all actors for patient
+        user_actors = Actor.objects.filter(user=request.user)
         
-        
-        #############################
-        #User is a patient
-        try:
-            request.patient = Patient.objects.get(user=request.user)
-            request.my_careteam = CareTeam.objects.get(patient=request.patient)
-            is_patient = True
-        except ObjectDoesNotExist:
-            pass
-        
-        
+#        #############################
+#        #User is a patient
+#        try:
+#            request.patient = Patient.objects.get(user=request.user)
+#            request.my_careteam = CareTeam.objects.get(patient=request.patient)
+#            is_patient = True
+#        except ObjectDoesNotExist:
+#            pass
+#
+        proles = PrincipalRoleRelation.objects.filter(actor__in=user_actors)
+
+        #hack hack
+        patient_role = Role.objects.get(name=constants.role_patient)
+        provider_role = Role.objects.get(name=constants.role_provider)
+        caregiver_role = Role.objects.get(name=constants.role_caregiver)
+        primary_provider_role = Role.objects.get(name=constants.role_primary_provider)
+
+
+        if proles.filter(role=patient_role).count() > 0:
+            is_patient=True
+            pt_role = proles.filter(role=patient_role)[0]
+            request.current_patient = Patient.objects.get(id=pt_role.content_id).couchdoc
+
         #############################
         #User is a Provider
-        try:
-            request.provider = Doctor.objects.get(user=request.user)
-            is_provider = True                        
-            primary_careteams = CareTeamMember.objects.filter(role__user=request.user)
-            if primary_careteams.count() > 0:
-                is_primary = True        
-        except ObjectDoesNotExist:
-            pass
-        
+        if proles.filter(role=provider_role).count() > 0:
+            is_provider=True
+
+        if proles.filter(role=primary_provider_role).count() > 0:
+            is_primary=True
         ##############################
         #User is a caregiver
-        try:
-            request.caregiver = Caregiver.objects.get(user=request.user)
+        if proles.filter(role=caregiver_role).count() > 0:
             is_caregiver = True
-        except ObjectDoesNotExist:
-            pass
 
 #        request.patient_careteams = CareTeam.objects.all().filter(caregivers=request.user)
 #        if request.patient_careteams.count() > 0:
@@ -110,8 +118,6 @@ class AshandIdentityMiddleware(object):
         request.is_patient = is_patient
         request.is_caregiver = is_caregiver        
         request.is_primary = is_primary
-#        print("Prov: %s Patient: %s Caregiver: %s Primary: %s" % (is_provider, is_patient, is_caregiver, is_primary))
-             
         return None
             
         

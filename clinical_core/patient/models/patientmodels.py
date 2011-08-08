@@ -10,6 +10,7 @@ from datetime import datetime, time
 import simplejson
 from clinical_shared.mixins import TypedSubclassMixin
 from dimagi.utils.couch.database import get_db
+from permissions.models import Actor
 
 import settings
 import logging
@@ -44,7 +45,7 @@ class Patient(models.Model):
     """
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True,  primary_key=True, editable=False)
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist
+    user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
 
 
     class Meta:
