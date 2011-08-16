@@ -70,8 +70,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'johnny.middleware.LocalStoreClearMiddleware',
-    #'johnny.middleware.QueryCacheMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -164,7 +164,7 @@ INSTALLED_APPS = (
 
     ###########################
     #Apps for production use
-    #'johnny',
+    'johnny',
 
     ####################
     #Dev helper apps
