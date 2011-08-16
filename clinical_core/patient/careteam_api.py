@@ -34,7 +34,6 @@ def get_careteam(django_patient, omit_patient=True):
 
     
     ctype = ContentType.objects.get_for_model(django_patient)
-
     proles = PrincipalRoleRelation.objects.filter(content_type=ctype, content_id=django_patient.id)
 
     if omit_patient:

@@ -2,7 +2,8 @@
 {% load case_tags %}
 <div class="span-18">  <!-- case info block -->
         <div class="span-18">
-            <span style="font-size:2.5em;">{{case.description}}</span><br>
+            <span style="font-size:2.0em;">{{case.description}}</span><br>
+            <span style="font-size:1.25em">for Patient {{ case.patient.couchdoc.first_name }} {{ case.patient.couchdoc.last_name }}</span> &nbsp;&nbsp;
 			<small>Created {{case.opened_date|timesince}} ago by <a href="{% url view_actor case.opened_by.id %}">{{case.opened_by.get_name}}</a></small>
             <hr>
             <p style="font-size:1.5em;">{{case.body}}</p>

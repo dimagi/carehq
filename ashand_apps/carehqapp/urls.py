@@ -2,7 +2,8 @@ from django.conf.urls.defaults import *
 from carehqapp.views.patient_views import AshandPatientSingleView
 
 urlpatterns = patterns('carehqapp.views',
-        url(r'^$', 'home.home_view', name='home'),
+        #url(r'^$', 'home.home_view', name='home'),
+        url(r'^$', 'dashboard.ghetto_news_feed', name='home'),
         #url(r'^dashboard$', 'dashboard.dashboard_view', name='dashboard'),
         url(r'^dashboard$', 'dashboard.ghetto_dashboard', name='dashboard'),
         url(r'^dashboard$', 'dashboard.ghetto_news_feed', name='news_feed'),

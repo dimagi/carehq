@@ -1,4 +1,5 @@
 from carehqapp import constants
+from casetracker.models.casecore import Case
 from clinical_shared.utils import generator
 from .demo.demo_careteams import DEMO_CARETEAMS
 from patient.models import Patient
@@ -8,6 +9,7 @@ from tenant.models import Tenant
 def run():
     Patient.objects.all().delete()
     Actor.objects.all().delete()
+    Case.objects.all().delete()
 
     tenant = Tenant.objects.get(name=constants.TENANT_NAME)
     caregiver_role = Role.objects.get(name=constants.role_caregiver)
@@ -23,7 +25,7 @@ def run():
                                                                                  team_dictionary=team_dict,
                                                                                  caregiver_role=caregiver_role,
                                                                                  provider_role=provider_role,
-                                                                                 primary_provider_role=primary_provider_role,
+                                                                                 primary_provider_role=provider_role,
                                                                                  patient_role=patient_role)
         patient.mrn = str(generator.random_number())
         patient.save()

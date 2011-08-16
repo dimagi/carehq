@@ -6,15 +6,13 @@
     <div class="span=24 last">
         <a href="{%url casetracker.views.manage_case case.id %}">{{case.description}}</a>
     </div>
-    <div class="span-7 prepend-1">
-        {{ case.opened_by.get_name }}
-    </div>
-    <div class="span-8">
-       Opened {{ case.opened_date|date }}
+    <div class="span-10 prepend-1">
+        Opened by {{ case.opened_by.get_name }}
+       {{ case.opened_date|date }}
     </div>
     <div class="span-8 last">
-        Last Activity {{ case.last_edit_date|date }} {{ case.last_edit_date|time }}<br>
-        by {{ case.last_edit_by.get_name }}
+        Last Activity {{ case.last_edit_date|date }} {{ case.last_edit_date|time }}
+{#        by {{ case.last_edit_by.get_name }}#}
     </div>
     </div>
     {% else %}

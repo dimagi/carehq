@@ -118,7 +118,7 @@ class CaregiverActor(BaseActorDocument):
         ('child', 'Child'),
         ('parent', 'Parent'),
         ('relative', 'Relative'),
-        ('spouse', 'Spouse'),
+        #('spouse', 'Spouse'),
         ('sibling', 'Sibling'),
         ('nextofkin', 'Next of kin'),
         ('friend', 'Friend'),
@@ -129,6 +129,9 @@ class CaregiverActor(BaseActorDocument):
     phone_number = StringProperty()
     address = StringProperty()
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
+
+    def get_name(self):
+        return "%s (%s)" % (self.name, self.relation)
 
     def get_display(self):
         return self.relation
@@ -151,6 +154,9 @@ class ProviderActor(BaseActorDocument):
     facility_address = StringProperty()
 
     affiliation = StringProperty()
+
+    def get_name(self):
+        return "%s (%s)" % (self.name, self.title)
 
     def get_display(self):
         return "%s, %s" % (self.title, self.facility_name)

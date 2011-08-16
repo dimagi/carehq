@@ -1,5 +1,6 @@
 from carehqapp.scripts.demo.demo_cases import DEMO_CASES
 from datetime import timedelta, datetime
+from django.contrib.contenttypes.models import ContentType
 import os
 from casetracker import constants as caseconstants
 from casetracker.models import Case
@@ -7,8 +8,12 @@ import csv
 from patient import careteam_api
 from patient.models.patientmodels import Patient
 import random
+from permissions.models import Role, PrincipalRoleRelation
 
 def run():
+    """
+    inject cases into system for aug 2011 usability studies
+    """
     Case.objects.all().delete()
     filepath = os.path.abspath(os.path.dirname(__file__))
     patients = Patient.objects.all()
@@ -19,12 +24,27 @@ def run():
             #burn the headline row
             first=False
             continue
+        if row[2] == "threshold":
+           continue
 
         pt = random.choice(patients)
         careteam_dict = careteam_api.get_careteam(pt)
         actors = []
         for k, a in careteam_dict.items():
             actors+=a
+
+        if row[3] == 'caregiver':
+            actor = random.choice(careteam_dict[Role.objects.get(name='ashand-Caregiver')])
+        elif row[3] == 'patient':
+            ctype = ContentType.objects.get_for_model(pt)
+            proles = PrincipalRoleRelation.objects.filter(content_type=ctype, content_id=pt.id).filter(role__display="Patient")
+            actor = proles[0].actor
+        elif row[3] == 'provider':
+            #actor = random.choice(careteam_dict[Role.objects.get(name='ashand-GeneralProvider')] + careteam_dict[Role.objects.get(name='ashand-PrimaryProvider')])
+            actor = random.choice(careteam_dict[Role.objects.get(name='ashand-GeneralProvider')])
+        else:
+            actor =   random.choice(actors)
+
 
 
         if row[0].count('%s') > 0:
@@ -36,7 +56,7 @@ def run():
         else:
             body=row[1]
         newcase = Case.objects.new_case(row[2],
-                              random.choice(actors),
+                                        actor,
                               desc,
                               body,
                               random.choice(caseconstants.PRIORITY_CHOICES)[0],
