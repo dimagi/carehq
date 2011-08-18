@@ -4,7 +4,7 @@ from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.forms.phone_form import PhoneForm
 from pactpatient.updater import update_patient_casexml
-from patient.models.patientmodels import  BasePatient
+from patient.models.patientmodels import  BasePatient, CPhone
 from receiver.util import spoof_submission
 from .util import DAYS_OF_WEEK
 from datetime import datetime, time
