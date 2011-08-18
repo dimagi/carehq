@@ -138,6 +138,8 @@ def get_phone_xml(n, phone, typestring=None):
     return phone_template % dict
 
 def get_address_xml(n, address, typestring=None):
+    if typestring == None:
+        typestring = ''
     dict = { 'num': n, 'address': address,
              'typestring': typestring if typestring is not None or len(typestring) > 0 else ''}
     return address_template % dict
