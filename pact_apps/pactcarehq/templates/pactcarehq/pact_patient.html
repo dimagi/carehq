@@ -167,14 +167,14 @@
         {% block hat_actions %}
             {{ block.super }}
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Progress Note
             </a>
             </div>
 
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Bloodwork
             </a>
