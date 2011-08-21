@@ -1,0 +1,114 @@
+{%  extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+{% block extrahead %}
+{#    <script>#}
+{#	$(function() {#}
+{#		$( "#newprovider_dlg" ).dialog({#}
+{#			height: 620,#}
+{#            width: 640,#}
+{#			modal: true,#}
+{#            autoOpen: false,#}
+{#            buttons: {#}
+{#                "Create Provider": function() {#}
+{#                    #}
+{#                },#}
+{#                Cancel: function() {$(this).dialog("close")},#}
+{#            },#}
+{#		});#}
+{#        $("#newprovider_dlg_opener").click(function() {#}
+{#			$( "#newprovider_dlg" ).dialog( "open" );#}
+{#			return false;#}
+{#		});#}
+{#	});#}
+{#	</script>#}
+    <script>
+        function link_provider_patient(patient_guid, prov_actor_id) {
+            function getCookie(name) {
+                //basic get cookie, to facilitate getting the csrf token
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var payload = {
+                        'csrfmiddlewaretoken': getCookie("csrftoken"),
+                        'patient_guid': patient_guid,
+                        'actor_uuid': prov_actor_id,
+            };
+
+            url = "{% url add_provider_to_patient %}";
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  url,
+                    "data":payload,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+    </script>
+{% endblock %}
+    <div class="container">
+        <h2>Add Provider for patient {{ patient.get_id }}</h2>
+        <div class="span-24">
+            {% if all_providers %}
+                <h3>Choose from existing providers</h3>
+{#                <button id="newprovider_dlg_opener">Create New</button>#}
+                <table id="patient-table" class="tablesorter">
+                    <thead>
+                    <tr>
+                    <th class="span-1"></th>
+                    <th class="span-4">Name</th>
+                    <th class="span-4">Title</th>
+                    <th class="span-4">Email</th>
+                    <th class="span-3">Phone Number</th>
+                    <th class="span-6">Facility</th>
+                    </thead>
+
+                    <tbody>
+                    {% for prov in all_providers %}
+                        <tr>
+                            <td><button onclick="link_provider_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}')">Add</button></td>
+                            <td>{{ prov.name }}</td>
+                            <td>{{ prov.title }}</td>
+                            <td>{{ prov.email }}</td>
+                            <td>{{ prov.phone_number }}</td>
+                            <td>{{ prov.facility_name }}<br>
+                                {{ prov.facility_address }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+        <div id="newprovider_dlg" title="Create New Provider" class="span-24">
+        <h4>Create new provider</h4>
+            <form id="newprovider_form" action="" method="POST" class="uniForm">
+                {% csrf_token %}
+                <table>
+                    {% uni_form form form.helper %}
+                </table>
+                <div style="float:right;">
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

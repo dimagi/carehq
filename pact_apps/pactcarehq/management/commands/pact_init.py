@@ -22,11 +22,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Register roles
-        role_suspended = permissions.utils.register_role(constants.role_suspended)
-        role_chw = permissions.utils.register_role(constants.role_chw)
-        role_primary_chw = permissions.utils.register_role(constants.role_primary_chw)
-        role_external_provider = permissions.utils.register_role(constants.role_external_provider)
-        role_admin_tenant = permissions.utils.register_role(constants.role_admin_tenant)
+        role_suspended = permissions.utils.register_role(constants.role_suspended,"Suspended")
+        role_chw = permissions.utils.register_role(constants.role_chw, 'CHW')
+        role_primary_chw = permissions.utils.register_role(constants.role_primary_chw, "Primary CHW")
+        role_external_provider = permissions.utils.register_role(constants.role_external_provider, "External Provider")
+        role_admin_tenant = permissions.utils.register_role(constants.role_admin_tenant, "PACT Tenant Admin")
 
         # Registers permissions
         perm_noaccess = permissions.utils.register_permission(constants.perm_noaccess, constants.perm_noaccess)

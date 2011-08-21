@@ -1,4 +1,4 @@
 from .clinicaluser import *
 from .actortypes import *
 
-from signals import *
+from .signals import *

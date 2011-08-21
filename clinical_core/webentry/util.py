@@ -16,7 +16,12 @@ def user_meta_preloaders(user):
 def get_remote_form(xform_url):
     """
     Get a remote form from a url
+    source: http://stackoverflow.com/questions/1020892/urllib2-read-to-unicode
     """
-    url_resp = urllib2.urlopen(xform_url)
-    return url_resp.read().decode('utf-8')
+    req = urllib2.urlopen(xform_url)
+    #encoding = req.headers['content-type'].split('charset=')[-1]
+    encoding = "windows-1251"
+    content = req.read()
+    ucontent = unicode(content, encoding)
+    return ucontent.encode('utf-8')
     

@@ -4,29 +4,52 @@
     {{ block.super }}
 
     <script>
-
-
-        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
-            function getCookie(name) {
-                //basic get cookie, to facilitate getting the csrf token
-                var cookieValue = null;
-                if (document.cookie && document.cookie != '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
+        function getCookie(name) {
+            //basic get cookie, to facilitate getting the csrf token
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
-                return cookieValue;
             }
+            return cookieValue;
+        }
+
+        function unlink_patient_provider(patient_guid, actor_uuid) {
+            var remove_url = "{% url rm_provider_from_patient %}";
+            var payload = {
+                'csrfmiddlewaretoken': getCookie("csrftoken"),
+                'patient_guid': patient_guid,
+                'actor_uuid': actor_uuid,
+            };
+
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  remove_url,
+                    "data":payload,
+                    "success": function(data) {
+                        location.reload();
+                        console.log(data);
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+
+        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
+
 
             var payload = {
-                        'csrfmiddlewaretoken': getCookie("csrftoken"),
-                        'patient_guid': patient_guid,
+                'csrfmiddlewaretoken': getCookie("csrftoken"),
+                'patient_guid': patient_guid,
             };
 
             var remove_url = '';
@@ -144,14 +167,14 @@
         {% block hat_actions %}
             {{ block.super }}
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Progress Note
             </a>
             </div>
 
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="#">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Bloodwork
             </a>
@@ -247,45 +270,45 @@
             <br>
             <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
             <table>
+{#                <tr>#}
+{#                    <th class="span-4">#}
+{#                        PDoc Address(es)#}
+{#                    </th>#}
+{#                    <td>#}
+{#                        {% for patient_address in patient_doc.address %}#}
+{#                            <div class="ptprofile_address">#}
+{#                                {% if patient_address.description %}#}
+{#                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>#}
+{#                                {% endif %}#}
+{#                                {{ patient_address.street }}<br>#}
+{#                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>#}
+{#                            <hr>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th lass="span-4">#}
+{#                        PDoc Phone(s)#}
+{#                    </th>#}
+{#                    <td>#}
+{#                        {% for phone in patient_doc.phones %}#}
+{#                            <div class="ptprofile_phone">#}
+{#                                {% if phone.description %}#}
+{#                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>#}
+{#                                {% endif %}#}
+{#                                {{ phone.number }}<br>#}
+{#                            <hr>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+{#                </tr>#}
+
+
                 <tr>
                     <th class="span-4">
-                        PDoc Address(es)
-                    </th>
-                    <td>
-                        {% for patient_address in patient_doc.address %}
-                            <div class="ptprofile_address">
-                                {% if patient_address.description %}
-                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
-                                {% endif %}
-                                {{ patient_address.street }}<br>
-                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
-                            <hr>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-                <tr>
-                    <th lass="span-4">
-                        PDoc Phone(s)
-                    </th>
-                    <td>
-                        {% for phone in patient_doc.phones %}
-                            <div class="ptprofile_phone">
-                                {% if phone.description %}
-                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
-                                {% endif %}
-                                {{ phone.number }}<br>
-                            <hr>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <th class="span-4">
-                        Case Address(es)<br>
+                        Address(es)<br>
                     </th>
                     <td>
                         <div id="addressform"></div>
@@ -314,7 +337,7 @@
 
                 <tr>
                     <th class="span-4">
-                        Case Phone(s)
+                        Phone(s)
                     </th>
                     <td>
                         <div id="phoneform"></div>
@@ -359,31 +382,34 @@
 
         <div id="patient-careteam-tab">
             <div class="span-20">
-                    <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                       href="{% url pt_add_provider patient_doc.get_id %}">
-                    <span class="ui-icon ui-icon-circle-plus"></span>
-                    Add Provider </a>
-                <div class="span-20">
-                    Search: <input type="text">
-                </div>
-
                 <h3>CareTeam</h3>
                 {% for role, actors in careteam_dict.items %}
-                    <h4>{{ role.name }}</h4>
+{#                    <h4>{{ role.display }}(s)</h4>#}
                     <ul>
                     {% for actor in actors %}
-                        <li>{{ actor.name }}</li>
+                        <div class="span-7" style="border: 1px solid black;padding: 8px;">
+                            <div class="span-7 last careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span-7 last">{{ actor.actordoc.title }}</div>
+                            <div class="span-7 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+                            <div class="span-7 last careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                            <div class="span-7 last">
+                                <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
+                                            Remove
+                                        </a>
+                                </small>
+                            </div>
+                        </div>
                     {% endfor %}
                     </ul>
                 {% endfor %}
-
-                <h4>Dummy Data</h4>
-                <div class="span-5" style="border: 1px solid black;padding: 8px;">
-                    <div class="span-5 last careteam_name">Casey Caregiver</div>
-                    <div class="span-5 last">Emergency Contact</div>
-                </div>
             </div>
             &nbsp;
+            <div style="float:right;">
+                <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                   href="{% url pt_add_provider patient_doc.get_id %}">
+                    <span class="ui-icon ui-icon-circle-plus"></span>
+                    Add Provider </a>
+            </div>
         </div>
 
         <div id="patient-submissions-tab">

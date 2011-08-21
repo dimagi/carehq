@@ -1,3 +1,56 @@
+<script>
+function post_schedule_delete(patient_id, schedule_id) {
+    //method = method || "post"; // Set method to post by default, if not specified.
+    method="post";
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", '{% url remove_schedule %}');
+
+    var csrf = document.createElement("input");
+    csrf.setAttribute("type", "hidden");
+    csrf.setAttribute("name", "csrfmiddlewaretoken");
+    csrf.setAttribute("value", "{{ csrf_token }}");
+    form.appendChild(csrf);
+
+    var patientIDField = document.createElement("input");
+    patientIDField.setAttribute("type", "hidden");
+    patientIDField.setAttribute("name", "patient_id");
+    patientIDField.setAttribute("value", patient_id);
+    form.appendChild(patientIDField);
+
+    var scheduleIDField = document.createElement("input");
+    scheduleIDField.setAttribute("type", "hidden");
+    scheduleIDField.setAttribute("name", "schedule_id");
+    scheduleIDField.setAttribute("value", schedule_id);
+    form.appendChild(scheduleIDField);
+
+    document.body.appendChild(form);    // Not entirely sure if this is necessary
+//    form.submit();
+
+    var $form = $(form);
+    var values = $form.serializeArray();
+    var submit_dict = {};
+    for (var i = 0; i < values.length; i++) {
+        submit_dict[values[i]['name']] = values[i]['value'];
+    }
+
+    send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  "{% url remove_schedule %}",
+                    "data": submit_dict,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+}
+</script>
 {% if past_schedules %}
         <small>
    		<a id="btn_show_all_schedules"
@@ -87,7 +140,12 @@
             </td>
         </tr>
 </table>
-    {% if patient_doc.future_schedules %}
+{% else %}
+<br>
+<strong>No Current Schedule Set</strong> <br>
+{% endif %} {# current schedules #}
+
+{% if patient_doc.future_schedules %}
     <strong><span style="font-size: 125%;">Future Schedules</span></strong>
     <table>
         <thead>
@@ -128,9 +186,5 @@
             </tr>
         {% endfor %}
     </table>
-    {% endif %}
+{% endif %} {# Future schedules #}
 
-{% else %}
-<br>
-<strong>No Current Schedule Set</strong> <br>
-{%endif %}

@@ -576,7 +576,6 @@ class PactPatient(BasePatient):
         ret = []
 
         for n, x in enumerate(address_props, start=1):
-            print "Enumerating addr: %s : %s" % (n, x)
             p = {}
             p['address_id'] = n
             if hasattr(casedoc, 'address%d' % n):
@@ -584,9 +583,7 @@ class PactPatient(BasePatient):
                 if pnum != None and pnum != '':
                     p['address'] = pnum
             if hasattr(casedoc, 'address%dtype' % n):
-                print "got description"
                 p['description'] = getattr(casedoc, 'address%dtype' % n)
-                print p['description']
 
             if p.has_key('address'):
                 ret.append(p)
