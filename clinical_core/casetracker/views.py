@@ -72,8 +72,6 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
             activity = value
     context['case'] = thecase
    
-    #template_name = thecase.category.handler.read_template(request, context)
-    #context = thecase.category.handler.read_context(thecase,request, context)
     ########################
     # Inline Form display
     if activity:                
@@ -130,7 +128,13 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
                     return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))
         else:
             #it's a GET
-            caseform = activity.bridge.form_class()
+            if activity==constants.CASE_EVENT_EDIT or activity==constants.CASE_EVENT_ASSIGN:
+                caseform = CaseModelForm
+            elif activity == constants.CASE_EVENT_COMMENT:
+                caseform = CaseCommentForm
+            elif activity==constants.CASE_EVENT_RESOLVE or activity==constants.CASE_EVENT_CLOSE:
+                caseform = CaseResolveCloseForm
+
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 
             if caseform == CaseModelForm:
                 context['form'] = caseform(instance=thecase, editor_user=request.user, activity=activity)

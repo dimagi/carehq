@@ -1,5 +1,35 @@
 <ul>
 {% for case in cases %}
-<li><a href="{%url casetracker.views.view_case case.id %}">{{case.description}} - Opened By: {{case.opened_by}} Edited by: {{case.last_edit_by}} Status: {{case.status}} Priority: {{case.priority}}</a></li>
+{% if request.is_patient %}
+
+    <div class="span-24" style="margin: 8px;">
+    <div class="span=24 last">
+        <a href="{%url casetracker.views.manage_case case.id %}">{{case.description}}</a>
+    </div>
+    <div class="span-10 prepend-1">
+        Opened by {{ case.opened_by.get_name }}
+       {{ case.opened_date|date }}
+    </div>
+    <div class="span-8 last">
+        Last Activity {{ case.last_edit_date|date }} {{ case.last_edit_date|time }}
+{#        by {{ case.last_edit_by.get_name }}#}
+    </div>
+    </div>
+    {% else %}
+    <li>
+        <div class="span=10">
+        <span style="font-size:110%">Patient: {{ case.patient }}</span>
+        </div>
+        <div class="span=10 last">
+            {{ case.opened_date|date }} {{ case.opened_date|time }}
+        </div>
+        <div class="span-24">
+            <span style="font-size:125%">
+        <a href="{%url casetracker.views.manage_case case.id %}">{{case.description}}</a>
+                </span>
+        </div>
+        <strong>Opened By</strong> {{case.opened_by.get_name}} <strong>Edited by:</strong> {{case.last_edit_by.get_name}} <strong>Status:</strong> {{case.status}} <strong>Priority:</strong> {{case.priority}}</a></li>
+    <hr>
+{% endif %}
 {%endfor%}
 </ul>

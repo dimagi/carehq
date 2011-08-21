@@ -132,7 +132,7 @@ class CaregiverActor(BaseActorDocument):
         ('child', 'Child'),
         ('parent', 'Parent'),
         ('relative', 'Relative'),
-        ('spouse', 'Spouse'),
+        #('spouse', 'Spouse'),
         ('sibling', 'Sibling'),
         ('nextofkin', 'Next of kin'),
         ('friend', 'Friend'),
@@ -152,6 +152,10 @@ class CaregiverActor(BaseActorDocument):
 
     def get_display(self):
         return self.relation
+
+class PatientActor(BaseActorDocument):
+    patient_doc_id = StringProperty()
+    pass
 
 class ProviderActor(BaseActorDocument):
     """

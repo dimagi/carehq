@@ -23,10 +23,9 @@ CASE_EVENT_CLOSE = 'event-close'
 
 
 CATEGORY_CHOICES = (
-    ('question', 'Question'),
-    ('issue', 'Issue'),
     ('threshold', 'Threshold Violation'),
     ('appointment', 'Appointment'),
+    ('message', 'Message'),
 )
 
 

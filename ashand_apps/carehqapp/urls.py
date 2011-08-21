@@ -2,8 +2,11 @@ from django.conf.urls.defaults import *
 from carehqapp.views.patient_views import AshandPatientSingleView
 
 urlpatterns = patterns('carehqapp.views',
-        url(r'^$', 'home.home_view', name='home'),
-        url(r'^dashboard$', 'dashboard.dashboard_view', name='dashboard'),
+        #url(r'^$', 'home.home_view', name='home'),
+        url(r'^$', 'dashboard.ghetto_news_feed', name='home'),
+        #url(r'^dashboard$', 'dashboard.dashboard_view', name='dashboard'),
+        url(r'^dashboard$', 'dashboard.ghetto_dashboard', name='dashboard'),
+        url(r'^dashboard$', 'dashboard.ghetto_news_feed', name='news_feed'),
         url(r'^profile$', 'account.my_profile', name='my_profile'),
         url(r'^cases$', 'cases.case_list', name='case_list'),
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
@@ -20,6 +23,8 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^providerSearch/?$', 'ashandui.providerSearch', name='providerSearch'),
         url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
         url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
+
+        url(r'^actors/(?P<actor_id>[0-9a-f]{32})?$', 'users.view_actor', name='view_actor'),
 
 #
 #    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),

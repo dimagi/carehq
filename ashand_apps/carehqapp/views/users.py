@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
@@ -10,6 +11,10 @@ def my_profile(request, template_name = 'carehqapp/my_profile.html'):
     user = request.user
     context = {}        
     return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+@login_required
+def view_actor(request, actor_id):
+    return HttpResponse("Coming Soon")
 
 
 #@cache_page(60 * 5)

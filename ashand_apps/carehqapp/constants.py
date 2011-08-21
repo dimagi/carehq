@@ -12,7 +12,8 @@ role_suspended = '%sSuspended' % (APP_PREFIX)
 
 role_caregiver = '%sCaregiver' % (APP_PREFIX)
 role_primary_provider = '%sPrimaryProvider' % (APP_PREFIX)
-role_provider = '%sExternalProvider' % (APP_PREFIX)
+role_provider = '%sGeneralProvider' % (APP_PREFIX)
+role_patient = '%sPatient' % (APP_PREFIX)
 role_admin_tenant = '%sAdminTenant' % (APP_PREFIX) #global admin for the entire operation
 
 ### Permission Constants

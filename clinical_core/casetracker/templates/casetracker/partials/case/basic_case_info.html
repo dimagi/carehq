@@ -2,8 +2,9 @@
 {% load case_tags %}
 <div class="span-18">  <!-- case info block -->
         <div class="span-18">
-            <span style="font-size:2.5em;">{{case.description}}</span><br>
-			<small>Created {{case.opened_date|timesince}} ago by <a href="{% url view_actor case.opened_by.id %}">{{case.opened_by}}</a></small>
+            <span style="font-size:2.0em;">{{case.description}}</span><br>
+            <span style="font-size:1.25em">for Patient {{ case.patient.couchdoc.first_name }} {{ case.patient.couchdoc.last_name }}</span> &nbsp;&nbsp;
+			<small>Created {{case.opened_date|timesince}} ago by <a href="{% url view_actor case.opened_by.id %}">{{case.opened_by.get_name}}</a></small>
             <hr>
             <p style="font-size:1.5em;">{{case.body}}</p>
         </div>
@@ -12,7 +13,7 @@
 			<div class="span-5 prepend-2">
                 {% if case.assigned_to %}
                 <strong>{% trans "Assigned" %}</strong>
-                to <a href="{% url view_actor case.assigned_to.id %}">{{case.assigned_to}}</a><br>
+                to <a href="{% url view_actor case.assigned_to.id %}">{{case.assigned_to.get_name}}</a><br>
 				<small>{{case.assigned_date|date}}</small>
                 {% else %}
                     <strong>Unassigned</strong>
@@ -22,14 +23,14 @@
 			
 			{% if case.is_resolved and not case.is_closed%}
 			<div class="span-5">
-                <strong>{% trans "Resolved" %}</strong> by <a href="{% url view_actor case.resolved_by.id %}">{{case.resolved_by}}</a><br>
+                <strong>{% trans "Resolved" %}</strong> by <a href="{% url view_actor case.resolved_by.id %}">{{case.resolved_by.get_name}}</a><br>
 				<small>{{case.resolved_date|date}}</small>            
             </div>
 			{% endif %}
 			
 			{% if case.is_closed %}
 			<div class="span-5 notice">
-                <strong>{% trans "Closed" %}</strong> by <a href="{% url view_actor case.closed_by.id %}">{{case.closed_by}}</a><br>
+                <strong>{% trans "Closed" %}</strong> by <a href="{% url view_actor case.closed_by.id %}">{{case.closed_by.get_name}}</a><br>
 				<small>{{case.closed_date|date}}</small>            
             </div>
 			{% endif %}			

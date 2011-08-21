@@ -2,6 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from casetracker.models.casecore import Case
 from patient import careteam_api
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
@@ -56,6 +57,10 @@ class AshandPatientSingleView(PatientSingleView):
         context['phone_edit'] = phone_edit
         context['address_edit'] = address_edit
         context['patient_edit'] = patient_edit
+
+        context['case_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+        context['cases'] = Case.objects.filter(patient=dj_patient)
+
 
         role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
         context['careteam_dict'] = role_actor_dict

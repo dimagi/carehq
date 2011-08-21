@@ -37,9 +37,7 @@
 		<script type="text/javascript">
   			$("#casehistory").load("{%url case-newsfeed case.id %}");
 		</script>		
-		{% if can_comment %}
 		{% include "casetracker/manage/comment.html" %}
-		{% endif %}
 		{% endblock newsfeed-area %}
 		</div>		
 	</div>	<!-- end case body and info container -->	

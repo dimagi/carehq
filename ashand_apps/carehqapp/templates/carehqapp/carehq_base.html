@@ -11,14 +11,16 @@
     <div id="menu" style="z-index:-1;">
      <ul>
         {% block nav_list %}
+         {% if request.is_provider %}
          <li>
              <span class="head_menu">
-               <a href="#">Dashboard</a>
+               <a href="{% url dashboard %}">Dashboard</a>
              </span>
          </li>
+         {% endif %}
          <li>
              <span class="head_menu">
-             <a href="#">News Feed</a>
+             <a href="{% url news_feed %}">News Feed</a>
              </span>
          </li>
 
@@ -34,10 +36,19 @@
             </div>
          </li>
          <li>
+         {% if not request.is_patient %}
              <span class="head_menu">
              <a href="{% url my_patients %}">My Patients</a>
              </span>
          </li>
+         {% endif %}
+         {% if request.is_patient %}
+         <li>
+             <span class="head_menu">
+             <a href="{% url view_ashand_patient request.current_patient.get_id %}">My Careteam</a>
+             </span>
+         </li>
+         {% endif %}
         {% endblock %}
      </ul>
     {% endif %} {# end autenticated if#}

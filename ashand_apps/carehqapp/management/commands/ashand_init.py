@@ -15,18 +15,19 @@ from tenant.models import Tenant
 
 class Command(BaseCommand):
     args = ''
-    help = """Initializes PACT permissions
+    help = """Initializes ASHand permissions
 
-    This will create permissions for PACT
+    This will create permissions for ASHand
     """
 
     def handle(self, *args, **options):
         # Register roles
-        role_suspended = permissions.utils.register_role(constants.role_suspended)
-        role_caregiver = permissions.utils.register_role(constants.role_caregiver)
-        role_primary_provider = permissions.utils.register_role(constants.role_primary_provider)
-        role_provider = permissions.utils.register_role(constants.role_provider)
-        role_admin_tenant = permissions.utils.register_role(constants.role_admin_tenant)
+        role_suspended = permissions.utils.register_role(constants.role_suspended, "Suspended")
+        role_caregiver = permissions.utils.register_role(constants.role_caregiver, "Caregiver")
+        role_primary_provider = permissions.utils.register_role(constants.role_primary_provider, "Primary Provider")
+        role_provider = permissions.utils.register_role(constants.role_provider, "Provider")
+        role_patient = permissions.utils.register_role(constants.role_patient, "Patient")
+        role_admin_tenant = permissions.utils.register_role(constants.role_admin_tenant, "ASHand Tenant Admin")
 
         # Registers permissions
         perm_noaccess = permissions.utils.register_permission(constants.perm_noaccess, constants.perm_noaccess)
