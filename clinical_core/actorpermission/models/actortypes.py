@@ -100,6 +100,8 @@ class DeviceDocument(Document):
     modified_date = DateTimeProperty()
     is_active = BooleanProperty()
     is_suspended = BooleanProperty(default=False)
+    class Meta:
+        app_label = 'actorpermission'
 
 
 class CHWActor(BaseActorDocument):
@@ -108,6 +110,9 @@ class CHWActor(BaseActorDocument):
     """
     phone_number = StringProperty()
     device_list = SchemaListProperty(DeviceDocument)
+
+    class Meta:
+        app_label = 'actorpermission'
 
     def casexml_registration_block(self, user_profile):
         user = user_profile.user
@@ -136,6 +141,9 @@ class CaregiverActor(BaseActorDocument):
     address = StringProperty()
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
 
+    class Meta:
+        app_label = 'actorpermission'
+
     def get_name(self):
         return "%s (%s)" % (self.name, self.relation)
 
@@ -155,6 +163,8 @@ class ProviderActor(BaseActorDocument):
     facility_address = StringProperty()
 
     affiliation = StringProperty()
+    class Meta:
+        app_label = 'actorpermission'
 
     def get_name(self):
         return "%s (%s)" % (self.name, self.title)
