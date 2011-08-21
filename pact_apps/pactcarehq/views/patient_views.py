@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+import isodate
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
@@ -154,10 +155,17 @@ def _get_submissions_for_patient(patient):
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             date = note['form']['note']['encounter_date']
         else:
-            try:
+            if isinstance(note['form']['Meta']['TimeStart'], datetime):
                 date = note['form']['Meta']['TimeStart'].date()
-            except:
-                date = datetime.min.date()
+            else:
+                try:
+                    timesplit = note['form']['Meta']['TimeStart'].split(' ')
+                    tstring = "%sT%s" % (timesplit[0], timesplit[1])
+                    print tstring
+                    date = isodate.parse_datetime(tstring).date()
+                except Exception, e:
+                    print "exception parsing freaking date! %s" % (e)
+                    date = datetime.min.date()
         submissions.append([note._id, date, note.form['Meta']['username'] , displayname])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
