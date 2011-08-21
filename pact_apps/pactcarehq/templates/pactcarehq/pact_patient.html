@@ -270,45 +270,45 @@
             <br>
             <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
             <table>
+{#                <tr>#}
+{#                    <th class="span-4">#}
+{#                        PDoc Address(es)#}
+{#                    </th>#}
+{#                    <td>#}
+{#                        {% for patient_address in patient_doc.address %}#}
+{#                            <div class="ptprofile_address">#}
+{#                                {% if patient_address.description %}#}
+{#                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>#}
+{#                                {% endif %}#}
+{#                                {{ patient_address.street }}<br>#}
+{#                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>#}
+{#                            <hr>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+{#                </tr>#}
+{##}
+{#                <tr>#}
+{#                    <th lass="span-4">#}
+{#                        PDoc Phone(s)#}
+{#                    </th>#}
+{#                    <td>#}
+{#                        {% for phone in patient_doc.phones %}#}
+{#                            <div class="ptprofile_phone">#}
+{#                                {% if phone.description %}#}
+{#                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>#}
+{#                                {% endif %}#}
+{#                                {{ phone.number }}<br>#}
+{#                            <hr>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{#                    </td>#}
+{#                </tr>#}
+
+
                 <tr>
                     <th class="span-4">
-                        PDoc Address(es)
-                    </th>
-                    <td>
-                        {% for patient_address in patient_doc.address %}
-                            <div class="ptprofile_address">
-                                {% if patient_address.description %}
-                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
-                                {% endif %}
-                                {{ patient_address.street }}<br>
-                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
-                            <hr>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-                <tr>
-                    <th lass="span-4">
-                        PDoc Phone(s)
-                    </th>
-                    <td>
-                        {% for phone in patient_doc.phones %}
-                            <div class="ptprofile_phone">
-                                {% if phone.description %}
-                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
-                                {% endif %}
-                                {{ phone.number }}<br>
-                            <hr>
-                            </div>
-                        {% endfor %}
-                    </td>
-                </tr>
-
-
-                <tr>
-                    <th class="span-4">
-                        Case Address(es)<br>
+                        Address(es)<br>
                     </th>
                     <td>
                         <div id="addressform"></div>
@@ -337,7 +337,7 @@
 
                 <tr>
                     <th class="span-4">
-                        Case Phone(s)
+                        Phone(s)
                     </th>
                     <td>
                         <div id="phoneform"></div>
