@@ -88,6 +88,9 @@ def cmp_addr(caddr, case_addr):
     return old_addr_cmp == case_addr_cmp
 
 def run():
+
+    print "this migration has been run in production sunday aug 21 2011 at 1:16 am est"
+    return
     patients = Patient.objects.all()
     for pt in patients:
         try:
