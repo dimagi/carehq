@@ -1,37 +1,18 @@
+#import uuid
 import uuid
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.contrib.webdesign import lorem_ipsum
 import random
 from datetime import timedelta, datetime
+from .pactpatient_test_utils import delete_all
 from pactpatient.models import PactPatient
 from patient.models import Patient, DuplicateIdentifierException
 import settings
 
-def delete_all(couchmodel, view_name, key=None, startkey=None, endkey=None):
-    """Helper function to help delete/clear documents from the database of a certain type.
-    Will call the view function opon a given couchdbkit model you specify (couchmodel), on the given view.  It will do an include_docs on the view request
-    to get the entire document, it must return the actual couchmodel instances for the view for this to work.
-
-    After that, it'll iterate through all the elements to delete the items in the resultset.
-    """
-    params = {}
-    if key != None:
-        params['key'] = key
-    if startkey != None and endkey != None:
-        params['startkey'] = startkey
-        params['endkey'] = endkey
-    params['include_docs'] = True
-    data = couchmodel.view(view_name, **params).all()
-    total_rows = len(data)
-
-    for dat in data:
-        try:
-            dat.delete()
-        except:
-            pass
-    return total_rows
-
+#'pact_id','first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'race', 'is_latino',
+#                        'preferred_language', 'mass_health_expiration', 'hiv_care_clinic', 'ssn', 'notes',
+#                        'primary_hp', 'arm', 'art_regimen', 'non_art_regimen',]
 
 class patientViewTests(TestCase):
     def setUp(self):
@@ -54,13 +35,22 @@ class patientViewTests(TestCase):
         response = self.client.post('/patient/new', {'first_name':'foo',
                                                       'last_name': 'bar',
                                                       'gender':'m',
-                                                      'birthdate': datetime.now().date(),
+                                                      'birthdate': '1/1/2000',
                                                       'pact_id': 'mockmock',
                                                       'arm': 'DOT',
                                                       'art_regimen': 'QD',
                                                       'non_art_regimen': 'BID',
-                                                      'primary_hp': 'foo'
+                                                      'primary_hp': 'isaac',
+                                                      'patient_id': uuid.uuid4().hex,
+                                                      'race': 'asian',
+                                                      'is_latino': 'yes',
+                                                      'mass_health_expiration': '1/1/2020',
+                                                      'hiv_care_clinic': 'brigham_and_womens_hospital',
+                                                      'ssn': '1112223333',
+                                                      'preferred_language': 'english',
+
                                                     })
+
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
     def testCreatePatientViewFailed(self):
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
@@ -68,43 +58,69 @@ class patientViewTests(TestCase):
         response = self.client.post('/patient/new', {'first_name':'foo',
                                                       'last_name': 'bar',
                                                       'gender':'m',
-                                                      'birthdate': datetime.now().date(),
+                                                      'birthdate': '1/1/2000',
                                                       'pact_id': 'mockmock',
                                                       'arm': 'DOT',
                                                       'art_regimen': 'QD',
                                                       'non_art_regimen': 'BID',
+#                                                     'primary_hp': 'isaac',
+                                                      'patient_id': uuid.uuid4().hex,
+                                                      'race': 'asian',
+                                                      'is_latino': 'yes',
+                                                      'mass_health_expiration': '1/1/2020',
+                                                      'hiv_care_clinic': 'brigham_and_womens_hospital',
+                                                      'ssn': '1112223333',
+                                                      'preferred_language': 'english',
                                                     })
         self.assertEquals(response.status_code, 200) #if it's failed, it'll still register a false
-        self.assertTrue(response.content.index("<ul class=\"errorlist\">") > 0)
+        self.assertTrue(response.content.count('class="errorField"') > 0)
+        self.assertTrue(response.content.count("This field is required") > 0)
 
     def testCreatePatientViewDupe(self):
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
-        pact_id = uuid.uuid1().hex
+        pact_id = uuid.uuid4().hex
         #create first one, should worok
         response = self.client.post('/patient/new', {'first_name':'foo',
                                                       'last_name': 'bar',
                                                       'gender':'m',
-                                                      'birthdate': datetime.now().date(),
+                                                      'birthdate': '1/1/2000',
                                                       'pact_id': pact_id,
                                                       'arm': 'DOT',
                                                       'art_regimen': 'QD',
                                                       'non_art_regimen': 'BID',
-                                                      'primary_hp': 'foo'
+                                                      'primary_hp': 'isaac',
+                                                      'patient_id': uuid.uuid4().hex,
+                                                      'race': 'asian',
+                                                      'is_latino': 'yes',
+                                                      'mass_health_expiration': '1/1/2020',
+                                                      'hiv_care_clinic': 'brigham_and_womens_hospital',
+                                                      'ssn': '1112223333',
+                                                      'preferred_language': 'english',
+
                                                     })
         self.assertEquals(response.status_code, 302) #if it's failed, it'll still register a false
         response = self.client.post('/patient/new', {'first_name':'foo',
                                               'last_name': 'bar',
                                               'gender':'m',
-                                              'birthdate': datetime.now().date(),
+                                              'birthdate': '1/1/2000',
                                               'pact_id': pact_id,
                                               'arm': 'DOT',
                                               'art_regimen': 'QD',
                                               'non_art_regimen': 'BID',
-                                              'primary_hp': 'foo'
+                                              'primary_hp': 'isaac',
+                                              'patient_id': uuid.uuid4().hex,
+                                              'race': 'asian',
+                                              'is_latino': 'yes',
+                                              'mass_health_expiration': '1/1/2020',
+                                              'hiv_care_clinic': 'brigham_and_womens_hospital',
+                                              'ssn': '1112223333',
+                                              'preferred_language': 'english',
+
                                             })
         self.assertEquals(response.status_code, 200) #failure at 200
-        self.assertTrue(response.content.index("<li>Error, pact id must be unique</li>") > 0)
+
+        self.assertTrue(response.content.count("Error, pact id must be unique") > 0)
 
 class basicPatientTest(TestCase):
     def _createUser(self):

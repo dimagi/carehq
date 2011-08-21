@@ -6,6 +6,9 @@ def run():
     """
     This script will process all submits by in order by date for a given patient.
     """
+
+    print "this migration has been run in production sunday aug 21 2011 at 1:16 am est"
+    return
     offset =0
     total = 0
     while True:

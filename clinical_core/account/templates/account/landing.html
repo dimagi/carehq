@@ -1,0 +1,15 @@
+{% extends base_template %}
+{% load i18n %}
+{% block content %}
+    <h2>Hello {{ user.username }}</h2>
+
+    You have {{ profiles|length }} profiles linked to your account.
+    <a href="{% request_profile %}">Request Profile</a>
+    <ul>
+    {% for prof in profiles %}
+        <li>{{ prof }}</li>
+    {% endfor %}
+    </ul>
+
+
+{% endblock content %}

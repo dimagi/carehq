@@ -4,6 +4,15 @@ from couchdbkit.ext.django.forms import DocumentForm
 from patient.models import CAddress
 
 
+class SimpleAddressForm(forms.Form):
+    """
+    Form to provide for simple editing/commentnig on an inbound progrssnote for PACT
+    """
+    description = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
+    address = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols':32, 'rows': 5}))
+    address_id = forms.CharField(required=False, widget=forms.HiddenInput()) #integer
+
+
 class AddressForm(forms.Form):
     """
     Form to provide for simple editing/commentnig on an inbound progrssnote for PACT
@@ -13,7 +22,7 @@ class AddressForm(forms.Form):
     city = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
     state = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
     postal_code = forms.CharField(required=True, widget=forms.Textarea(attrs={'cols': 32, 'rows': 1}))
-    address_id = forms.CharField(required=False, widget=forms.HiddenInput())
+#    address_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
     def __init__(self, instance=None, *args, **kwargs):

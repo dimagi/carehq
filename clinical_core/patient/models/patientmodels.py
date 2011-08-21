@@ -1,11 +1,12 @@
 import uuid
 from couchdbkit.ext.django.schema import Document
-from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty
+from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty
+from django.utils.timesince import timesince
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
-from datetime import datetime
+from datetime import datetime, time
 import simplejson
 from dimagi.utils.couch.database import get_db
 
@@ -237,13 +238,15 @@ class BasePatient(Document):
     gender = StringProperty(required=True)
     birthdate = DateProperty()
     patient_id = StringProperty() #particular identifiers will likley be defined in the subclass. - this is a placeholder for nothing actually used.
+
     address = SchemaListProperty(CAddress)
     phones = SchemaListProperty(CPhone)
+
     date_modified = DateTimeProperty(default=datetime.utcnow)
     notes = StringProperty()
 
     base_type = StringProperty(default="BasePatient")
-
+    poly_types = StringListProperty() #if the document is assumed as multiple patient types (by multi tenancy), store the different types here.  it's left up to the tenant's querying method to retreive the document.
 
     _subclass_dict = {}
     @classmethod
@@ -275,6 +278,24 @@ class BasePatient(Document):
         return cls.get_typed_from_dict(doc_dict)
 
 
+    @property
+    def django_patient(self):
+        if not hasattr(self, '_django_patient'):
+            try:
+                djpt = Patient.objects.get(id=self.django_uuid)
+            except Actor.DoesNotExist:
+                djpt = None
+            self._django_patient = djpt
+        return self._django_patient
+
+    @property
+    def age_string(self):
+        """
+        Return the age in only one maximal unit (since the timesince template tag adds a secondary unit)
+        """
+        tsince_string = timesince(datetime.combine(self.birthdate, time(0)))
+        return tsince_string.split(',')[0]
+
     def is_unique(self):
         raise NotImplementedError("Error, subclass for patient document type must have a uniqueness check for its own instance.  %s" % (self.__class__()))
 
@@ -304,6 +325,13 @@ class BasePatient(Document):
 
 
     def save(self, *args, **kwargs):
+        if self.poly_types == None:
+            self.poly_types = []
+
+        if self.__class__.__name__ not in self.poly_types:
+            self.poly_types.append(self.__class__.__name__)
+
+
         if self.django_uuid == None:
             #this is a new instance
             #first check global uniqueness
@@ -312,6 +340,7 @@ class BasePatient(Document):
 
             djangopt = Patient()
             django_uuid = uuid.uuid4().hex
+            doc_id = uuid.uuid4().hex
             if self._id == None and self.new_document:
                 doc_id = uuid.uuid4().hex
                 self._id = doc_id

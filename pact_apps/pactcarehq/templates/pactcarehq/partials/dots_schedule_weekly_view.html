@@ -1,7 +1,64 @@
-<strong><span style="font-size: 125%;">Visit Schedules</span></strong> <small><a href="{{ request.path }}?allschedules">Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a></small>
-<hr>
+<script>
+function post_schedule_delete(patient_id, schedule_id) {
+    //method = method || "post"; // Set method to post by default, if not specified.
+    method="post";
 
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", '{% url remove_schedule %}');
+
+    var csrf = document.createElement("input");
+    csrf.setAttribute("type", "hidden");
+    csrf.setAttribute("name", "csrfmiddlewaretoken");
+    csrf.setAttribute("value", "{{ csrf_token }}");
+    form.appendChild(csrf);
+
+    var patientIDField = document.createElement("input");
+    patientIDField.setAttribute("type", "hidden");
+    patientIDField.setAttribute("name", "patient_id");
+    patientIDField.setAttribute("value", patient_id);
+    form.appendChild(patientIDField);
+
+    var scheduleIDField = document.createElement("input");
+    scheduleIDField.setAttribute("type", "hidden");
+    scheduleIDField.setAttribute("name", "schedule_id");
+    scheduleIDField.setAttribute("value", schedule_id);
+    form.appendChild(scheduleIDField);
+
+    document.body.appendChild(form);    // Not entirely sure if this is necessary
+//    form.submit();
+
+    var $form = $(form);
+    var values = $form.serializeArray();
+    var submit_dict = {};
+    for (var i = 0; i < values.length; i++) {
+        submit_dict[values[i]['name']] = values[i]['value'];
+    }
+
+    send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  "{% url remove_schedule %}",
+                    "data": submit_dict,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+}
+</script>
 {% if past_schedules %}
+        <small>
+   		<a id="btn_show_all_schedules"
+              href="javascript:toggle_schedule('prior_schedules')"
+              class="fg-button ui-state-default ui-corner-all"> Show All Schedules ({{ patient_doc.weekly_schedule|length }})</a>
+        </small>
+    <hr>
+<div id="prior_schedules" class="toggler">
     <strong><span style="font-size: 125%;">Prior Schedules</span></strong>
     <table>
         <thead>
@@ -13,11 +70,11 @@
             <th>Thursday</th>
             <th>Friday</th>
             <th>Saturday</th>
+            <th></th>
         </tr>
         </thead>
 
         {% for pschedule in past_schedules %}
-
             <tr>
                 <td> {{pschedule.sunday}}</td>
                 <td> {{pschedule.monday}}</td>
@@ -26,9 +83,10 @@
                 <td> {{pschedule.thursday}}</td>
                 <td> {{pschedule.friday}}</td>
                 <td> {{pschedule.saturday}}</td>
+                <td> {{pschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="7" class="prepend-1">
+                <td colspan="8" class="prepend-1">
                     <small><em>
                         Applied {{ pschedule.started|date }} -
                         {% if pschedule.ended %}
@@ -41,10 +99,9 @@
                 </td>
             </tr>
         {% endfor %}
-
     </table>
-    {% endif %} {# past_schedules #}
-
+</div>
+{% endif %}
 
 {% if patient_doc.current_schedule %}
 {# Section current schedule #}
@@ -59,6 +116,7 @@
             <th>Thursday</th>
             <th>Friday</th>
             <th>Saturday</th>
+            <th></th>
         </tr>
     </thead>
     	<tr>
@@ -69,9 +127,10 @@
             <td> {{patient_doc.current_schedule.thursday}}</td>
             <td> {{patient_doc.current_schedule.friday}}</td>
             <td> {{patient_doc.current_schedule.saturday}}</td>
+            <td> {{patient_doc.current_schedule.comment}}</td>
         </tr>
         <tr>
-            <td colspan="7" class="prepend-1">
+            <td colspan="8" class="prepend-1">
                 <small><em>
                     Active {{ patient_doc.current_schedule.started|date }}
                     {% if patient_doc.current_schedule.ended %}
@@ -80,13 +139,13 @@
                 </em></small>
             </td>
         </tr>
-        <tr>
-            <td colspan="7">
-                <a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Add Future Schedule</a>
-            </td>
-        </tr>
 </table>
-    {% if patient_doc.future_schedules %}
+{% else %}
+<br>
+<strong>No Current Schedule Set</strong> <br>
+{% endif %} {# current schedules #}
+
+{% if patient_doc.future_schedules %}
     <strong><span style="font-size: 125%;">Future Schedules</span></strong>
     <table>
         <thead>
@@ -98,6 +157,7 @@
             <th>Thursday</th>
             <th>Friday</th>
             <th>Saturday</th>
+            <th></th>
         </tr>
     </thead>
 
@@ -111,9 +171,10 @@
                 <td> {{fschedule.thursday}}</td>
                 <td> {{fschedule.friday}}</td>
                 <td> {{fschedule.saturday}}</td>
+                <td> {{fschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="7" class="prepend-1">
+                <td colspan="8" class="prepend-1">
                     <small><em>
                         Applies {{ fschedule.started|date }}
                         {% if fschedule.ended %}
@@ -125,9 +186,5 @@
             </tr>
         {% endfor %}
     </table>
-    {% endif %}
-{% else %}
-<br>
-<strong>No Current Schedule Set</strong> <br>
-<a href="{% url pactcarehq.views.patient_view patient.id %}?edit_schedule=True">Create Schedule</a>
-{%endif %}
+{% endif %} {# Future schedules #}
+

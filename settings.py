@@ -74,7 +74,7 @@ MIDDLEWARE_CLASSES = (
     #'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -115,7 +115,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
                                'django.core.context_processors.i18n', 
                                'django.core.context_processors.media',                               
                                'django.core.context_processors.request',
-                               #'staticfiles.context_processors.static',
                                'django.core.context_processors.static',
                                'context_processors.base_template',
                                #'touchforms.context_processors.static_workaround',
@@ -132,7 +131,8 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
 
     # Core clinical apps #####################
-    'actorprofile',
+    'tenant',
+    'clinical_core.actorpermission',
     'permissions',
     'couchforms',
     'couchexport',
@@ -143,8 +143,11 @@ INSTALLED_APPS = (
     'touchforms.formplayer',
     'patient',
     'auditcare',
+    'downloader',
     'casexml.apps.case',
     'casexml.apps.phone',
+    'account',
+    'clinical_core.carehqadmin',
     #end clinical_core
 
     #########################
@@ -152,6 +155,8 @@ INSTALLED_APPS = (
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
+
+    'uni_form',
     #'south',
     #end third party apps
 
@@ -223,7 +228,7 @@ XFORMS_PLAYER_URL = "http://localhost:4444/"
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 
 
-#AUTH_PROFILE_MODULE = 'actorprofile.models.ClinicalUserProfile'
+#AUTH_PROFILE_MODULE = 'actorpermission.models.ClinicalUserProfile'
 AUTHENTICATION_BACKENDS = (
             'django.contrib.auth.backends.ModelBackend',
             'permissions.backend.ObjectPermissionsBackend',

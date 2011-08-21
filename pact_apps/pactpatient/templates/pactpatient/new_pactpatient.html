@@ -1,0 +1,28 @@
+{% extends "patient/new_patient.html" %}
+{% load uni_form_tags %}
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+	$(function() {
+		$( "#id_mass_health_expiration" ).datepicker( {
+                changeMonth: true,
+                changeYear: true,
+            }
+        );
+	});
+</script>
+{% endblock %}
+{#override the stuff to use uni_forms#}
+{% block content %}
+<div class="container">
+<h2>Enroll New Patient</h2>
+      <form action="" method="POST" class="uniForm">
+       {% csrf_token %}
+       <table>
+       {% uni_form patient_form patient_form.helper %}
+       </table>
+       <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+       <input type="button" name="cancel" value="Cancel"  onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+   </form>
+</div>
+{% endblock content %}

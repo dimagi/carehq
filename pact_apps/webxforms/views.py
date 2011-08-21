@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.views.decorators.csrf import csrf_exempt
 import os
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -34,6 +35,7 @@ def do_save_xform(xform):
     pass
 
 @login_required
+@csrf_exempt
 def edit_progress_note(request, doc_id):
     xform_url = 'http://build.dimagi.com/commcare/pact/pact_progress_note.xml'
     new_form = fetch_xform_def(xform_url)
@@ -41,10 +43,10 @@ def edit_progress_note(request, doc_id):
     
     orig_doc = XFormInstance.get(doc_id)
     pact_id = orig_doc['form']['note']['pact_id']
-    patient_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['django_uuid']
+    patient_doc_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['_id']
     def callback(xform, doc):
         post_xform_to_couch(doc)
-        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        reverse_back = reverse('view_pactpatient', kwargs={'patient_guid': patient_doc_id})
         return HttpResponseRedirect(reverse_back)
 
     try:
@@ -54,16 +56,17 @@ def edit_progress_note(request, doc_id):
     return enter_form(request, xform_id=new_form.id, onsubmit=callback, instance_xml=instance_data, input_mode='type')
 
 @login_required
+@csrf_exempt
 def edit_bloodwork(request, doc_id):
     xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
     new_form = fetch_xform_def(xform_url)
 
     orig_doc = XFormInstance.get(doc_id)
     pact_id = orig_doc['form']['pact_id']
-    patient_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['django_uuid']
+    patient_doc_id = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()['_id']
     def callback(xform, doc):
         post_xform_to_couch(doc)
-        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        reverse_back = reverse('view_pactpatient', kwargs={'patient_guid': patient_doc_id})
         return HttpResponseRedirect(reverse_back)
 
     try:
@@ -89,14 +92,15 @@ def _new_form(request, patient_id, form):
     
     def post_and_back_to_patient(xform, doc):
         post_xform_to_couch(doc)
-        reverse_back = reverse('view_patient', kwargs={'patient_id': patient_id})
+        reverse_back = reverse('view_pactpatient', kwargs={'patient_guid': patient.doc_id})
         return HttpResponseRedirect(reverse_back)
 
     return enter_form(request, xform_id=form.id, onsubmit=post_and_back_to_patient, 
                       preloader_data=preloader_data, input_mode='type')
     
 @login_required
-def new_progress_note(request, patient_id): 
+@csrf_exempt
+def new_progress_note(request, patient_id):
     """
     Fill out a NEW progress note
     """
@@ -105,6 +109,7 @@ def new_progress_note(request, patient_id):
     return _new_form(request, patient_id, new_form)
     
 @login_required
+@csrf_exempt
 def new_bloodwork(request, patient_id): 
     """
     Fill out a NEW bloodwork

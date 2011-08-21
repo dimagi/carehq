@@ -4,7 +4,7 @@
 {% block content %}
 <h2>Submission Readout for
     {% if patient %}
-    <a href="{% url pactcarehq.views.patient_view patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h2>
+    <a href="{% url view_pactpatient patient.id %}">{{patient.couchdoc.last_name}}, {{patient.couchdoc.first_name}}</a></h2>
     {% endif %}
 <table>
 <thead>
