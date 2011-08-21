@@ -321,9 +321,7 @@ class BasePatient(Document, TypedSubclassMixin):
                 self._id = doc_id
             else:
                 doc_id = self._id
-
             self.django_uuid = django_uuid
-
             try:
                 super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)
