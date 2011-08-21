@@ -27,3 +27,4 @@ celery
 sorl-thumbnail
 celerymon
 django-uni-form
+isodate
