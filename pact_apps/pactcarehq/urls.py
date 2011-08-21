@@ -18,7 +18,7 @@ urlpatterns = patterns ('',
     (r'^cases$', 'pactcarehq.views.debug_casexml_new'),
 
 
-
+    url(r'^pact/providers$', 'pactcarehq.views.providers.view_add_pact_provider', name="pact_providers"),
 
     #where the xforms get submitted to
 #    (r'^submit$', 'pactcarehq.views.post'),
@@ -61,6 +61,13 @@ urlpatterns = patterns ('',
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),
     url(r'^patient/phone/rm$', 'pactcarehq.views.remove_phone', name='remove_phone'),
     url(r'^patient/address/rm$', 'pactcarehq.views.remove_address', name='remove_address'),
+    url(r'^patient/careteam/provider/rm$', 'pactcarehq.views.api.rm_provider_from_patient', name='rm_provider_from_patient'),
+    url(r'^patient/careteam/provider/add$', 'pactcarehq.views.api.do_add_provider_to_patient', name='add_provider_to_patient'),
+    url(r'^pact/provider/rm$', 'pactcarehq.views.api.rm_provider', name='rm_pact_provider'),
+
+
+
+
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
 

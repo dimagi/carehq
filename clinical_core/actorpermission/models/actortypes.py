@@ -19,6 +19,20 @@ class BaseActorDocument(Document):
 
     notes = StringProperty()
 
+    def get_name(self):
+        return self.name
+
+    def get_display(self):
+        return self.name
+
+    @classmethod
+    def _get_my_type(cls):
+        return cls
+
+    def _deprecate_data(self):
+        self.doc_type = "Deleted%s" % (self._get_my_type().__name__)
+        self.base_type = "DeletedBaseActorDocument"
+        super(BaseActorDocument, self).save()
 
     @property
     def django_actor(self):
@@ -122,6 +136,12 @@ class CaregiverActor(BaseActorDocument):
     address = StringProperty()
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
 
+    def get_name(self):
+        return "%s (%s)" % (self.name, self.relation)
+
+    def get_display(self):
+        return self.relation
+
 class ProviderActor(BaseActorDocument):
     """
     Health Provider identification.
@@ -135,6 +155,12 @@ class ProviderActor(BaseActorDocument):
     facility_address = StringProperty()
 
     affiliation = StringProperty()
+
+    def get_name(self):
+        return "%s (%s)" % (self.name, self.title)
+
+    def get_display(self):
+        return "%s, %s" % (self.title, self.facility_name)
 
 
 

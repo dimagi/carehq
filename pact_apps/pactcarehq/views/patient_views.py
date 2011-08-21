@@ -61,10 +61,6 @@ class PactPatientSingleView(PatientSingleView):
         role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
         context['careteam_dict'] = role_actor_dict
 
-
-
-
-
         if last_bw == None:
             context['bloodwork_missing']  = True
         else:

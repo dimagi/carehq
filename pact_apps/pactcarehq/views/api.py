@@ -1,10 +1,14 @@
 import urllib
+from django.contrib.contenttypes.models import ContentType
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
+from pactconfig import constants
 from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.forms.phone_form import PhoneForm
 from pactpatient.updater import update_patient_casexml
 from patient.models.patientmodels import  BasePatient, CPhone
+from permissions.models import Role, PrincipalRoleRelation, Actor
+from permissions import utils as putils
 from receiver.util import spoof_submission
 from .util import DAYS_OF_WEEK
 from datetime import datetime, time
@@ -27,11 +31,63 @@ def remove_phone(request):
         pdoc = PactPatient.get(patient_guid)
         phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
         new_phones = pdoc.active_phones
-        new_phones[phone_id] = {'phone':'', 'description': ''}
+        new_phones[phone_id] = {'number':'', 'description': ''}
 
         xml_body = update_patient_casexml(request.user, pdoc, new_phones, pdoc.active_addresses)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
+
+
+@login_required
+@require_POST
+def do_add_provider_to_patient(request):
+    resp = HttpResponse()
+    try:
+        patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
+        pdoc = PactPatient.get(patient_guid)
+        provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
+        provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
+        role_class = Role.objects.get(name=constants.role_external_provider)
+        putils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
+        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
+
+
+@login_required
+@require_POST
+def rm_provider_from_patient(request):
+    resp = HttpResponse()
+    try:
+        patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
+        pdoc = PactPatient.get(patient_guid)
+        provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
+        provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
+        role_class = Role.objects.get(name=constants.role_external_provider)
+        #permissions.utils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
+        ctype = ContentType.objects.get_for_model(pdoc.django_patient)
+        PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype, content_id=pdoc.django_uuid).delete()
+        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
+
+@login_required
+@require_POST
+def rm_provider(request):
+    resp = HttpResponse()
+    try:
+        provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
+        provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
+        provider_actor_django.delete()
+        return HttpResponseRedirect(reverse('pact_providers'))
     except Exception, e:
         logging.error("Error getting args:" + str(e))
         #return HttpResponse("Error: %s" % (e))
@@ -233,7 +289,7 @@ def remove_schedule(request):
 
                 couchdoc.weekly_schedule = new_schedules
                 couchdoc.save()
-            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':patient_id}))
+            return HttpResponse("Success")
         except Exception, e:
             logging.error("Error getting args:" + str(e))
             return HttpResponse("Error: %s" % (e))

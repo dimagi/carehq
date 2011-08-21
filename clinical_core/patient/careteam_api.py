@@ -28,8 +28,6 @@ def get_careteam(django_patient):
     Do query on PrincipalRoleRelation to find principals (actors) with local relationships with the given patient django document
     Return a dictionary keyed by the role, of actor arrays.
     """
-
-    
     ctype = ContentType.objects.get_for_model(django_patient)
     proles = PrincipalRoleRelation.objects.filter(content_type=ctype, content_id=django_patient.id)
 
