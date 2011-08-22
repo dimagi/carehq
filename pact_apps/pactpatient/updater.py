@@ -82,10 +82,10 @@ def update_patient_casexml(user, patient_doc, active_phones, active_addresses):
 
 
 
-    case = CommCareCase.get(patient_doc.case_id)
+#    case = CommCareCase.get(patient_doc.case_id)
     data_dict['update_block'] = ''.join(phone_xml + address_xml)
     data_dict['uid'] = uuid.uuid4().hex
-    data_dict['case_id'] = case._id
+    data_dict['case_id'] = patient_doc.case_id
     data_dict['username'] = user.username
     data_dict['chw_id'] = user.id
     data_dict['date_modified'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") # this is != to isoformat()!!!
