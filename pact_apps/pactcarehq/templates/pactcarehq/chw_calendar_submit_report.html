@@ -43,7 +43,7 @@
 
                 <div class="span-5">
                     <div class="success">
-                    <a href="{% url view_patient cpatient.django_uuid %}">{{ cpatient.first_name }} {{ cpatient.last_name }}</a>
+                    <a href="{% url view_pactpatient cpatient.get_id %}">{{ cpatient.first_name }} {{ cpatient.last_name }}</a>
                     </div>
                 </div>
                 <div class="span-15 last">
