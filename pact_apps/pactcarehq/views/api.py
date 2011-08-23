@@ -261,6 +261,7 @@ def ajax_post_form(request, patient_guid, form_name):
         else:
             context['form']=form
     resp.write(context['form'].as_table())
+    print resp
     return resp
 
 @login_required
