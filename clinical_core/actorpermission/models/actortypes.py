@@ -21,10 +21,10 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     notes = StringProperty()
 
     def get_name(self):
-        return self.name
+        pass
 
     def get_display(self):
-        return self.name
+        pass
 
     @classmethod
     def _get_my_type(cls):

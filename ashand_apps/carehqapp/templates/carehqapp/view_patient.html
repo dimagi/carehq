@@ -214,8 +214,8 @@
                     <div class="span-16 last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
                     {% for actor in actors %}
                         <div class="span-16 last" style="border: 1px solid black;padding: 8px;margin: 4px;">
-                            <div class="span-10 careteam_name">{{ actor.get_name }}</div>
-                            <div class="span-6 last">{{ actor.get_display|title }}</div>
+                            <div class="span-10 careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span-6 last">{{ actor.actordoc.get_display|title }}</div>
                             &nbsp;
                         </div>
                         &nbsp;

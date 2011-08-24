@@ -6,7 +6,8 @@ from permissions.models import Actor
 def get_actor_doc(sender, instance, *args, **kwargs):
     doc_id=instance.doc_id
     if doc_id is not None:
-        doc = BaseActorDocument.view('actorpermission/all_actors',key=doc_id, include_docs=True).first()
+        #doc = BaseActorDocument.view('actorpermission/all_actors',key=doc_id, include_docs=True).first()
+        doc = BaseActorDocument.get_typed_from_id(doc_id)
         if doc != None:
             instance.actordoc = doc
 post_init.connect(get_actor_doc, sender=Actor)
