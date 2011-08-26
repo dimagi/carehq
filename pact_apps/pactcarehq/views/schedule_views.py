@@ -15,6 +15,7 @@ from pactcarehq.views import DAYS_OF_WEEK
 from pactcarehq.views.patient_views import getpatient
 from pactpatient.models.pactmodels import CDotWeeklySchedule
 from patient.models.patientmodels import Patient
+from pactcarehq.tasks import all_chw_submit_report
 
 
 def _get_schedule_tally(username, total_interval, override_date=None):
