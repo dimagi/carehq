@@ -57,7 +57,7 @@ def schema_export(namespace, download_id, email=None):
 
 @task
 def all_chw_submit_report(total_interval, download_id):
-    from pactcarehq.views import _get_schedule_tally
+    from pactcarehq.views.schedule_views import _get_schedule_tally
     users = User.objects.all().filter(username__in=hack_pact_usernames)
     all_data = {}
     cache_container = {}
