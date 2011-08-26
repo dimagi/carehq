@@ -111,13 +111,12 @@ class patientCaseUpdateTests(TestCase):
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
         response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient._id}))
-
-
+        content = response.content
 
         phone_indices = []
         for p in phones:
-            phone_indices.append(response.content.index(p.description))
-            phone_indices.append(response.content.index(p.number))
+            #make sure the numbers are in the right order
+            phone_indices.append(content.index(p.number))
         self.assertEquals(sorted(phone_indices), phone_indices)
 
 

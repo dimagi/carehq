@@ -26,6 +26,7 @@ hack_chw_username_phones = {
     'ao970': '6178168507@vtext.com',
     'nc903': '6173788671@vtext.com',
     'isaac': '6174597765@vtext.com',
+    'ss192': '6175127114@vtext.com',
     #'clare': '6175298471@vtext.com',
 }
 
