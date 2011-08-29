@@ -10,13 +10,27 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
-                        (r'^accounts/login/$', 'django.contrib.auth.views.login',
-                                                {"template_name": settings.LOGIN_TEMPLATE }),
-                        (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login',
-                                                ),
+    (r'^accounts/login/$', 'django.contrib.auth.views.login',
+         {"template_name": settings.LOGIN_TEMPLATE}),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login',
+        ),
 
 
-                        (r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
+    (r'^couchforms/', include('couchforms.urls')),
+    (r'^couchlog/', include('couchlog.urls')),
+    (r'^djangocouch', include('djangocouch.urls')),
+    (r'^formplayer/', include('touchforms.formplayer.urls')),
+    (r'', include('account.urls')),
+    (r'', include('auditcare.urls')),
+    #(r'', include('casetracker.urls')), #TODO
+    (r'', include('clinical_core.carehqadmin.urls')),
+    (r'', include('downloader.urls')),
+    (r'', include('keymaster.urls')),
+    (r'^phone/', include('casexml.apps.phone.urls')),
+    (r'^receiver/', include('receiver.urls')),
+    (r'^webxforms/', include('webxforms.urls')),
+
 
                         # This is a bit kloogey - but since most of these urls don't span
                         # a single namespace (e.g. domain/ and accounts/ for domain app)
@@ -24,8 +38,8 @@ urlpatterns += patterns('',
                         # The correct solution is likely to break apart urls or harmonize
                         # apps so they all have proper prefixing.
                         #(r'', include('actors.urls')), #patient's always here.  carehq cares for patients!
-                        )
-if hasattr(settings, 'LOCAL_APP_URLS' ):
+)
+if hasattr(settings, 'LOCAL_APP_URLS'):
     #specify for your particular installationwhich local application urls you want to map
     urlpatterns += settings.LOCAL_APP_URLS
 

@@ -148,6 +148,9 @@ INSTALLED_APPS = (
     'casexml.apps.phone',
     'account',
     'clinical_core.carehqadmin',
+    'keymaster',
+    'webxforms',
+    'djangocouch',
     #end clinical_core
 
     #########################
