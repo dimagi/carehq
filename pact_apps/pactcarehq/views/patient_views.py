@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import isodate
+from auditcare.models.couchmodels import ModelActionAudit
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
@@ -24,6 +25,12 @@ def getpatient(pact_id):
         pt = PactPatient.view('pactcarehq/patient_pact_ids', key=str(pact_id), include_docs=True).first()
         patient_pactid_cache[pact_id] = pt
         return pt
+
+
+
+
+
+
 
 class PactPatientSingleView(PatientSingleView):
     def get_context_data(self, **kwargs):
@@ -92,6 +99,22 @@ class PactPatientSingleView(PatientSingleView):
             context['past_schedules'] = pdoc.past_schedules
 
 
+
+        audit_log_docs = ModelActionAudit.view('auditcare/model_actions', key = ['model_types', 'PactPatient', pdoc._id], include_docs=True).all()
+        audit_log_docs = sorted(audit_log_docs, key=lambda x: x.revision_id, reverse=True)
+        audit_log_info = []
+#        for x, l in enumerate(audit_log_docs):
+#            if x == len(audit_log_docs)-1:
+#                delta = None
+#            else:
+#                y = x+1
+#                removed, added, changed = dict_diff(audit_log_docs[x].archived_data, audit_log_docs[y].archived_data)
+#
+#            audit_log_info.append((audit_log_docs[x], delta))
+
+
+
+        context['audit_log'] = audit_log_info
 
 
         return context

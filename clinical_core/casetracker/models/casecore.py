@@ -17,7 +17,6 @@ from casetracker.managers import CaseManager
 from dimagi.utils import make_uuid
 import uuid
 from django.contrib.contenttypes.models import ContentType
-from model_utils.models import InheritanceCastModel
 from permissions.models import Actor
 
 
