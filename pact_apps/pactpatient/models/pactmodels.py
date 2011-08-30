@@ -595,12 +595,12 @@ class PactPatient(BasePatient):
         ret = ''
         counter = 1
         for num, phone in enumerate(self.active_phones, start=1):
-            if phone.number == '':
+            if phone['number'] == '':
                 continue
             else:
-                ret += "<Phone%d>%s</Phone%d>" % (num, phone.number.replace("(", "").replace(")", ""),num)
-                if phone.description != None and len(phone.description) > 0:
-                    ret += "<Phone%dType>%s</Phone%dType>" % (num, phone.description, num)
+                ret += "<Phone%d>%s</Phone%d>" % (num, phone['number'].replace("(", "").replace(")", ""),num)
+                if phone['description'] != None and len(phone['description']) > 0:
+                    ret += "<Phone%dType>%s</Phone%dType>" % (num, phone['description'], num)
                 else:
                     ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret

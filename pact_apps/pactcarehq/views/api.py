@@ -226,7 +226,6 @@ def ajax_post_form(request, patient_guid, form_name):
 
             xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
-            print xml_body
 
             resp.status_code = 204
             return resp

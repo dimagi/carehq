@@ -150,6 +150,9 @@ INSTALLED_APPS = (
     'carehqadmin',
     'carehq_core',
     'casetracker',
+    'keymaster',
+    'webxforms',
+    'djangocouch',
     #end clinical_core
 
     #########################

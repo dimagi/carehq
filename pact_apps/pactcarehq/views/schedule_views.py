@@ -12,8 +12,10 @@ from django.views.decorators.cache import cache_page
 from couchforms.models import XFormInstance
 from pactcarehq import schedule
 from pactcarehq.views import DAYS_OF_WEEK
+from pactcarehq.views.patient_views import getpatient
 from pactpatient.models.pactmodels import CDotWeeklySchedule
 from patient.models.patientmodels import Patient
+from pactcarehq.tasks import all_chw_submit_report
 
 
 def _get_schedule_tally(username, total_interval, override_date=None):
@@ -116,6 +118,7 @@ def chw_calendar_submit_report(request, username, template_name="pactcarehq/chw_
     #context['total_visited'] = total_visited
     context['start_date'] = ret[0][0]
     context['end_date'] = ret[-1][0]
+
 
     if request.GET.get('getcsv', None) != None:
         csvdata = []

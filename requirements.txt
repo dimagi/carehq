@@ -13,7 +13,7 @@ python-memcached
 simplejson
 BeautifulSoup
 python-digest
-hg+https://bitbucket.org/akoha/django-digest
+git+git://github.com/dimagi/django-digest.git
 cherrypy
 git+git://github.com/dimagi/django-cpserver.git
 django-kombu
@@ -28,3 +28,4 @@ sorl-thumbnail
 celerymon
 django-uni-form
 isodate
+djtables

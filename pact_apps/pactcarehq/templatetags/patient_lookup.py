@@ -23,4 +23,4 @@ def patient_url_from_form(xforminstance):
     if djpatient.count() == 0:
         return "#"
     else:
-        return reverse('view_patient', kwargs={'patient_id':djpatient[0].id} )
+        return reverse('view_pactpatient', kwargs={'patient_guid':djpatient[0].doc_id} )

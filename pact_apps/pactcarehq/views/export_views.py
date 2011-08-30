@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from couchexport.schema import get_docs
+from pactcarehq.tasks import schema_export
 
 
 @login_required
@@ -22,7 +23,7 @@ def export_excel_file(request):
         return HttpResponse("Error, no documents for that schema exist")
     download_id = uuid.uuid4().hex
     schema_export.delay(namespace, download_id)
-    return HttpResponseRedirect(reverse('downloader.downloaderviews.retrieve', kwargs={'download_id': download_id}))
+    return HttpResponseRedirect(reverse('downloader.downloaderviews.retrieve_download', kwargs={'download_id': download_id}))
 
 @login_required()
 def export_landing(request, template_name="pactcarehq/export_landing.html"):

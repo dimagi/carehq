@@ -117,22 +117,20 @@ LOCAL_COUCHDB_APPS = ['pactpatient', 'touchforms.formplayer', 'actorpermission',
 
 #local settings does this to make this a lot easeir
 LOCAL_APP_URLS = patterns('',
+    #PACT
     (r'', include('pactcarehq.urls')),
     (r'', include('pactpatient.urls')),
-    (r'', include('patient.urls')),
-    (r'', include('keymaster.urls')),
     (r'', include('dotsview.urls')),
-    (r'', include('auditcare.urls')),
+
+
+    #DEV WORK
     (r'', include('couchdebugpanel.urls')),
+
+
+    #SHINE
     (r'', include('slidesview.urls')),
     (r'', include('shineforms.urls')),
     (r'', include('shinepatient.urls')),
-    (r'^couchlog/', include('couchlog.urls')),
-    (r'^phone/', include('casexml.apps.phone.urls')),
-    (r'^receiver/', include('receiver.urls')),
-    (r'^formplayer/', include('touchforms.formplayer.urls')),
-    (r'^webxforms/', include('webxforms.urls')),
-    (r'^couchforms/', include('couchforms.urls')),
 
     #these are the static media for fomsplayer since it's not using the django staticfiles app
     (r'^%s/formplayer/(?P<path>.*)$' % 'media', 'django.views.static.serve', {'document_root': os.path.join(filepath, 'submodules','touchforms','touchforms','formplayer','static') }),

@@ -50,8 +50,8 @@ class PactPatientForm(DocumentForm):
     hiv_care_clinic = forms.ChoiceField(choices=PACT_HIV_CLINIC_CHOICES)
     preferred_language = forms.ChoiceField(choices=PACT_LANGUAGE_CHOICES)
 
-    mass_health_expiration = forms.DateField(label = "Mass Health expiration Date", input_formats=['%m/%d/%Y'], widget=forms.DateInput(format = '%m/%d/%Y'))
-    ssn = forms.CharField(label="Social Security Number")
+    mass_health_expiration = forms.DateField(label = "Mass Health expiration Date", input_formats=['%m/%d/%Y',''], widget=forms.DateInput(format = '%m/%d/%Y'), required=False)
+    ssn = forms.CharField(label="Social Security Number", required=False)
 
 
 
@@ -64,7 +64,7 @@ class PactPatientForm(DocumentForm):
                         'primary_hp', 'arm', 'art_regimen', 'non_art_regimen',]
         elif mode == 'edit':
             includes = ['first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'notes', 'primary_hp', 'arm',
-                         'race', 'is_latino', 'preferred_language', 'mass_health_expiration', 'hiv_care_clinic', 'ssn'
+                         'race', 'is_latino', 'preferred_language', 'mass_health_expiration', 'hiv_care_clinic', 'ssn',
                         'art_regimen', 'non_art_regimen',]
         elif mode == "regimen":
             includes = ['art_regimen','non_art_regimen',]
@@ -89,6 +89,14 @@ class PactPatientForm(DocumentForm):
                 except Exception, e:
                     #print "can't delete %s: %s" % (field, e)
                     pass
+
+    def clean_mass_health_expiration(self):
+        print "cleaning masshealth"
+        print self.cleaned_data['mass_health_expiration']
+        if self.cleaned_data['mass_health_expiration'] is None:
+            return self.cleaned_data['mass_health_expiration']
+        else:
+            return self.cleaned_data['mass_health_expiration']
 
     def clean_pact_id(self):
        if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:

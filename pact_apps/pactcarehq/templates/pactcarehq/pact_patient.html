@@ -439,6 +439,9 @@
             Raw Case stuff
         </div>
         <div id="patient-log-tab">
-            Auditcare/edit history?
+            {% for log in audit_log %}
+                {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1}}<br><hr>
+            {% endfor %}
+
         </div>
     {% endblock patient-tab-container %}

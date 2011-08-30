@@ -1,11 +1,13 @@
 from couchdbkit.exceptions import ResourceNotFound
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from casexml.apps.case.models import CommCareCase
 from pactpatient.updater import update_patient_casexml
 from patient.models import Patient
 import sys
 import traceback
 import re
+from receiver.util import spoof_submission
 
 def filter_addr_phone(f):
     if f.lower().startswith('phone') or f.lower().startswith('address'):
@@ -47,7 +49,7 @@ def merge_props(lst):
     return phones, address
 
 
-def get_case_phone(num, props, case):
+def get_case_phone(num, case):
     ret = {}
 
     if hasattr(case, 'Phone%d' % num):
@@ -61,7 +63,7 @@ def get_case_phone(num, props, case):
         ret['description'] = None
     return ret
 
-def get_case_address(num, props, case):
+def get_case_address(num, case):
     ret = {}
 
     if hasattr(case, 'address%d' % num):
@@ -89,22 +91,30 @@ def cmp_addr(caddr, case_addr):
 
 def run():
 
-    print "this migration has been run in production sunday aug 21 2011 at 1:16 am est"
-    return
+#    print "this migration has been run in production sunday aug 21 2011 at 1:16 am est"
+#    return
     patients = Patient.objects.all()
     for pt in patients:
         try:
             print "\t###Patient %s" % pt.id
             cpatient = pt.couchdoc
             case_id = cpatient.case_id
-            case = CommCareCase.get(case_id)
-            prop_keys = case._dynamic_properties.keys()
-            addr_keys = filter(filter_addr_phone, prop_keys)
+            try:
+                case = CommCareCase.get(case_id)
+            except:
+                case = None
 
-            addr_keys.sort()
-            case_phones, case_addrs = merge_props(addr_keys)
-            merged_phones = pt.couchdoc.active_phones
-            merged_addrs = pt.couchdoc.active_addresses
+            if case is not None:
+                prop_keys = case._dynamic_properties.keys()
+                addr_keys = filter(filter_addr_phone, prop_keys)
+                addr_keys.sort()
+                merged_phones = pt.couchdoc.active_phones
+
+                merged_addrs = pt.couchdoc.active_addresses
+            else:
+
+                merged_phones = []
+                merged_addrs = []
 
 
             #############################################
@@ -118,7 +128,7 @@ def run():
                     continue
                 matched_phone=False
                 for q in range(1,5):
-                    phone_dict = get_case_phone(q, case_phones, case)
+                    phone_dict = get_case_phone(q, case)
 
                     if len(phone_dict.keys()) > 0:
                         #print "\t\tCase phone: %s: %s" % (phone_dict['description'], phone_dict['number'])
@@ -142,7 +152,7 @@ def run():
                     continue
                 matched_addr=False
                 for q in range(1,5):
-                    addr_dict = get_case_address(q, case_addrs, case)
+                    addr_dict = get_case_address(q, case)
 
                     if len(addr_dict.keys()) > 0:
                         if cmp_addr(addr,addr_dict['address']):
@@ -156,9 +166,8 @@ def run():
                     #print "\t\t\tFinished append: %s %s, %s %s" % (addr.street, addr.city, addr.state, addr.postal_code)
 
             xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], pt.couchdoc, merged_phones, merged_addrs)
-            #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
-            print xml_body
-            #deprecate addrs and phones!
+            spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            #todo: deprecate addrs and phones!
 
 
         except ResourceNotFound, ex:
