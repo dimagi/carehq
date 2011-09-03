@@ -1,0 +1,74 @@
+{%  extends base_template %}
+{% load i18n %}
+{% load patient_tags %}
+
+{% block content %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#patient-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
+{% endblock %}
+<div class="container">
+    <div class="span-24">
+        <div class="span-6">
+            <h2>Patient List</h2>
+        </div>
+        <div class="prepend-15 span-3 last">
+            <a href="{{ create_patient_url }}">New Patient</a>
+        </div>
+    </div>
+<hr>
+    <table id="patient-table" class="tablesorter span-24 last">
+    <thead>
+        <tr>
+            <th>{% trans "ID" %}</th>
+            <th>{% trans "Surname" %}</th>
+            <th>{% trans "Given Name" %}</th>
+            <th>{% trans "Enrollment Date" %}</th>
+            <th>{% trans "HIV Status" %}</th>
+            <th>{% trans "CD4 Count" %}</th>
+            <th>{% trans "Last Activity" %}</th>
+            <th>{% trans "Current Status" %}</th>
+        </tr>
+    </thead>
+
+        <tbody>
+        {% for patient in patients %}
+            <tr>
+                <td><a href="{% url shine_single_patient patient.get_id %}">{{ patient.external_id }}</a></td>
+
+                <td>
+                    {% if patient.last_name %}
+                        {{ patient.last_name }}
+                    {% else %}
+                        wtf
+                    {% endif %}
+                </td>
+                <td>
+                    {% if patient.first_name %}
+                        {{ patient.first_name }}
+                    {% endif %}
+                </td>
+                <td>{{ patient.get_enrollment_date|date }}</td>
+                <td>
+                    {{ patient.get_hiv_status }}
+                </td>
+                <td>
+                    {{ patient.get_cd4_count }}
+                </td>
+                <td>
+                    {{ patient.last_activity|date }}
+                </td>
+                <td>
+                    {{ patient.get_current_status }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

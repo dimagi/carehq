@@ -49,4 +49,5 @@ def new_patient(request, template_name="pactpatient/new_pactpatient.html"):
             context['patient_form'] = form
     else:
         context['patient_form'] = PactPatientForm("new")
+
     return render_to_response(template_name, context_instance=context)

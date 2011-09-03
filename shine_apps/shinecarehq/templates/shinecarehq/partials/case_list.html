@@ -1,16 +1,52 @@
 {% load patient_tags %}
+{% load i18n %}
 <table id="pt_{{ patient.get_id }}_case_table">
 <thead>
-    <tr>
-        <th>Name</th><th>Date</th><th>Barcode</th>{% if not patient %}<th>Patient</th>{% endif %}<th>Status</th>
-    </tr>
+<tr>
+    <th>{% trans "ID" %}</th>
+    <th>{% trans "Surname" %}</th>
+    <th>{% trans "Given Name" %}</th>
+    <th>{% trans "Enrollment Date" %}</th>
+    <th>{% trans "HIV Status" %}</th>
+    <th>{% trans "CD4 Count" %}</th>
+    <th>{% trans "Last Activity" %}</th>
+    <th>{% trans "Current Status" %}</th>
+</tr>
 </thead>
 <tbody>
 {% for case in cases %}
 <tr>    
-    <td><a href="{% url shine_case_details case.get_id %}">{{ case.name }}</a></td>
+    <td><a href="{% url mepi_case case.get_id %}">{{ case.name }}</a></td>
+
+    <td>
+        {% if case.last_name %}
+            {{ case.last_name }}
+        {% else %}
+            wtf
+        {% endif %}
+    </td>
+    <td>
+        {% if case.first_name %}
+            {{ case.first_name }}
+        {% endif %}
+    </td>
     <td>{{ case.opened_on }}</td>
     <td>
+        {% if case.hiv_status %}
+            {{ case.hiv_status }}
+        {% else %}
+            Unknown
+        {% endif %}
+    </td>
+     <td>
+        {% if case.cd4_count %}
+            {{ case.cd4_count }}
+        {% else %}
+            Unknown
+        {% endif %}
+    </td>
+    <td>
+        {{ case.modified_on|date }}
         {% if case.barcode %}
         <div id="qrcode-{{ case.get_id }}"></div>
         <script type="text/javascript">

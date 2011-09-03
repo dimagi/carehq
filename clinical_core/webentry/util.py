@@ -18,10 +18,15 @@ def get_remote_form(xform_url):
     Get a remote form from a url
     source: http://stackoverflow.com/questions/1020892/urllib2-read-to-unicode
     """
-    req = urllib2.urlopen(xform_url)
-    #encoding = req.headers['content-type'].split('charset=')[-1]
-    encoding = "windows-1251"
-    content = req.read()
-    ucontent = unicode(content, encoding)
+#    req = urllib2.urlopen(xform_url)
+#    #encoding = req.headers['content-type'].split('charset=')[-1]
+#    encoding = "windows-1251"
+#    content = req.read()
+#    ucontent = unicode(content, encoding)
+#    return ucontent.encode('utf-8')
+
+    filename = xform_url.split('/')[-1]
+    fin = open('/home/dmyung/src/commcare-sets/shine/%s' % filename)
+    content = fin.read()
+    ucontent = unicode(content, 'windows-1251')
     return ucontent.encode('utf-8')
-    

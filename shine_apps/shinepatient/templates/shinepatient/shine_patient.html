@@ -1,0 +1,185 @@
+{% extends "patient/base_patient.html" %}
+{% load shinepatient_tags %}
+{% load i18n %}
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#pt_{{ patient.get_id }}_case_table").addClass("tablesorter");
+            $("#pt_{{ patient.get_id }}_case_table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
+    <script>
+        function getCookie(name) {
+            //basic get cookie, to facilitate getting the csrf token
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+    <script>
+        $(function() {
+            $("#id_birthdate").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        maxDate: "+0M +0D +0Y",
+                        yearRange: "-100:+0"
+                    }
+            );
+        });
+    </script>
+    <script type="text/javascript">
+        //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
+        $(function() {
+            $("#id_active_date").datepicker({ showAnim: 'fadeIn' });
+        });
+    </script>
+    {% endblock extrahead %}
+        {% block hat_actions %}
+            {{ block.super }}
+            <div style="float:right;">
+                    <a
+                            class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                            href="{% url new_bloodwork_order patient_doc.get_id %}">
+                        <span class="ui-icon ui-icon-circle-plus"></span>
+                        {% trans "Create Bloodwork Order" %}</a>
+            </div>
+    {% endblock %}
+    {% block patient_badge %}
+        {{ block.super }}
+        <dt>{% trans "System ID" %}</dt>
+            <dd>{{ patient_doc.external_id }}</dd>
+        <dt>{% trans "CD4 Count" %}</dt>
+            <dd>{{ patient_doc.get_cd4_count }}</dd>
+        <dt>{% trans "HIV Status" %}</dt>
+            <dd>{{ patient_doc.get_hiv_status }}</dd>
+
+        <dt>{% trans "Ward" %}</dt>
+        <dd>{{ patient_doc.get_current_ward }}</dd>
+        <dt>{% trans "Bed Number" %}</dt>
+        <dd>{{ patient_doc.get_current_bed }}</dd>
+    {% endblock patient_badge %}
+
+    {% block patient-tab-controller %}
+            <li><a href="#patient-casenews-tab">{% trans "Case History" %}</a></li>
+            <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
+            <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
+            <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
+    {% endblock patient-tab-controller %}
+    {% block patient-tab-container %}
+        <div id="patient-casenews-tab" class="ui-tabs-hide">
+            Blood order case news display
+        </div>
+        <div id="patient-info-tab" class="ui-tabs-hide">
+            <div id="patienteditform" class="editctrl"></div>
+            <div id="patient-info-display">
+            <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">Address</th>
+                    <td>Address</td>
+                </tr>
+                <tr>
+                    <th class="span-4">Occupation</th>
+                    <td>
+                        Farmer, Carpenter, Cook
+                    </td>
+                </tr>
+                <tr>
+                    <th class="span-4">Language</th>
+                    <td>Language (portugese, etc)</td>
+                </tr>
+                <tr>
+                    <th class="span-4">Married</th>
+                    <td>Yes/No</td>
+                </tr>
+                <tr>
+                    <th>Household Number</th>
+                    <td>Some number</td>
+                </tr>
+                <tr>
+                    <th>Number of Children</th>
+                    <td>Some number</td>
+                </tr>
+                <tr>
+                    <th>Animals</th>
+                    <td>Pig, Chicken, Cow, etc</td>
+                </tr>
+                <tr>
+                    <th>Running Water</th>
+                    <td>Yes/No</td>
+                </tr>
+            </table>
+                        <div class="editctrl" style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                                <span class="ui-icon ui-icon-wrench"></span>
+                                Edit Info
+                            </a>
+                        </div>
+            </div> <!-- end patient info display-->
+            <br>
+            <br>
+            <h4 class="ui-widget-header ui-corner-all">Food Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">
+                        Food Questions<br>
+                    </th>
+                    <td>
+                        TODO
+                   </td>
+                </tr>
+
+
+            </table>
+            <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+        </div>
+
+
+        <div id="patient-submissions-tab">
+            {% if submit_arr %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="span-4">Date</th>
+                        <th class="span-4">CHW</th>
+                        <th class="span-4">Form</th>
+                    </tr>
+                    </thead>
+                    {% for submission in submit_arr %}
+                        <tr>
+                            <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
+                            <td> {{ submission.2 }}</td>
+                            <td> {{ submission.3 }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h4>No Recent Activity</h4>
+            {% endif %}
+        </div>
+
+
+        <div id="patient-log-tab">
+            {% for log in audit_log %}
+                {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1}}<br><hr>
+            {% endfor %}
+
+        </div>
+    {% endblock patient-tab-container %}
