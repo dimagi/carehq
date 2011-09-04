@@ -44,21 +44,45 @@ lab_command = """
 #print quantity of 3
 # ^PQ3,,,, 
 
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.connect((host,port))
 
+#sets print width in dots (203dpi)
+#^PW406
+
+#as a control command, we can send it this way too:
+#^XA^PW406^XZ
+#^XA^JUS^XZ
+#The ^JUS command saves the value in memory and is optional in the application.
+
+def do_send(zpl_string): #destination
+    try:
+        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.connect((host,port))
+        s.send(zpl_string)
+    except Exception, ex:
+        print "*** Error sending: %s" % (ex)
+
+
+    try:
+        #print s.recv(1024)
+        pass
+    except Exception, ex:
+        print "**** Error trying to read from socket %s" % ex
+
+    try:
+        s.close()
+    except Exception, ex:
+        print "*** Error trying to clos socket %s" % ex
 
 def qr_code():
     label_data = {}
-    label_data['barcode_data']="I RULE!!!"#uuid.uuid4().hex
+    label_data['barcode_data']=uuid.uuid4().hex
     label_data['last_name']='Preziosi'
     label_data['first_name']='Mike'
     label_data['gender']='M'
     label_data['age']='999'
     label_data['external_id']=random.randint(10000,99999)
     label_data['enroll_date']= (datetime.utcnow() - timedelta(days=random.randint(1,500))).strftime('%m/%d/%Y')
-    s.send(qr_command % (label_data))
-    s.close()
+    do_send(qr_command % (label_data))
 
 def flat_code():
     label_data = {}
@@ -66,9 +90,7 @@ def flat_code():
     #print label_data['barcode_data']
     label_data['last_name']='Preziosi'
     label_data['first_name']='Mike'
-    s.send(lab_command % (label_data))
-    s.close()
-#flat_code()
+    do_send(lab_command % (label_data))
 qr_code()
 
 
