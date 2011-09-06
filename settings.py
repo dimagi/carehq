@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
+    'tastypie',
 
     'uni_form',
     #'south',
