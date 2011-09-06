@@ -16,10 +16,9 @@ python-digest
 git+git://github.com/dimagi/django-digest.git
 cherrypy
 git+git://github.com/dimagi/django-cpserver.git
-django-kombu
-djkombu
-django-celery
 kombu
+django-kombu
+django-celery
 fabric
 django-breadcrumbs
 south
@@ -31,3 +30,4 @@ isodate
 djtables
 django-tastypie
 gevent
+PIL

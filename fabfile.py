@@ -32,7 +32,7 @@ def pact_production():
     _setup_pact_production()
 
 def _setup_mepi_production():
-    env.virtualenv_root = '/home/mepimoz/.virtualenvs/carehq'
+    env.virtualenv_root = '/home/carehq/.virtualenvs/carehq'
     env.src_root       = _join(env.root, 'src')
     env.code_root       = _join(env.root, 'src/carehq')
     env.project_root    = _join(env.root, 'src/carehq')
@@ -93,7 +93,7 @@ def pip_update():
     """
     with cd(env.code_root):
         with enter_virtualenv():
-            run('pip install -r requirements.txt')
+            run('pip install -r requirements.txt', shell=True)
 
 def syncdb():
     with cd(env.code_root):
