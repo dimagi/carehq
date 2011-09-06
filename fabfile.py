@@ -79,9 +79,9 @@ def get_code():
     require('root', provided_by=('staging', 'pact_production'))
     with cd(env.src_root):
         sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
-        sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/')
-        sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/')
-        sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/')
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/', shell=False)
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_django.conf /etc/init/', shell=False)
+        sudo('ln -s %(code_root)s/services/production/upstart/carehq_formsplayer.conf /etc/init/', shell=False)
 
 def pip_update():
     """
