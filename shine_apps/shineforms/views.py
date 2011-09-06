@@ -50,10 +50,13 @@ def new_bloodwork_questionnaire(request, patient_guid):
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
+@login_required
+def new_bloodwork_lab(request, case_id):
+    pass
 
 
 @login_required
-def discharge_form(request, patient_guid):
+def new_bloodwork_discharge(request, patient_guid):
     pass
 
 @login_required

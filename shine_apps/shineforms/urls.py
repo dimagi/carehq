@@ -24,7 +24,7 @@ urlpatterns = patterns ('shineforms.views',
         name="shine_form_cb"),
 
 
-    url(r'^shine/restore$', 'shineforms.views.ota_restore',
+    url(r'^shine/restore$', 'ota_restore',
         name="shineforms_restore"),
     
 )
