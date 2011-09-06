@@ -30,4 +30,5 @@ isodate
 djtables
 django-tastypie
 gevent
+johnny-cache
 PIL
