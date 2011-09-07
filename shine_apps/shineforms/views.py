@@ -39,7 +39,7 @@ def get_playsettings(request, patient_guid, form_url, next=None, ua=None):
 
 
 @login_required
-def new_bloodwork_questionnaire(request, patient_guid):
+def clinical_information(request, patient_guid):
     """
     This is the initial bloodwork order request that goes out.  This scans the vial of blood barcode for record keeping as it is sent down to Lab1.
     """
@@ -50,6 +50,9 @@ def new_bloodwork_questionnaire(request, patient_guid):
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
+
+
+
 @login_required
 def new_bloodwork_lab(request, case_id):
     pass

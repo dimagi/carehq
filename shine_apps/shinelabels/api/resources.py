@@ -1,10 +1,11 @@
 from tastypie import fields
+from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.bundle import Bundle
 from tastypie.resources import Resource, ModelResource
 import restkit
 from couchforms.models import XFormInstance
-from shinelabels.models import ZebraStatus, ZebraPrinter
+from shinelabels.models import ZebraPrinter, LabelQueue, ZebraStatus
 
 class ZebraPrinterResource(ModelResource):
     class Meta:
@@ -16,6 +17,12 @@ class ZebraStatusResource(ModelResource):
         queryset = ZebraStatus.objects.all()
         resource_name='zebra_status'
 
+class LabelQueueResource(ModelResource):
+    class Meta:
+        queryset = LabelQueue.objects.all().filter(fulfilled_date=None)
+        authorization = Authorization()
+        authentication=ApiKeyAuthentication()
+        resource_name='zebra_queue'
 
 
 class LabelResource(Resource):

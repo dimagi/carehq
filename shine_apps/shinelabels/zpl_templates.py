@@ -2,10 +2,6 @@ import socket
 import uuid
 from datetime import datetime, timedelta
 import random
-from gevent import socket as gsocket
-from gevent import monkey
-import gevent
-monkey.patch_socket()
 
 ZEBRA_SEND_TIMOUT=1500
 ZEBRA_RECEIVE_TIMEOUT=1500
@@ -20,7 +16,10 @@ port = 9100
 #THIS IS THE QR CODE COMMAND
 #QR code  BQ,2,[<zoom/scale> 5 or 6, maybe 4, but 6 is the max for the 2x1],Q|M, Q is default, 
 #
-qr_command = """
+
+
+#the CaseID's Barcode with patient information
+case_qr_zpl = """
 ^XA
 ^PW416
 ^FO20,15^BQ,2,5,,^FDMA,%(barcode_data)s^FS
@@ -32,7 +31,8 @@ qr_command = """
 ^XZ
 """
 
-lab_command = """
+#Lab 1D barcode printouts with simplified outputs.
+lab_1d_zpl = """
 ^XA
 ^PW416
 ^FO20,15^A0,24,^FD%(last_name)s, %(first_name)s^FS
@@ -43,9 +43,11 @@ lab_command = """
 ^XZ
 """
 
-#max_len=21 for surname
-#max_len=21 for firstname
-#save this to the printer as an image for dispaly. SAVES PAPER
+#########################################
+#Notes
+# Surname AND Firstname max length is 21 characters
+
+#Testing printouts by generating image to store on the printer (SAVES PAPER)
 #^ISR:EXERPROG.GRF,N
 
 #print quantity of 3
@@ -60,50 +62,6 @@ lab_command = """
 #^XA^JUS^XZ
 #The ^JUS command saves the value in memory and is optional in the application.
 
-def gsend(zpl_string, recv=False):
-    s = gsocket.create_connection((host,port), timeout=5)
-    s.send(zpl_string)
-    #fileobj = s.makefile()
-    #fileobj.write(zpl_string)
-    #fileobj.flush()
-
-    if recv:
-        try:
-            while True:
-                #line = fileobj.readline()
-                line = s.recv(256)
-                print "%s (%d)" % (line.strip(), len(line))
-                if not line:
-                    print ("client disconnected")
-                    break
-        except socket.timeout, ex:
-            print "Exception: %s, %s" % (ex, ex.__class__)
-
-
-           
-   
-
-
-def do_send(zpl_string, recv=False): #destination
-    try:
-        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        s.connect((host,port))
-        s.send(zpl_string)
-    except Exception, ex:
-        print "*** Error sending: %s" % (ex)
-
-
-    if recv:
-        try:
-            print s.recv(1024)
-            pass
-        except Exception, ex:
-            print "**** Error trying to read from socket %s" % ex
-
-        try:
-            s.close()
-        except Exception, ex:
-            print "*** Error trying to close socket %s" % ex
 
 
 def qr_code():
@@ -115,7 +73,7 @@ def qr_code():
     label_data['age']='999'
     label_data['external_id']=random.randint(10000,99999)
     label_data['enroll_date']= (datetime.utcnow() - timedelta(days=random.randint(1,500))).strftime('%m/%d/%Y')
-    do_send(qr_command % label_data)
+#    do_send(case_qr_zpl % label_data)
 
 def flat_code():
     label_data = {}
@@ -123,7 +81,7 @@ def flat_code():
     #print label_data['barcode_data']
     label_data['last_name']='Preziosi'
     label_data['first_name']='Mike'
-    do_send(lab_command % label_data)
+#    do_send(lab_1d_zpl % label_data)
 
 
 
@@ -143,10 +101,10 @@ def set_host_config():
     ^SX*,D,Y,Y,192.168.0.108,9111
     ^XZ
     """
-    do_send(msg_text)
+#    do_send(msg_text)
     pass
 
-set_host_config()
+#set_host_config()
 #qr_code()
 #flat_code()
 #host_status()

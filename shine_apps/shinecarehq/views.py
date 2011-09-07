@@ -11,7 +11,7 @@ class MepiPatientListView(PatientListView):
     def get_context_data(self, **kwargs):
         request = self.request
         context = super(MepiPatientListView, self).get_context_data(**kwargs)
-        cases = CommCareCase.view("shinepatient/cases_by_patient_guid", include_docs=True).all()
+        cases = CommCareCase.view("shinepatient/shine_patient_cases", include_docs=True).all()
         return context
     pass
 
@@ -27,7 +27,7 @@ def all_cases(request, template="shinecarehq/all_cases.html"):
     """
     Full case list
     """
-    cases = CommCareCase.view("shinepatient/cases_by_patient_guid", include_docs=True).all()
+    cases = CommCareCase.view("shinepatient/shine_patient_cases", include_docs=True).all()
     for case in cases:
         try:
             pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(case.patient_guid))

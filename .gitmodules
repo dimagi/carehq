@@ -28,3 +28,6 @@
 [submodule "submodules/casexml-src"]
 	path = submodules/casexml-src
 	url = git://github.com/dimagi/casexml.git
+[submodule "submodules/zprintspool-src"]
+	path = submodules/zprintspool-src
+	url = git://github.com/dimagi/zprintspool.git

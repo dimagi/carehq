@@ -1,6 +1,5 @@
 import base64
 import uuid
-import Image, ImageDraw
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -10,45 +9,15 @@ import os
 import random
 import re
 from casexml.apps.case.models import CommCareCase
-from receiver.util import spoof_submission
 from shineforms.models import ShineUser
 from shinepatient.models import ShinePatient
 from django.test.client import Client
 from django_digest.test import Client as DigestClient
 from StringIO import StringIO
 from couchforms.models import XFormInstance
+from shinepatient.tests.testutils import _mkpatient_dict, get_registration_xml, do_submit, create_image
 from slidesview.models import ImageAttachment
 
-create_patient_xml = """
-<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://shine.commcarehq.org/patient/reg" uiVersion="2" version="1">
-  <Meta>
-    <DeviceID>touchforms</DeviceID>
-    <TimeStart>2011-07-05T22:27:52.885-04</TimeStart>
-    <TimeEnd>2011-07-05T22:28:00.045-04</TimeEnd>
-    <username>admin</username>
-    <chw_id>2</chw_id>
-    <uid>%(uid)s</uid>
-  </Meta>
-  <case>
-    <case_id>%(case_id)s</case_id>
-    <date_modified>2011-07-05T22:28:00.045-04</date_modified>
-    <create>
-      <case_type_id>shine_patient</case_type_id>
-      <user_id>2</user_id>
-      <case_name>%(last_name)s, %(first_name)s</case_name>
-      <external_id>%(external_id)s</external_id>
-    </create>
-    <update>
-      <patient_guid>%(patient_guid)s</patient_guid>
-      <first_name>%(first_name)s</first_name>
-      <last_name>%(last_name)s</last_name>
-      <sex>male</sex>
-      <dob>2011-07-01</dob>
-    </update>
-  </case>
-  <generated/>
-</data>
-"""
 
 image_submit_xml = """
 <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://shine.commcarehq.org/bloodwork/entry" uiVersion="1" version="1">
@@ -109,6 +78,7 @@ generated_image_xml = """
 """
 
 
+
 #http auth with django client, source: http://stackoverflow.com/questions/6068674/django-test-client-http-basic-auth-for-post-request
 def http_auth(username, password):
     credentials = base64.encodestring('%s:%s' % (username, password)).strip()
@@ -139,32 +109,24 @@ class ShinePatienteTests(TestCase):
         usr.save()
         return usr
 
-    def _mkpatient_dict(self):
-        data_dict = {}
-
-        data_dict['uid'] = uuid.uuid4().hex
-        data_dict['case_id'] = uuid.uuid4().hex
-        data_dict['patient_guid'] = uuid.uuid4().hex
-        data_dict['external_id'] = "mockexternalid"
-        data_dict['first_name'] = "mockfirstname"
-        data_dict['last_name'] = "mockfirstname"
-        return data_dict
 
     def testCreatePatient(self):
         """
         Ensure that a submitted patient registration xml file creates ShinePatient object and Case object.
         """
-        pdict = self._mkpatient_dict()
-        xml = create_patient_xml % pdict
-        resp = spoof_submission(reverse("receiver_post"), xml, hqsubmission=False)
+        pdict = _mkpatient_dict()
+        final_xml = get_registration_xml(pdict)
 
-        shinept = ShinePatient.get(pdict['patient_guid'])
+        consent_image = create_image(100,100,"Consent Form!")
+
+        do_submit(final_xml, attachments_list=[('consent.jpg', consent_image)])
+
+        shinept = ShinePatient.view('shinepatient/patient_cases_all', key=pdict['case_id'], include_docs=True).first()
         self.assertEqual(shinept['external_id'], pdict['external_id'])
 
         casedoc = CommCareCase.get(pdict['case_id'])
         self.assertEqual(casedoc['first_name'], pdict['first_name'])
         self.assertEqual(casedoc['last_name'], pdict['last_name'])
-        self.assertEqual(casedoc['patient_guid'], pdict['patient_guid'])
         self.assertEqual(casedoc['external_id'], pdict['external_id'])
 
         self.patient = shinept
@@ -180,7 +142,6 @@ class ShinePatienteTests(TestCase):
         client = DigestClient()
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
         restore_payload = client.get('/shine/restore', **self.extra)
-
         case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
         case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
         self.assertEqual(case_id_xml, self.casedoc._id)
@@ -218,20 +179,8 @@ class ShinePatienteTests(TestCase):
 
     def testSubmitAttachments(self):
         #self.testCreatePatient()
-        def create_image(filename, x, y, n):
-            """
-            Return a buffer of a jpeg image
-            """
-            im = Image.new("RGB",(x,y))
-            drtext = ImageDraw.Draw(im)
-            drtext.text((10,10), str(n),fill="white")
 
-            buf = StringIO()
-            im.save(buf,"JPEG")
-            buf.seek(0)
-            return buf
-
-        for x in range(10,60):
+        for x in range(1,5):
             print "Creating and submitting image %d" % (x)
             #generate image
             #attach and submit
@@ -259,7 +208,7 @@ class ShinePatienteTests(TestCase):
             xml_f = StringIO(final_xml.encode('utf-8'))
             xml_f.name = 'form.xml'
 
-            image_f = create_image(filename, x*100, x*100, x )
+            image_f = create_image(x*100, x*100, x )
             image_f.name = filename
 
             client = Client()

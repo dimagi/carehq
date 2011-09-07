@@ -33,7 +33,7 @@ def new_patient_touch(request):
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
     playsettings = defaultdict(lambda: "")
-    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/752395978bb2/shine/patient_registration.xml")
+    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/patient_registration.xml")
     playsettings["next"] = reverse('newshinepatient_callback')
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://shine.commcarehq.org/lab/one" uiVersion="2" version="2" name="Lab Data">
+  <Meta>
+    <DeviceID>354957030960291</DeviceID>
+    <TimeStart>2011-09-07T03:47:59.918+02</TimeStart>
+    <TimeEnd>2011-09-07T03:48:12.117+02</TimeEnd>
+    <username>shine</username>
+    <chw_id>2</chw_id>
+    <uid>T1232T90U5ZLCQEMOMB3BL4S0</uid>
+  </Meta>
+  <case>
+    <case_id>WYZSQVASOZ3KDY2SCTCEPST1W</case_id>
+    <date_modified>2011-09-07T03:48:12.118+02</date_modified>
+    <update>
+      <bloodwork_pending>two</bloodwork_pending>
+    </update>
+  </case>
+  <positive_bottles>one_aerobic two_aerobic</positive_bottles>
+  <gram_stain>gpc_pairs gpc_clusters</gram_stain>
+  <gram_stain_photo>gram_stain.png</gram_stain_photo>
+  <afb_stain>present</afb_stain>
+  <afb_stain_photo>afb_stain.png</afb_stain_photo>
+</data>

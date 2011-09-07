@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta
 from casexml.apps.case.models import CommCareCase
 from patient.models.patientmodels import BasePatient
-from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty
+from couchdbkit.schema.properties import StringProperty, StringListProperty
 
 class ShinePatient(BasePatient):
     """
     A stub implementation of the Patient model
     """
     external_id = StringProperty() #patient_id for human readable
+
+    cases = StringListProperty()
+
     def is_unique(self):
         return True
 
@@ -33,7 +36,7 @@ class ShinePatient(BasePatient):
 
     @property
     def last_activity(self):
-        cases = CommCareCase.view("shinepatient/cases_by_patient_guid", key=self._id, include_docs=True).all()
+        cases = CommCareCase.view("shinepatient/shine_patient_cases", key=self._id, include_docs=True).all()
         if len(cases) == 0:
             #return "No activity"
             return datetime.mindate

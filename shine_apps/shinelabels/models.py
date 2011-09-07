@@ -31,7 +31,7 @@ class LabelQueue(models.Model):
 
     created_date = models.DateTimeField()
     xform_id = models.CharField(max_length=32, help_text="XForm Submission that triggered this submission")
-    fulfilled_date = models.DateTimeField()
+    fulfilled_date = models.DateTimeField(blank=True, null=True)
 
     zpl_code=models.TextField()
 
@@ -101,4 +101,4 @@ class ZebraStatus(models.Model):
 
 
 
-
+from signals import *
