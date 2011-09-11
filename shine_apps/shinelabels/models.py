@@ -16,6 +16,10 @@ class ZebraPrinter(models.Model):
     serial_number = models.CharField(max_length=32)
     mac_address = models.CharField(max_length=32)
 
+
+    def __unicode__(self):
+        return "%s (%s@%s)" % (self.name, self.location, self.ip_address)
+
 class LabelQueue(models.Model):
     """
     The LabelQueue is a model for a REST api for the printer queue processor on the netbook in the lab to process and eventually marshall out
@@ -34,6 +38,11 @@ class LabelQueue(models.Model):
     fulfilled_date = models.DateTimeField(blank=True, null=True)
 
     zpl_code=models.TextField()
+
+
+    @property
+    def get_printer(self):
+        return self.destination.id
 
 class ZebraStatus(models.Model):
 #    Accepted Values:
@@ -71,7 +80,7 @@ class ZebraStatus(models.Model):
         ("rewind_full","rewind full"),
         ("cut_error","cut error"),
         ("printer_paused","printer paused"),
-        ("PQ_job_completed","PQ job completed"),
+        ("pq_job_completed","PQ job completed"),
         ("label_ready","label ready"),
         ("head_element_out","head element out"),
         ("power_on","power on"),
@@ -87,18 +96,8 @@ class ZebraStatus(models.Model):
     )
     printer = models.ForeignKey(ZebraPrinter)
     event_date = models.DateTimeField(db_index=True)
-    status = models.CharField(max_length=32, choices=ZEBRA_STATUS, db_index=True)
-    is_triggered = models.BooleanField(default=False, help_text="If there is something set on the machine, then that indicates a problem.  If the printer sets it 'cleared', then that negates it")
-
-
-    @classmethod
-    def parse_message(cls, msg_text):
-        pass
-
-    def save(self, *args, **kwargs):
-        pass
-
-
+    status = models.CharField(max_length=32, db_index=True)
+    is_cleared = models.BooleanField(default=False, help_text="If there is something set on the machine, then that indicates a problem.  If the printer sets it 'cleared', this is true")
 
 
 from signals import *

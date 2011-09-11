@@ -2,6 +2,7 @@ from tastypie import fields
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.bundle import Bundle
+from tastypie.fields import ForeignKey
 from tastypie.resources import Resource, ModelResource
 import restkit
 from couchforms.models import XFormInstance
@@ -11,18 +12,25 @@ class ZebraPrinterResource(ModelResource):
     class Meta:
         queryset = ZebraPrinter.objects.all()
         resource_name='zebra_printers'
+        authorization = ReadOnlyAuthorization()
+        authentication=ApiKeyAuthentication()
 
 class ZebraStatusResource(ModelResource):
+    printer = ForeignKey(ZebraPrinterResource, 'printer')
     class Meta:
         queryset = ZebraStatus.objects.all()
         resource_name='zebra_status'
+        authorization = Authorization()
+        authentication=ApiKeyAuthentication()
 
 class LabelQueueResource(ModelResource):
+    destination_printer = ForeignKey(ZebraPrinterResource, 'destination')
     class Meta:
         queryset = LabelQueue.objects.all().filter(fulfilled_date=None)
         authorization = Authorization()
         authentication=ApiKeyAuthentication()
         resource_name='zebra_queue'
+
 
 
 class LabelResource(Resource):

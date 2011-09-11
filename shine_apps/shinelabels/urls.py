@@ -5,6 +5,7 @@ from shinelabels.api.resources import ZebraStatusResource, ZebraPrinterResource,
 status_resource = ZebraStatusResource()
 printer_resource = ZebraPrinterResource()
 label_resource = LabelQueueResource()
+label_resource = LabelQueueResource()
 urlpatterns = patterns('',
     (r'^api/', include(status_resource.urls)),
     (r'^api/', include(printer_resource.urls)),

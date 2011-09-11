@@ -2,6 +2,7 @@ import socket
 import uuid
 from datetime import datetime, timedelta
 import random
+import gevent
 
 ZEBRA_SEND_TIMOUT=1500
 ZEBRA_RECEIVE_TIMEOUT=1500
@@ -37,11 +38,12 @@ lab_1d_zpl = """
 ^PW416
 ^FO20,15^A0,24,^FD%(last_name)s, %(first_name)s^FS
 ^FO20,45
-^BY3^BCN,100,Y,N,N
-^FD>;%(barcode_data)s^FS
+^BY1^BCN,100,Y,N,N
+^FD%(barcode_data)s^FS
 ^ISR:EXERPROG.GRF,N
 ^XZ
 """
+#^BY3^BCN,100,Y,Y,N,A
 
 #########################################
 #Notes
@@ -62,6 +64,27 @@ lab_1d_zpl = """
 #^XA^JUS^XZ
 #The ^JUS command saves the value in memory and is optional in the application.
 
+def do_send(host, port, zpl_string, recv=False): #destination
+    try:
+        s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        s.connect((host,port))
+        s.send(zpl_string)
+    except Exception, ex:
+        print "*** Error sending: %s" % (ex)
+
+
+    if recv:
+        try:
+            print s.recv(1024)
+            pass
+        except Exception, ex:
+            print "**** Error trying to read from socket %s" % ex
+
+        try:
+            s.close()
+        except Exception, ex:
+            print "*** Error trying to close socket %s" % ex
+
 
 
 def qr_code():
@@ -77,11 +100,11 @@ def qr_code():
 
 def flat_code():
     label_data = {}
-    label_data['barcode_data']="I REALLY RULE!!!"#uuid.uuid4().hex
+    label_data['barcode_data']='20SZRT3OAN96R6IGOEKULK0XO'
     #print label_data['barcode_data']
     label_data['last_name']='Preziosi'
     label_data['first_name']='Mike'
-#    do_send(lab_1d_zpl % label_data)
+    do_send(host, port,lab_1d_zpl % label_data)
 
 
 
@@ -101,12 +124,11 @@ def set_host_config():
     ^SX*,D,Y,Y,192.168.0.108,9111
     ^XZ
     """
-#    do_send(msg_text)
-    pass
+    do_send(host, port, msg_text)
 
 #set_host_config()
 #qr_code()
-#flat_code()
+flat_code()
 #host_status()
 #host_config()
 
