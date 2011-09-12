@@ -128,7 +128,7 @@ def set_host_config():
 
 #set_host_config()
 #qr_code()
-flat_code()
+#flat_code()
 #host_status()
 #host_config()
 

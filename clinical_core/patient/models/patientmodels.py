@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime, time
 import simplejson
+import math
 from clinical_shared.mixins import TypedSubclassMixin
 from dimagi.utils.couch.database import get_db
 from permissions.models import Actor
@@ -270,6 +271,14 @@ class BasePatient(Document, TypedSubclassMixin):
         """
         tsince_string = timesince(datetime.combine(self.birthdate, time(0)))
         return tsince_string.split(',')[0]
+
+    @property
+    def age_int(self):
+        """
+        Return the age in only as an int
+        """
+        td = datetime.utcnow() - datetime.combine(self.birthdate, time(0))
+        return int(round(td.days/365.25))
 
     def is_unique(self):
         raise NotImplementedError("Error, subclass for patient document type must have a uniqueness check for its own instance.  %s" % (self.__class__()))

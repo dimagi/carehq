@@ -5,7 +5,7 @@ urlpatterns = patterns ('shineforms.views',
         name="clinical_information"),
 
 
-    url(r'^shine/new/bw_order/(?P<patient_guid>[0-9a-fA-Z]{25,32})$', 'new_bloodwork_order',
+    url(r'^shine/new/bw_order/(?P<case_id>[0-9a-fA-Z]{25,32})$', 'new_bloodwork_order',
         name="new_bloodwork_order"),
 
 

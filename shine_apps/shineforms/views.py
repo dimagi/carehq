@@ -105,10 +105,10 @@ def new_bloodwork_order(request, case_id):
     """
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
-    preloaders["case"] = {"patient_guid": patient_guid}
+    preloaders["case"] = {"case_id": case_id}
     playsettings = defaultdict(lambda: "")
-    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/create_order.xml")
-    playsettings["next"] = reverse('new_bloodwork_order_cb', kwargs={'case_id': case_id})
+    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/clinical_information.xml")
+    playsettings["next"] = reverse('shine_form_cb', kwargs={'case_id': case_id})
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
