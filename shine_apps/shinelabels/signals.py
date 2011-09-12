@@ -46,24 +46,15 @@ def generate_case_barcode(case_id):
     For a given case ID, we need to construct a barcode for the patient.
     """
     case = CommCareCase.get(case_id)
-    print case_id
     #we are assuming that case == patient and bloodwork here.
     label_data = {}
     label_data['barcode_data']=case.external_id # case_id?
-    print 'lastname'
     label_data['last_name']= case.last_name
-    print 'firstname'
     label_data['first_name']= case.first_name
-    print 'gender'
     label_data['gender']= case.sex.title()[0]
-    print 'age'
     label_data['age']= int(math.floor((datetime.utcnow().date() - case.dob).days / 365.25))
-    print 'external'
     label_data['external_id']= case.external_id
-    print "enroll"
-    print case.opened_on
     label_data['enroll_date']= case.opened_on.strftime('%d/%m/%Y')
-    print label_data
 
     return case_qr_zpl % label_data
 
