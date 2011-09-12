@@ -29,6 +29,7 @@ case_qr_zpl = """
 ^FO175,100^ABN,16,^FDSex: %(gender)s Age: %(age)s^FS
 ^FO175,120^ABN,16,^FDID: %(external_id)s^FS
 ^FO175,140^ABN,16,^FDAdmit Date: %(enroll_date)s^FS
+^PQ10,,,,
 ^XZ
 """
 
