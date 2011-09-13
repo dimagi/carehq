@@ -73,5 +73,6 @@ PACT_HIV_CLINIC_CHOICES = (
     ("lemuel_shattuck_hospital","Lemuel Shattuck Hospital"),
     ("st_elizabeths_medical_center","St. Elizabeth's Medical Center"),
     ("uphams_corner_health_center","Upham's Corner Health Center"),
+    ("boston_medical_center","Boston Medical Center"),
 
 )
