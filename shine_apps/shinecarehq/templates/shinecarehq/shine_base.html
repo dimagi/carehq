@@ -11,13 +11,11 @@
     <div id="menu" style="z-index:-1;">
      <ul>
         {% block nav_list %}
-         {% if request.is_provider %}
          <li>
              <span class="head_menu">
-               <a href="{% url dashboard %}">Dashboard</a>
+{#               <a href="{% url dashboard %}">Dashboard</a>#}
              </span>
          </li>
-         {% endif %}
          <li>
              <span class="head_menu">
              <a href="">News Feed</a>

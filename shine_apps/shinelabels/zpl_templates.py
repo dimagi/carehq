@@ -7,7 +7,7 @@ import gevent
 ZEBRA_SEND_TIMOUT=1500
 ZEBRA_RECEIVE_TIMEOUT=1500
 
-host = '192.168.0.85'
+host = '192.168.1.15'
 port = 9100
 
 #command = "^XA^FO10,10,^AO,30,20^FDFDTesting^S^FO10,30^BY3^BCN,100,Y,N,N^FDTesting^FS^XZ"
@@ -26,10 +26,10 @@ case_qr_zpl = """
 ^FO20,15^BQ,2,5,,^FDMA,%(barcode_data)s^FS
 ^FO175,20^A0,30,22^FD%(last_name)s,^FS
 ^FO175,50^A0,24,^FD%(first_name)s^FS
-^FO175,100^ABN,16,^FDSex: %(gender)s Age: %(age)s^FS
-^FO175,120^ABN,16,^FDID: %(external_id)s^FS
-^FO175,140^ABN,16,^FDAdmit Date: %(enroll_date)s^FS
-^PQ10,,,,
+^FO175,85^A0,22,^FDBlood Culture Study^FS
+^FO175,120^A0,18,^FDSex: %(gender)s Age: %(age)s^FS
+^FO175,140^A0,18,^FDAdmit Date: %(enroll_date)s^FS
+^ISR:EXERPROG.GRF,N
 ^XZ
 """
 
@@ -97,7 +97,7 @@ def qr_code():
     label_data['age']='999'
     label_data['external_id']=random.randint(10000,99999)
     label_data['enroll_date']= (datetime.utcnow() - timedelta(days=random.randint(1,500))).strftime('%m/%d/%Y')
-#    do_send(case_qr_zpl % label_data)
+    do_send(host, port, case_qr_zpl % label_data)
 
 def flat_code():
     label_data = {}
@@ -127,10 +127,11 @@ def set_host_config():
     """
     do_send(host, port, msg_text)
 
-#set_host_config()
-#qr_code()
-#flat_code()
-#host_status()
-#host_config()
+if __name__ == "__main__":
+    #set_host_config()
+    qr_code()
+    #flat_code()
+    #host_status()
+    #host_config()
 
 

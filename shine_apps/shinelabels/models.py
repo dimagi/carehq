@@ -67,37 +67,15 @@ class ZebraStatus(models.Model):
 #    U = battery low
 #    V = all errors
 
-    #unreachable by client
-#
-    ZEBRA_STATUS=(
-        ("paper_out","paper out"),
-        ("ribbon_out","ribbon out"),
-        ("printhead_overtemp","printhead over-temp"),
-        ("printhead_undertemp","printhead under-temp"),
-        ("head_open","head open"),
-        ("power_supply_overtemp", "power supply over-temp"),
-        ("ribbon-in_warning_dtm","ribbon-in warning (Direct Thermal Mode)"),
-        ("rewind_full","rewind full"),
-        ("cut_error","cut error"),
-        ("printer_paused","printer paused"),
-        ("pq_job_completed","PQ job completed"),
-        ("label_ready","label ready"),
-        ("head_element_out","head element out"),
-        ("power_on","power on"),
-        ("clean_printhead","clean printhead"),
-        ("media_low","media low"),
-        ("ribbon_low","ribbon low"),
-        ("replace_head","replace head"),
-        ("battery_low","battery low"),
-        ("all_errors","all errors"),
+    #Custom:
+    #heartbeat True (reachable) false (unreachable)
 
-            #this is a custom error
-        ('unreachable', 'Unreachable from printserver'),
-    )
-    printer = models.ForeignKey(ZebraPrinter)
+    printer = models.ForeignKey(ZebraPrinter, related_name='status_history')
     event_date = models.DateTimeField(db_index=True)
     status = models.CharField(max_length=32, db_index=True)
-    is_cleared = models.BooleanField(default=False, help_text="If there is something set on the machine, then that indicates a problem.  If the printer sets it 'cleared', this is true")
+    is_cleared = models.BooleanField(default=False, help_text="If there is something set on the machine, then that indicates a problem.  If the printer sets it 'cleared', this is true.  So True=OK, False=Bad, with the exception of successful print jobs, they set to false")
 
+    def __unicode__(self):
+        return "(%s) %s %s" % (self.event_date.strftime("%m/%d/%Y"), self.status, self.is_cleared)
 
 from signals import *

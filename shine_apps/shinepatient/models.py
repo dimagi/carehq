@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient
@@ -98,10 +99,13 @@ class ShinePatient(BasePatient):
         xmlns = submissions[-1]['xmlns']
         recv = submissions[-1]['received_on']
 
-        return "%s<br>%s" % (recv.strftime("%Y-%m-%d"), xmlns_display_map[xmlns])
+        return recv, xmlns_display_map[xmlns]
 
     @property
     def get_current_status(self):
+        """
+        Returns whether or not patient is active in the study (whether they've been discharged)
+        """
         case = self.latest_case
         submissions = [XFormInstance.get(x) for x in case.xform_ids]
         keys = xmlns_display_map.keys()
@@ -114,6 +118,19 @@ class ShinePatient(BasePatient):
         else:
             return "[Done]"
 
+    @property
+    def data_complete(self):
+        """
+        todo: Do an analysis of all the fields collected in all forms to determine if dataset is complete
+        """
+        return random.choice([True, False])
+
+    @property
+    def is_positive(self):
+        """
+        Determine positivity from submitted form TODO
+        """
+        return random.choice([True, False])
 
 
 

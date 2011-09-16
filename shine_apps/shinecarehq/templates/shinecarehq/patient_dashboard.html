@@ -14,9 +14,40 @@
 {% endblock %}
 <div class="container">
     <div class="span-24">
+        <h2>Bacteremia Dashboard</h2>
+
+
         <div class="span-6">
-            <h2>Patient List</h2>
+            <h3>Total Enrolled</h3>
+            <h3>{{ patients|length }}</h3>
         </div>
+        <div class="span-6">
+            <h3>Total Active</h3>
+            <h3>{{ active|length }}</h3>
+        </div>
+        <div class="span-6">
+            <h3>Total Completed</h3>
+            <h3>{{ data_completed|length }}</h3>
+        </div>
+        <div class="span-6 last">
+            <h3>% Positive</h3>
+            <h3>{{ pct_positive }}%</h3>
+        </div>
+
+        <hr>
+         <div class="span-6">
+            <h3>Enrolled Today</h3>
+            <h3>{{ enrolled_today|length }}</h3>
+        </div>
+
+         <div class="span-6">
+            <h3>Needing Contact</h3>
+            <h3>{{ only_enrolled|length }}</h3>
+        </div>
+
+
+
+
         <div class="prepend-15 span-3 last">
             <a href="{{ create_patient_url }}">New Patient</a>
         </div>
@@ -68,7 +99,7 @@
                     {{ patient.get_cd4_count }}
                 </td>
                 <td>
-                    {{ patient.get_last_action|safe }}
+                    {{ patient.get_last_action.0|date:"Y-m-d" }} {{ patient.get_last_action.1 }}
                 </td>
                 <td>
                     {% if patient.get_current_status == "[Done]" %}

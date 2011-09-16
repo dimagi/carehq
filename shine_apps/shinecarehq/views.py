@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from casexml.apps.case.models import CommCareCase
 from patient.models.patientmodels import BasePatient, Patient
+from datetime import datetime
 
 #
 #class MepiPatientListView(PatientListView):
@@ -30,7 +31,15 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
 
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
-    return render_to_response(template, {"patients": patients}, context_instance=RequestContext(request))
+    active= filter(lambda x: x.get_current_status != '[Done]', patients)
+    enrolled_today = filter(lambda x: x.get_last_action[1] == 'Enrollment' and x.get_last_action[0].date() == datetime.utcnow().date(), patients)
+    data_completed = filter(lambda x: x.data_complete, patients)
+
+    only_enrolled = filter(lambda x: x.get_last_action[1] == 'Enrollment', patients)
+
+    pct_positive = round(float(len(filter(lambda x: x.is_positive, patients))) / len(patients) * 100)
+
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
 
 @login_required()
 def all_cases(request, template="shinecarehq/all_cases.html"):
