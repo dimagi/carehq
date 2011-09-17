@@ -53,9 +53,11 @@ def do_add_provider_to_patient(request):
         provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
         role_class = Role.objects.get(name=constants.role_external_provider)
         putils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
-        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+        #return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+        resp.write("Success")
     except Exception, e:
         logging.error("Error getting args:" + str(e))
+        resp.write("Error")
         #return HttpResponse("Error: %s" % (e))
     return resp
 

@@ -11,7 +11,7 @@ import permissions
 from permissions.models import Role, PrincipalRoleRelation
 from tenant.models import Tenant
 
-def pt_add_provider(request, patient_guid, template="pactcarehq/add_pact_provider_to_patient.html"):
+def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact_provider_to_patient.html"):
     """
     Add a provider to a patient's careteam by linking a permission to the patient/actor pair
     """
@@ -64,3 +64,28 @@ def view_add_pact_provider(request, template="pactcarehq/new_pact_provider.html"
     context['provider_actors'] = actor_docs
     return render_to_response(template, context_instance=context)
 
+
+
+def edit_provider(request, provider_guid, template="pactcarehq/edit_provider.html"):
+    context = RequestContext(request)
+
+    readonly = request.GET.get('readonly', False)
+    actor_doc = ProviderActor.view('actorpermission/all_actors', key=provider_guid, include_docs=True).first()
+    prrs = PrincipalRoleRelation.objects.filter(actor__id=actor_doc.actor_uuid)
+    context['perms'] = prrs
+
+    if readonly:
+        context['provider'] = actor_doc
+    else:
+        form = ProviderForm(instance=actor_doc)
+        if request.method == "POST":
+            form = ProviderForm(instance=actor_doc,data=request.POST)
+            if form.is_valid():
+                provider_actor = form.save(commit=False)
+                provider_actor.save(Tenant.objects.get(name="PACT"))
+                return HttpResponseRedirect(reverse('pact_providers'))
+            else:
+                context['form'] = form
+        else:
+            context['form'] = form
+    return render_to_response(template, context_instance=context)

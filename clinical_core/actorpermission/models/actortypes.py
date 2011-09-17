@@ -46,12 +46,11 @@ class BaseActorDocument(Document):
 
 
     def save(self, tenant, *args, **kwargs):
-        if self.actor_uuid == None:
+        if self.actor_uuid is None:
         #this is a new instance
         #first check global uniqueness
         #            if not self.is_unique():
         #                raise DuplicateIdentifierException()
-
             django_actor = Actor()
             actor_uuid = uuid.uuid4().hex
             #doc_id = uuid.uuid4().hex

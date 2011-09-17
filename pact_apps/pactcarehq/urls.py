@@ -62,17 +62,15 @@ urlpatterns = patterns ('',
     url(r'^patient/phone/rm$', 'pactcarehq.views.remove_phone', name='remove_phone'),
     url(r'^patient/address/rm$', 'pactcarehq.views.remove_address', name='remove_address'),
     url(r'^patient/careteam/provider/rm$', 'pactcarehq.views.api.rm_provider_from_patient', name='rm_provider_from_patient'),
-    url(r'^patient/careteam/provider/add$', 'pactcarehq.views.api.do_add_provider_to_patient', name='add_provider_to_patient'),
+    url(r'^patient/careteam/provider/add$', 'pactcarehq.views.api.do_add_provider_to_patient', name='link_provider_to_patient'),
     url(r'^pact/provider/rm$', 'pactcarehq.views.api.rm_provider', name='rm_pact_provider'),
 
-
-
+    url(r'^pact/provider/(?P<provider_guid>[0-9a-fA-Z]{25,32})/edit$', 'pactcarehq.views.providers.edit_provider', name='pact_edit_provider'),
 
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
-
     url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
-    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_add_provider', name='pt_add_provider'),
+    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),

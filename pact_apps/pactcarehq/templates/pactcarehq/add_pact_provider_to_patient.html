@@ -47,13 +47,17 @@
                         'actor_uuid': prov_actor_id,
             };
 
-            url = "{% url add_provider_to_patient %}";
+            url = "{% url link_provider_to_patient %}";
             send_xhr = $.ajax({
                     "type": "POST",
                     "url":  url,
                     "data":payload,
                     "success": function(data) {
-                        location.reload();
+                        if (data.responseText == "Success") {
+                            alert ("Provider added to patient")
+                        } else {
+                            alert ("An error occurred in linking provider to the patient.")
+                        }
                     }, //end success
                     "error": function(data) {
                         $('body').replaceWith(data.responseText);
@@ -72,7 +76,7 @@
                 <table id="patient-table" class="tablesorter">
                     <thead>
                     <tr>
-                    <th class="span-1"></th>
+                    <th class="span-3"></th>
                     <th class="span-4">Name</th>
                     <th class="span-4">Title</th>
                     <th class="span-4">Email</th>
@@ -83,7 +87,8 @@
                     <tbody>
                     {% for prov in all_providers %}
                         <tr>
-                            <td><button onclick="link_provider_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}')">Add</button></td>
+                            <td><button onclick="link_provider_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}')">Add</button>&nbsp;
+                            <a href="{% url pact_edit_provider prov.get_id %}?edit">Edit</a></td>
                             <td>{{ prov.name }}</td>
                             <td>{{ prov.title }}</td>
                             <td>{{ prov.email }}</td>

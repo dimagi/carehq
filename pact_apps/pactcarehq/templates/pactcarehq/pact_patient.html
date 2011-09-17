@@ -104,6 +104,7 @@
             $.get(form_url, function(data) {
                 var context=$(data);
                 context.find('save attribute').click(function () {});
+                console.log(data);
                 $("#" + target_div).html(data).show("blind", {}, 300);
                 /* Override the submit handler to the ajax_form. */
                 $("#id_" + form_name).submit(function(event) {
@@ -406,7 +407,7 @@
             &nbsp;
             <div style="float:right;">
                 <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                   href="{% url pt_add_provider patient_doc.get_id %}">
+                   href="{% url pt_new_or_link_provider patient_doc.get_id %}">
                     <span class="ui-icon ui-icon-circle-plus"></span>
                     Add Provider </a>
             </div>

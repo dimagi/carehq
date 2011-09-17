@@ -1,0 +1,57 @@
+{%  extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+
+
+    {% if form %}
+        <form id="newprovider_form" action="" method="POST" class="uniForm">
+            {% csrf_token %}
+            <table>
+                {% uni_form form form.helper %}
+            </table>
+
+            <div style="float:right;">
+                <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
+            </div>
+        </form>
+    {% else %}
+        <table>
+        <tr>
+            <td>Name</td>
+            <td>{{ provider.name }}</td>
+        </tr>
+        <tr>
+            <td>Title</td>
+            <td>{{ provider.title }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{ provider.email }}</td>
+        </tr>
+        <tr>
+            <td>Phone Number</td>
+            <td>{{ provider.phone_number }}</td>
+        </tr>
+        <tr>
+            <td>Facility Name</td>
+            <td>{{ provider.facility_name }}</td>
+        </tr>
+        <tr>
+            <td>Facility Adress</td>
+            <td>{{ provider.facility_address }}</td>
+        </tr>
+        </table>
+    {% endif %}
+    <h2>Permissions</h2>
+    <ul>
+    {% for perm in perms %}
+    <li>Has role: {{ perm.role.display }}
+        {% if perm.content %}
+            for {{ perm.content }}
+        {% endif %}
+    </li>
+    {% endfor %}
+    </ul>
+
+{% endblock content %}
