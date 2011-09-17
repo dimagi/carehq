@@ -67,12 +67,11 @@ class BaseActorDocument(Document):
             django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
 
             try:
-                super(BaseActorDocument, self).save(*args, **kwargs)
                 django_actor.save()
                 ta = TenantActor(actor=django_actor, tenant=tenant)
                 ta.save()
+                super(BaseActorDocument, self).save(*args, **kwargs)
                 self._django_actor = django_actor
-
             except Exception, ex:
                 logging.error("Error creating actor: %s" % ex)
                 raise ex
