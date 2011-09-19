@@ -1,0 +1,71 @@
+{% extends base_template %}
+{% load i18n %}
+{% load patient_tags %}
+
+{% block content %}
+    {% block extrahead %}
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
+              media="print, projection, screen"/>
+        <script type="text/javascript" charset="utf-8">
+            $().ready(function() {
+                $("#patient-table").tablesorter({sortList: [
+                    [0,0]
+                ],widgets:['zebra']});
+            });
+        </script>
+    {% endblock %}
+    <div class="container">
+        <h2>Clinical Progress</h2>
+        <hr>
+        <table id="patient-table" class="tablesorter span-24 last">
+            <thead>
+            <tr>
+                <th>{% trans "Surname" %}</th>
+                <th>{% trans "Given Name" %}</th>
+                <th>{% trans "Enrollment" %}</th>
+                <th>{% trans "Clinical Info" %}</th>
+                <th>{% trans "Follow Up" %}</th>
+                <th>{% trans "Lab" %}</th>
+                <th>{% trans "Emergency Lab" %}</th>
+                <th>{% trans "Biochemical" %}</th>
+                <th>{% trans "Speciation" %}</th>
+                <th>{% trans "Sensitivity" %}</th>
+                <th>{% trans "Outcome" %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for patient in patients %}
+                <tr>
+
+                    <td>
+                        {% if patient.last_name %}
+                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
+                        {% else %}
+                            wtf
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if patient.first_name %}
+                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
+                        {% endif %}
+                    </td>
+                    {% for status in patient.get_completed_tally %}
+                        <td>
+                            {% if status.1.0  %}
+{#                                {{ status.1.1.received_on|date}}#}
+                                <img src="{{ STATIC_URL }}carehq/img/icons/check.jpg">
+
+                            {% else %}
+                                ---
+                            {% endif %}
+
+                        </td>
+
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

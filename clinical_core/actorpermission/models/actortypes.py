@@ -45,14 +45,12 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             self._django_actor = dja
         return self._django_actor
 
-
-    def save(self, tenant, user=None, *args, **kwargs):
-        if self.actor_uuid == None:
+    def save(self, tenant, *args, **kwargs):
+        if self.actor_uuid is None:
         #this is a new instance
         #first check global uniqueness
         #            if not self.is_unique():
         #                raise DuplicateIdentifierException()
-
             django_actor = Actor()
             actor_uuid = uuid.uuid4().hex
             #doc_id = uuid.uuid4().hex
@@ -65,33 +63,21 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             self.actor_uuid = actor_uuid
             django_actor.id = actor_uuid
             django_actor.doc_id=doc_id
-            if user != None:
-                django_actor.user = user
 
             django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
 
             try:
-                super(BaseActorDocument, self).save(*args, **kwargs)
                 django_actor.save()
                 ta = TenantActor(actor=django_actor, tenant=tenant)
                 ta.save()
+                super(BaseActorDocument, self).save(*args, **kwargs)
                 self._django_actor = django_actor
-
             except Exception, ex:
                 logging.error("Error creating actor: %s" % ex)
                 raise ex
         else:
             #it's not new
             super(BaseActorDocument, self).save(*args, **kwargs)
-
-
-        #Invalidate the cache entry of this instance
-        cache.delete('%s_actordoc' % (self._id))
-        try:
-            couchjson = simplejson.dumps(self.to_json())
-            cache.set('%s_actordoc' % (self._id), couchjson)
-        except Exception, ex:
-            logging.error("Error serializing actor document object for cache (%s): %s" % (self._id, ex))
 
     class Meta:
         app_label = 'actorpermission'

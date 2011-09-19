@@ -76,7 +76,7 @@
     {% endblock patient_badge %}
 
     {% block patient-tab-controller %}
-            <li><a href="#patient-casenews-tab">{% trans "Case History" %}</a></li>
+            <li><a href="#patient-casenews-tab">{% trans "Activity History" %}</a></li>
             <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
             <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
             <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
@@ -153,7 +153,7 @@
 
 
         <div id="patient-submissions-tab">
-            {% if submit_arr %}
+            {% if submissions %}
                 <table>
                     <thead>
                     <tr>
@@ -162,11 +162,11 @@
                         <th class="span-4">Form</th>
                     </tr>
                     </thead>
-                    {% for submission in submit_arr %}
+                    {% for submit in submissions %}
                         <tr>
-                            <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
-                            <td> {{ submission.2 }}</td>
-                            <td> {{ submission.3 }}</td>
+                            <td><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date }}</a></td>
+                            <td> {{ submit.form.Meta.username }}</td>
+                            <td> {{ submit.xmlns }}</td>
                         </tr>
                     {% endfor %}
                 </table>

@@ -18,7 +18,7 @@ from django.core.urlresolvers import reverse
 def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
     provider_type = request.GET.get('type', None)
 
-    if provider_type == None:
+    if provider_type  is None:
         raise Http404
     elif provider_type == 'chw':
         doc_class = CHWActor
@@ -29,13 +29,13 @@ def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
         doc_class = ProviderActor
         role_class = Role.objects.get(name=constants.role_external_provider)
 
+    tenant = Tenant.objects.get(id=tenant_id)
     form_class = get_actor_form(doc_class)
     context = RequestContext(request)
-    tenant = Tenant.objects.get(id=tenant_id)
     context['tenant'] = tenant
 
     if request.method == 'POST':
-        form = form_class(data=request.POST)
+        form = form_class(tenant, data=request.POST)
         if form.is_valid():
             actor_instance = form.save(commit=False)
             actor_instance.save(tenant)
@@ -49,7 +49,7 @@ def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
             pass
 
     else:
-        form = form_class()
+        form = form_class(tenant)
     context['form'] = form
     return render_to_response(template, context)
 

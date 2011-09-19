@@ -41,7 +41,7 @@
         </div>
 
          <div class="span-6">
-            <h3>Needing Contact</h3>
+            <h3>Needing Follow Up</h3>
             <h3>{{ only_enrolled|length }}</h3>
         </div>
 
@@ -60,10 +60,10 @@
             <th>{% trans "Given Name" %}</th>
             <th>{% trans "Sex" %}</th>
             <th>{% trans "Age" %}</th>
+            <th>{% trans "Location" %}</th>
             <th>{% trans "Enrolled" %}</th>
-            <th>{% trans "HIV Tested" %}</th>
-            <th>{% trans "CD4 Count" %}</th>
-            <th>{% trans "Last Activity" %}</th>
+            <th>{% trans "Last Action" %}</th>
+            <th>{% trans "Last Date" %}</th>
             <th>{% trans "Current Status" %}</th>
         </tr>
     </thead>
@@ -74,14 +74,14 @@
 
                 <td>
                     {% if patient.last_name %}
-                        {{ patient.last_name|title }}
+                        <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
                     {% else %}
                         wtf
                     {% endif %}
                 </td>
                 <td>
                     {% if patient.first_name %}
-                        {{ patient.first_name|title }}
+                        <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
                     {% endif %}
                 </td>
                 <td>
@@ -89,23 +89,28 @@
                 </td>
                 <td>
                     {{ patient.age_int }}
-
+                </td>
+                <td>
+                    Ward {{ patient.get_current_ward }} Bed {{ patient.get_current_bed }}
                 </td>
                 <td>{{ patient.enrollment_date|date:"Y-m-d" }}</td>
+
+
                 <td>
-                    {{ patient.get_hiv_status|title }}
+                    {{ patient.get_last_action.1 }}
                 </td>
-                <td>
-                    {{ patient.get_cd4_count }}
-                </td>
-                <td>
-                    {{ patient.get_last_action.0|date:"Y-m-d" }} {{ patient.get_last_action.1 }}
+            <td>
+                    {{ patient.get_last_action.0|date:"Y-m-d" }}
                 </td>
                 <td>
                     {% if patient.get_current_status == "[Done]" %}
                         <img src="{{ STATIC_URL }}carehq/img/icons/check.jpg"> Completed
                     {% else %}
-                        {{ patient.get_current_status }}
+                        {% if patient.get_current_status == "1/9" %}
+                            <div class="error">Need Follow Up</div>
+                        {% else %}
+                            {{ patient.get_current_status }}
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

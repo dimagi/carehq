@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from casexml.apps.case.models import CommCareCase
+from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient, Patient
 from datetime import datetime
 
@@ -25,12 +26,41 @@ def my_cases(request, template="shinecarehq/my_cases.html"):
     )
 
 @login_required()
+def labs_dashboard(request, template="shinecarehq/labs_dashboard.html"):
+    """
+    Full case list for dashboard view
+    """
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
+
+@login_required()
+def hiv_dashboard(request, template="shinecarehq/hiv_dashboard.html"):
+    """
+    Full case list for dashboard view
+    """
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
+
+@login_required()
+def clinical_dashboard(request, template="shinecarehq/clinical_dashboard.html"):
+    """
+    Full case list for dashboard view
+    """
+
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
+
+@login_required()
 def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
     Full case list for dashboard view
     """
 
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+
+    for pt in patients:
+        pt.cache_clinical_case()
+
     active= filter(lambda x: x.get_current_status != '[Done]', patients)
     enrolled_today = filter(lambda x: x.get_last_action[1] == 'Enrollment' and x.get_last_action[0].date() == datetime.utcnow().date(), patients)
     data_completed = filter(lambda x: x.data_complete, patients)
@@ -70,3 +100,12 @@ def view_case(request, case_id, template="shinecarehq/mepi_case.html"):
                                 context_instance=RequestContext(request)
     )
 
+@login_required
+def show_submission(request, doc_id, template_name="shinecarehq/view_mepi_submission.html"):
+    context = RequestContext(request)
+    xform = XFormInstance.get(doc_id)
+    form_data = xform['form']
+    #context['form_type'] = form_xmlns_to_names.get(xform.xmlns, "Unknown")
+    context['form_type'] = xform.xmlns
+    context['xform'] = xform
+    return render_to_response(template_name, context_instance=context)

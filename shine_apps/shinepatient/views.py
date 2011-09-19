@@ -23,9 +23,35 @@ from shinepatient.models import ShinePatient
 from casexml.apps.case.models import CommCareCase
 import json
 from couchdbkit.resource import ResourceNotFound
-from patient.views import PatientListView
+from patient.views import PatientListView, PatientSingleView
 from slidesview.models import ImageAttachment
 from touchforms.formplayer.views import play_remote, get_remote_instance
+
+
+class MepiPatientSingleView(PatientSingleView):
+    def get_context_data(self, **kwargs):
+        """
+        Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
+        """
+
+        request = self.request
+        patient_guid = self.kwargs['patient_guid']
+        patient_edit = request.GET.get('edit_patient', None)
+
+        context = super(MepiPatientSingleView, self).get_context_data(**kwargs)
+        pdoc = context['patient_doc']
+        dj_patient = context['patient_django']
+#        context['patient_list_url'] = reverse('my_patients')
+        context['patient_edit'] = patient_edit
+        if patient_edit:
+            context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
+
+        submissions = [XFormInstance.get(x) for x in pdoc.latest_case.xform_ids]
+        context['submissions'] = submissions
+
+        return context
+        #return render_to_response(template_name, context_instance=context)
+
 
 
 @login_required
