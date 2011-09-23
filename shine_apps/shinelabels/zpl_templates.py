@@ -7,7 +7,7 @@ import gevent
 ZEBRA_SEND_TIMOUT=1500
 ZEBRA_RECEIVE_TIMEOUT=1500
 
-host = '192.168.1.15'
+host = '192.168.7.144'
 port = 9100
 
 #command = "^XA^FO10,10,^AO,30,20^FDFDTesting^S^FO10,30^BY3^BCN,100,Y,N,N^FDTesting^FS^XZ"
@@ -29,17 +29,17 @@ case_qr_zpl = """
 ^FO175,85^A0,22,^FDBlood Culture Study^FS
 ^FO175,120^A0,18,^FDSex: %(gender)s Age: %(age)s^FS
 ^FO175,140^A0,18,^FDAdmit Date: %(enroll_date)s^FS
-^ISR:EXERPROG.GRF,N
+^PQ10,,,,
 ^XZ
 """
 
 #Lab 1D barcode printouts with simplified outputs.
-lab_1d_zpl = """
+lab_datamatrix_zpl = """
 ^XA
 ^PW416
 ^FO20,15^A0,24,^FD%(last_name)s, %(first_name)s^FS
 ^FO20,45
-^BY1^BCN,100,Y,N,N
+^BY1,,1^BXN,3,200,,,4
 ^FD%(barcode_data)s^FS
 ^ISR:EXERPROG.GRF,N
 ^XZ
@@ -99,14 +99,13 @@ def qr_code():
     label_data['enroll_date']= (datetime.utcnow() - timedelta(days=random.randint(1,500))).strftime('%m/%d/%Y')
     do_send(host, port, case_qr_zpl % label_data)
 
-def flat_code():
+def datamatrix_code():
     label_data = {}
-    label_data['barcode_data']='20SZRT3OAN96R6IGOEKULK0XO'
+    label_data['barcode_data']=uuid.uuid4().hex
     #print label_data['barcode_data']
     label_data['last_name']='Preziosi'
     label_data['first_name']='Mike'
-    do_send(host, port,lab_1d_zpl % label_data)
-
+    do_send(host, port,lab_datamatrix_zpl % label_data)
 
 
 def get_host_status():
@@ -129,9 +128,10 @@ def set_host_config():
 
 if __name__ == "__main__":
     #set_host_config()
-    qr_code()
-    #flat_code()
+    #qr_code()
+    #datamatrix_code()
     #host_status()
     #host_config()
+    pass
 
 
