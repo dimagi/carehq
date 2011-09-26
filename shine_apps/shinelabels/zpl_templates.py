@@ -39,11 +39,13 @@ lab_datamatrix_zpl = """
 ^PW416
 ^FO20,15^A0,24,^FD%(last_name)s, %(first_name)s^FS
 ^FO20,45
-^BY1,,1^BXN,3,200,,,4
+^BY1,,1^BXN,3,200,,,4,,2
 ^FD%(barcode_data)s^FS
 ^ISR:EXERPROG.GRF,N
 ^XZ
 """
+#rectangular data matrix baby:
+#https://km.zebra.com/kb/index?page=content&id=SO8047&actp=LIST
 #^BY3^BCN,100,Y,Y,N,A
 
 #########################################
@@ -129,7 +131,7 @@ def set_host_config():
 if __name__ == "__main__":
     #set_host_config()
     #qr_code()
-    #datamatrix_code()
+    datamatrix_code()
     #host_status()
     #host_config()
     pass
