@@ -131,7 +131,7 @@ def set_host_config():
 if __name__ == "__main__":
     #set_host_config()
     #qr_code()
-    datamatrix_code()
+    #datamatrix_code()
     #host_status()
     #host_config()
     pass
