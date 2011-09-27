@@ -122,12 +122,12 @@ class ShinePatienteTests(TestCase):
         do_submit(final_xml, attachments_list=[('consent.jpg', consent_image)])
 
         shinept = ShinePatient.view('shinepatient/patient_cases_all', key=pdict['case_id'], include_docs=True).first()
-        self.assertEqual(shinept['external_id'], pdict['external_id'])
+        self.assertEqual(shinept['external_id'], str(pdict['external_id']))
 
         casedoc = CommCareCase.get(pdict['case_id'])
         self.assertEqual(casedoc['first_name'], pdict['first_name'])
         self.assertEqual(casedoc['last_name'], pdict['last_name'])
-        self.assertEqual(casedoc['external_id'], pdict['external_id'])
+        self.assertEqual(casedoc['external_id'], str(pdict['external_id']))
 
         self.patient = shinept
         self.casedoc = casedoc

@@ -30,7 +30,7 @@ patient_registration_xml = """
     </create>
     <update>
       <first_name>%(first_name)s</first_name>
-      <last_name>%(first_name)s</last_name>
+      <last_name>%(last_name)s</last_name>
       <sex>male</sex>
       <dob>1980-09-06</dob>
       <barcode_one_aerobic>6001240206256</barcode_one_aerobic>
