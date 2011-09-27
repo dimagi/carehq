@@ -25,6 +25,12 @@ def my_cases(request, template="shinecarehq/my_cases.html"):
                               context_instance=RequestContext(request)
     )
 
+
+@login_required()
+def emergency_lab_dashboard(request, template="shinecarehq/emergency_lab_dashboard.html"):
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    return render_to_response(template, locals(), context_instance=RequestContext(request))
+
 @login_required()
 def labs_dashboard(request, template="shinecarehq/labs_dashboard.html"):
     """

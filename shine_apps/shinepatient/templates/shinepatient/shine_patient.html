@@ -1,5 +1,7 @@
 {% extends "patient/base_patient.html" %}
 {% load shinepatient_tags %}
+{% load shineforms_tags %}
+{% load xform_tags %}
 {% load i18n %}
 {% block extrahead %}
     {{ block.super }}
@@ -7,10 +9,24 @@
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+
+    <script>
+    //Accordion for activity history
+	$(function() {
+		$( "#activity_history_accordion" ).accordion({
+                    header: "> div > h3",
+                    navigation:true,
+                    autoHeight:false,
+        }
+        );
+	});
+	</script>
+
+
     <script type="text/javascript" charset="utf-8">
         $().ready(function(){
-            $("#pt_{{ patient.get_id }}_case_table").addClass("tablesorter");
-            $("#pt_{{ patient.get_id }}_case_table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+            $("#pt_{{ patient_doc.get_id }}_case_table").addClass("tablesorter");
+            $("#pt_{{ patient_doc.get_id }}_case_table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
         });
     </script>
     <script>
@@ -53,11 +69,10 @@
         {% block hat_actions %}
             {{ block.super }}
             <div style="float:right;">
-                    <a
-                            class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                            href="{% url new_bloodwork_order patient_doc.get_id %}">
-                        <span class="ui-icon ui-icon-circle-plus"></span>
-                        {% trans "Create Bloodwork Order" %}</a>
+{#                    <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"#}
+{#                            href="{% url new_bloodwork_order patient_doc.get_id %}">#}
+{#                        <span class="ui-icon ui-icon-circle-plus"></span>#}
+{#                        {% trans "Create Bloodwork Order" %}</a>#}
             </div>
     {% endblock %}
     {% block patient_badge %}
@@ -68,6 +83,13 @@
             <dd>{{ patient_doc.get_cd4_count }}</dd>
         <dt>{% trans "HIV Status" %}</dt>
             <dd>{{ patient_doc.get_hiv_status }}</dd>
+
+
+        <dt>{% trans "Blood Culture Status" %}</dt>
+            <dd>Some Status (Positive/Negative) Microlab, etc</dd>
+
+        <dt>{% trans "Status" %}</dt>
+        <dd>Inpatient | Discharged | Deceased</dd>
 
         <dt>{% trans "Ward" %}</dt>
         <dd>{{ patient_doc.get_current_ward }}</dd>
@@ -83,7 +105,31 @@
     {% endblock patient-tab-controller %}
     {% block patient-tab-container %}
         <div id="patient-casenews-tab" class="ui-tabs-hide">
-            Blood order case news display
+
+            <div id="activity_history_accordion">
+            {% for act in patient_doc.get_activity_history %}
+                <div>
+                    <h3><a href="#">
+
+                        {% if act.2 %}
+                            <strong>{{ act.0 }} {{ act.2.received_on }}</strong>
+                        {% else %}
+                            <em>{{ act.0 }}</em>
+                        {% endif %}
+
+                    </a></h3>
+                    <div>
+                        {% if act.2 %}
+                            {% render_submission_fragment act.1 act.2 %}
+                        {% else %}
+                            No Data
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
         </div>
         <div id="patient-info-tab" class="ui-tabs-hide">
             <div id="patienteditform" class="editctrl"></div>

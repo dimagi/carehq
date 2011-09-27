@@ -4,8 +4,20 @@ from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient
 from couchdbkit.schema.properties import StringProperty, StringListProperty
+from shineforms.lab_utils import merge_labs
 
 
+xmlns_sequence = [
+   'http://shine.commcarehq.org/patient/reg',
+   'http://shine.commcarehq.org/questionnaire/clinical',
+   'http://shine.commcarehq.org/questionnaire/followup',
+   'http://shine.commcarehq.org/questionnaire/labdata',
+   'http://shine.commcarehq.org/lab/one',
+   'http://shine.commcarehq.org/lab/two',
+   'http://shine.commcarehq.org/lab/three',
+   'http://shine.commcarehq.org/lab/four',
+   'http://shine.commcarehq.org/questionnaire/outcome',
+]
 
 form_sequence = [
     'Enrollment',
@@ -102,7 +114,7 @@ class ShinePatient(BasePatient):
                 if s['form'].has_key('hiv'):
                     hiv = s['form']['hiv']
                     return hiv
-        return cd4
+        return hiv
 
     @property
     def get_current_status(self):
@@ -154,6 +166,35 @@ class ShinePatient(BasePatient):
         return ret
 
 
+    def get_activity_history(self):
+        """
+        For patient Activity History Tab
+        For all forms possible in system, fill it in as a section in the activity tab
+        """
+        case = self.latest_case
+        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        activities_dict = dict()
+        all_xmlns = xmlns_display_map.keys()
+
+        for s in submissions:
+            xmlns = s['xmlns']
+
+            if xmlns in all_xmlns:
+                all_xmlns.remove(xmlns)
+
+            activity_arr = activities_dict.get(xmlns, [])
+            activity_arr.append(s)
+            activities_dict[xmlns] = activity_arr
+        for xmlns in all_xmlns:
+            #fill in the remainder of unseen xmlns as []
+            activity_arr = activities_dict.get(xmlns, [])
+            activities_dict[xmlns] = activity_arr
+
+        ret = []
+        for x in xmlns_sequence:
+            ret.append((xmlns_display_map[x], x, activities_dict[x]))
+
+        return ret
 
     @property
     def get_current_status(self):
@@ -187,6 +228,41 @@ class ShinePatient(BasePatient):
         return random.choice([True, False])
 
 
+    def _do_get_emergency_lab_submission(self):
+        if hasattr(self, '_elab'):
+            return self._elab
+        case = self.latest_case
+        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        elab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/lab/one", submissions)
+        #hack: assume to be one here
+        sorted_labs = sorted(elab_submissions, key=lambda x: x.received_on, reverse=True)
+
+        if len(sorted_labs) == 0:
+            return None
+        lab = sorted_labs[0]
+        self._elab = lab
+        return lab
+
+
+    @property
+    def get_emergency_lab_submit(self):
+        return self._do_get_emergency_lab_submission()
+
+
+    @property
+    def get_elab_bottle_data(self):
+        lab = self._do_get_emergency_lab_submission()
+        if lab is None:
+            return "[No Data]"
+
+        if lab.form['positive_bottles'] == '':
+            return []
+        positives = lab.form['positive_bottles'].split(' ')
+        return positives
+        
+
+
+
 
     @property
     def get_lab_data(self):
@@ -195,70 +271,11 @@ class ShinePatient(BasePatient):
         submissions = [XFormInstance.get(x) for x in case.xform_ids]
 
         lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
-        sorted_labs = sorted(lab_submissions, key=lambda x: x.received_on)
-        hiv = ""
-        mal_rapid = "" #rapid
-        mal_smear = "" #smear
-        prophylaxis = ""
-        afb_smear = ""
-        bloodwbc =dict()
-        xray = ""
-        hivfollowup = dict()
-        bloodcts = dict()
-
-        basic_chemistry = dict()
-        lft = dict()
-
-        def fill_sub_dict(submission, key):
-            ret_dict = dict()
-            for k,v in submission.form[key].items():
-                if k not in ret_dict:
-                    ret_dict[k] = ''
-                stored_val = ret_dict[k]
-                if stored_val == "" and v != "":
-                    ret_dict[k] = v
-            return ret_dict
 
 
+        return merge_labs(lab_submissions)
 
-
-        for sub in lab_submissions:
-            if sub.form['hiv'] != "":
-                hiv = sub.form['hiv']
-            if sub.form['rapid'] != "":
-                mal_rapid = sub.form['rapid']
-            if sub.form['smear'] != "":
-                mal_smear = sub.form['smear']
-            if sub.form['prophylaxis'] != "":
-                prophylaxis = sub.form['prophylaxis']
-            if sub.form['afb_smear'] != "":
-                afb_smear = sub.form['afb_smear']
-            if sub.form['xray'] != "":
-                if sub.form['xray'] == 'other':
-                    if 'xrayother' in sub.form:
-                        xray = "Other: %s" % sub.form['xrayother']
-                    else:
-                        xray='other'
-                else:
-                    xray = sub.form['xray']
-
-            if 'bloodwbc' in sub.form:
-                bloodwbc = fill_sub_dict(sub, 'bloodwbc')
-            if 'hivfollowup' in sub.form:
-                hivfollowup = fill_sub_dict(sub, 'hivfollowup')
-            if 'bloodcts' in sub.form:
-                bloodcts = fill_sub_dict(sub, 'bloodcts')
-
-        return [
-            ('hiv', { 'hiv test': hiv, 'followup': hivfollowup}),
-            ('malaria', {'rapid': mal_rapid, 'smear': mal_smear}),
-            ('prophylaxis', prophylaxis),
-            ('afb_smear', afb_smear),
-            ('xray', xray),
-            ('bloodwbc', bloodwbc),
-            ('hemogram', bloodcts),
-            ('lft', dict()),
-        ]
+        
 
 
 

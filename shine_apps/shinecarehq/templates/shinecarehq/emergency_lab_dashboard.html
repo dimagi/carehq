@@ -1,0 +1,76 @@
+{% extends base_template %}
+{% load i18n %}
+{% load patient_tags %}
+
+{% block content %}
+    {% block extrahead %}
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
+              media="print, projection, screen"/>
+        <script type="text/javascript" charset="utf-8">
+            $().ready(function() {
+                $("#patient-table").tablesorter({sortList: [
+                    [0,0]
+                ],widgets:['zebra']});
+            });
+        </script>
+    {% endblock %}
+    <div class="container">
+        <h2>Emergency Lab Culture Results</h2>
+        <hr>
+        <table id="patient-table" class="tablesorter span-24 last">
+            <thead>
+            <tr>
+                <th>{% trans "Surname" %}</th>
+                <th>{% trans "Given Name" %}</th>
+                <th>{% trans "Enrollment Date" %}</th>
+                <th>{% trans "Test Date" %}</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for patient in patients %}
+                <tr>
+
+                    <td>
+                        {% if patient.last_name %}
+                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
+                        {% else %}
+                            wtf
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if patient.first_name %}
+                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ patient.enrollment_date|date:"Y-m-d" }}
+                    </td>
+                        {% if patient.get_emergency_lab_submit != None %}
+                            <td>
+                                {{ patient.get_emergency_lab_submit.received_on|date:"Y-m-d" }}
+                            </td>
+
+                        {% else %}
+                            <td>N/A</td>
+
+                        {% endif %}
+
+
+                    {% if patient.get_elab_bottle_data == "[No Data]" %}
+                    {% else %}
+                    {% for bottle in patient.get_elab_bottle_data %}
+                        <td>{{ bottle }}</td>
+                    {% endfor %}
+                {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

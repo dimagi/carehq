@@ -29,6 +29,8 @@ from touchforms.formplayer.views import play_remote, get_remote_instance
 
 
 class MepiPatientSingleView(PatientSingleView):
+    patient_list_url = '/' #hardcoded from urls, because you can't do a reverse due to the urls not being bootstrapped yet.
+
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
