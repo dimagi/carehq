@@ -1,5 +1,4 @@
 from couchdbkit.exceptions import ResourceNotFound
-from devserver.modules.profile import devserver_profile
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
@@ -71,7 +70,6 @@ def recent_activity(request, template="shinecarehq/recent_activity.html"):
 
 
 @login_required()
-@devserver_profile(follow=[render_to_response, filter])
 def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
     Full case list for dashboard view
