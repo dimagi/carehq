@@ -83,7 +83,6 @@ def new_mepi_interaction(request, case_id, interaction):
 
 
     xform_url = form_url_map.get(interaction, None)
-    print interaction
     if xform_url is None:
         raise Http404
     return _prep_form(request, case_id,
@@ -97,7 +96,6 @@ def shine_form_cb(request, case_id):
     if formsession:
         instance_xml = get_remote_instance(request, formsession).content
         resp = spoof_submission(reverse("receiver_post"), instance_xml, hqsubmission=False)
-        print resp
     pts = ShinePatient.view('shinepatient/patient_cases_all', key=case_id, include_docs=True).all()
     if len(pts) == 0:
         raise Http404

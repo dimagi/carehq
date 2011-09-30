@@ -29,6 +29,7 @@ case_qr_zpl = """
 ^FO175,85^A0,22,^FDBlood Culture Study^FS
 ^FO175,120^A0,18,^FDSex: %(gender)s Age: %(age)s^FS
 ^FO175,140^A0,18,^FDAdmit Date: %(enroll_date)s^FS
+^PQ10,,,,
 ^XZ
 """
 
