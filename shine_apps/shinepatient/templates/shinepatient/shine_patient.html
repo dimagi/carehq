@@ -123,9 +123,9 @@
                             {% render_submission_fragment act.1 act.2 %}
                         {% else %}
                             <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                               href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}">
+                               href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?mode=fullscreen">
                                 <span class="ui-icon ui-icon-circle-plus"></span>
-                                {% trans "Create" %}  {{ act.0 }}
+                                {% trans "Enter" %}  {{ act.0 }}
                             </a>
                         {% endif %}
                     </div>

@@ -49,8 +49,16 @@ def _get_preloaders(request, patient_guid):
 
 
 def _prep_form(request, case_id, xform_url, next_url, mode):
-    mode = request.GET.get('ua', 'type')
 
+    if request.browser_info.get('ismobiledevice') == 'true':
+        mode='touch'
+    else:
+        #do one more check
+        ua_string = request.META['HTTP_USER_AGENT']
+        if ua_string.count('Android') > 0:
+            mode = 'touch'
+        else:
+            mode = 'type'
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
     preloaders['case'] = {'case-id': case_id}

@@ -86,6 +86,7 @@ MIDDLEWARE_CLASSES = (
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
     #'carehqapp.middleware.identity.CareHQIdentityMiddleware',
+    'smartagent.middleware.UserAgentDetectorMiddleware',
 )
 
 AUDIT_VIEWS = [
@@ -163,6 +164,7 @@ INSTALLED_APPS = (
     'tastypie',
 
     'uni_form',
+    'smartagent',
     #'south',
     #end third party apps
 
@@ -259,6 +261,9 @@ except ImportError, e:
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
 
+SMART_AGENT_SETTINGS = {
+    'AGENT_DATASET_LOCATION': os.path.join(filepath, 'agents_2011_04_14.pkl')
+}
 
 ####### Couch Forms & Couch DB Kit Settings #######
 def get_server_url(server_root, username, password):
