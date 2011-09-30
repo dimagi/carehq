@@ -1,4 +1,6 @@
 from django import template
+
+
 from datetime import datetime, date
 import types
 from django.template.context import Context
@@ -6,6 +8,8 @@ from shineforms.lab_utils import merge_labs
 from couchforms.models import XFormInstance
 
 from couchforms.templatetags import xform_tags
+from shineforms.constants import xmlns_display_map
+
 register = template.Library()
 
 def format_name(value):
@@ -78,6 +82,9 @@ def render_kv(nodekey, nodevalue):
     else:
         return render_base_type(nodekey, nodevalue)
 
+@register.simple_tag
+def shine_xmlns_name(xmlns):
+    return xmlns_display_map.get(xmlns, 'Unknown')
 
 
 @register.simple_tag

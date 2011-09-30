@@ -29,7 +29,6 @@ case_qr_zpl = """
 ^FO175,85^A0,22,^FDBlood Culture Study^FS
 ^FO175,120^A0,18,^FDSex: %(gender)s Age: %(age)s^FS
 ^FO175,140^A0,18,^FDAdmit Date: %(enroll_date)s^FS
-^PQ10,,,,
 ^XZ
 """
 
@@ -93,10 +92,10 @@ def do_send(host, port, zpl_string, recv=False): #destination
 def qr_code():
     label_data = {}
     label_data['barcode_data']=uuid.uuid4().hex
-    label_data['last_name']='Preziosi'
-    label_data['first_name']='Mike'
+    label_data['last_name']='Jackson'
+    label_data['first_name']='Jonathan'
     label_data['gender']='M'
-    label_data['age']='999'
+    label_data['age']='9'
     label_data['external_id']=random.randint(10000,99999)
     label_data['enroll_date']= (datetime.utcnow() - timedelta(days=random.randint(1,500))).strftime('%m/%d/%Y')
     do_send(host, port, case_qr_zpl % label_data)
@@ -130,7 +129,7 @@ def set_host_config():
 
 if __name__ == "__main__":
     #set_host_config()
-    #qr_code()
+    qr_code()
     #datamatrix_code()
     #host_status()
     #host_config()

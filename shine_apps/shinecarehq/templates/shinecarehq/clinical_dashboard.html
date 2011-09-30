@@ -5,8 +5,7 @@
 {% block content %}
     {% block extrahead %}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
-        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
-              media="print, projection, screen"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen"/>
         <script type="text/javascript" charset="utf-8">
             $().ready(function() {
                 $("#patient-table").tablesorter({sortList: [

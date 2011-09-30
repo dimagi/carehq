@@ -5,46 +5,7 @@ from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient
 from couchdbkit.schema.properties import StringProperty, StringListProperty
 from shineforms.lab_utils import merge_labs
-
-
-xmlns_sequence = [
-   'http://shine.commcarehq.org/patient/reg',
-   'http://shine.commcarehq.org/questionnaire/clinical',
-   'http://shine.commcarehq.org/questionnaire/followup',
-   'http://shine.commcarehq.org/questionnaire/labdata',
-   'http://shine.commcarehq.org/lab/one',
-   'http://shine.commcarehq.org/lab/two',
-   'http://shine.commcarehq.org/lab/three',
-   'http://shine.commcarehq.org/lab/four',
-   'http://shine.commcarehq.org/questionnaire/outcome',
-]
-
-form_sequence = [
-    'Enrollment',
-    'Clinical Info',
-    'Clinical Follow Up',
-    'Lab Data',
-    'Emergency Lab',
-    'Biochemical Lab',
-    'Speciation',
-    'Sensitivity',
-    'Outcome',
-    ]
-
-xmlns_display_map = {
-   'http://shine.commcarehq.org/patient/reg': "Enrollment",
-   'http://shine.commcarehq.org/questionnaire/clinical': "Clinical Info",
-   'http://shine.commcarehq.org/questionnaire/followup': "Follow Up",
-   'http://shine.commcarehq.org/questionnaire/labdata': "Lab Data",
-   'http://shine.commcarehq.org/lab/one': "Emergency Lab",
-   'http://shine.commcarehq.org/lab/two': "Biochemical Lab",
-   'http://shine.commcarehq.org/lab/three': "Speciation",
-   'http://shine.commcarehq.org/lab/four': "Sensitivity",
-   'http://shine.commcarehq.org/questionnaire/outcome': "Outcome",
-}
-
-
-
+from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence
 
 
 class ShinePatient(BasePatient):
@@ -59,18 +20,33 @@ class ShinePatient(BasePatient):
 
     def cache_clinical_case(self):
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
 
         for s in submissions:
             formname = xmlns_display_map[s.xmlns].replace(' ','_').lower()
             setattr(self, "_%s" % formname, s)
         self._cached_submits=True
 
+    def _get_case_submissions(self, case):
+        attrib = '_case_submissions_%s' % case._id
+        if hasattr(self, attrib):
+            return getattr(self, attrib)
+        else:
+            submissions = [XFormInstance.get(x) for x in case.xform_ids]
+            setattr(self, attrib, submissions)
+            return submissions
+
+
+
     @property
     def latest_case(self):
+        if hasattr(self,'_latest_case'):
+            return self._latest_case
+
         case_docs = [CommCareCase.get(x) for x in self.cases]
         sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
-        return sorted_docs[-1]
+        self._latest_case = sorted_docs[-1]
+        return self._latest_case
 
     def is_unique(self):
         return True
@@ -103,7 +79,7 @@ class ShinePatient(BasePatient):
     @property
     def get_hiv_status(self):
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         hiv ="No"
         for s in submissions:
             if s.xmlns == "http://shine.commcarehq.org/patient/reg":
@@ -134,7 +110,7 @@ class ShinePatient(BasePatient):
     @property
     def get_last_action(self):
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         xmlns = submissions[-1]['xmlns']
         recv = submissions[-1]['received_on']
 
@@ -147,7 +123,7 @@ class ShinePatient(BasePatient):
         Returns an array with tuples indicating form done-ness along with the submission itself
         """
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         keys = xmlns_display_map.keys()
         completed = dict()
         full_len = len(keys)
@@ -172,7 +148,7 @@ class ShinePatient(BasePatient):
         For all forms possible in system, fill it in as a section in the activity tab
         """
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         activities_dict = dict()
         all_xmlns = xmlns_display_map.keys()
 
@@ -202,7 +178,7 @@ class ShinePatient(BasePatient):
         Returns whether or not patient is active in the study (whether they've been discharged)
         """
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         keys = xmlns_display_map.keys()
         full_len = len(keys)
         for i,s in enumerate(submissions):
@@ -232,7 +208,7 @@ class ShinePatient(BasePatient):
         if hasattr(self, '_elab'):
             return self._elab
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
         elab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/lab/one", submissions)
         #hack: assume to be one here
         sorted_labs = sorted(elab_submissions, key=lambda x: x.received_on, reverse=True)
@@ -268,7 +244,7 @@ class ShinePatient(BasePatient):
     def get_lab_data(self):
         #get all clinical lab data submissions
         case = self.latest_case
-        submissions = [XFormInstance.get(x) for x in case.xform_ids]
+        submissions = self._get_case_submissions(case)
 
         lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
 

@@ -12,6 +12,7 @@ urlpatterns = patterns('shinecarehq.views',
     url(r'^mepi/dashboard/progress$', 'clinical_dashboard', name='clinical_dashboard'),
     url(r'^mepi/dashboard/hiv$', 'hiv_dashboard', name='hiv_dashboard'),
     url(r'^mepi/dashboard/labs$', 'labs_dashboard', name='labs_dashboard'),
+    url(r'^mepi/dashboard/recent$', 'recent_activity', name='recent_activity'),
 
     url(r'^mepi/dashboard/emergency_lab$', 'emergency_lab_dashboard', name='emergency_lab_dashboard'),
 

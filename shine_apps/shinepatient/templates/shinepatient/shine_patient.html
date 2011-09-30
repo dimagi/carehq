@@ -7,7 +7,7 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
 
     <script>
@@ -114,7 +114,7 @@
                         {% if act.2 %}
                             <strong>{{ act.0 }} {{ act.2.received_on }}</strong>
                         {% else %}
-                            <em>{{ act.0 }}</em>
+                            <em>{{ act.0 }} - No Data</em>
                         {% endif %}
 
                     </a></h3>
@@ -122,7 +122,11 @@
                         {% if act.2 %}
                             {% render_submission_fragment act.1 act.2 %}
                         {% else %}
-                            No Data
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                {% trans "Create" %}  {{ act.0 }}
+                            </a>
                         {% endif %}
                     </div>
                 </div>

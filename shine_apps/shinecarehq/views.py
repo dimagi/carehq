@@ -1,11 +1,12 @@
 from couchdbkit.exceptions import ResourceNotFound
+from devserver.modules.profile import devserver_profile
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient, Patient
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #
 #class MepiPatientListView(PatientListView):
@@ -56,7 +57,21 @@ def clinical_dashboard(request, template="shinecarehq/clinical_dashboard.html"):
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 
+
 @login_required()
+def recent_activity(request, template="shinecarehq/recent_activity.html"):
+
+    startkey = (datetime.utcnow() - timedelta(days=7)).strftime('%Y-%m-%d')
+    endkey = datetime.utcnow().strftime('%Y-%m-%d')
+
+    activities = XFormInstance.view('shinecarehq/all_submits_by_date', startkey=startkey, endkey=endkey, include_docs=True, reverse=True).all()
+    return render_to_response(template, {'submissions': activities}, context_instance=RequestContext(request))
+
+
+
+
+@login_required()
+@devserver_profile(follow=[render_to_response, filter])
 def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
     Full case list for dashboard view
