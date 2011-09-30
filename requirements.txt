@@ -32,3 +32,4 @@ django-tastypie
 gevent
 johnny-cache
 PIL
+django-smartagent
