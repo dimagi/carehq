@@ -125,3 +125,62 @@ def render_submission_fragment(xmlns, submissions):
     t = template.loader.get_template(template_name)
     return t.render(Context(context, autoescape='on'))
 
+
+
+@register.simple_tag
+def get_status_matrix(patient):
+
+    context_dict = dict()
+    tally = patient.get_completed_tally
+    for tup in tally:
+        #(displayname, (True|False, instance))
+        displayname = tup[0]
+        status = tup[1][0]
+        instance = tup[1][1]
+        if displayname == "Enrollment":
+            context_dict['enrollment'] = status
+        elif displayname == "Clinical Info":
+            context_dict['clinical_info'] = status
+        elif displayname == "Lab Data":
+            submissions = patient._get_case_submissions(patient.latest_case)
+            lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
+            labs_dict = merge_labs(lab_submissions, as_dict=True)
+            for k,v in labs_dict.items():
+                lab_status=False
+                if isinstance(v, str) or isinstance(v, unicode):
+                    if v == '':
+                        lab_status = False
+                    else:
+                        lab_status=True
+
+                elif isinstance(v, dict):
+                    lab_status = v
+                context_dict['lab_%s' % k] = lab_status
+        elif displayname == "Emergency Lab":
+            #do check on positivity
+            if status:
+                bottles = patient.get_elab_bottle_data
+                if len(bottles) > 0:
+                    context_dict['emergency_lab'] = True
+                    context_dict['is_positive'] = True
+                else:
+                    context_dict['emergency_lab'] = True
+                    context_dict['is_positive'] = False
+
+            else:
+                context_dict['emergency_lab'] = False
+                context_dict['is_positive'] = False
+
+        elif displayname == "Biochemical Lab":
+            context_dict['biochemical']=status
+        elif displayname == "Speciation":
+            context_dict['speciation']=status
+        elif displayname == "Sensitivity":
+            context_dict['sensitivity']=status
+        elif displayname == "Outcome" or displayname == "Old Follow Up/Outcome":
+            context_dict['outcome']=status
+
+    t = template.loader.get_template('shineforms/status_matrix.html')
+
+
+    return t.render(Context(context_dict, autoescape=False))

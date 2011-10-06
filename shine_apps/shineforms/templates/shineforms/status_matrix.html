@@ -1,0 +1,155 @@
+<div class="mepi_status_matrix span-6">
+    <div class="span-6">
+        <div class="mepi_half">
+            {% if enrollment %}
+                <div class="mepi_completed">Enrolled</div>
+            {% else %}
+                Enrollment
+            {% endif %}
+        </div>
+        <div class="mepi_half">
+            {% if clinical_info %}
+                <div class="mepi_completed">
+            {% else %}
+                <div class="mepi_missing">
+            {% endif %}
+            Clin. Info
+            </div>
+        </div>
+    </div>
+    <div class="span-6">
+        <div class="mepi_quarter">
+            {% if lab_hiv.hiv_test == 'yes' %}
+                <div class="mepi_completed">
+            {% else %}
+                <div class="mepi_missing">
+            {% endif %}
+            LHIV
+            </div>
+        </div>
+        <div class="mepi_quarter">
+            {% if lab_malaria.rapid != "" or lab_malaria.mal_smear != '' %}
+                <div class="mepi_completed">
+            {% else %}
+                <div class="mepi_missing">
+            {% endif %}
+            LM
+            </div>
+        </div>
+        <div class="mepi_quarter">
+            {% if lab_afb_smear %}
+                <div class="mepi_completed">
+            {% else %}
+                <div class="mepi_missing">
+            {% endif %}
+            LAFB
+            </div>
+        </div>
+
+        <div class="mepi_quarter">
+            {% if lab_xray  %}
+                <div class="mepi_completed">
+            {% else %}
+                <div class="mepi_missing">
+            {% endif %}
+            LCXR
+            </div>
+        </div>
+    </div>
+    <div class="span-6">
+            <div class="mepi_third">
+                {% if lab_bloodwbc.blood_neutrophils or lab_bloodwbc.blood_lymphocytes %}
+                <div class="mepi_completed">
+                {% else %}
+                <div class="mepi_missing">
+                {% endif %}
+                LWBC
+                </div>
+            </div>
+            <div class="mepi_third">
+                {% if lab_hemogram.blood_na %}
+                <div class="mepi_completed">
+                {% else %}
+                <div class="mepi_missing">
+                {% endif %}
+                LCBC
+                </div>
+            </div>
+            <div class="mepi_third">
+            <div class="mepi_missing">
+                LLFT
+            </div>
+            </div>
+    </div>
+    <div class="span-6">
+
+        <div class="mepi_quarter">
+        {% if emergency_lab %}
+            <div class="mepi_completed">
+            {% if is_positive %}
+                    <strong>E +</strong>
+            {% else %}
+                    <strong>E -</strong>
+            {% endif %}
+            </div>
+        {% else %}
+            <div class="mepi_missing">
+                E
+            </div>
+        {% endif %}
+        </div>
+        {% if not emergency_lab %}
+                <div class="mepi_quarter"><div class="mepi_missing">Bio</div></div>
+                 <div class="mepi_quarter"><div class="mepi_missing">Spe</div></div>
+                 <div class="mepi_quarter"><div class="mepi_missing">Sen</div></div>
+        {% else %}
+            {% if emergency_lab and not is_positive %}
+                {# if there's a negative emergency lab, then all the other labs can go dark #}
+                <div class="mepi_quarter"><div class="mepi_omit">Bio</div></div>
+                <div class="mepi_quarter"><div class="mepi_omit">Spe</div></div>
+                <div class="mepi_quarter"><div class="mepi_omit">Sen</div></div>
+            {% endif %}
+
+            {% if emergency_lab and is_positive %}
+                <div class="mepi_quarter">
+                    {% if biochemical %}
+                        <div class="mepi_completed">
+                    {% else %}
+                        <div class="mepi_missing">
+                    {% endif %}
+                    Bio
+                    </div>
+                </div>
+
+                <div class="mepi_quarter">
+                    {% if speciation %}
+                        <div class="mepi_completed">
+                    {% else %}
+                        <div class="mepi_missing">
+                    {% endif %}
+                    Spe
+                    </div>
+                </div>
+
+                <div class="mepi_quarter">
+                    {% if sensitivity %}
+                        <div class="mepi_completed">
+                    {% else %}
+                        <div class="mepi_missing">
+                    {% endif %}
+                    Sen
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="span-6">
+                {% if outcome %}
+                    <div class="mepi_completed">
+                {% else %}
+                    <div class="mepi_missing">
+                {% endif %}
+            Outcome
+        </div>
+    </div>
+</div>

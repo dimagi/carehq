@@ -1,6 +1,7 @@
 {%  extends base_template %}
 {% load i18n %}
 {% load patient_tags %}
+{% load shineforms_tags %}
 
 {% block content %}
 {% block extrahead %}
@@ -11,6 +12,7 @@
             $("#patient-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
         });
     </script>
+    <link rel="stylesheet" href="{{STATIC_URL}}shinecarehq/shinecarehq.css" type="text/css">
 {% endblock %}
 <div class="container">
     <div class="span-24">
@@ -103,15 +105,15 @@
                     {{ patient.get_last_action.0|date:"Y-m-d" }}
                 </td>
                 <td>
-                    {% if patient.get_current_status == "[Done]" %}
-                        <img src="{{ STATIC_URL }}carehq/img/icons/check.jpg"> Completed
-                    {% else %}
-                        {% if patient.get_current_status == "1/9" %}
-                            <div class="error">Need Follow Up</div>
-                        {% else %}
-                            {{ patient.get_current_status }}
-                        {% endif %}
-                    {% endif %}
+                    {% get_status_matrix patient %}
+{#                    {% if patient.get_current_status == "[Done]" %}#}
+{#                        <img src="{{ STATIC_URL }}carehq/img/icons/check.jpg"> Completed#}
+{#                    {% else %}#}
+{#                        {% if patient.get_current_status == "1/9" %}#}
+{#                            <div class="error">Need Follow Up</div>#}
+{#                        {% else %}#}
+{#                        {% endif %}#}
+{#                    {% endif %}#}
                 </td>
             </tr>
         {% endfor %}

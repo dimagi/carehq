@@ -1,6 +1,8 @@
 
 
 def merge_labs(lab_submissions, as_dict=False):
+    """
+    """
     sorted_labs = sorted(lab_submissions, key=lambda x: x.received_on)
     hiv = ""
     mal_rapid = "" #rapid
@@ -55,7 +57,7 @@ def merge_labs(lab_submissions, as_dict=False):
 
     if as_dict:
         return {
-                'hiv': {'hiv test': hiv, 'followup': hivfollowup},
+                'hiv': {'hiv_test': hiv, 'followup': hivfollowup},
                 'malaria': {'rapid': mal_rapid, 'smear': mal_smear},
                 'prophylaxis': prophylaxis,
                 'afb_smear': afb_smear,

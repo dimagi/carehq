@@ -227,6 +227,9 @@ class ShinePatient(BasePatient):
 
     @property
     def get_elab_bottle_data(self):
+        """
+        Return an array of the positive bottles
+        """
         lab = self._do_get_emergency_lab_submission()
         if lab is None:
             return "[No Data]"
@@ -245,7 +248,6 @@ class ShinePatient(BasePatient):
         #get all clinical lab data submissions
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-
         lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
 
 
