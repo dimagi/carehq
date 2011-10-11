@@ -60,7 +60,8 @@ def clinical_dashboard(request, template="shinecarehq/clinical_dashboard.html"):
 @login_required()
 def recent_activity(request, template="shinecarehq/recent_activity.html"):
 
-    startkey = (datetime.utcnow() - timedelta(days=7)).strftime('%Y-%m-%d')
+    day_range = int(request.GET.get('range', 7))
+    startkey = (datetime.utcnow() - timedelta(days=day_range)).strftime('%Y-%m-%d')
     endkey = datetime.utcnow().strftime('%Y-%m-%d')
 
     activities = XFormInstance.view('shinecarehq/all_submits_by_date', startkey=startkey, endkey=endkey, include_docs=True, reverse=True).all()

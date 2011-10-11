@@ -44,7 +44,9 @@ class PatientFromCaseNode(template.Node):
     def render(self, context):
         pts = ShinePatient.view('shinepatient/patient_cases_all', key=self.case.resolve(context)['case_id'], include_docs=True).all()
         if len(pts) == 0:
-            raise template.TemplateSyntaxError("Error, tag's argument could not resolve to a CommCareCase")
+            #raise template.TemplateSyntaxError("Error, tag's argument could not resolve to a CommCareCase")
+            context[self.var_name] = None
+            return ''
         context[self.var_name] = pts[0]
         return ''
 

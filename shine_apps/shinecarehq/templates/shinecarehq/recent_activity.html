@@ -32,8 +32,12 @@
                             <td><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date:"m-d-Y H:i"}}</a></td>
                             <td> {{ submit.form.Meta.username }}</td>
                             <td> {% case_patient_lookup submit.form.case as curr_pt%}
+                                {% if curr_pt %}
                                 {{ curr_pt.last_name|title }}, {{ curr_pt.first_name|title }}
                                 <a href="{% url shine_single_patient curr_pt.get_id %}">View</a>
+                                {% else %}
+                                    -- Unlinked Case --
+                                {% endif %}
 
 
                             </td>
