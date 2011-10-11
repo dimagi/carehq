@@ -76,6 +76,26 @@ class ShinePatient(BasePatient):
                     return cd4
         return cd4
 
+
+    @property
+    def get_culture_status(self):
+        bottles = self.get_elab_bottle_data
+
+        if bottles == '[No Data]':
+            return '[No Data]'
+
+        if len(bottles) > 0:
+            return 'positive'
+        else:
+            return 'negative'
+
+
+    @property
+    def get_status(self):
+        case = self.latest_case
+        submissions = self._get_case_submissions(case)
+
+
     @property
     def get_hiv_status(self):
         case = self.latest_case
@@ -228,7 +248,7 @@ class ShinePatient(BasePatient):
     @property
     def get_elab_bottle_data(self):
         """
-        Return an array of the positive bottles
+        Return an array of the positive bottles or [No Data]
         """
         lab = self._do_get_emergency_lab_submission()
         if lab is None:

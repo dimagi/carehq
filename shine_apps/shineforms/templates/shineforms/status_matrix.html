@@ -1,10 +1,11 @@
+{% load i18n %}
 <div class="mepi_status_matrix span-6">
     <div class="span-6">
         <div class="mepi_half">
             {% if enrollment %}
                 <div class="mepi_completed">Enrolled</div>
             {% else %}
-                Enrollment
+                {% trans "Enrollment"%}
             {% endif %}
         </div>
         <div class="mepi_half">
@@ -13,7 +14,7 @@
             {% else %}
                 <div class="mepi_missing">
             {% endif %}
-            Clin. Info
+            {% trans "Clin. Info" %}
             </div>
         </div>
     </div>
@@ -24,7 +25,7 @@
             {% else %}
                 <div class="mepi_missing">
             {% endif %}
-            LHIV
+            {% trans "LHIV" %}
             </div>
         </div>
         <div class="mepi_quarter">
@@ -33,7 +34,7 @@
             {% else %}
                 <div class="mepi_missing">
             {% endif %}
-            LM
+            {% trans "LM" %}
             </div>
         </div>
         <div class="mepi_quarter">
@@ -42,7 +43,7 @@
             {% else %}
                 <div class="mepi_missing">
             {% endif %}
-            LAFB
+            {% trans "LAFB" %}
             </div>
         </div>
 
@@ -52,7 +53,7 @@
             {% else %}
                 <div class="mepi_missing">
             {% endif %}
-            LCXR
+            {% trans "LCXR" %}
             </div>
         </div>
     </div>
@@ -63,7 +64,7 @@
                 {% else %}
                 <div class="mepi_missing">
                 {% endif %}
-                LWBC
+                {% trans "LWBC" %}
                 </div>
             </div>
             <div class="mepi_third">
@@ -72,12 +73,12 @@
                 {% else %}
                 <div class="mepi_missing">
                 {% endif %}
-                LCBC
+                {% trans "LCBC" %}
                 </div>
             </div>
             <div class="mepi_third">
             <div class="mepi_missing">
-                LLFT
+                {% trans "LLFT" %}
             </div>
             </div>
     </div>
@@ -87,27 +88,27 @@
         {% if emergency_lab %}
             <div class="mepi_completed">
             {% if is_positive %}
-                    <strong>E +</strong>
+                    <strong>{% trans "E +" %}</strong>
             {% else %}
-                    <strong>E -</strong>
+                    <strong>{% trans "E -" %}</strong>
             {% endif %}
             </div>
         {% else %}
             <div class="mepi_missing">
-                E
+                {% trans "E" %}
             </div>
         {% endif %}
         </div>
         {% if not emergency_lab %}
-                <div class="mepi_quarter"><div class="mepi_missing">Bio</div></div>
-                 <div class="mepi_quarter"><div class="mepi_missing">Spe</div></div>
-                 <div class="mepi_quarter"><div class="mepi_missing">Sen</div></div>
+                <div class="mepi_quarter"><div class="mepi_missing">{% trans "Bio" %}</div></div>
+                <div class="mepi_quarter"><div class="mepi_missing">{% trans "Spe" %}</div></div>
+                <div class="mepi_quarter"><div class="mepi_missing">{% trans "Sen" %}</div></div>
         {% else %}
             {% if emergency_lab and not is_positive %}
                 {# if there's a negative emergency lab, then all the other labs can go dark #}
-                <div class="mepi_quarter"><div class="mepi_omit">Bio</div></div>
-                <div class="mepi_quarter"><div class="mepi_omit">Spe</div></div>
-                <div class="mepi_quarter"><div class="mepi_omit">Sen</div></div>
+                <div class="mepi_quarter"><div class="mepi_omit">{% trans "Bio" %}</div></div>
+                <div class="mepi_quarter"><div class="mepi_omit">{% trans "Spe" %}</div></div>
+                <div class="mepi_quarter"><div class="mepi_omit">{% trans "Sen %}</div></div>
             {% endif %}
 
             {% if emergency_lab and is_positive %}
@@ -117,7 +118,7 @@
                     {% else %}
                         <div class="mepi_missing">
                     {% endif %}
-                    Bio
+                    {% trans "Bio" %}
                     </div>
                 </div>
 
@@ -127,7 +128,7 @@
                     {% else %}
                         <div class="mepi_missing">
                     {% endif %}
-                    Spe
+                    {% trans "Spe" %}
                     </div>
                 </div>
 
@@ -137,7 +138,7 @@
                     {% else %}
                         <div class="mepi_missing">
                     {% endif %}
-                    Sen
+                    {% trans "Sen" %}
                     </div>
                 </div>
             {% endif %}
@@ -149,7 +150,7 @@
                 {% else %}
                     <div class="mepi_missing">
                 {% endif %}
-            Outcome
+            {% trans "Outcome" %}
         </div>
     </div>
 </div>
