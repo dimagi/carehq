@@ -59,7 +59,6 @@ def clinical_dashboard(request, template="shinecarehq/clinical_dashboard.html"):
 
 @login_required()
 def recent_activity(request, template="shinecarehq/recent_activity.html"):
-
     day_range = int(request.GET.get('range', 7))
     startkey = (datetime.utcnow() - timedelta(days=day_range)).strftime('%Y-%m-%d')
     endkey = datetime.utcnow().strftime('%Y-%m-%d')
