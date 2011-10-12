@@ -15,6 +15,6 @@ admin.site.register(LabelQueue, LabelQueueAdmin)
 
 class ZebraStatusAdmin(admin.ModelAdmin):
     list_display=('event_date','printer', 'status','is_cleared')
-    list_filter = ['printer','status']
+    list_filter = ['printer','status', 'is_cleared']
 admin.site.register(ZebraStatus, ZebraStatusAdmin)
 

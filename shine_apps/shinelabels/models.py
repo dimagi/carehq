@@ -16,6 +16,9 @@ class ZebraPrinter(models.Model):
     serial_number = models.CharField(max_length=32)
     mac_address = models.CharField(max_length=32)
 
+    class Meta:
+        verbose_name = "Zebra Printer"
+        verbose_name_plural = "Zebra Printers"
 
     def __unicode__(self):
         return "%s (%s@%s)" % (self.name, self.location, self.ip_address)
@@ -38,6 +41,10 @@ class LabelQueue(models.Model):
     fulfilled_date = models.DateTimeField(blank=True, null=True)
 
     zpl_code=models.TextField()
+
+    class Meta:
+        verbose_name = "Label Print Queue"
+        verbose_name_plural = "Label Print Jobs"
 
 
     @property
@@ -74,6 +81,10 @@ class ZebraStatus(models.Model):
     event_date = models.DateTimeField(db_index=True)
     status = models.CharField(max_length=32, db_index=True)
     is_cleared = models.BooleanField(default=False, help_text="If there is something set on the machine, then that indicates a problem.  If the printer sets it 'cleared', this is true.  So True=OK, False=Bad, with the exception of successful print jobs, they set to false")
+
+    class Meta:
+        verbose_name = "Zebra Printer Status"
+        verbose_name_plural = "Printer Statuses"
 
     def __unicode__(self):
         return "(%s) %s %s" % (self.event_date.strftime("%m/%d/%Y"), self.status, self.is_cleared)

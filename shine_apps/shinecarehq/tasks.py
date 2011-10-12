@@ -1,4 +1,5 @@
 
+from shinelabels import label_utils
 
 
 
@@ -29,3 +30,9 @@ def printer_uptime_email():
     #ANY incidents that are NOT successful print or uptime.
 
     pass
+
+
+
+def cleanup_printlogs():
+    #once a week?
+    label_utils.condense_status_logs()
