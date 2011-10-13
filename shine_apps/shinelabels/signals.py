@@ -41,7 +41,7 @@ successful_form_received.connect(process_lab_one_submission)
 
 
 
-def generate_case_barcode(case_id):
+def generate_case_barcode(case_id, num=10):
     """
     For a given case ID, we need to construct a barcode for the patient.
     """
@@ -55,6 +55,7 @@ def generate_case_barcode(case_id):
     label_data['age']= int(math.floor((datetime.utcnow().date() - case.dob).days / 365.25))
     #label_data['external_id']= case.external_id #add this later if we ever get to making a human readable/transcribable number
     label_data['enroll_date']= case.opened_on.strftime('%d/%m/%Y')
+    label_data['print_num'] = num
 
     return case_qr_zpl % label_data
 

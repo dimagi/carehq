@@ -82,7 +82,7 @@
 {#                            href="{% url new_bloodwork_order patient_doc.get_id %}">#}
 {#                        <span class="ui-icon ui-icon-circle-plus"></span>#}
 {#                        {% trans "Create Bloodwork Order" %}</a>#}
-            <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:get_label_dialog('{{ patient_doc.get_id }}')">
+            <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url shinepatient_print_jobs patient_doc.get_id %}">
                 <span class="ui-icon ui-icon-gear"></span>
                 <span class="edit_btn_txt">Print Labels</span>
             </a>
@@ -137,14 +137,13 @@
             {% for act in patient_doc.get_activity_history %}
                 <div>
                     <h3><a href="#">
-
                         {% if act.2 %}
                             <strong>{{ act.0 }} {{ act.2.received_on }}</strong>
                         {% else %}
                             <em>{{ act.0 }} - No Data</em>
                         {% endif %}
-
-                    </a></h3>
+                        </a>
+                    </h3>
                     <div>
                         {% if act.2 %}
                             {% render_submission_fragment act.1 act.2 %}

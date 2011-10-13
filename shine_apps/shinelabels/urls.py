@@ -10,5 +10,7 @@ urlpatterns = patterns('',
     (r'^api/', include(status_resource.urls)),
     (r'^api/', include(printer_resource.urls)),
     (r'^api/', include(label_resource.urls)),
+    url(r'^mepi/printlabel/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', 'shinelabels.views.print_jobs',  name='shinepatient_print_jobs'),
+
 )
 

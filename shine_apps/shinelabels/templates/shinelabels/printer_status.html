@@ -1,0 +1,18 @@
+
+<div class="span-6">
+    <h4>Printer Status {{ printer_name }}</h4>
+    {% if is_active %}
+        <div class="span-2 success">
+            Active
+        </div>
+    {% else %}
+        <div class="span-2 error">
+            Inactive
+        </div>
+        <div class="span-4 last">
+            Last Event:
+            {{ last.status|title }}: {{ last.event_date|date }}
+        </div>
+    {% endif %}
+
+</div>
