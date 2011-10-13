@@ -1,4 +1,7 @@
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from patient.models.patientmodels import BasePatient
@@ -31,8 +34,16 @@ def print_jobs(request, patient_guid, template_name="shinelabels/printer_jobs.ht
         if form.is_valid():
             num = form.cleaned_data['number']
             printer = form.cleaned_data['printer']
-            barcode_zpl = generate_case_barcode(patient.latest_case._id, num=num)
-            print barcode_zpl
+            mode = form.cleaned_data['type']
+            if mode == 'standard':
+                barcode_zpl = generate_case_barcode(patient.latest_case._id, num=num)
+            else:
+                barcode_zpl = generate_case_barcode(patient.latest_case._id, num=num, mode='datamatrix')
+
+            new_job = LabelQueue(destination=printer, xform_id='web', created_date=datetime.utcnow(), case_guid=patient.latest_case._id, zpl_code=barcode_zpl)
+            new_job.save()
+            reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid})
+            return HttpResponseRedirect(reverse_back)
         else:
             context['printform'] = form
         #submit a new print job

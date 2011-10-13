@@ -34,6 +34,7 @@ case_qr_zpl = """
 """
 
 #Lab 1D barcode printouts with simplified outputs.
+#todo, add additioanl data, like blood culture study, enroll date
 lab_datamatrix_zpl = """
 ^XA
 ^PW416
@@ -41,7 +42,7 @@ lab_datamatrix_zpl = """
 ^FO20,45
 ^BY1,,1^BXN,3,200,,,4,,2
 ^FD%(barcode_data)s^FS
-^ISR:EXERPROG.GRF,N
+^PQ%(print_num)d,,,,
 ^XZ
 """
 #rectangular data matrix baby:

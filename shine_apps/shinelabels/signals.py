@@ -3,7 +3,7 @@ import math
 from casexml.apps.case.models import CommCareCase
 import logging
 from shinelabels.models import LabelQueue, ZebraPrinter
-from shinelabels.zpl_templates import case_qr_zpl
+from shinelabels.zpl_templates import case_qr_zpl, lab_datamatrix_zpl
 from receiver.signals import successful_form_received
 from django.contrib.auth.models import User
 from django.db import models
@@ -41,7 +41,7 @@ successful_form_received.connect(process_lab_one_submission)
 
 
 
-def generate_case_barcode(case_id, num=10):
+def generate_case_barcode(case_id, num=10, mode='qr'):
     """
     For a given case ID, we need to construct a barcode for the patient.
     """
@@ -56,6 +56,8 @@ def generate_case_barcode(case_id, num=10):
     #label_data['external_id']= case.external_id #add this later if we ever get to making a human readable/transcribable number
     label_data['enroll_date']= case.opened_on.strftime('%d/%m/%Y')
     label_data['print_num'] = num
-
-    return case_qr_zpl % label_data
+    if mode == 'qr':
+        return case_qr_zpl % label_data
+    else:
+        return lab_datamatrix_zpl % label_data
 
