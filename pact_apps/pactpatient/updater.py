@@ -70,6 +70,7 @@ def update_patient_casexml(user, patient_doc, active_phones, active_addresses):
     data_dict['time_start'] = datetime.utcnow()#.isoformat()
     phone_xml = []
     for i, p in enumerate(active_phones, start=1):
+        print p
         if p == None:
             continue
         phone_xml.append(get_phone_xml(i, p['number'], typestring=p['description']))
@@ -80,9 +81,7 @@ def update_patient_casexml(user, patient_doc, active_phones, active_addresses):
             continue
         address_xml.append(get_address_xml(i, a['address'], typestring=a['description']))
 
-
-
-#    case = CommCareCase.get(patient_doc.case_id)
+    #case = CommCareCase.get(patient_doc.case_id)
     data_dict['update_block'] = ''.join(phone_xml + address_xml)
     data_dict['uid'] = uuid.uuid4().hex
     data_dict['case_id'] = patient_doc.case_id

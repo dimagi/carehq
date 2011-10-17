@@ -117,7 +117,18 @@ def new_bloodwork(request, patient_id):
     xform_url = 'http://build.dimagi.com/commcare/pact/pact_bw_entry.xml'
     new_form = fetch_xform_def(xform_url)
     return _new_form(request, patient_id, new_form)
-    
+
+
+
+@login_required
+@csrf_exempt
+def new_dots(request, patient_id):
+    """
+    Fill out a NEW DOTS
+    """
+    xform_url = 'http://build.dimagi.com/commcare/pact/pact_dot_session.xml'
+    new_form = fetch_xform_def(xform_url)
+    return _new_form(request, patient_id, new_form)
 
 def fetch_xform_def(xform_url):
     xform_str = get_remote_form(xform_url)
