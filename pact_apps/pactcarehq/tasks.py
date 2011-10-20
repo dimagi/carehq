@@ -14,23 +14,7 @@ from couchexport.export import export, Format
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
 from django.core.mail import send_mail
-
-hack_chw_username_phones = {
-    'ss524': '6178168512@vtext.com',
-    'lm723': '6175434561@vtext.com',
-    'an907': '6178941127@vtext.com',
-    'lnb9':  '6178944627@vtext.com',
-    'ma651': '6176509230@vtext.com',
-    'ac381': '6179218161@vtext.com',
-    'cs783': '6178168506@vtext.com',
-    'ao970': '6178168507@vtext.com',
-    'nc903': '6173788671@vtext.com',
-    'isaac': '6174597765@vtext.com',
-    'ss192': '6175127114@vtext.com',
-    #'clare': '6175298471@vtext.com',
-    'asc30': '6175298471@vtext.com',
-}
-
+from settings_local import hack_chw_username_phones
 
 
 @task
@@ -161,7 +145,7 @@ def prime_views():
 #@periodic_task(run_every=crontab(hour="*", minute="*", day_of_week="*"))
 def schedule_coverage_tally_report():
     """scheduled tally for all CHWs sms'ed via email"""
-    from pactcarehq.views import _get_schedule_tally
+    from pactcarehq.views.schedule_views import _get_schedule_tally
     #for each CHW
     #do a single date query for dateitme.today(), get the num actual vs. expected
     #ping chw with text message
