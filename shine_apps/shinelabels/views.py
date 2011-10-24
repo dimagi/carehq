@@ -40,7 +40,7 @@ def print_jobs(request, patient_guid, template_name="shinelabels/printer_jobs.ht
             else:
                 barcode_zpl = generate_case_barcode(patient.latest_case._id, num=num, mode='datamatrix')
 
-            new_job = LabelQueue(destination=printer, xform_id='web', created_date=datetime.utcnow(), case_guid=patient.latest_case._id, zpl_code=barcode_zpl)
+            new_job = LabelQueue(destination=printer, xform_id='web: %s' % (request.user.username), created_date=datetime.utcnow(), case_guid=patient.latest_case._id, zpl_code=barcode_zpl)
             new_job.save()
             reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid})
             return HttpResponseRedirect(reverse_back)
