@@ -1,8 +1,11 @@
 from datetime import datetime
 import math
+from django.core.mail import send_mail
+from django.db.models.signals import post_save
 from casexml.apps.case.models import CommCareCase
 import logging
-from shinelabels.models import LabelQueue, ZebraPrinter
+import settings
+from shinelabels.models import LabelQueue, ZebraPrinter, ZebraStatus
 from shinelabels.zpl_templates import case_qr_zpl, lab_datamatrix_zpl
 from receiver.signals import successful_form_received
 from django.contrib.auth.models import User
@@ -60,4 +63,56 @@ def generate_case_barcode(case_id, num=10, mode='qr'):
         return case_qr_zpl % label_data
     else:
         return lab_datamatrix_zpl % label_data
+
+
+
+def status_saved(sender, instance, created, **kwargs):
+    """
+    post-save signal for checking uptime indicator and emailing where appropriate
+    """
+    current_printer = instance.printer
+    current_status = instance.status
+    body = ''
+    subject=''
+    if instance.status == 'printer uptime heartbeat':
+        #do the checking workflow
+        if instance.is_cleared:
+            is_now_online=True
+        else:
+            is_now_online=False
+
+        prior_states = ZebraStatus.objects.all().filter(printer=current_printer, status=current_status).order_by('-event_date')
+        for prior_state in prior_states:
+            if prior_state.id == instance.id:
+                #skip if we run into ourselves
+                continue
+            if prior_state.is_cleared:
+                #Previously the printer was ONLINE
+                if is_now_online:
+                    #and now it is ONLINE
+                    #that's good, do nothing, we're done
+                    break
+                else:
+                    #it is OFFLINE after being previously ONLINE
+                    send_mail('[MEPI-OPS] Printer %s Offline' % current_printer.name, 'Printer %s is now offline' % current_printer.name, settings.EMAIL_HOST_USER, settings.ALERT_EMAILS, fail_silently=True)
+                    break
+            else:
+                #previously the printer was OFFLINE
+                if is_now_online:
+                    #but now it's ONLINE.  This is good!  Let's tell people it's online now.
+                    send_mail('[MEPI-OPS] Printer %s back online' % current_printer.name, 'Printer %s back online' % current_printer.name, settings.EMAIL_HOST_USER, settings.ALERT_EMAILS, fail_silently=True)
+                    break
+                else:
+                    #previously OFFLINE and still OFFLINE
+                    #todo, consider checking deeper and report if it's been offline for a long while.
+                    break
+    else:
+        #send an email for NEW alerts that are bad. Skip print job completed
+        if instance.is_cleared == False and instance.status != 'pq job completed':
+            #send_email of error
+            send_mail('[MEPI-OPS] Printer Alert', "Printer %s: %s" % (current_printer.name, instance.status) , settings.EMAIL_HOST_USER, settings.ALERT_EMAILS, fail_silently=True)
+        pass
+
+
+post_save.connect(status_saved, sender=ZebraStatus)
 
