@@ -22,19 +22,27 @@ bad_messages = [
 def get_printer_status():
     ret = []
     for printer in ZebraPrinter.objects.all():
-        status = ZebraStatus.objects.all().filter(printer=printer).exclude(status='pq job completed')
-        is_active=False
+        states = ZebraStatus.objects.all().filter(printer=printer).filter(status='printer uptime heartbeat').order_by('-event_date')
+
+        if states[0].is_cleared:
+            is_active=True
+        else:
+            is_active=False
+
         last_active = None
         last_inactive = None
-        for stat in status:
-            #this is pretty ghetto, but we kind of need to walk through it all due to the way in which the logs are recorded.
-            if stat.status in bad_messages:
-                is_active= stat.is_cleared
+        for stat in states[1:]:
             if is_active:
-                last_active=stat
+                if not stat.is_cleared:
+                    last_inactive = stat
+                    break
             else:
-                last_inactive = stat
-
+                if stat.is_cleared:
+                    last_active = stat
+                    break
+        print last_active
+        print last_inactive
+        print is_active
         t = template.loader.get_template('shinelabels/printer_status.html')
         context_dict = dict()
         context_dict['status'] = is_active
@@ -44,4 +52,4 @@ def get_printer_status():
             context_dict['last'] = last_inactive
         context_dict['printer_name'] = "%s: %s" % (printer.location, printer.name)
         ret.append(t.render(Context(context_dict, autoescape=False)))
-        return ''.join(ret)
+    return ''.join(ret)
