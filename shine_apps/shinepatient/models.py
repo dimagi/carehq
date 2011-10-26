@@ -1,11 +1,25 @@
 from datetime import datetime, timedelta
 import random
+from couchdbkit.ext.django.schema import Document, SchemaListProperty
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient
-from couchdbkit.schema.properties import StringProperty, StringListProperty
+from couchdbkit.schema.properties import StringProperty, StringListProperty, DateTimeProperty
 from shineforms.lab_utils import merge_labs
-from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence
+from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence, STR_MEPI_ENROLLMENT_FORM, STR_MEPI_LABDATA_FORM, STR_MEPI_LAB_TWO_FORM, STR_MEPI_LAB_FOUR_FORM, STR_MEPI_LAB_THREE_FORM, STR_MEPI_LAB_ONE_FORM
+
+
+class AuxImage(Document):
+    uploaded_date = DateTimeProperty()
+    uploaded_by = StringProperty()
+    uploaded_filename = StringProperty() #the uploaded filename info
+    checksum = StringProperty()
+    attachment_id = StringProperty() #the actual attachment id in _attachments
+    image_type = StringProperty()
+    notes = StringProperty()
+
+
+
 
 
 class ShinePatient(BasePatient):
@@ -16,6 +30,133 @@ class ShinePatient(BasePatient):
 
     cases = StringListProperty()
 
+    aux_images = SchemaListProperty(AuxImage)
+
+
+    def _get_or_create_image_from_submission(self, submission, attachment_filename):
+        #check if an ImageAttachment exists for it.
+        imgs = ImageAttachment.objects.filter(xform_id=submission._id, attachment_key=attachment_filename)
+        if imgs.count() == 0:
+            #make new ImageAttachment
+            new_img = ImageAttachment()
+            attach_dict = submission._attachments.get(attachment_filename,None)
+            img = ImageAttachment()
+
+            img.patient_guid = self._id
+            img.xform_id = submission._id
+            img.attachment_key = attachment_filename
+            img.content_length = attach_dict['length']
+            img.content_type = attach_dict['content_type']
+
+            imgfile = ContentFile(submission.fetch_attachment(attachment_filename, stream=True).read())
+            img.image.save(attachment_filename, imgfile)
+            img.save()
+        else:
+            #verify checksums are equal
+            img = imgs[0]
+        return img
+    def _get_or_create_image_from_aux(self, aux_image):
+                #check if an ImageAttachment exists for it.
+        attach_dict = self._attachments.get(aux_image.attachment_id,None)
+        imgs = ImageAttachment.objects.filter(patient_guid = self._id, attachment_key=aux_image.attachment_id)
+        if imgs.count() == 0:
+            #make new ImageAttachment
+            new_img = ImageAttachment()
+            img = ImageAttachment()
+
+            img.patient_guid = self._id
+            img.attachment_key = aux_image.attachment_id
+            img.content_length = attach_dict['length']
+            img.content_type = attach_dict['content_type']
+
+            imgfile = ContentFile(self.fetch_attachment(aux_image.attachment_id, stream=True).read())
+            img.image.save(aux_image.attachment_id, imgfile)
+            img.save()
+        else:
+            #verify checksums are equal
+            img = imgs[0]
+        return img
+
+
+    @property
+    def clinical_images(self):
+        """
+        Wrapper function that does two things:
+        1: Scans existing submissions for photos
+        2: Scans patient object for auxiliary submissions
+
+        Returns them as a dictionary of arrays where {"image_context": [Image, Image, Image...]}
+
+        These images will then be made displayable in templates via sorl-thumbnails
+        """
+        case = self.latest_case
+        xform_id_keys = case.xform_ids
+        db = CommCareCase.get_db()
+        attach_submissions = db.view('slidesview/shine_image_submits', keys=xform_id_keys).all()
+
+        #ret = OrderedDict()
+        ret = []
+
+        #step 1, check the case's submissions
+        for submit in attach_submissions:
+            xmlns = submit['value'][0]
+            attachment_filename = submit['value'][1]
+            xform_id = submit['id']
+            submission = XFormInstance.get(xform_id)
+            image_context = ''
+
+            #get metadata on photo info
+            if xmlns == STR_MEPI_ENROLLMENT_FORM:
+                #it's a consent form
+                #the field in question is consent_photo
+                if submission.form.get('consent_photo', None) == attachment_filename:
+                    image_context = "consent"
+            elif xmlns == STR_MEPI_LAB_ONE_FORM:
+                #emergency lab form, lab one
+                #the fields in question are:
+                #afb_stain_photo
+                if submission.form.get('afb_stain_photo', None) == attachment_filename:
+                    image_context = 'AFB Stain'
+                #gram_stain_photo
+                elif submission.form.get('gram_stain_photo', '') == attachment_filename:
+                    image_context = 'Gram Stain'
+            elif xmlns == STR_MEPI_LAB_TWO_FORM:
+                #lab two
+                #agar_photos/<field>
+                if submission.form.get('agar_photos', None) is not None:
+                    if submission.form['agar_photos']['macconkey'] == attachment_filename:
+                        image_context = 'Macconkey'
+                    elif submission.form['agar_photos'].get('blood', None) == attachment_filename:
+                        image_context = 'Blood'
+                    elif submission.form['agar_photos'].get('chocolate', None) == attachment_filename:
+                        image_context = 'Chocolate'
+                    elif submission.form['agar_photos'].get('lowenstein-jensen', None) == attachment_filename:
+                        image_context = 'Lowenstein-Jensen'
+                pass
+            elif xmlns == STR_MEPI_LAB_THREE_FORM:
+                #vitek_photo
+                if submission.form.get('vitek_photo',None) == attachment_filename:
+                    image_context = 'Vitek'
+                #api_strip_photo
+                elif submission.form.get('api_strip_photo', None) == attachment_filename:
+                    image_context = 'API Strip'
+                pass
+            elif xmlns == STR_MEPI_LAB_FOUR_FORM:
+                #plate_image
+                if submission.form.get('plate_image',None) == attachment_filename:
+                    image_context = 'Plate Image'
+            img = self._get_or_create_image_from_submission(submission, attachment_filename)
+            ret.append((img, image_context))
+
+        #step 2: check the AuxImages
+        for aux in self.aux_images:
+            img = self._get_or_create_image_from_aux(aux)
+            ret.append((img, aux.image_type))
+
+        print ret
+
+
+        return ret
 
 
     def cache_clinical_case(self):
@@ -102,11 +243,11 @@ class ShinePatient(BasePatient):
         submissions = self._get_case_submissions(case)
         hiv ="No"
         for s in submissions:
-            if s.xmlns == "http://shine.commcarehq.org/patient/reg":
+            if s.xmlns == STR_MEPI_ENROLLMENT_FORM:
                 if s['form']['hiv_test'] == "yes":
                     return "yes"
 
-            if s.xmlns == 'http://shine.commcarehq.org/questionnaire/labdata':
+            if s.xmlns == STR_MEPI_LABDATA_FORM:
                 if s['form'].has_key('hiv'):
                     hiv = s['form']['hiv']
                     return hiv
@@ -229,7 +370,7 @@ class ShinePatient(BasePatient):
             return self._elab
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-        elab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/lab/one", submissions)
+        elab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LAB_ONE_FORM, submissions)
         #hack: assume to be one here
         sorted_labs = sorted(elab_submissions, key=lambda x: x.received_on, reverse=True)
 
@@ -268,15 +409,10 @@ class ShinePatient(BasePatient):
         #get all clinical lab data submissions
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-        lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
+        lab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LABDATA_FORM, submissions)
 
 
         return merge_labs(lab_submissions)
-
-        
-
-
-
 
     @property
     def get_current_bed(self):

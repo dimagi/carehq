@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from casexml.apps.case.models import CommCareCase
 import logging
 import settings
+from shineforms.constants import STR_MEPI_LAB_ONE_FORM
 from shinelabels.models import LabelQueue, ZebraPrinter, ZebraStatus
 from shinelabels.zpl_templates import case_qr_zpl, lab_datamatrix_zpl
 from receiver.signals import successful_form_received
@@ -21,7 +22,7 @@ def process_lab_one_submission(sender, xform, **kwargs):
     If ANY bottle comes up positive, fire up the print job for processing
     """
     try:
-        if xform.xmlns != "http://shine.commcarehq.org/lab/one":
+        if xform.xmlns != STR_MEPI_LAB_ONE_FORM:
             return
         try:
             positives = xform['form']['positive_bottles'].split(' ')

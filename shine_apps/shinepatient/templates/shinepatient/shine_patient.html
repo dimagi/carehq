@@ -3,7 +3,8 @@
 {% load shineforms_tags %}
 {% load xform_tags %}
 {% load i18n %}
-{% block extrahead %}
+{% load thumbnail %}
+{% block extrahead %}[
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/qrcode.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}shinepatient/qrcode/html5-qrcode.js"></script>
@@ -127,6 +128,7 @@
     {% block patient-tab-controller %}
             <li><a href="#patient-casenews-tab">{% trans "Activity History" %}</a></li>
             <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
+            <li><a href="#patient-images-tab">{% trans "Images" %}</a></li>
             <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
             <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
     {% endblock patient-tab-controller %}
@@ -227,6 +229,29 @@
             <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
         </div>
 
+        <div id="patient-images-tab">
+        {% with patient_doc.clinical_images as clinical_images %}
+            {% if clinical_images %}
+            {% for image_tuple in clinical_images %}
+{#                <p>{{ image_tuple.0.image}}</p>#}
+                {% thumbnail image_tuple.0.image "200x200" as im %}
+                <p>
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {{ image_tuple.1 }}
+                </p>
+                {% endthumbnail %}
+            {% endfor %}
+            {% else %}
+                <h4>No Images</h4>
+            {% endif %}
+        {% endwith %}
+        <div class="container">
+                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url mepi_upload_patient_photo patient_doc.get_id %}">
+                <span class="ui-icon ui-icon-gear"></span>
+                <span class="edit_btn_txt">Upload New Image</span>
+            </a>
+        </div>
+        </div>
 
         <div id="patient-submissions-tab">
             {% if submissions %}

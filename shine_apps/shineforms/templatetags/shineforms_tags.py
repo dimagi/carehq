@@ -8,7 +8,7 @@ from shineforms.lab_utils import merge_labs
 from couchforms.models import XFormInstance
 
 from couchforms.templatetags import xform_tags
-from shineforms.constants import xmlns_display_map
+from shineforms.constants import xmlns_display_map, STR_MEPI_ENROLLMENT_FORM, STR_MEPI_CLINICAL_QUEST_FORM, STR_MEPI_OUTCOME_FORM, STR_MEPI_LAB_FOUR_FORM, STR_MEPI_LAB_THREE_FORM, STR_MEPI_LAB_TWO_FORM, STR_MEPI_LAB_ONE_FORM, STR_MEPI_LABDATA_FORM, STR_MEPI_FOLLOWUP_FORM
 
 register = template.Library()
 
@@ -94,32 +94,31 @@ def render_submission_fragment(xmlns, submissions):
     """
     template_name = 'shineforms/generic_fragment.html'
     context = {}
-    if xmlns == 'http://shine.commcarehq.org/patient/reg':
+    if xmlns == STR_MEPI_ENROLLMENT_FORM:
 #        template_name = 'shineforms/enrollment_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns ==  'http://shine.commcarehq.org/questionnaire/clinical':
+    elif xmlns ==  STR_MEPI_CLINICAL_QUEST_FORM:
 #        template_name = 'shineforms/clinical_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns == 'http://shine.commcarehq.org/questionnaire/followup':
+    elif xmlns == STR_MEPI_FOLLOWUP_FORM:
 #        context = {template_name = 'shineforms/followup_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns == 'http://shine.commcarehq.org/questionnaire/labdata':
+    elif xmlns == STR_MEPI_LABDATA_FORM:
         template_name = 'shineforms/labdata_fragment.html'
         context = {'labs': merge_labs(submissions, as_dict=True)}
-        pass
-    elif xmlns == 'http://shine.commcarehq.org/lab/one':
+    elif xmlns == STR_MEPI_LAB_ONE_FORM:
         context = {'submission': submissions[0]}
 #        template_name = 'shineforms/lab_one_fragment.html'
-    elif xmlns == 'http://shine.commcarehq.org/lab/two':
+    elif xmlns == STR_MEPI_LAB_TWO_FORM:
 #        template_name = 'shineforms/lab_two_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns == 'http://shine.commcarehq.org/lab/three':
+    elif xmlns == STR_MEPI_LAB_THREE_FORM:
 #        template_name = 'shineforms/lab_three_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns == 'http://shine.commcarehq.org/lab/four':
+    elif xmlns == STR_MEPI_LAB_FOUR_FORM:
 #        template_name = 'shineforms/lab_four_fragment.html'
         context = {'submission': submissions[0]}
-    elif xmlns == 'http://shine.commcarehq.org/questionnaire/outcome':
+    elif xmlns == STR_MEPI_OUTCOME_FORM:
 #        template_name = 'shineforms/outcome_fragment.html'
         context = {'submission': submissions[0]}
     t = template.loader.get_template(template_name)
@@ -143,7 +142,7 @@ def get_status_matrix(patient):
             context_dict['clinical_info'] = status
         elif displayname == "Lab Data":
             submissions = patient._get_case_submissions(patient.latest_case)
-            lab_submissions = filter(lambda x: x.xmlns == "http://shine.commcarehq.org/questionnaire/labdata", submissions)
+            lab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LABDATA_FORM, submissions)
             labs_dict = merge_labs(lab_submissions, as_dict=True)
             for k,v in labs_dict.items():
                 lab_status=False

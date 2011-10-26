@@ -1,7 +1,10 @@
 # To manage patient views for create/view/update you need to implement them directly in your patient app
 from _collections import defaultdict
 from datetime import datetime
+import hashlib
 import logging
+import tempfile
+import uuid
 import re
 import urllib
 from django.contrib.auth.decorators import login_required
@@ -19,7 +22,8 @@ from patient.forms import BasicPatientForm
 from django.contrib import messages
 from receiver.util import spoof_submission
 from shineforms.views import random_barcode
-from shinepatient.models import ShinePatient
+from shinepatient.forms import AuxImageUploadForm
+from shinepatient.models import ShinePatient, AuxImage
 from casexml.apps.case.models import CommCareCase
 import json
 from couchdbkit.resource import ResourceNotFound
@@ -55,6 +59,46 @@ class MepiPatientSingleView(PatientSingleView):
         #return render_to_response(template_name, context_instance=context)
 
 
+@login_required
+def upload_patient_photo(request, patient_guid, template_name='shinepatient/upload_photo.html'):
+    context = RequestContext(request)
+    patient = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+
+    def handle_uploaded_file(f, form):
+        destination = tempfile.NamedTemporaryFile()
+        checksum = hashlib.md5()
+        for chunk in f.chunks():
+            checksum.update(chunk)
+            destination.write(chunk)
+        destination.seek(0)
+
+        attachment_id = uuid.uuid4().hex
+        new_image = AuxImage(uploaded_date=datetime.utcnow(),
+                             uploaded_by=request.user.username,
+                             uploaded_filename=f.name,
+                             checksum=checksum.hexdigest(),
+                             attachment_id=attachment_id,
+                             image_type=form.cleaned_data['image_type'],
+                             notes=form.cleaned_data['notes'])
+        patient.put_attachment(destination, attachment_id, content_type=f.content_type, content_length=f.size)
+        destination.close()
+        new_image.save()
+        return new_image
+
+    if request.method == 'POST':
+        form = AuxImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = handle_uploaded_file(request.FILES['image_file'], form)
+            patient.aux_images.append(image)
+            patient.save()
+            return HttpResponseRedirect(reverse('shine_single_patient', kwargs={'patient_guid': patient_guid}))
+    else:
+        form = AuxImageUploadForm()
+    context['form'] = form
+    context['patient_guid'] = patient_guid
+    return render_to_response(template_name, context)
+
+
 
 @login_required
 def new_patient_touch(request):
@@ -66,6 +110,7 @@ def new_patient_touch(request):
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
+
 
 
 @login_required

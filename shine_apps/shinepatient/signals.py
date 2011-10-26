@@ -10,7 +10,7 @@ from slidesview.models import ImageAttachment
    
 def process_shinepatient_registration(sender, xform, **kwargs):
     try:
-        if xform.xmlns != "http://shine.commcarehq.org/patient/reg":
+        if xform.xmlns != STR_MEPI_ENROLLMENT_FORM:
             return
         try:
             case_id = xform['form']['case']['case_id']

@@ -1,0 +1,19 @@
+{%  extends base_template %}
+
+{% load patient_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="span-24">
+        <h2>Upload Photo</h2>
+        <form enctype="multipart/form-data" method="POST" action="{{request.path}}">
+            <table>
+            {% csrf_token %}
+            {{ form.as_table }}
+            </table>
+            <input type="submit" value="Submit"/>
+            <input type="hidden" name="next" value="{% url shine_single_patient patient_guid %}" />
+        </form>
+    </div>
+</div>
+{% endblock content %}

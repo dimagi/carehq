@@ -6,11 +6,21 @@ from sorl.thumbnail import ImageField
 
 class ImageAttachment(models.Model):
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    xform_id = models.CharField(max_length=32)
-    attachment_key = models.CharField(max_length=255)
+    patient_guid = models.CharField(max_length=32, null=True, blank=True, db_index=True)
+    xform_id = models.CharField(max_length=32, null=True, blank=True, db_index=True)
+    attachment_key = models.CharField(max_length=255, db_index=True)
     content_type = models.CharField(max_length=160)
     content_length=models.IntegerField()
-    image = ImageField(upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
+    checksum = models.CharField(max_length=32, help_text='MD5 of the Image submitted')
+    image = ImageField(max_length=255,upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
+
+
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        #Don't allow both patient_guid AND xform_id to be None
+        if self.patient_guid is None and xform_id is None:
+            raise ValidationError('You must either set a patient_guid or xform_id, both cannot be None')
 
 
     def __unicode__(self):
