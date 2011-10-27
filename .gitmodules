@@ -31,3 +31,6 @@
 [submodule "submodules/zprintspool-src"]
 	path = submodules/zprintspool-src
 	url = git://github.com/dimagi/zprintspool.git
+[submodule "submodules/hutch-src"]
+	path = submodules/hutch-src
+	url = git://github.com/dimagi/hutch.git
