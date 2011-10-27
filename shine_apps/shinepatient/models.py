@@ -1,12 +1,22 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
 from couchdbkit.ext.django.schema import Document, SchemaListProperty
+from django.core.files.base import ContentFile
+from storages.backends.couchdb_storage import CouchDBStorage, CouchDBFile
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from patient.models.patientmodels import BasePatient
 from couchdbkit.schema.properties import StringProperty, StringListProperty, DateTimeProperty
+import settings
 from shineforms.lab_utils import merge_labs
 from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence, STR_MEPI_ENROLLMENT_FORM, STR_MEPI_LABDATA_FORM, STR_MEPI_LAB_TWO_FORM, STR_MEPI_LAB_FOUR_FORM, STR_MEPI_LAB_THREE_FORM, STR_MEPI_LAB_ONE_FORM
+
+import os
+from cStringIO import StringIO
+
+from django.core.files import File
+from slidesview.couchdb_doc_storage import CouchDBDocStorage, CouchDBAttachmentFile
+from slidesview.models import ImageAttachment
 
 
 class AuxImage(Document):
@@ -20,7 +30,8 @@ class AuxImage(Document):
 
 
 
-
+couchdb_storage = CouchDBStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
+couchdb_doc_storage = CouchDBDocStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
 
 class ShinePatient(BasePatient):
     """
@@ -49,6 +60,8 @@ class ShinePatient(BasePatient):
             img.content_type = attach_dict['content_type']
 
             imgfile = ContentFile(submission.fetch_attachment(attachment_filename, stream=True).read())
+            #imgfile = CouchDBAttachmentFile(submission._id, attachment_filename, couchdb_doc_storage, mode='r')
+            #imgfile = CouchDBFile('%s_%s' % (submission._id, attachment_filename), couchdb_storage, mode='w')
             img.image.save(attachment_filename, imgfile)
             img.save()
         else:
@@ -57,7 +70,7 @@ class ShinePatient(BasePatient):
         return img
     def _get_or_create_image_from_aux(self, aux_image):
                 #check if an ImageAttachment exists for it.
-        attach_dict = self._attachments.get(aux_image.attachment_id,None)
+        attach_dict = self._attachments.get(aux_image['attachment_id'],None)
         imgs = ImageAttachment.objects.filter(patient_guid = self._id, attachment_key=aux_image.attachment_id)
         if imgs.count() == 0:
             #make new ImageAttachment
@@ -65,12 +78,14 @@ class ShinePatient(BasePatient):
             img = ImageAttachment()
 
             img.patient_guid = self._id
-            img.attachment_key = aux_image.attachment_id
+            img.attachment_key = aux_image['attachment_id']
             img.content_length = attach_dict['length']
             img.content_type = attach_dict['content_type']
 
             imgfile = ContentFile(self.fetch_attachment(aux_image.attachment_id, stream=True).read())
-            img.image.save(aux_image.attachment_id, imgfile)
+            #imgfile = CouchDBAttachmentFile(aux_image._id, aux_image['attachment_id'], couchdb_doc_storage, mode='r')
+            #imgfile = CouchDBFile('%s_%s' % (aux_image._id, aux_image['attachment_id']), couchdb_storage, mode='w')
+            img.image.save(aux_image['attachment_id'], imgfile)
             img.save()
         else:
             #verify checksums are equal
@@ -429,5 +444,5 @@ class ShinePatient(BasePatient):
             return 'Unknown'
 
 
-
 from signals import *
+

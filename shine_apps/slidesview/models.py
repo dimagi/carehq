@@ -1,8 +1,14 @@
 import os
 from django.conf import settings
 from django.db import models
+from storages.backends.couchdb_storage import CouchDBStorage
 from dimagi.utils import make_uuid
 from sorl.thumbnail import ImageField
+from slidesview.couchdb_doc_storage import CouchDBDocStorage
+
+
+couchdb_doc_storage = CouchDBDocStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
+couchdb_storage = CouchDBStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
 
 class ImageAttachment(models.Model):
     id = models.CharField(max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
@@ -11,8 +17,10 @@ class ImageAttachment(models.Model):
     attachment_key = models.CharField(max_length=255, db_index=True)
     content_type = models.CharField(max_length=160)
     content_length=models.IntegerField()
-    checksum = models.CharField(max_length=32, help_text='MD5 of the Image submitted')
     image = ImageField(max_length=255,upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
+    checksum = models.CharField(max_length=32, help_text='MD5 of the Image submitted')
+    #image = ImageField(max_length=255, storage=couchdb_doc_storage, upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
+    #image = ImageField(max_length=255, storage=couchdb_storage, upload_to=os.path.join(settings.MEDIA_ROOT, 'attachments'))
 
 
 

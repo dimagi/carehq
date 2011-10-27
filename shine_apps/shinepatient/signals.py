@@ -3,6 +3,7 @@ from casexml.apps.case.models import CommCareCase
 from couchforms.signals import xform_saved
 import logging
 import simplejson
+from shineforms.constants import STR_MEPI_ENROLLMENT_FORM
 from shinepatient.models import ShinePatient
 from receiver.signals import successful_form_received
 from django.core.files.base import ContentFile
@@ -34,27 +35,3 @@ def process_shinepatient_registration(sender, xform, **kwargs):
 successful_form_received.connect(process_shinepatient_registration)
 
 
-def process_bloodwork_attachments(sender, xform, **kwargs):
-    try:
-        if xform.xmlns != "http://shine.commcarehq.org/bloodwork/entry":
-            return
-        try:
-            for k, v in xform._attachments.items():
-                if k == 'form.xml':
-                    continue
-                img = ImageAttachment()
-                img.xform_id = xform._id
-                img.attachment_key = k
-                img.content_length = v['length']
-                img.content_type = v['content_type']
-
-                imgfile = ContentFile(xform.fetch_attachment(k, stream=True).read())
-                img.image.save(k, imgfile)
-                img.save()
-        except Exception, ex:
-            logging.error("Error, bloodwork attachment submission error: %s" % (ex))
-
-    except:
-        logging.error("Error processing the submission due to an unknown error.")
-        raise
-successful_form_received.connect(process_bloodwork_attachments)
