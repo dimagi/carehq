@@ -154,6 +154,7 @@ INSTALLED_APPS = (
     'keymaster',
     'webxforms',
     'djangocouch',
+    'hutch',
     #end clinical_core
 
     #########################

@@ -1,37 +1,20 @@
 from datetime import datetime
 import random
-from couchdbkit.ext.django.schema import Document, SchemaListProperty
+from couchdbkit.ext.django.schema import  SchemaListProperty
 from django.core.files.base import ContentFile
-from storages.backends.couchdb_storage import CouchDBStorage, CouchDBFile
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
+from hutch.couchdb_doc_storage import CouchDBAttachmentFile, CouchDBDocStorage
+from hutch.models import AuxMedia, AttachmentImage
 from patient.models.patientmodels import BasePatient
-from couchdbkit.schema.properties import StringProperty, StringListProperty, DateTimeProperty
+from couchdbkit.schema.properties import StringProperty, StringListProperty
 import settings
 from shineforms.lab_utils import merge_labs
 from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence, STR_MEPI_ENROLLMENT_FORM, STR_MEPI_LABDATA_FORM, STR_MEPI_LAB_TWO_FORM, STR_MEPI_LAB_FOUR_FORM, STR_MEPI_LAB_THREE_FORM, STR_MEPI_LAB_ONE_FORM
 
-import os
-from cStringIO import StringIO
-
-from django.core.files import File
-from slidesview.couchdb_doc_storage import CouchDBDocStorage, CouchDBAttachmentFile
-from slidesview.models import ImageAttachment
 
 
-class AuxImage(Document):
-    uploaded_date = DateTimeProperty()
-    uploaded_by = StringProperty()
-    uploaded_filename = StringProperty() #the uploaded filename info
-    checksum = StringProperty()
-    attachment_id = StringProperty() #the actual attachment id in _attachments
-    image_type = StringProperty()
-    notes = StringProperty()
-
-
-
-couchdb_storage = CouchDBStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
-couchdb_doc_storage = CouchDBDocStorage(server=settings.COUCH_SERVER, database=settings.COUCH_DATABASE_NAME)
+couchdb_image_storage = CouchDBDocStorage(db_url=settings.COUCH_DATABASE)
 
 class ShinePatient(BasePatient):
     """
@@ -41,57 +24,7 @@ class ShinePatient(BasePatient):
 
     cases = StringListProperty()
 
-    aux_images = SchemaListProperty(AuxImage)
-
-
-    def _get_or_create_image_from_submission(self, submission, attachment_filename):
-        #check if an ImageAttachment exists for it.
-        imgs = ImageAttachment.objects.filter(xform_id=submission._id, attachment_key=attachment_filename)
-        if imgs.count() == 0:
-            #make new ImageAttachment
-            new_img = ImageAttachment()
-            attach_dict = submission._attachments.get(attachment_filename,None)
-            img = ImageAttachment()
-
-            img.patient_guid = self._id
-            img.xform_id = submission._id
-            img.attachment_key = attachment_filename
-            img.content_length = attach_dict['length']
-            img.content_type = attach_dict['content_type']
-
-            imgfile = ContentFile(submission.fetch_attachment(attachment_filename, stream=True).read())
-            #imgfile = CouchDBAttachmentFile(submission._id, attachment_filename, couchdb_doc_storage, mode='r')
-            #imgfile = CouchDBFile('%s_%s' % (submission._id, attachment_filename), couchdb_storage, mode='w')
-            img.image.save(attachment_filename, imgfile)
-            img.save()
-        else:
-            #verify checksums are equal
-            img = imgs[0]
-        return img
-    def _get_or_create_image_from_aux(self, aux_image):
-                #check if an ImageAttachment exists for it.
-        attach_dict = self._attachments.get(aux_image['attachment_id'],None)
-        imgs = ImageAttachment.objects.filter(patient_guid = self._id, attachment_key=aux_image.attachment_id)
-        if imgs.count() == 0:
-            #make new ImageAttachment
-            new_img = ImageAttachment()
-            img = ImageAttachment()
-
-            img.patient_guid = self._id
-            img.attachment_key = aux_image['attachment_id']
-            img.content_length = attach_dict['length']
-            img.content_type = attach_dict['content_type']
-
-            imgfile = ContentFile(self.fetch_attachment(aux_image.attachment_id, stream=True).read())
-            #imgfile = CouchDBAttachmentFile(aux_image._id, aux_image['attachment_id'], couchdb_doc_storage, mode='r')
-            #imgfile = CouchDBFile('%s_%s' % (aux_image._id, aux_image['attachment_id']), couchdb_storage, mode='w')
-            img.image.save(aux_image['attachment_id'], imgfile)
-            img.save()
-        else:
-            #verify checksums are equal
-            img = imgs[0]
-        return img
-
+    aux_media = SchemaListProperty(AuxMedia)
 
     @property
     def clinical_images(self):
@@ -113,7 +46,10 @@ class ShinePatient(BasePatient):
         ret = []
 
         #step 1, check the case's submissions
+
+
         for submit in attach_submissions:
+
             xmlns = submit['value'][0]
             attachment_filename = submit['value'][1]
             xform_id = submit['id']
@@ -147,7 +83,6 @@ class ShinePatient(BasePatient):
                         image_context = 'Chocolate'
                     elif submission.form['agar_photos'].get('lowenstein-jensen', None) == attachment_filename:
                         image_context = 'Lowenstein-Jensen'
-                pass
             elif xmlns == STR_MEPI_LAB_THREE_FORM:
                 #vitek_photo
                 if submission.form.get('vitek_photo',None) == attachment_filename:
@@ -160,17 +95,16 @@ class ShinePatient(BasePatient):
                 #plate_image
                 if submission.form.get('plate_image',None) == attachment_filename:
                     image_context = 'Plate Image'
-            img = self._get_or_create_image_from_submission(submission, attachment_filename)
-            ret.append((img, image_context))
+
+            attachments_img_dict = AttachmentImage.objects.get_doc_attachments(submission)
+            if attachment_filename in attachments_img_dict:
+                ret.append((attachments_img_dict[attachment_filename], image_context))
 
         #step 2: check the AuxImages
-        for aux in self.aux_images:
-            img = self._get_or_create_image_from_aux(aux)
-            ret.append((img, aux.image_type))
-
-        print ret
-
-
+        print "getting aux attachments"
+        aux_img_dict = AttachmentImage.objects.get_doc_auxmedia(self)
+        for aux, attach_img in aux_img_dict.items():
+            ret.append((attach_img, aux['media_meta']['image_type']))
         return ret
 
 
@@ -443,6 +377,4 @@ class ShinePatient(BasePatient):
         else:
             return 'Unknown'
 
-
-from signals import *
 

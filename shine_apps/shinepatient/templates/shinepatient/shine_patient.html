@@ -233,7 +233,6 @@
         {% with patient_doc.clinical_images as clinical_images %}
             {% if clinical_images %}
             {% for image_tuple in clinical_images %}
-{#                <p>{{ image_tuple.0.image}}</p>#}
                 {% thumbnail image_tuple.0.image "200x200" as im %}
                 <p>
                     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">

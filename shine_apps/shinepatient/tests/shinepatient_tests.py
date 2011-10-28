@@ -16,7 +16,7 @@ from django_digest.test import Client as DigestClient
 from StringIO import StringIO
 from couchforms.models import XFormInstance
 from shinepatient.tests.testutils import _mkpatient_dict, get_registration_xml, do_submit, create_image
-from slidesview.models import ImageAttachment
+from hutch.models import AttachmentImage
 
 
 image_submit_xml = """
@@ -171,7 +171,7 @@ class ShinePatienteTests(TestCase):
         except Exception, ex:
             self.fail("Error, submission not retrieved: %s" % ex)
 
-        images = ImageAttachment.objects.filter(xform_id=uid, attachment_key=testimage)
+        images = AttachmentImage.objects.filter(xform_id=uid, attachment_key=testimage)
         self.assertEqual(len(images), 1)
 
     def _random_td(self):
@@ -224,7 +224,7 @@ class ShinePatienteTests(TestCase):
                 self.fail("Error, submission not retrieved: %s" % ex)
 
 
-            #images = ImageAttachment.objects.filter(xform_id=uid, attachment_key=filename)
+            #images = AttachmentImage.objects.filter(xform_id=uid, attachment_key=filename)
             #self.assertEqual(len(images), 1)
 
 

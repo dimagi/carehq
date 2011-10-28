@@ -6,29 +6,22 @@ import logging
 import tempfile
 import uuid
 import re
-import urllib
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from sorl.thumbnail.shortcuts import get_thumbnail
 from clinical_core.webentry.util import get_remote_form, user_meta_preloaders, shared_preloaders
 from couchforms.models import XFormInstance
-from couchforms.util import post_xform_to_couch
-from patient.models import Patient
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from hutch.models import  AttachmentImage, AuxMedia
 from patient.models import BasePatient
-from patient.forms import BasicPatientForm
-from django.contrib import messages
 from receiver.util import spoof_submission
-from shineforms.views import random_barcode
-from shinepatient.forms import AuxImageUploadForm
-from shinepatient.models import ShinePatient, AuxImage
+from shinepatient.forms import  ClinicalImageUploadForm
 from casexml.apps.case.models import CommCareCase
 import json
 from couchdbkit.resource import ResourceNotFound
-from patient.views import PatientListView, PatientSingleView
-from slidesview.models import ImageAttachment
+from patient.views import  PatientSingleView
 from touchforms.formplayer.views import play_remote, get_remote_instance
 
 
@@ -71,29 +64,30 @@ def upload_patient_photo(request, patient_guid, template_name='shinepatient/uplo
             checksum.update(chunk)
             destination.write(chunk)
         destination.seek(0)
+        image_type = form.cleaned_data['image_type'],
+        media_meta=dict(image_type=image_type[0])
 
         attachment_id = uuid.uuid4().hex
-        new_image = AuxImage(uploaded_date=datetime.utcnow(),
+        new_image_aux = AuxMedia(uploaded_date=datetime.utcnow(),
                              uploaded_by=request.user.username,
                              uploaded_filename=f.name,
                              checksum=checksum.hexdigest(),
                              attachment_id=attachment_id,
-                             image_type=form.cleaned_data['image_type'],
+                             media_meta=media_meta,
                              notes=form.cleaned_data['notes'])
         patient.put_attachment(destination, attachment_id, content_type=f.content_type, content_length=f.size)
         destination.close()
-        new_image.save()
-        return new_image
+        return new_image_aux
 
     if request.method == 'POST':
-        form = AuxImageUploadForm(request.POST, request.FILES)
+        form = ClinicalImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = handle_uploaded_file(request.FILES['image_file'], form)
-            patient.aux_images.append(image)
+            patient['aux_media'].append(image)
             patient.save()
             return HttpResponseRedirect(reverse('shine_single_patient', kwargs={'patient_guid': patient_guid}))
     else:
-        form = AuxImageUploadForm()
+        form = ClinicalImageUploadForm()
     context['form'] = form
     context['patient_guid'] = patient_guid
     return render_to_response(template_name, context)
@@ -182,10 +176,10 @@ def single_case(request, case_id):
 
     def mk_thumbnail(doc_id, k):
         try:
-            attach = ImageAttachment.objects.get(xform_id=doc_id, attachment_key=k)
+            attach = AttachmentImage.objects.get(xform_id=doc_id, attachment_key=k)
             im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
             return im
-        except ImageAttachment.DoesNotExist:
+        except AttachmentImage.DoesNotExist:
             logging.error("Error retrieving image attachment %s for submission %s" % (k,doc_id))
             return None
     image_action_dict = {}

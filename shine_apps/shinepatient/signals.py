@@ -1,14 +1,9 @@
-import uuid
 from casexml.apps.case.models import CommCareCase
-from couchforms.signals import xform_saved
 import logging
-import simplejson
 from shineforms.constants import STR_MEPI_ENROLLMENT_FORM
 from shinepatient.models import ShinePatient
 from receiver.signals import successful_form_received
-from django.core.files.base import ContentFile
-from slidesview.models import ImageAttachment
-   
+
 def process_shinepatient_registration(sender, xform, **kwargs):
     try:
         if xform.xmlns != STR_MEPI_ENROLLMENT_FORM:

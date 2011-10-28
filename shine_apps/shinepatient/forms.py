@@ -1,4 +1,5 @@
 from django.forms import forms, fields
+from hutch.forms import AuxImageUploadForm
 
 PHOTO_CHOICES = (
     ('consent_photo','Consent Form'),
@@ -24,7 +25,7 @@ PHOTO_CHOICES = (
 )
 
 
-class AuxImageUploadForm(forms.Form):
+class ClinicalImageUploadForm(AuxImageUploadForm):
     image_type = fields.ChoiceField(label="Image Upload Type", choices=PHOTO_CHOICES)
-    image_file  = fields.FileField()
     notes = fields.CharField(required=False)
+
