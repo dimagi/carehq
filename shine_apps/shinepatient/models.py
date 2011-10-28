@@ -75,7 +75,7 @@ class ShinePatient(BasePatient):
                 #lab two
                 #agar_photos/<field>
                 if submission.form.get('agar_photos', None) is not None:
-                    if submission.form['agar_photos']['macconkey'] == attachment_filename:
+                    if submission.form['agar_photos'].get('macconkey', None) == attachment_filename:
                         image_context = 'Macconkey'
                     elif submission.form['agar_photos'].get('blood', None) == attachment_filename:
                         image_context = 'Blood'
@@ -192,7 +192,7 @@ class ShinePatient(BasePatient):
         hiv ="No"
         for s in submissions:
             if s.xmlns == STR_MEPI_ENROLLMENT_FORM:
-                if s['form']['hiv_test'] == "yes":
+                if s['form'].get('hiv_test', '') == "yes":
                     return "yes"
 
             if s.xmlns == STR_MEPI_LABDATA_FORM:
