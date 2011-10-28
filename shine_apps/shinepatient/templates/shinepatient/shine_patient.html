@@ -235,7 +235,10 @@
             {% for image_tuple in clinical_images %}
                 {% thumbnail image_tuple.0.image "200x200" as im %}
                 <p>
-                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+
+                    <a href="{% url hutch_show_image image_tuple.0.id %}">
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    </a>
                     {{ image_tuple.1 }}
                 </p>
                 {% endthumbnail %}
