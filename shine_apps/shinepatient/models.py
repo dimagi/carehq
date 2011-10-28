@@ -101,7 +101,6 @@ class ShinePatient(BasePatient):
                 ret.append((attachments_img_dict[attachment_filename], image_context))
 
         #step 2: check the AuxImages
-        print "getting aux attachments"
         aux_img_dict = AttachmentImage.objects.get_doc_auxmedia(self)
         for aux, attach_img in aux_img_dict.items():
             ret.append((attach_img, aux['media_meta']['image_type']))
