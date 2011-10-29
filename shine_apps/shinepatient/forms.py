@@ -22,6 +22,11 @@ PHOTO_CHOICES = (
 
     #lab four
     ('plate_image','Plate Image'),
+
+    #other
+    ('chest_xray','Chest XRay'),
+    ('malaria_smear','Chest XRay'),
+
 )
 
 
