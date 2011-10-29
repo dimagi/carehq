@@ -140,11 +140,13 @@ LOCAL_APP_URLS = patterns('',
 
 AUDIT_VIEWS = ['pactcarehq.views.post',]
 AUDIT_MODEL_SAVE = [
-                    'django.contrib.auth.models.User',
-                    'patient.models.BasePatient',
-                    'dotsview.models.couchmodels.CObservationAddendum',
-                    'dotsview.models.couchmodels.CObservation',
-                    ]
+                'django.contrib.auth.models.User',
+                'patient.models.BasePatient',
+                'permissions.models.Actor',
+                'permissions.models.Permission',
+                'permissions.models.PrincipalRoleRelation',
+                'actorpermission.models.BaseActorDocument',
+                ]
 DEV_APPS=['couchlog','couchforms','couchexport','patient','actors','keymaster','pactcarehq','dotsview','auditcare', ]
 
 MIDDLEWARE_CLASSES = (
