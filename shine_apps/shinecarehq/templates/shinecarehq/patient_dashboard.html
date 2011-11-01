@@ -16,45 +16,45 @@
 {% endblock %}
 <div class="container">
     <div class="span-24">
-        <h2>Bacteremia Dashboard</h2>
-
+        <h2>Bacteremia Dashboard :: {{ show_string }}</h2>
 
         <div class="span-6">
-            <h3>Total Enrolled</h3>
+            <h3><a href="{{ request.path }}?show=all">All Patients</a></h3>
             <h3>{{ patients|length }}</h3>
         </div>
         <div class="span-6">
-            <h3>Total Active</h3>
+            <h3><a href="{{ request.path }}?show=active">Active</a></h3>
             <h3>{{ active|length }}</h3>
         </div>
         <div class="span-6">
-            <h3>Total Completed</h3>
-            <h3>TBD</h3>
+            <h3><a href="{{ request.path }}?show=inactive">Inactive</a></h3>
+            <h3>{{ inactive|length }}</h3>
         </div>
-        <div class="span-6 last">
-            <h3>% Positive</h3>
-            <h3>TBD</h3>
-        </div>
-
-        <hr>
-         <div class="span-6">
-            <h3>Enrolled Today</h3>
+         <div class="span-6 last">
+             <h3><a href="{{ request.path }}?show=enrolled_today">Enrolled Today</a></h3>
             <h3>{{ enrolled_today|length }}</h3>
         </div>
-
-         <div class="span-6">
-            <h3>Needing Follow Up</h3>
-            <h3>{{ only_enrolled|length }}</h3>
+        <hr>
+        <div class="span-6">
+            <h3><a href="{{ request.path }}?show=positive">Positive</a></h3>
+            <h3>{{ positive|length }}</h3>
         </div>
 
-
-
-
-        <div class="prepend-15 span-3 last">
-            <a href="{{ create_patient_url }}">New Patient</a>
+        <div class="span-6">
+            <h3><a href="{{ request.path }}?show=negative">Negative</a></h3>
+            <h3>{{ negative|length }}</h3>
+        </div>
+        <div class="span-6">
+            <h3><a href="{{ request.path }}?show=contaminated">Contaminated</a></h3>
+            <h3>{{ contaminated|length }}</h3>
+        </div>
+         <div class="span-6 last">
+             <h3><a href="{{ request.path }}?show=needing_fup">Needing Follow Up</a></h3>
+            <h3>{{ only_enrolled|length }}</h3>
         </div>
     </div>
 <hr>
+    <div class="span-24 prepend-22"><small>Total: {{ show_list|length }} rows</small></div>
     <table id="patient-table" class="tablesorter span-24 last">
     <thead>
         <tr>
@@ -71,7 +71,7 @@
     </thead>
 
         <tbody>
-        {% for patient in patients %}
+        {% for patient in show_list %}
             <tr>
 
                 <td>
@@ -119,5 +119,6 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="span-24 prepend-22"><small>Total: {{ show_list|length }} rows</small></div>
 </div>
 {% endblock content %}

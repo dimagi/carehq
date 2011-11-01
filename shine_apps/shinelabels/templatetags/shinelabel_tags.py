@@ -40,9 +40,6 @@ def get_printer_status():
                 if stat.is_cleared:
                     last_active = stat
                     break
-        print last_active
-        print last_inactive
-        print is_active
         t = template.loader.get_template('shinelabels/printer_status.html')
         context_dict = dict()
         context_dict['status'] = is_active

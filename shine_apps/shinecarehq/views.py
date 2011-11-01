@@ -75,18 +75,48 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     Full case list for dashboard view
     """
 
+    show_param = request.GET.get('show', 'all')
+
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
 
     for pt in patients:
         pt.cache_clinical_case()
 
-    active= filter(lambda x: x.get_current_status != '[Done]', patients)
+    active= filter(lambda x: not x.latest_case.closed, patients)
+    inactive = set.difference(set(patients), set(active))
     enrolled_today = filter(lambda x: x.get_last_action[1] == 'Enrollment' and x.get_last_action[0].date() == datetime.utcnow().date(), patients)
-    data_completed = filter(lambda x: x.data_complete, patients)
-
     only_enrolled = filter(lambda x: x.get_last_action[1] == 'Enrollment', patients)
+    positive = filter(lambda x: x.get_culture_status == 'positive', patients)
+    negative = filter(lambda x: x.get_culture_status == 'negative', patients)
+    contaminated = filter(lambda x: x.latest_case.dynamic_properties().get('contamination', '') == 'yes', patients)
 
-    pct_positive = round(float(len(filter(lambda x: x.is_positive, patients))) / len(patients) * 100)
+
+    if show_param == 'all':
+        show_list = patients
+        show_string = "All Patients"
+    elif show_param == 'active':
+        show_list = active
+        show_string = "Active Patients"
+    elif show_param == 'inactive':
+        show_list = inactive
+        show_string = 'Inactive Patients'
+    elif show_param=='enrolled_today':
+        show_string="Patients Enrolled Today"
+        show_list = enrolled_today
+    elif show_param == 'needing_fup':
+        show_string="Patients Needing Follow Up"
+        show_list = only_enrolled
+    elif show_param == 'positive':
+        show_string = "Positive Blood Cultures"
+        show_list = positive
+    elif show_param == 'negative':
+        show_string = "Negative Blood Cultures"
+        show_list = negative
+    elif show_param == 'contaminated':
+        show_string = "Contaminated Blood Cultures"
+        show_list = contaminated
+
+
 
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 

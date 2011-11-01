@@ -201,9 +201,6 @@ class ShinePatient(BasePatient):
                     return hiv
         return hiv
 
-    @property
-    def get_current_status(self):
-        return "Bloodwork > Positive > Lab2"
 
     @property
     def last_activity(self):
@@ -302,13 +299,6 @@ class ShinePatient(BasePatient):
     def data_complete(self):
         """
         todo: Do an analysis of all the fields collected in all forms to determine if dataset is complete
-        """
-        return random.choice([True, False])
-
-    @property
-    def is_positive(self):
-        """
-        Determine positivity from submitted form TODO
         """
         return random.choice([True, False])
 

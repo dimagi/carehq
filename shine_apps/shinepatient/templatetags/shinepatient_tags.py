@@ -1,3 +1,4 @@
+import logging
 from django import template
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
@@ -45,7 +46,7 @@ class PatientFromCaseNode(template.Node):
         try:
             pts = ShinePatient.view('shinepatient/patient_cases_all', key=self.case.resolve(context)['case_id'], include_docs=True).all()
         except Exception, ex:
-            print "Error: %s" % ex
+            logging.error("Error rendering PatientFromCaseNode: %s" % ex)
             context[self.var_name] = None
             return ''
         if len(pts) == 0:
