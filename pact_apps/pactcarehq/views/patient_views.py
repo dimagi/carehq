@@ -63,7 +63,7 @@ class PactPatientSingleView(PatientSingleView):
         context['submit_arr'] = _get_submissions_for_patient(dj_patient)
         context['casedoc'] = CommCareCase.get(pdoc.case_id)
 
-        last_bw = pdoc.last_bloodwork
+        last_bw = pdoc.check_last_bloodwork
         context['last_bloodwork'] = last_bw
 
         role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
@@ -184,10 +184,8 @@ def _get_submissions_for_patient(patient):
                 try:
                     timesplit = note['form']['Meta']['TimeStart'].split(' ')
                     tstring = "%sT%s" % (timesplit[0], timesplit[1])
-                    print tstring
                     date = isodate.parse_datetime(tstring).date()
                 except Exception, e:
-                    print "exception parsing freaking date! %s" % (e)
                     date = datetime.min.date()
         submissions.append([note._id, date, note.form['Meta']['username'] , displayname])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
