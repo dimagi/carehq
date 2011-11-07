@@ -367,3 +367,4 @@ class ShinePatient(BasePatient):
             return 'Unknown'
 
 
+from .signals import *
