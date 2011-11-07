@@ -32,13 +32,15 @@
                     <strong>Total Submissions:</strong> {{ cpatient.activity_dashboard.count }}<br>
                     <strong>Last Encounter:</strong> {{ cpatient.activity_dashboard.encounter_date|date }} by {{ cpatient.activity_dashboard.chw_id }} {{ cpatient.activity_dashboard.last_form_type }}<br>
                     <strong>Last Bloodwork:</strong>
-                    {% if cpatient.last_bloodwork %}
-                        {{ cpatient.last_bloodwork.get_date|date }} <small>{{ cpatient.last_bloodwork.get_date|timesince }}</small>
-                        {% if cpatient.last_bloodwork.is_overdue %}
+                    {% if cpatient.check_last_bloodwork %}
+                        {% with cpatient.check_last_bloodwork as bw %}
+                        {{ bw.get_date|date }} <small>{{ bw.get_date|timesince }}</small>
+                        {% if bw.is_overdue %}
                             <div class="error">
                                 Bloodwork Overdue
                             </div>
                         {% endif %}
+                        {% endwith %}
                     {% else %}
                         No bloodwork
                     {% endif %}

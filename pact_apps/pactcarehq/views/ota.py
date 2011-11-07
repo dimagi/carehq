@@ -5,7 +5,6 @@ from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
 from pactpatient.models.pactmodels import PactPatient
 
-
 @httpdigest()
 def debug_casexml_new(request):
     """

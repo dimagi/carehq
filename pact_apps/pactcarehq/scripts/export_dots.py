@@ -10,7 +10,7 @@ def run():
     for obs in observations:
         output = []
         output.append(str(obs.doc_id))
-        doc = XFormInstance.view('pactcarehq/all_submits_raw', key=obs.doc_id).first()
+        doc = XFormInstance.get(obs.doc_id)
         if (doc):
             output.append(doc['form']['encounter_date'].strftime('%Y-%m-%d'))
         else:

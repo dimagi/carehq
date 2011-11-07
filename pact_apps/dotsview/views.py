@@ -463,11 +463,18 @@ def get_couchdata(request):
         new_dates.append((date, observation_tuple[0], observation_tuple[1], observation_tuple[2], observation_tuple[3]))
     weeks = [new_dates[7 * n:7 * (n + 1)] for n in range(len(new_dates) / 7)]
 
-    dots_pts = PactPatient.view('pactcarehq/all_dots', include_docs=True).all()
+    all_patients = PactPatient.view('pactpatient/by_case_id', include_docs=True).all()
+    def is_dots(pt):
+        if pt['arm'].startswith('DOT'):
+            return True
+        else:
+            return False
+    dots_pts = filter(is_dots, all_patients)
+
     dots_ids = [pt._id for pt in dots_pts]
     patients = Patient.objects.filter(doc_id__in=dots_ids)
 
-    visit_docs = [XFormInstance.view('pactcarehq/all_submits_raw', key=visit_id, include_docs=True).first() for visit_id in visits_set]
+    visit_docs = [XFormInstance.get(visit_id) for visit_id in visits_set]
     while visit_docs.count(None) > 0:
         visit_docs.remove(None) #this is a bit hacky, some of the visit_ids are actually reconcile doc_ids, so we need to remove the ones that return None from the view
 

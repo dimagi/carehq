@@ -117,10 +117,7 @@ def prime_views():
     db.view("dotsview/dots_observations", limit=5).all()
     logging.debug("Primed dotsview/dots_observations")
 
-    db.view("pactcarehq/all_dots", limit=5).all()
-    logging.debug("Primed pactcarehq views")
-
-    db.view("pactcarehq/all_dots", limit=5).all()
+    db.view("pactcarehq/all_submits", limit=5).all()
     logging.debug("Primed pactcarehq views")
 
     db.view("pactpatient/by_case_id", limit=5).all()

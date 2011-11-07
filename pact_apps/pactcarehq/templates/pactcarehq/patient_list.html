@@ -43,10 +43,10 @@
                 {% if patient.arm == "DOT"%}
                     <a href="{% url dots_view %}?patient={{patient.get_id}}">View DOT Adherence</a>
                 {% endif %}
-                {% if patient.last_bloodwork %}
+                {% if patient.check_last_bloodwork %}
                     <br>
-                    <strong>Bloodwork</strong> {{ patient.last_bloodwork.get_date|date }} <small>({{ patient.last_bloodwork.get_date|timesince }} ago)</small>
-                    {% if patient.last_bloodwork.is_overdue %}
+                    <strong>Bloodwork</strong> {{ patient.check_last_bloodwork.get_date|date }} <small>({{ patient.check_last_bloodwork.get_date|timesince }} ago)</small>
+                    {% if patient.check_last_bloodwork.is_overdue %}
                         <strong style="color:red;">Overdue!</strong>
                     {% endif %}
                 {% endif %}

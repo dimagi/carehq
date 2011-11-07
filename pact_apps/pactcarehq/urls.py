@@ -11,8 +11,8 @@ urlpatterns = patterns ('',
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '%spactcarehq/img/favicon.png' % (settings.STATIC_URL)}),
 
 
-    (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),
-    (r'^reduce$', 'pactcarehq.views.my_patient_activity_reduce'),
+#    (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),
+#    (r'^reduce$', 'pactcarehq.views.my_patient_activity_reduce'),
 
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
     (r'^cases$', 'pactcarehq.views.debug_casexml_new'),

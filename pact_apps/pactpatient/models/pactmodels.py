@@ -1,11 +1,15 @@
-from datetime import datetime, timedelta
+from _collections import defaultdict
+from datetime import datetime, timedelta, date
+from cherrypy.wsgiserver import CherryPyWSGIServer
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty, DateProperty
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
 from casexml.apps.case.models import CommCareCase
+from couchforms.models import XFormInstance
 from dimagi.utils.couch.database import get_db
+from pactconfig import constants
 from pactpatient.enums import PACT_ARM_CHOICES, PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
 from patient.models import BasePatient
 import logging
@@ -184,6 +188,74 @@ class PactPatient(BasePatient):
     ssn = StringProperty()
 
     @property
+    def last_progress_note_date(self):
+        #iterate through xforms in case and get namespace by doing xforminstance.get()
+        case_doc = self._cache_case()
+
+        if hasattr(case_doc, 'last_note'):
+            return case_doc.last_note
+        else:
+            return None
+
+    @property
+    def last_dot_form_date(self):
+        #todo: get case
+        #iterate through xforms in case and get namespace by doing xforminstance.get()
+        #if dots form, then break
+        case_doc = self._cache_case()
+        if hasattr(case_doc, 'last_dot'):
+            return case_doc.last_dot
+        else:
+            for id in reversed(case_doc.xform_ids):
+                xform = self._get_case_submission(id)
+                if xform.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+                    return xform['form']['encounter_date']
+            return ''
+
+
+    def _cache_case(self):
+        if hasattr(self,'_case'):
+            return self._case
+
+        self._case = CommCareCase.get(self.case_id)
+        self._cached_submits=True
+        return self._case
+
+#    def _get_case_submissions(self):
+#        print "cache case submits for %s" % self._id
+#        case = self._cache_case()
+#        attrib = '_case_submissions_%s' % case._id
+#        if hasattr(self, attrib):
+#            print "hit cache case submits for %s" % self._id
+#            return getattr(self, attrib)
+#        else:
+#            submissions = [XFormInstance.get(x) for x in case.xform_ids]
+#            setattr(self, attrib, submissions)
+#            print "finish cache case submits for %s" % self._id
+#            return submissions
+
+    def _get_case_submission(self, xform_id):
+        if not hasattr(self, '_case'):
+            self._cache_case()
+        attrib = '_case_xform_%s' % xform_id
+        if hasattr(self, attrib):
+            return getattr(self, attrib)
+        else:
+            if xform_id in self._case.xform_ids:
+                instance = XFormInstance.get(xform_id)
+                setattr(self, attrib, instance)
+                return instance
+            else:
+                return None
+
+
+
+
+
+
+
+
+    @property
     def get_race(self):
         if hasattr(self, '_race'):
             return self._race
@@ -279,11 +351,11 @@ class PactPatient(BasePatient):
             return True
 
     @property
-    def last_bloodwork(self):
+    def check_last_bloodwork(self):
         """bloodwork will check two places.  First, the custom bloodwork view to see if there's a bloodwork submission from an XForm, else, it'll check to see """
-#        if hasattr(self, '_prior_bloodwork'):
-#            #in memory lookup
-#            return self._prior_bloodwork
+        if hasattr(self, '_prior_bloodwork'):
+            #in memory lookup
+            return self._prior_bloodwork
 
         #memcached lookup
         last_bw = cache.get('%s_bloodwork' % (self._id), None)
@@ -294,21 +366,19 @@ class PactPatient(BasePatient):
         elif last_bw == '[##Null##]':
             return None
         else:
-            #self._prior_bloodwork = CBloodwork.wrap(simplejson.loads(last_bw))
-            #return self._prior_bloodwork
             pass
-
 
         #requery
         bw_docs = CBloodwork.view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
         bw_docs = sorted(bw_docs, key=lambda x: x['test_date'], reverse=True)
         if len(bw_docs) > 0:
-            #self._prior_bloodwork = bw_docs[0]
-            #cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
+            self._prior_bloodwork = bw_docs[0]
+            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
             return bw_docs[0]
-        if self.prior_bloodwork.test_date == None:
+
+        if self.prior_bloodwork.test_date is None:
             #this is a bit hacky, it should really be null, but since this is an added on object, to PactPatient, it doesn't show up as None
-            #so we need to do an explicit check for the
+            #so we need to do an explicit check for the value
             #cache.set('%s_bloodwork' % (self._id), '[##Null##]')
             pass
         else:
@@ -320,30 +390,59 @@ class PactPatient(BasePatient):
     @property
     def activity_dashboard(self):
         #[count, encounter_date, doc_id, chw_id, xmlns, received_on]
-
         if hasattr(self, '_dashboard'):
             return self._dashboard
         else:
             #Let's check memcached.
-            cached_dashboard_json = cache.get('%s_dashboard' % (self._id), None)
-            if cached_dashboard_json != None:
+            cached_dashboard_json = cache.get('%s_dashboard' % self._id, None)
+            if cached_dashboard_json is not None:
                 if cached_dashboard_json == '[##Null##]':
                     self._dashboard = None #nullstring, so we have no dashboard but we don't want to requery
                 else:
                     self._dashboard = CActivityDashboard.wrap(simplejson.loads(cached_dashboard_json))
             else:
-                dashboard_data = CActivityDashboard.view('pactcarehq/patient_dashboard', key=self.pact_id).first()
-                if dashboard_data == None:
-                    #if it's null, set it to null in memcached using a nullstring
-                    cache.set("%s_dashboard" % (self._id), '[##Null##]')
-                    self._dashboard = None
-                else:
-                    cache.set('%s_dashboard' % (self._id), simplejson.dumps(dashboard_data['value']))
-                    self._dashboard = CActivityDashboard.wrap(dashboard_data['value'])
+                #new version pulling from case
+                case_doc = self._cache_case()
+                ret = dict()
+                ret['count'] = len(set(case_doc.xform_ids))
+                last_form = self._get_case_submission(case_doc.xform_ids[-1])#self._XFormInstance.get(case_doc.xform_ids[-1])
+                ret['doc_id'] = last_form._id
+                ret['last_xmlns'] = last_form.xmlns
+                ret['last_received'] = last_form.received_on.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            if self._dashboard != None and self._dashboard.last_bloodwork.test_date != None:
-                self._prior_bloodwork = self._dashboard.last_bloodwork
+                def _get_encounter_date(xform_doc):
+                    ret_date = None
+                    try:
+                        if xform_doc.get('encounter_date', None) is not None:
+                            ret_date = xform_doc['encounter_date']
+                        if xform_doc.get('note', None) is not None and xform_doc['note'].get('encounter_date', None) is not None:
+                            ret_date =  xform_doc['note']['encounter_date']
+                        if xform_doc.get('Meta', None) is not None:
+                            if xform_doc['Meta'].get('TimeEnd', None) is not None:
+                                ret_date = xform_doc['Meta']['TimeEnd']
+                            if xform_doc['Meta'].get('TimeStart', None) is not None:
+                                ret_date = xform_doc['Meta']['TimeStart']
+                        if isinstance(ret_date, date):
+                            ret_date = ret_date.strftime('%Y-%m-%dT04:00:00.000Z')
+                        elif isinstance(ret_date, datetime):
+                            ret_date = ret_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+                        elif isinstance(ret_date, str) or isinstance(ret_date, unicode):
+                            splits = ret_date.split(' ')
+                            if len(splits) > 1:
+                                ret_date = "%sT%s" % (splits[0], splits[1])
 
+                    except Exception, ex:
+                        ret_date = ''
+                        logging.error("Unable to parse an encounter date from submission %s" % xform_doc['_id'])
+                    return ret_date
+
+
+                ret['encounter_date'] = _get_encounter_date(last_form['form'])
+                cache.set('%s_dashboard' % self._id, simplejson.dumps(ret))
+                self._dashboard = CActivityDashboard.wrap(ret)
+
+#            if self._dashboard is not None and self._dashboard['last_bloodwork'].test_date:
+#                self._prior_bloodwork = self._dashboard.last_bloodwork
             return self._dashboard
 
     def dots_casedata_for_day(self, date, art_num, non_art_num):
@@ -542,7 +641,7 @@ class PactPatient(BasePatient):
         """
         Get casexml phones
         """
-        casedoc = CommCareCase.get(self.case_id)
+        casedoc = self._cache_case()
         phone_properties = sorted(filter(lambda x: x.startswith("Phone"), casedoc._dynamic_properties.keys()))
         #iterate through all phones properties and make an array of [ {description, number}, etc ]
         ret = []
@@ -570,7 +669,7 @@ class PactPatient(BasePatient):
         """
         Get casexml address info
         """
-        casedoc = CommCareCase.get(self.case_id)
+        casedoc = self._cache_case()
         #iterate through all address properties and make an array of [ {description, address_string}, etc ]
         address_props = sorted(filter(lambda x: x.startswith("address"), casedoc._dynamic_properties.keys()))
         ret = []
@@ -659,7 +758,7 @@ class PactPatient(BasePatient):
         return ret
 
     def ghetto_xml(self):
-        xml_dict = {}
+        xml_dict = defaultdict(lambda: '')
         xml_dict['case_id'] = self.case_id
         xml_dict['date_modified'] = self.date_modified.strftime("%Y-%m-%dT%H:%M:%S.000")
         xml_dict['patient_name'] = "%s, %s" % (self.last_name, self.first_name)
@@ -678,34 +777,13 @@ class PactPatient(BasePatient):
 
         #check the view if any exist.  if it's empty, check this property.
 
-        xml_dict['last_dot'] = ''
-        last_dots = get_db().view('pactcarehq/last_dots_form', key=self.pact_id, group=True).all()
-        if len(last_dots) != 1:
-            if self.last_dot != None:
-                xml_dict['last_dot'] = self.last_dot
-        else:
-            last_dot = last_dots[0]['value']
-            if len(last_dot) > 0:
-                xml_dict['last_dot'] = last_dot[0][1] #array is [[doc_id, encounter_date_string], ...]
-
-
-        #for last_note, check the view if any exist.  if it's null, check self property.
-        xml_dict['last_note'] = ''
-        last_notes = get_db().view('pactcarehq/last_progress_note', key=self.pact_id, group=True).all()
-        if len(last_notes) != 1:
-            if self.last_note != None:
-                xml_dict['last_note'] = self.last_note
-        else:
-            last_note = last_notes[0]['value']
-            if len(last_note) > 0:
-                xml_dict['last_note'] = last_note[0][1] #array is [[doc_id, encounter_date_string], ...]
+        xml_dict['last_dot'] = self.last_dot_form_date
+        xml_dict['last_note'] = self.last_progress_note_date
 
         #todo: check bloodwork view
         xml_dict['last_bw_xml'] = self.get_bloodwork_xml()
 
-
-
-        if self.arm.lower() == 'dot':
+        if self.arm.lower().startswith('dot'):
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
             xml_dict['regimens'] = self.get_ghetto_regimen_xml()
         else:
