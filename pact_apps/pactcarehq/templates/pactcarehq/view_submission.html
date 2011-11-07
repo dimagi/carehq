@@ -7,14 +7,28 @@
 
 {% block content %}
 <div class="span-14">
-<h2>View {{ form_type }} Submission</h2>
-{% if form_type == "Bloodwork" %}
-    <a href="{% url webxforms.views.edit_bloodwork xform.get_id %}">Edit</a>
-{% endif %}
+<div class="span-14 last">
+    <div class="span-10">
+        <h2>View {{ form_type }} Submission</h2>
+    </div>
+    <div class="span-4 last">
+        {% if form_type == "Bloodwork" %}
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+               href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
+                <span class="ui-icon ui-icon-wrench"></span>
+                Edit
+            </a>
+        {% endif %}
 
-{% if form_type == "Progress Note" %}
-    <a href="{% url webxforms.views.edit_progress_note xform.get_id %}">Edit</a>
-{% endif %}
+        {% if form_type == "Progress Note" %}
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+               href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
+                <span class="ui-icon ui-icon-wrench"></span>
+                Edit
+            </a>
+        {% endif %}
+    </div>
+</div>
 
 <div>{% render_form_data xform %}</div>
 

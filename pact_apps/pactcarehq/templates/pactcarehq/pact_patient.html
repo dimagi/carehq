@@ -168,20 +168,20 @@
         {% block hat_actions %}
             {{ block.super }}
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/progress_note/new/{{ patient_doc.django_uuid }}">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url new_xform_interaction patient_doc.case_id "progress_note" %}?override=full">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Progress Note
             </a>
             </div>
 
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/bw/new/{{ patient_doc.django_uuid }}">
+                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url new_xform_interaction patient_doc.case_id "bloodwork" %}?override=full">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New Bloodwork
             </a>
             </div>
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="/webxforms/dots/new/{{ patient_doc.django_uuid }}">
+                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url new_xform_interaction patient_doc.case_id "dot" %}?override=full">
                 <span class="ui-icon ui-icon-circle-plus"></span>
                 New DOTS
             </a>
@@ -427,6 +427,7 @@
                         <th class="span-4">Date</th>
                         <th class="span-4">CHW</th>
                         <th class="span-4">Form</th>
+                        <th></th>
                     </tr>
                     </thead>
                     {% for submission in submit_arr %}
@@ -434,6 +435,7 @@
                             <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
                             <td> {{ submission.2 }}</td>
                             <td> {{ submission.3 }}</td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                 </table>
