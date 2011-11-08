@@ -333,7 +333,7 @@ class ShinePatient(BasePatient):
         if lab is None:
             return "[No Data]"
 
-        if lab.form['positive_bottles'] == '':
+        if lab.form.get('positive_bottles', '') == '':
             return []
         positives = lab.form['positive_bottles'].split(' ')
         return positives
