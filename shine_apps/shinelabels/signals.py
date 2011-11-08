@@ -25,21 +25,38 @@ def process_lab_one_submission(sender, xform, **kwargs):
         if xform.xmlns != STR_MEPI_LAB_ONE_FORM:
             return
         try:
-            positives = xform['form']['positive_bottles'].split(' ')
 
-            lq = LabelQueue()
-            lq.case_guid = xform['form']['case']['case_id']
-            lq.destination=ZebraPrinter.objects.all()[0]
-            lq.created_date = datetime.utcnow()
-            lq.xform_id = xform._id
-            lq.zpl_code=generate_case_barcode(lq.case_guid)
-            lq.save()
+            is_positive = False
+
+
+
+            #newer xform data with explicit result indicator
+            new_result_check = xform['form'].get('result', None)
+            if new_result_check is not None:
+                if new_result_check == 'positive':
+                    is_positive=True
+            else:
+                #old style check on inbound forms based upon positive field length
+                positive_bottle_str = xform['form'].get('positive_bottles', '')
+                if positive_bottle_str == '':
+                    is_positive=False
+                else:
+                    if len(positive_bottle_str.split(' ')) > 0:
+                        is_positive = True
+
+            if is_positive:
+                lq = LabelQueue()
+                lq.case_guid = xform['form']['case']['case_id']
+                lq.destination=ZebraPrinter.objects.all()[0]
+                lq.created_date = datetime.utcnow()
+                lq.xform_id = xform._id
+                lq.zpl_code=generate_case_barcode(lq.case_guid)
+                lq.save()
         except Exception, ex:
             logging.error("Error, shine lab data submission: %s" % (ex))
-            print "error making label %s" % ex
 
     except:
-        logging.error("Error processing the jsubmission due to an unknown error.")
+        logging.error("Error processing the submission due to an unknown error.")
         raise
 successful_form_received.connect(process_lab_one_submission)
 
