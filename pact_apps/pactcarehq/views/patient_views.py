@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import isodate
+from auditcare import inspect
 from auditcare.models.couchmodels import ModelActionAudit
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
@@ -100,9 +101,10 @@ class PactPatientSingleView(PatientSingleView):
 
 
 
-        audit_log_docs = ModelActionAudit.view('auditcare/model_actions', key = ['model_types', 'PactPatient', pdoc._id], include_docs=True).all()
-        audit_log_docs = sorted(audit_log_docs, key=lambda x: x.revision_id, reverse=True)
-        audit_log_info = []
+
+#        audit_log_docs = ModelActionAudit.view('auditcare/model_actions', key = ['model_types', 'PactPatient', pdoc._id], include_docs=True).all()
+#        audit_log_docs = sorted(audit_log_docs, key=lambda x: x.revision_id, reverse=True)
+#        audit_log_info = []
 #        for x, l in enumerate(audit_log_docs):
 #            if x == len(audit_log_docs)-1:
 #                delta = None
@@ -113,10 +115,8 @@ class PactPatientSingleView(PatientSingleView):
 #            audit_log_info.append((audit_log_docs[x], delta))
 
 
-
-        context['audit_log'] = audit_log_info
-
-
+        audit_logs = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys())
+        context['audit_log'] = [(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
         return context
         #return render_to_response(template_name, context_instance=context)
 

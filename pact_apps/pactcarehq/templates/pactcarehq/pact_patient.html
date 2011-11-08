@@ -449,7 +449,7 @@
         </div>
         <div id="patient-log-tab">
             {% for log in audit_log %}
-                {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1}}<br><hr>
+                {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1.0}}<br><hr>
             {% endfor %}
 
         </div>
