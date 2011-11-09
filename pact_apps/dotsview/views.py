@@ -478,7 +478,7 @@ def get_couchdata(request):
     while visit_docs.count(None) > 0:
         visit_docs.remove(None) #this is a bit hacky, some of the visit_ids are actually reconcile doc_ids, so we need to remove the ones that return None from the view
 
-    sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
+    #sorted_visits = sorted(visit_docs, key=lambda d: d.received_on)
 
     #sanity check if we're running with old data:
     if patients.count() == 0:
