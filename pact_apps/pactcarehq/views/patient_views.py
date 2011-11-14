@@ -115,8 +115,11 @@ class PactPatientSingleView(PatientSingleView):
 #            audit_log_info.append((audit_log_docs[x], delta))
 
 
-        audit_logs = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys())
-        context['audit_log'] = [(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
+        history_logs = inspect.history_for_doc(pdoc, filter_fields=['arm','art_regimen','non_art_regimen', 'primary_hp', 'mass_health_expiration', 'hiv_care_clinic'])
+        context['history_logs'] = history_logs #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
+
+        all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
+        context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
         return context
         #return render_to_response(template_name, context_instance=context)
 

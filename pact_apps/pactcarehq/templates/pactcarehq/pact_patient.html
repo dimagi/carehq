@@ -223,7 +223,8 @@
             <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
             <li><a href="#patient-submissions-tab">{% trans "Submissions" %}</a></li>
             <li><a href="#patient-case-tab">{% trans "Case Debug" %}</a></li>
-            <li><a href="#patient-log-tab">{% trans "Log" %}</a></li>
+            <li><a href="#patient-history-tab">{% trans "History" %}</a></li>
+            <li><a href="#patient-log-tab">{% trans "Change Log" %}</a></li>
     {% endblock patient-tab-controller %}
     {% block patient-tab-container %}
         <div id="patient-info-tab" class="ui-tabs-hide">
@@ -294,7 +295,6 @@
 {#                        {% endfor %}#}
 {#                    </td>#}
 {#                </tr>#}
-{##}
 {#                <tr>#}
 {#                    <th lass="span-4">#}
 {#                        PDoc Phone(s)#}
@@ -447,10 +447,55 @@
         <div id="patient-case-tab">
             Raw Case stuff
         </div>
-        <div id="patient-log-tab">
-            {% for log in audit_log %}
-                {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1.0}}<br><hr>
-            {% endfor %}
+        <div id="patient-history-tab">
+            <div class="span-20">
+            {% with narratives=history_logs.change_narratives %}
+                {% if narratives %}
+                <h3>Patient Progress Changes</h3>
+                {% for rc in narratives %}
+                    <div class="span-15">
+                    {{ rc.revision.event_date}} by: {{ rc.revision.user }}
+                    </div>
+                    <div class="span-15 prepend-1">
+                    <dl>
+                        {% for c  in rc.changes %}
+                         <dt>{{ c.0 }}</dt>
+                            <dd>from {{ c.1.0 }} to {{ c.1.1 }}</dd>
+                        {% endfor %}
+                    </dl>
+                    </div>
 
+                {% endfor %}
+                {% else %}
+                    No major changes
+                {% endif %}
+            {% endwith %}
+            </div> {# span-20 div #}
+        &nbsp;
+        </div> {# tab div #}
+        <div id="patient-log-tab">
+            <div class="span-20">
+            &nbsp;
+            {% for rev in all_changes.filtered_changes %}
+                <div class="span-20">
+                    {% if rev.changed_fields.0 or rev.changed_fields.1 or rev.changed_fields.2 %}
+                    {% if rev.changed_fields.0 %}
+                    Changed: {{ rev.changed_fields.0|join:", " }} <br>
+                    {% endif %}
+                    {% if rev.changed_fields.1 %}
+                    Added: {{ rev.changed_fields.1|join:", " }} <br>
+                    {% endif %}
+
+                    {% if rev.changed_fields.2 %}
+                    Removed: {{ rev.changed_fields.2|join:", " }}<br>
+                    {% endif %}
+                    {{ rev.revision.event_date}} by {{ rev.revision.user }}
+                    &nbsp;
+                    <hr>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            </div>
+            &nbsp;
         </div>
     {% endblock patient-tab-container %}

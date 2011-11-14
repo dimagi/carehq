@@ -24,7 +24,7 @@ def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact
         form = ProviderForm(pact_tenant, data=request.POST)
         if form.is_valid():
             provider_actor = form.save(commit=False)
-            provider_actor.save()
+            provider_actor.save(pact_tenant)
             role_class = Role.objects.get(name=constants.role_external_provider)
 
             permissions.utils.add_role(provider_actor.django_actor, role_class)
