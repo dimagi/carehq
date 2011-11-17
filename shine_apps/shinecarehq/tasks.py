@@ -1,9 +1,38 @@
 import logging
-from celery.decorators import periodic_task
+import tempfile
 from celery.schedules import crontab
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+import simplejson
+from couchexport.export import export
+from couchexport.models import Format
 from couchforms.models import XFormInstance
 from shinelabels import label_utils
-from shinelabels.models import ZebraStatus, ZebraPrinter
+from django.core.cache import cache
+from celery.decorators import task, periodic_task
+
+
+@task
+def schema_export(namespace, download_id, email=None):
+    cache_container = {}
+    tmp = tempfile.NamedTemporaryFile(suffix='.xls', delete=False)
+    if export(namespace, tmp, format=Format.XLS):
+        cache_container['mimetype'] = 'application/vnd.ms-excel'
+        cache_container['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace
+        cache_container['location'] = tmp.name
+        tmp.close()
+    else:
+        cache_container = {}
+        cache_container['mimetype'] = 'text/plain'
+        cache_container['location'] = None
+        cache_container['message'] = "No data due to an error generating the file"
+    cache.set(download_id, simplejson.dumps(cache_container), 86400)
+
+    if email != None:
+        subject = "[CareHQ] Your requested file download is ready"
+        url = "https://pact.dimagi.com" + reverse('retrieve_download', kwargs={'download_id': download_id})
+        body = '\n'.join(['To retrieve your document log into CareHQ and visit the URL below.', url])
+        send_mail(subject, body, 'notifications@dimagi.com', [email], fail_silently=True)
 
 
 @periodic_task(run_every=crontab(hour=23, minute=59))

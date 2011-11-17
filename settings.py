@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'permissions',
     'couchforms',
     'couchexport',
+    'soil', 
     'couchlog',
     'dimagi.utils',
     'receiver',

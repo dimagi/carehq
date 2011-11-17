@@ -18,4 +18,7 @@ urlpatterns = patterns('shinecarehq.views',
 
     url(r'^mepi/cases/(?P<case_id>[0-9a-fA-Z]{25,32})/$', 'view_case',  name='mepi_case'),
     url(r'^mepi/submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'show_submission', name='show_submission'),
+    url(r'^exporter/$', 'csv_export_landing', name='csv_export_landing'),
+    url(r'^exporter/file/$', 'export_excel_file', name='export_excel_file'),
+    url(r'^exporter/cases/$', 'download_cases', name='download_cases'),
 )

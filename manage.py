@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.join(filedir,'submodules','couchlog'))
 sys.path.insert(0, os.path.join(filedir,'submodules','djactor-permissions'))
 sys.path.insert(0, os.path.join(filedir,'submodules','djangocouch-src'))
 sys.path.insert(0, os.path.join(filedir,'submodules','hutch-src'))
+sys.path.insert(0, os.path.join(filedir,'submodules','soil-src'))
 
 from django.core.management import execute_manager
 try:

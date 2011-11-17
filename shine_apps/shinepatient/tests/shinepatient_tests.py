@@ -171,7 +171,7 @@ class ShinePatienteTests(TestCase):
         except Exception, ex:
             self.fail("Error, submission not retrieved: %s" % ex)
 
-        images = AttachmentImage.objects.filter(xform_id=uid, attachment_key=testimage)
+        images = AttachmentImage.objects.filter(doc_id=uid, attachment_key=testimage)
         self.assertEqual(len(images), 1)
 
     def _random_td(self):

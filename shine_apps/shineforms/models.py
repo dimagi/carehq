@@ -5,7 +5,12 @@ from casexml.apps.phone.caselogic import case_previously_synced
 
 
 class ShineUser(User):
-    
+
+    @property
+    def raw_username(self):
+        return self.username
+
+
     def get_open_cases(self, last_sync):
         """
         For now Shine Users all get the same (full) case list.

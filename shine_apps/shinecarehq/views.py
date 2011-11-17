@@ -1,11 +1,23 @@
+import uuid
 from couchdbkit.exceptions import ResourceNotFound
 from django.contrib.auth.decorators import login_required
+from django import forms
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from casexml.apps.case.export import export_cases_and_referrals
 from casexml.apps.case.models import CommCareCase
+from couchexport.models import Format
+from couchexport.schema import get_docs
 from couchforms.models import XFormInstance
+from dimagi.utils.export import WorkBook
+from dimagi.utils.web import json_request
 from patient.models.patientmodels import BasePatient, Patient
 from datetime import datetime, timedelta
+from shinecarehq.tasks import schema_export
+import simplejson as json
 
 #
 #class MepiPatientListView(PatientListView):
@@ -16,6 +28,7 @@ from datetime import datetime, timedelta
 #        #making big assumption that it's 1:1 for patient->case at this juncture
 #        return context
 #    pass
+from shineforms.models import ShineUser
 from shinepatient.models import ShinePatient
 
 @login_required()
@@ -158,3 +171,66 @@ def show_submission(request, doc_id, template_name="shinecarehq/view_mepi_submis
     context['form_type'] = xform.xmlns
     context['xform'] = xform
     return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def export_excel_file(request):
+    """
+    Download all data for a couchdbkit model
+    """
+
+    namespace = request.GET.get("export_tag", "")
+    if not namespace:
+        return HttpResponse("You must specify a model to download")
+    docs = get_docs(namespace)
+    if not docs:
+        return HttpResponse("Error, no documents for that schema exist")
+    download_id = uuid.uuid4().hex
+    schema_export.delay(namespace, download_id)
+    return HttpResponseRedirect(reverse('retrieve_download', kwargs={'download_id': download_id}))
+
+@login_required()
+def csv_export_landing(request, template_name="shinecarehq/export_landing.html"):
+
+    class RequestDownloadForm(forms.Form):
+        email_address = forms.CharField(error_messages = {'required':
+                                                'You must enter an email'})
+
+    context = RequestContext(request)
+    if request.method == "POST":
+        form = RequestDownloadForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email_address']
+            download_id = uuid.uuid4().hex
+            namespace = "http://dev.commcarehq.org/pact/progress_note"
+            context['email'] = email
+            context['download_id'] = download_id
+
+            schema_export.delay(namespace, download_id, email=email)
+
+        else:
+            context['form'] = form
+    else:
+        context['form'] = RequestDownloadForm()
+
+    return render_to_response(template_name, context_instance=context)
+
+@login_required()
+def download_cases(request):
+    include_closed = json.loads(request.GET.get('include_closed', 'false'))
+    format = Format.from_format(request.GET.get('format') or Format.XLS_2007)
+
+    #view_name = 'hqcase/all_cases' if include_closed else 'hqcase/open_cases'
+
+    #key = [domain, {}, {}]
+    cases = CommCareCase.view('shinecarehq/mepi_cases', reduce=False, include_docs=True)
+    #group, users = util.get_group_params(domain, **json_request(request.GET))
+    users = [ShineUser.from_django_user(x) for x in User.objects.all()]
+
+    workbook = WorkBook()
+    export_cases_and_referrals(cases, workbook, users=users)
+    #export_users(users, workbook)
+    response = HttpResponse(workbook.format(format.slug))
+    response['Content-Type'] = "%s" % format.mimetype
+    response['Content-Disposition'] = "attachment; filename=patient_casedata.{ext}".format(ext=format.extension)
+    return response
