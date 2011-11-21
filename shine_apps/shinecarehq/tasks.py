@@ -1,6 +1,7 @@
 import logging
 import tempfile
 from celery.schedules import crontab
+from celery.task import task, periodic_task
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 import simplejson
@@ -9,7 +10,6 @@ from couchexport.models import Format
 from couchforms.models import XFormInstance
 from shinelabels import label_utils
 from django.core.cache import cache
-from celery.decorators import task, periodic_task
 
 
 @task
