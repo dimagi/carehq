@@ -4,7 +4,8 @@ from couchforms.models import XFormInstance
 
 def run():
     """
-    This script will process all submits by in order by date for a given patient.
+    This script is a quick migration for the visit_three change in the labdata form.  this is just a temporary solution, the right way to
+    do this migration is to handle form handling and replay the interaction again.
     """
     xforms = XFormInstance.view('couchforms/by_xmlns', key = 'http://shine.commcarehq.org/questionnaire/labdata', reduce=False, include_docs=True).all()
     for doc in xforms:
