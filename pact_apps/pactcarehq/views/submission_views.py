@@ -172,7 +172,11 @@ def _get_submissions_for_user(username):
         if isinstance(started, unicode):
             started = isodate.parse_datetime("%sT%s" % (started.split(' ')[0], started.split(' ')[1]))
 
+
         ended = xform.get_form['Meta']['TimeEnd']
+        if ended == '':
+            #hack, touchforms doesn't seem to set a TimeEnd
+            ended = xform.received_on
         if isinstance(ended, unicode):
             ended = isodate.parse_datetime("%sT%s" % (ended.split(' ')[0], ended.split(' ')[1]))
 
