@@ -33,7 +33,7 @@ interaction_url_map = {
 xmlns_url_map = {
     'http://dev.commcarehq.org/pact/progress_note': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_progress_note.xml',
     'http://dev.commcarehq.org/pact/dots_form': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_dot_session.xml',
-    'http://dev.commcarehq.org/pact/bw': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_bw_entry.xml',
+    'http://dev.commcarehq.org/pact/bloodwork': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_bw_entry.xml',
     }
 
 def _do_prep_form(request, case_id, xform_url, next_url, instance_data=None):
@@ -97,8 +97,10 @@ def edit_xform_interaction(request, xform_id):
     pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
 
     if xform_url is None:
+        print "no url"
         raise Http404
     if len(pts) == 0:
+        print "no patient"
         raise Http404
 
     xform_def = fetch_xform_def(xform_url) # get existing data
