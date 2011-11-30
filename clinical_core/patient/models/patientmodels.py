@@ -8,7 +8,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime, time
 import simplejson
+import math
+from clinical_shared.mixins import TypedSubclassMixin
 from dimagi.utils.couch.database import get_db
+from permissions.models import Actor
 
 import settings
 import logging
@@ -43,7 +46,7 @@ class Patient(models.Model):
     """
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True,  primary_key=True, editable=False)
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist
+    user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
 
 
     class Meta:
@@ -220,7 +223,7 @@ class CAddress(Document):
 
 
 
-class BasePatient(Document):
+class BasePatient(Document, TypedSubclassMixin):
     """
     Base class for case-able patient model in CareHQ.  Actual implementations of CareHQ ought to subclass this for its own uses. Especially in cases of multi tenancy, or code reuse.
     """
@@ -248,34 +251,7 @@ class BasePatient(Document):
     base_type = StringProperty(default="BasePatient")
     poly_types = StringListProperty() #if the document is assumed as multiple patient types (by multi tenancy), store the different types here.  it's left up to the tenant's querying method to retreive the document.
 
-    _subclass_dict = {}
-    @classmethod
-    def _get_subclass_dict(cls):
-        if len(cls._subclass_dict.keys()) == 0:
-            for c in cls.__subclasses__():
-                cls._subclass_dict[unicode(c.__name__)] = c
-        return cls._subclass_dict
 
-
-    @classmethod
-    def get_typed_from_dict(cls, doc_dict):
-        doc_type = doc_dict['doc_type']
-        if cls._get_subclass_dict().has_key(doc_type):
-            cast_class = cls._get_subclass_dict()[doc_type]
-        else:
-            cast_class = BasePatient
-            logging.error("Warning, unable to retrieve and cast the stored doc_type of the patient model.")
-        return cast_class.wrap(doc_dict)
-
-    @classmethod
-    def get_typed_from_id(cls, doc_id):
-        """
-        Using the doc's stored doc_type, cast the retrieved document to the requisite couch model
-        """
-        #todo this is hacky in a multitenant environment
-        db = cls.get_db()
-        doc_dict = db.open_doc(doc_id)
-        return cls.get_typed_from_dict(doc_dict)
 
 
     @property
@@ -295,6 +271,14 @@ class BasePatient(Document):
         """
         tsince_string = timesince(datetime.combine(self.birthdate, time(0)))
         return tsince_string.split(',')[0]
+
+    @property
+    def age_int(self):
+        """
+        Return the age in only as an int
+        """
+        td = datetime.utcnow() - datetime.combine(self.birthdate, time(0))
+        return int(round(td.days/365.25))
 
     def is_unique(self):
         raise NotImplementedError("Error, subclass for patient document type must have a uniqueness check for its own instance.  %s" % (self.__class__()))
@@ -346,9 +330,7 @@ class BasePatient(Document):
                 self._id = doc_id
             else:
                 doc_id = self._id
-
             self.django_uuid = django_uuid
-
             try:
                 super(BasePatient, self).save(*args, **kwargs)
                 djangopt.save(django_uuid=django_uuid, doc_id=doc_id)

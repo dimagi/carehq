@@ -1,0 +1,8 @@
+Ready
+<binary>30,0,0,0213,001,0,0,0,000,0,0,0<binary>
+Open
+<binary>30,0,1,0213,001,0,0,0,000,0,0,0<binary>
+Closed, standby
+<binary>30,0,0,0213,002,0,0,0,000,0,0,0<binary>
+Back to Ready after pressing button
+<binary>30,0,0,0213,001,0,0,0,000,0,0,0<binary>

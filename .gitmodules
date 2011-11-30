@@ -28,3 +28,12 @@
 [submodule "submodules/casexml-src"]
 	path = submodules/casexml-src
 	url = git://github.com/dimagi/casexml.git
+[submodule "submodules/zprintspool-src"]
+	path = submodules/zprintspool-src
+	url = git://github.com/dimagi/zprintspool.git
+[submodule "submodules/hutch-src"]
+	path = submodules/hutch-src
+	url = git://github.com/dimagi/hutch.git
+[submodule "submodules/soil-src"]
+	path = submodules/soil-src
+	url = git://github.com/dimagi/django-soil.git

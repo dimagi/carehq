@@ -1,5 +1,0 @@
-jquery-ui images below here as they are statically mapped and included in the css this way through
-
-<appname>/images
-
-so, this is why there's an img folder and images folder

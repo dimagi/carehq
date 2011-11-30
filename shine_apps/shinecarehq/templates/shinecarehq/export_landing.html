@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Bulk Exports</h2>
+    <h3>Form Exporter</h3>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/patient/reg">Registration</a><br>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/questionnaire/clinical">Clinical Info</a><br>
+{#    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/questionnaire/followup">Clinical Followup (old)</a><br>#}
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/questionnaire/labdata">Laboratory Information</a><br>
+{#    <a href="javascript:alert('Not working yet');">Laboratory Information</a><br>#}
+
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/lab/one">Emergency Lab</a><br>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/lab/two">Microbiology Lab</a><br>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/lab/three">Speciation Lab</a><br>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/lab/four">Susceptibility Lab</a><br>
+    <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/questionnaire/outcome">Outcome</a><br>
+    <a href="{% url download_cases %}">Download Cases</a><br>
+{#    or<br>#}
+{#    Retrieve an email with a download link:<br>#}
+{#    {% if form %}#}
+{#    <form method="POST" action="">#}
+{#    <table>#}
+{#        {% csrf_token %}#}
+{#        {{ form.as_table }}#}
+{#    </table>#}
+{#    <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/></td>#}
+{#    <input type="hidden" name="next" value="{{ request.path }}" />#}
+{#    </form>#}
+{#    {% else %}#}
+{#        Your request has been submitted, you will receive an email at {{ email }} when it is ready for download. <br>#}
+{#        To wait in the browser, you can visit <a href="{% url retrieve_download download_id%}">this link</a>#}
+{#    {% endif %}#}
+
+{% endblock content %}
+

@@ -13,19 +13,8 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from couchforms.models import XFormInstance
 import tempfile
 from dimagi.utils.couch.database import get_db
-from .models import ImageAttachment
+from hutch.models import AttachmentImage
 
-
-@login_required
-def image_proxy(request, doc_id, attachment_key):
-    """Simple image proxy to view an image straight from couch.  This does not work with sorl-thumbnail as a viable means to
-    dynamically generate image thumbnails.
-    """
-    db = get_db()
-    attach = db.fetch_attachment(doc_id, attachment_key, stream=True)
-    wrapper = FileWrapper(attach)
-    response = HttpResponse(wrapper, content_type='image/jpeg')
-    return response
 
 @login_required
 def slideform(request, doc_id, template_name="slidesview/view_slide_form.html"):
@@ -38,7 +27,7 @@ def slideform(request, doc_id, template_name="slidesview/view_slide_form.html"):
     crop = request.GET.get('crop','center')
 
     def mk_thumbnail(slide, k):
-        attach = ImageAttachment.objects.get(xform_id=slide._id, attachment_key=k)
+        attach = AttachmentImage.objects.get(xform_id=slide._id, attachment_key=k)
         im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
         return im
 

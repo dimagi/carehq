@@ -21,13 +21,7 @@ def get_remote_form(xform_url):
     punctuation = { 0x2018:0x27, 0x2019:0x27, 0x201C:0x22, 0x201D:0x22 }
 
     req = urllib2.urlopen(xform_url)
-    #encoding = req.headers['content-type'].split('charset=')[-1]
-    #encoding = "windows-1251"
-    #encoding ='windows-1252'
     encoding ='utf8'
     content = req.read()
     ucontent = unicode(content, encoding)
     return ucontent.translate(punctuation)
-    #xform_str.decode('utf8').encode('utf8')
-    #return ucontent
-    

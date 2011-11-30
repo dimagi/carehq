@@ -1,31 +1,97 @@
 # To manage patient views for create/view/update you need to implement them directly in your patient app
 from _collections import defaultdict
 from datetime import datetime
+import hashlib
 import logging
+import tempfile
+import uuid
 import re
-import urllib
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from sorl.thumbnail.shortcuts import get_thumbnail
 from clinical_core.webentry.util import get_remote_form, user_meta_preloaders, shared_preloaders
 from couchforms.models import XFormInstance
-from couchforms.util import post_xform_to_couch
-from patient.models import Patient
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from hutch.models import  AttachmentImage, AuxMedia
 from patient.models import BasePatient
-from patient.forms import BasicPatientForm
-from django.contrib import messages
 from receiver.util import spoof_submission
-from shineforms.views import random_barcode
-from shinepatient.models import ShinePatient
+from shinepatient.forms import  ClinicalImageUploadForm
 from casexml.apps.case.models import CommCareCase
 import json
 from couchdbkit.resource import ResourceNotFound
-from patient.views import PatientListView
-from slidesview.models import ImageAttachment
+from patient.views import  PatientSingleView
 from touchforms.formplayer.views import play_remote, get_remote_instance
+
+
+class MepiPatientSingleView(PatientSingleView):
+    patient_list_url = '/' #hardcoded from urls, because you can't do a reverse due to the urls not being bootstrapped yet.
+
+    def get_context_data(self, **kwargs):
+        """
+        Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
+        """
+
+        request = self.request
+        patient_guid = self.kwargs['patient_guid']
+        patient_edit = request.GET.get('edit_patient', None)
+
+        context = super(MepiPatientSingleView, self).get_context_data(**kwargs)
+        pdoc = context['patient_doc']
+        dj_patient = context['patient_django']
+#        context['patient_list_url'] = reverse('my_patients')
+        context['patient_edit'] = patient_edit
+        if patient_edit:
+            context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
+
+        submissions = [XFormInstance.get(x) for x in pdoc.latest_case.xform_ids]
+        context['submissions'] = submissions
+
+        return context
+        #return render_to_response(template_name, context_instance=context)
+
+
+@login_required
+def upload_patient_photo(request, patient_guid, template_name='shinepatient/upload_photo.html'):
+    context = RequestContext(request)
+    patient = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+
+    def handle_uploaded_file(f, form):
+        destination = tempfile.NamedTemporaryFile()
+        checksum = hashlib.md5()
+        for chunk in f.chunks():
+            checksum.update(chunk)
+            destination.write(chunk)
+        destination.seek(0)
+        image_type = form.cleaned_data['image_type'],
+        media_meta=dict(image_type=image_type[0])
+
+        attachment_id = uuid.uuid4().hex
+        new_image_aux = AuxMedia(uploaded_date=datetime.utcnow(),
+                             uploaded_by=request.user.username,
+                             uploaded_filename=f.name,
+                             checksum=checksum.hexdigest(),
+                             attachment_id=attachment_id,
+                             media_meta=media_meta,
+                             notes=form.cleaned_data['notes'])
+        patient.put_attachment(destination, attachment_id, content_type=f.content_type, content_length=f.size)
+        destination.close()
+        return new_image_aux
+
+    if request.method == 'POST':
+        form = ClinicalImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = handle_uploaded_file(request.FILES['image_file'], form)
+            patient['aux_media'].append(image)
+            patient.save()
+            return HttpResponseRedirect(reverse('shine_single_patient', kwargs={'patient_guid': patient_guid}))
+    else:
+        form = ClinicalImageUploadForm()
+    context['form'] = form
+    context['patient_guid'] = patient_guid
+    return render_to_response(template_name, context)
+
 
 
 @login_required
@@ -33,11 +99,12 @@ def new_patient_touch(request):
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
     playsettings = defaultdict(lambda: "")
-    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/752395978bb2/shine/patient_registration.xml")
+    playsettings["xform"] = get_remote_form("https://bitbucket.org/ctsims/commcare-sets/raw/tip/shine/patient_registration.xml")
     playsettings["next"] = reverse('newshinepatient_callback')
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = "type"
     return play_remote(request, playsettings=playsettings)
+
 
 
 @login_required
@@ -109,10 +176,10 @@ def single_case(request, case_id):
 
     def mk_thumbnail(doc_id, k):
         try:
-            attach = ImageAttachment.objects.get(xform_id=doc_id, attachment_key=k)
+            attach = AttachmentImage.objects.get(xform_id=doc_id, attachment_key=k)
             im = get_thumbnail(attach.image, '%sx%s' % (thumbsize, thumbsize), crop=crop, quality=90)
             return im
-        except ImageAttachment.DoesNotExist:
+        except AttachmentImage.DoesNotExist:
             logging.error("Error retrieving image attachment %s for submission %s" % (k,doc_id))
             return None
     image_action_dict = {}

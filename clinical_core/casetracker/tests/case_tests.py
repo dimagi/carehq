@@ -3,7 +3,7 @@ import hashlib
 import uuid
 from django.contrib.auth.models import User
 from casetracker.models import Case, CaseEvent
-from clinical_core.clincore.utils import generator
+from clinical_core.clinical_shared.utils import generator
 from casetracker import constants
 from django.core.management import call_command
 
@@ -56,8 +56,8 @@ class EventActivityVerificationTest(TestCase):
         user1 = generator.get_or_create_user()
         user2 = generator.get_or_create_user()
 
-        role1 = generator.generate_role(user1, 'caregiver')
-        role2 = generator.generate_role(user2, 'provider')
+        role1 = generator.generate_actor(user1, 'caregiver')
+        role2 = generator.generate_actor(user2, 'provider')
 
         oldcasecount = Case.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
@@ -104,7 +104,7 @@ class EventActivityVerificationTest(TestCase):
         self.testCreateCaseApi(description=desc)
 
         user1 = generator.get_or_create_user()
-        actor1 = generator.generate_role(user1, 'provider')
+        actor1 = generator.generate_actor(user1, 'provider')
 
 
         case = Case.objects.all().get(description=desc)
@@ -131,7 +131,7 @@ class EventActivityVerificationTest(TestCase):
     def testCaseCreateChildCases(self):
         self.testCreateCaseApi()
         user1 = generator.get_or_create_user()
-        role1 = generator.generate_role(user1, 'provider')
+        role1 = generator.generate_actor(user1, 'provider')
 
         case = Case.objects.all().get(description =INITIAL_DESCRIPTION)
         CHILD_CASES=10

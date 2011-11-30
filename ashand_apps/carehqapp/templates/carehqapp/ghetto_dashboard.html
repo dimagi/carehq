@@ -1,0 +1,33 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block extrahead %}
+<script>
+    var refreshNotification =
+        function()
+        {
+            location.reload();
+            fadeIn("slow");
+        };
+
+    $(document).ready(
+        function()
+        {
+			//placeholder for autorefresh, but turning off for now
+            //var autoRefresh = setInterval(refreshNotification, 30000);
+            jQuery("abbr.timeago").timeago();
+        }
+    );
+</script>
+{% endblock %}
+{% block content %}
+    <div class="span-24 last"><h3>{{ title }}</h3></div>
+    <div class="span-24">
+    {% for case in cases %}
+    {% include "casetracker/partials/cases_ul.html" %}
+    {% endfor %}
+
+
+    </div>
+{% endblock %}

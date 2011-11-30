@@ -1,7 +1,7 @@
 from django.core.files.base import ContentFile
 from sorl.thumbnail.models import KVStore
 from couchforms.models import XFormInstance
-from slidesview.models import ImageAttachment
+from hutch.models import AttachmentImage
 from django.core.management.base import BaseCommand
 
 
@@ -12,7 +12,7 @@ class Command(BaseCommand):
     args = "script [script ...]"
 
     def handle(self, *scripts, **options):
-        ImageAttachment.objects.all().delete()
+        AttachmentImage.objects.all().delete()
         KVStore.objects.all().delete()
         slides = XFormInstance.view('slidesview/all_bloodwork_slides', include_docs=True).all()
         for slide in slides:
@@ -20,7 +20,7 @@ class Command(BaseCommand):
             for k, v in slide._attachments.items():
                 if k == 'form.xml':
                     continue
-                img = ImageAttachment()
+                img = AttachmentImage()
                 img.xform_id = slide._id
                 img.attachment_key = k
                 img.content_length = v['length']

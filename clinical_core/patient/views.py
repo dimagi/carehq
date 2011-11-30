@@ -43,6 +43,7 @@ class PatientListView(TemplateView):
     template_name="patient/patient_list.html"
     patient_type=None
     create_patient_viewname = settings.CAREHQ_CREATE_PATIENT_VIEW_NAME
+    couch_view = 'patient/all'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -50,7 +51,7 @@ class PatientListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PatientListView, self).get_context_data(**kwargs)
-        view_results = BasePatient.get_db().view("patient/all", include_docs=True).all()
+        view_results = BasePatient.get_db().view(self.couch_view, include_docs=True).all()
         pats = [BasePatient.get_typed_from_dict(row["doc"]) for row in view_results]
 
         if self.patient_type != None:

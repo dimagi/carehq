@@ -1,0 +1,54 @@
+{% extends base_template %}
+{% load i18n %}
+{% load shinelabel_tags %}
+
+{% block content %}
+<div class="span-18">
+    <h2>Labels Printed for Patient</h2>
+     <h3>Print More Labels</h3>
+
+     <form method="POST" action="{{request.path}}">
+        <table>
+        {% csrf_token %}
+        {{ printform.as_table }}
+        </table>
+        <input type="submit" value="Print"/>
+        <input type="hidden" name="next" value="{% url shine_single_patient patient_guid %}" />
+    </form>
+
+
+    <h3>Prior Prints for this Patient</h3>
+    {% if jobs %}
+    <dl>
+    {% for job in jobs %}
+        <dt>
+            Date
+        </dt>
+        <dd>
+            {{ job.created_date|date }}
+        </dd>
+
+        <dt>
+            Fulfilled
+        </dt>
+        <dd>
+            {% if job.fulfilled_date %}
+                {{ job.fulfilled_date|date }}
+            {% else %}
+                -- Not printed --
+            {% endif %}
+        </dd>
+
+    {% endfor %}
+    </dl>
+    {% else %}
+        -- No Print Jobs --
+    {% endif %}
+</div>
+<div class="span-6 last">
+
+{% get_printer_status %}
+
+</div>
+
+{% endblock content %}

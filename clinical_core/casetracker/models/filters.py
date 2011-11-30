@@ -3,9 +3,9 @@ from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
 from django.utils.translation import ugettext_lazy as _
-from actors.models import Actor
 from django.db import models
 from casetracker import constants
+from permissions.models import Actor
 
 class Filter(models.Model):
     """

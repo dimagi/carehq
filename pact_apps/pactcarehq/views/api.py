@@ -4,8 +4,8 @@ from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactconfig import constants
 from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
-from pactpatient.forms.phone_form import PhoneForm
 from pactpatient.updater import update_patient_casexml
+from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
@@ -25,6 +25,9 @@ from patient.models.patientmodels import  Patient
 @login_required
 @require_POST
 def remove_phone(request):
+    """
+    Remove a casexml phone by injecting a new casexml update block in to the submissions
+    """
     resp = HttpResponse()
     try:
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
@@ -100,6 +103,9 @@ def rm_provider(request):
 @login_required
 @require_POST
 def remove_address(request):
+    """
+    Remove a casexml address by injecting a new casexml update block into the submissions
+    """
     resp = HttpResponse()
     try:
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')

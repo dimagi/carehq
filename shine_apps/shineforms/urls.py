@@ -1,10 +1,14 @@
 from django.conf.urls.defaults import *
-urlpatterns = patterns ('',
-    url(r'^shine/callback/(?P<patient_guid>[0-9a-fA-Z]{25,32})$', 'shineforms.views.new_bloodwork_order_cb',
-        name="new_bloodwork_order_cb"),
-    url(r'^shine/new/bw_order/(?P<patient_guid>[0-9a-fA-Z]{25,32})$', 'shineforms.views.new_bloodwork_order',
-        name="new_bloodwork_order"),
-    url(r'^shine/restore$', 'shineforms.views.ota_restore',
+urlpatterns = patterns ('shineforms.views',
+
+    url(r'^mepi/interaction/new/(?P<case_id>[0-9a-fA-Z]{25,32})/(?P<interaction>.*)/$', 'new_mepi_interaction',
+        name="new_mepi_interaction"),
+
+#form entry callback
+    url(r'^shine/formentry/callback/(?P<case_id>[0-9a-fA-Z]{25,32})$', 'shine_form_cb',
+        name="shine_form_cb"),
+
+    url(r'^shine/restore$', 'ota_restore',
         name="shineforms_restore"),
     
 )

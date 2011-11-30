@@ -97,7 +97,7 @@ LOCAL_APPS = (
                 'pactcarehq',
                 'keymaster',
                 'webxforms',
-                
+
                 #shine
                 'sorl.thumbnail',
                 'slidesview',

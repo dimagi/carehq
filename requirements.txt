@@ -3,8 +3,8 @@ xlwt
 pycrypto
 pyasn1
 django>=1.3
-restkit==2.3.3
-couchdbkit==0.5.1
+restkit
+couchdbkit
 pygooglechart
 psycopg2
 pycurl
@@ -16,10 +16,9 @@ python-digest
 git+git://github.com/dimagi/django-digest.git
 cherrypy
 git+git://github.com/dimagi/django-cpserver.git
-django-kombu
-djkombu
-django-celery
 kombu
+django-kombu
+django-celery
 fabric
 django-breadcrumbs
 south
@@ -29,3 +28,8 @@ celerymon
 django-uni-form
 isodate
 djtables
+django-tastypie
+gevent
+johnny-cache
+PIL
+django-smartagent

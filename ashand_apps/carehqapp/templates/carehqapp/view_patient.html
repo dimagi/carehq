@@ -1,0 +1,232 @@
+{% extends "patient/base_patient.html" %}
+{% load i18n %}
+{% load casetracker_tags %}
+{% block extrahead %}
+    <script>
+        $(function() {
+                 $('.editctrl').each(function() {
+                    $(this).hide();
+                });
+        });
+        function toggle_edit() {
+            if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
+            } else {
+                $('.editctrl').each(function() {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
+            }
+        }
+
+        $(function() {
+            // The "tab widgets" to handle.
+            var tabs = $('.tabs'),
+
+            // This selector will be reused when selecting actual tab widget A elements.
+            tab_a_selector = 'ul.ui-tabs-nav a';
+
+            // Enable tabs on all tab widgets. The `event` property must be overridden so
+            // that the tabs aren't changed on click, and any custom event name can be
+            // specified. Note that if you define a callback for the 'select' event, it
+            // will be executed for the selected tab whenever the hash changes.
+            tabs.tabs({ event: 'change' });
+
+            // Define our own click handler for the tabs, overriding the default.
+            tabs.find(tab_a_selector).click(function() {
+                var state = {},
+
+                // Get the id of this tab widget.
+                id = $(this).closest('.tabs').attr('id'),
+
+                // Get the index of this tab.
+                idx = $(this).parent().prevAll().length;
+
+                //get the ID of the selected tab
+                var href = ($(this).filter('a').attr('href'));
+
+                // Set the state!
+                //state[ id ] = idx; //rather than by index, let's do it by id
+                state[id] = href.substring(1,href.length);
+                $.bbq.pushState(state);
+            });
+
+            // Bind an event to window.onhashchange that, when the history state changes,
+            // iterates over all tab widgets, changing the current tab as necessary.
+            $(window).bind('hashchange', function(e) {
+
+                // Iterate over all tab widgets.
+                tabs.each(function() {
+                    // Get the index for this tab widget from the hash, based on the
+                    // appropriate id property. In jQuery 1.4, you should use e.getState()
+                    // instead of $.bbq.getState(). The second, 'true' argument coerces the
+                    // string value to a number.
+//                    var idx = $.bbq.getState(this.id, true) || 0;
+                    var hash = $.bbq.getState(this.id, true) || "patient-casetracker-tab";
+                   // alert(hash); //todo, push a state here
+
+                    // Select the appropriate tab for this tab widget by triggering the custom
+                    // event specified in the .tabs() init above (you could keep track of what
+                    // tab each widget is on using .data, and only select a tab if it has
+                    // changed).
+//                    $(this).find(tab_a_selector).eq(idx).triggerHandler('change');
+                    $(this).find('a[hash=#'+ hash + ']').triggerHandler('change');
+                });
+
+
+
+
+            });
+
+            // Since the event is only triggered when the hash changes, we need to trigger
+            // the event now, to handle the hash the page may have loaded with.
+            $(window).trigger('hashchange');
+
+
+        });
+    </script>
+{% endblock extrahead %}
+        {% block hat_actions %}
+            {{ block.super }}
+            <div style="float:right;">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:alert('Popup for sending a message')">
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                New Message
+            </a>
+            </div>
+    {% endblock %}
+    {% block patient_badge %}
+        {{ block.super }}
+        <dt>{% trans "MRN" %}</dt>
+            <dd>{{ patient_doc.mrn }}</dd>
+    {% endblock patient_badge %}
+
+    {% block patient-tab-controller %}
+            <li><a href="#patient-casetracker-tab">{% trans "Cases" %}</a></li>
+            <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
+            <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
+            <li><a href="#patient-careplan-tab">{% trans "Care Plan" %}</a></li>
+    {% endblock patient-tab-controller %}
+    {% block patient-tab-container %}
+        <div id="patient-casetracker-tab" class="ui-tabs-hide">
+            <div class="span-19">
+            {% for case in cases %}
+                <div class="span-18 last" style="margin-bottom:8px;">
+                    <div class="span-18 last"><strong>{{ case.opened_by.get_name }}</strong>  {{ case.opened_date|date }} {{ case.opened_date|time }}</div>
+                    <div class="span-18 prepend-1 last">{{ case.description }}</div>
+                    <div class="span-4"><a href="{% url manage-case case.id %}">View Case</a></div>
+                    &nbsp;
+                </div>
+            {% endfor %}
+            </div>
+        &nbsp;
+        </div>
+        <div id="patient-info-tab" class="ui-tabs-hide">
+            <div id="patienteditform" class="editctrl"></div>
+            <div id="patient-info-display">
+            <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
+            <table>
+                <tr>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <th class="span-4">Language</th>
+                    <td>English/Spanish</td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <th>Additional Notes</th>
+                    <td>{{ patient_doc.notes }}</td>
+                </tr>
+            </table>
+                        <div class="editctrl" style="float:right;">
+                            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                                <span class="ui-icon ui-icon-wrench"></span>
+                                Edit Info
+                            </a>
+                        </div>
+            </div> <!-- end patient info display-->
+            <br>
+            <br>
+            <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
+            <table>
+                <tr>
+                    <th class="span-4">
+                        Address
+                    </th>
+                    <td>
+                        {% for patient_address in patient_doc.address %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ patient_address.street }}<br>
+                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
+                            <hr>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th lass="span-4">
+                        Phone
+                    </th>
+                    <td>
+                        {% for phone in patient_doc.phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                            <hr>
+                            </div>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+
+
+
+            </table>
+            <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+        </div>
+
+
+        <div id="patient-careteam-tab">
+            <div class="span-20">
+                    <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                       href="javascript:alert('todo')">
+{#                       href="{% url pt_add_provider patient_doc.get_id %}">#}
+                    <span class="ui-icon ui-icon-circle-plus"></span>
+                    Add Provider </a>
+                {% for role, actors in careteam_dict.items %}
+                    <div class="span-16 last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
+                    {% for actor in actors %}
+                        <div class="span-16 last" style="border: 1px solid black;padding: 8px;margin: 4px;">
+                            <div class="span-10 careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span-6 last">{{ actor.actordoc.get_display|title }}</div>
+                            &nbsp;
+                        </div>
+                        &nbsp;
+                    {% endfor %}
+                {% endfor %}
+
+
+            </div>
+            &nbsp;
+        </div>
+        <div id="patient-careplan-tab">
+            Careplan goes here
+        </div>
+    {% endblock patient-tab-container %}

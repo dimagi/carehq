@@ -70,8 +70,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'johnny.middleware.LocalStoreClearMiddleware',
-    #'johnny.middleware.QueryCacheMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,23 +79,24 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'auditcare.middleware.AuditMiddleware',
+    #'auditcare.middleware.AuditMiddleware',
     #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
-    #'clinical_core.clincore.middleware.identity.AshandIdentityMiddleware',
+    #'clinical_core.clinical_shared.middleware.identity.CareHQIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'dimagi.utils.threadlocals.ThreadLocals',
-    #'carehqapp.middleware.identity.AshandIdentityMiddleware',
+    #'carehqapp.middleware.identity.CareHQIdentityMiddleware',
+    'smartagent.middleware.UserAgentDetectorMiddleware',
 )
 
 AUDIT_VIEWS = [
-    'pactcarehq.views.my_patient_activity',
-    'pactcarehq.views.get_caselist',
-    'pactcarehq.views.patient_list',
-    'pactcarehq.views.patient_view',
-    'dotsview.views.index_couch',
-    'pactcarehq.views.chw_calendar_submit_report',
-    'dotsview.views.get_csv',
+    #'pactcarehq.views.my_patient_activity',
+#    'pactcarehq.views.get_caselist',
+#    'pactcarehq.views.patient_list',
+#    'pactcarehq.views.patient_view',
+#    'dotsview.views.index_couch',
+#    'pactcarehq.views.chw_calendar_submit_report',
+#    'dotsview.views.get_csv',
 ]
 
 
@@ -136,6 +137,7 @@ INSTALLED_APPS = (
     'permissions',
     'couchforms',
     'couchexport',
+    'soil', 
     'couchlog',
     'dimagi.utils',
     'receiver',
@@ -147,10 +149,13 @@ INSTALLED_APPS = (
     'casexml.apps.case',
     'casexml.apps.phone',
     'account',
-    'clinical_core.carehqadmin',
+    'carehqadmin',
+    'carehq_core',
+    'casetracker',
     'keymaster',
     'webxforms',
     'djangocouch',
+    'hutch',
     #end clinical_core
 
     #########################
@@ -158,14 +163,16 @@ INSTALLED_APPS = (
     'django_digest',
     'djcelery',    # pip install django-celery
     'djkombu',     # pip install django-kombu
+    'tastypie',
 
     'uni_form',
+    'smartagent',
     #'south',
     #end third party apps
 
     ###########################
     #Apps for production use
-    #'johnny',
+    'johnny',
 
     ####################
     #Dev helper apps
@@ -200,7 +207,7 @@ USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
 LOGGEDOUT_TEMPLATE='registration/logged_out.html'
 LOGIN_REDIRECT_URL = '/'
-BASE_TEMPLATE = "base.html"
+BASE_TEMPLATE = 'base.html'
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
@@ -256,6 +263,9 @@ except ImportError, e:
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
 
+SMART_AGENT_SETTINGS = {
+    'AGENT_DATASET_LOCATION': os.path.join(filepath, 'agents_2011_04_14.pkl')
+}
 
 ####### Couch Forms & Couch DB Kit Settings #######
 def get_server_url(server_root, username, password):

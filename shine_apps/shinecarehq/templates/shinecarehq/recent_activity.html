@@ -1,0 +1,47 @@
+{% extends base_template %}
+{% load i18n %}
+{% load patient_tags %}
+{% load shinepatient_tags %}
+{% load shineforms_tags %}
+
+{% block content %}
+    {% block extrahead %}
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
+              media="print, projection, screen"/>
+        <script type="text/javascript" charset="utf-8">
+            $().ready(function() {
+                $("#submit-table").tablesorter({sortList: [ [0,1] ],widgets:['zebra']});
+            });
+        </script>
+    {% endblock %}
+    <div class="container">
+        <h2>Clinical Progress</h2>
+        <hr>
+        <table id="submit-table" class="tablesorter span-24 last">
+                    <thead>
+                    <tr>
+                        <th class="span-4">Date</th>
+                        <th class="span-4">User</th>
+                        <th class="span-4">Patient</th>
+                        <th class="span-4">Form</th>
+                    </tr>
+                    </thead>
+                    {% for submit in submissions %}
+                        <tr>
+                            <td><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date:"m-d-Y H:i"}}</a></td>
+                            <td> {{ submit.form.Meta.username }}</td>
+                            <td> {% case_patient_lookup submit.form.case as curr_pt%}
+                                {% if curr_pt %}
+                                {{ curr_pt.last_name|title }}, {{ curr_pt.first_name|title }}
+                                <a href="{% url shine_single_patient curr_pt.get_id %}">View</a>
+                                {% else %}
+                                    -- Unlinked Case --
+                                {% endif %}
+                            </td>
+                            <td> {% shine_xmlns_name submit.xmlns %}</td>
+                        </tr>
+                    {% endfor %}
+        </table>
+    </div>
+{% endblock content %}

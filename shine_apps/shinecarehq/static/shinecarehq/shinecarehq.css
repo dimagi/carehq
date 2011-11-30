@@ -1,0 +1,49 @@
+.mepi_status_matrix {
+    /*background:  #d3d3d3;*/
+}
+
+.mepi_missing {
+    background:#FBB4AE;
+}
+.mepi_completed {
+    background:#CCEBC5;
+}
+
+.mepi_omit {
+    background:#d3d3d3;
+}
+
+div.mepi_missing, div.mepi_completed, div.mepi_omit {
+    border-radius:4px;
+    padding:4px;
+    margin-left: 4px;
+    margin-top:4px;
+}
+
+
+.mepi_last {
+    margin-right:4px;
+}
+
+.mepi_quarter {
+    width: 25%;
+}
+.mepi_third {
+    width: 33%;
+}
+
+.mepi_full {
+    width:100%;
+}
+
+.mepi_half {
+    width:50%;
+}
+
+.mepi_fifth {
+    width:20%;
+}
+
+div.mepi_quarter, div.mepi_third, div.mepi_full, div.mepi_half {
+    float:left;
+}

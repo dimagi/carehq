@@ -5,11 +5,12 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, Boole
 from couchdbkit.schema.properties_proxy import  SchemaListProperty
 import logging
 from django.core.cache import cache
+from clinical_shared.mixins import TypedSubclassMixin
 from permissions.models import Actor
 from tenant.models import TenantActor
 
 
-class BaseActorDocument(Document):
+class BaseActorDocument(Document, TypedSubclassMixin):
     """
     When creating an Actor django model, a corresponding ActorProfileDocument is created for it.
     """
@@ -20,10 +21,10 @@ class BaseActorDocument(Document):
     notes = StringProperty()
 
     def get_name(self):
-        return self.name
+        pass
 
     def get_display(self):
-        return self.name
+        pass
 
     @classmethod
     def _get_my_type(cls):
@@ -43,7 +44,6 @@ class BaseActorDocument(Document):
                 dja = None
             self._django_actor = dja
         return self._django_actor
-
 
     def save(self, tenant, *args, **kwargs):
         if self.actor_uuid is None:
@@ -78,15 +78,6 @@ class BaseActorDocument(Document):
         else:
             #it's not new
             super(BaseActorDocument, self).save(*args, **kwargs)
-
-
-        #Invalidate the cache entry of this instance
-        cache.delete('%s_actordoc' % (self._id))
-        try:
-            couchjson = simplejson.dumps(self.to_json())
-            cache.set('%s_actordoc' % (self._id), couchjson)
-        except Exception, ex:
-            logging.error("Error serializing actor document object for cache (%s): %s" % (self._id, ex))
 
     class Meta:
         app_label = 'actorpermission'
@@ -127,7 +118,7 @@ class CaregiverActor(BaseActorDocument):
         ('child', 'Child'),
         ('parent', 'Parent'),
         ('relative', 'Relative'),
-        ('spouse', 'Spouse'),
+        #('spouse', 'Spouse'),
         ('sibling', 'Sibling'),
         ('nextofkin', 'Next of kin'),
         ('friend', 'Friend'),
@@ -147,6 +138,10 @@ class CaregiverActor(BaseActorDocument):
 
     def get_display(self):
         return self.relation
+
+class PatientActor(BaseActorDocument):
+    patient_doc_id = StringProperty()
+    pass
 
 class ProviderActor(BaseActorDocument):
     """
