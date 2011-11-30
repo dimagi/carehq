@@ -60,6 +60,7 @@ PACT_HIV_CLINIC_CHOICES = (
     ("cambridge_health_alliance","Cambridge Health Alliance"),
     ("cambridge_health_alliance_somerville","Cambridge Health Alliance - Somerville"),
     ("cambridge_health_alliancewindsor_st","Cambridge Health Alliance-Windsor St"),
+    ("childrens_hospital","Children's Hospital"),
     ("codman_square_health_center","Codman Square Health Center"),
     ("dimock_center","Dimock Center"),
     ("dorchester_house_multiservice_center","Dorchester House Multi-Service Center"),
