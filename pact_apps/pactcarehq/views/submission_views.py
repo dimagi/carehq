@@ -243,7 +243,7 @@ def show_submission(request, doc_id, template_name="pactcarehq/view_submission.h
                 ccomment.created_by = request.user.username
                 ccomment.created = datetime.utcnow()
                 ccomment.save()
-                return HttpResponseRedirect(reverse('show_progress_note', kwargs= {'doc_id': doc_id}))
+                return HttpResponseRedirect(reverse('show_submission', kwargs= {'doc_id': doc_id}))
     else:
         #it's a GET, get the default form
         if request.GET.has_key('comment'):
