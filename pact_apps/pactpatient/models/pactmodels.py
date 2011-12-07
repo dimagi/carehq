@@ -681,7 +681,7 @@ class PactPatient(BasePatient):
         address_props = sorted(filter(lambda x: x.startswith("address"), casedoc._dynamic_properties.keys()))
         ret = []
 
-        for n, x in enumerate(address_props, start=1):
+        for n, x in enumerate(address_props):
             p = {}
             p['address_id'] = n
             if hasattr(casedoc, 'address%d' % n):
