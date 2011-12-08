@@ -17,8 +17,10 @@ class ProviderForm(DocumentForm):
         # create the layout object
         layout = Layout(
             # first fieldset shows the company
-            'name',
             'title',
+            'first_name',
+            'last_name',
+            'provider_title',
             Row('phone_number', 'email',),
             Row('gender', 'birthdate', 'ssn'),
 

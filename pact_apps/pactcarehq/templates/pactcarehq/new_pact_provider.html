@@ -78,8 +78,9 @@
                 <table id="providers-table" class="tablesorter">
                     <thead>
                     <tr>
-                    <th class="span-4">Name</th>
-                    <th class="span-4">Title</th>
+                    <th class="span-4">First Name</th>
+                    <th class="span-4">Last Name</th>
+                    <th class="span-4">Job Title</th>
                     <th class="span-4">Email</th>
                     <th class="span-3">Phone Number</th>
                     <th class="span-8">Facility</th>
@@ -89,8 +90,9 @@
                     <tbody>
                     {% for actor_doc in provider_actors %}
                         <tr>
-                            <td>{{ actor_doc.name }}</td>
-                            <td>{{ actor_doc.title }}</td>
+                            <td>{{ actor_doc.last_name }}</td>
+                            <td>{{ actor_doc.first_name }}</td>
+                            <td>{{ actor_doc.provider_title }}</td>
                             <td>{{ actor_doc.email }}</td>
                             <td>{{ actor_doc.phone_number }}</td>
                             <td>{{ actor_doc.facility_name }}<br>
