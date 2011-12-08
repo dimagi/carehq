@@ -36,7 +36,8 @@ def remove_phone(request):
         new_phones = pdoc.active_phones
         new_phones[phone_id] = {'number':'', 'description': ''}
 
-        xml_body = update_patient_casexml(request.user, pdoc, new_phones, pdoc.active_addresses)
+        print "Remove phone: %s" % new_phones
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.active_addresses)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -115,7 +116,7 @@ def remove_address(request):
         new_addrs[address_id] = {'address': '', 'description': ''}
 #        new_addrs.pop(address_id)
 
-        xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, new_addrs)
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones, new_addrs)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -226,7 +227,7 @@ def ajax_post_form(request, patient_guid, form_name):
             else:
                 active_addresses[int(address_edit_id)-1] = addr_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones, active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 
             resp.status_code = 204
@@ -253,7 +254,7 @@ def ajax_post_form(request, patient_guid, form_name):
             else:
                 active_phones[int(phone_edit_id)-1] = phone_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc, active_phones, pdoc.active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
             resp.status_code = 204
             return resp

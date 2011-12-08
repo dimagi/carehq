@@ -6,6 +6,8 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, Boole
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
+import isodate
+from pytz import timezone
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from dimagi.utils.couch.database import get_db
@@ -14,6 +16,7 @@ from pactpatient.enums import PACT_ARM_CHOICES, PACT_RACE_CHOICES, PACT_LANGUAGE
 from patient.models import BasePatient
 import logging
 from dimagi.utils import make_uuid
+import settings
 
 ghetto_regimen_map = {
     "none":'0',
@@ -519,7 +522,11 @@ class PactPatient(BasePatient):
                             ]
 
         ret['days'] = []
-        ret['anchor'] = datetime.now().strftime("%d %b %Y 04:00:00 GMT")
+        #dmyung - hack to have it be timezone be relative specific to the eastern seaboard
+        #ret['anchor'] = isodate.strftime(datetime.now(tz=timezone(settings.TIME_ZONE)), "%d %b %Y")
+        ret['anchor'] = datetime.now(tz=timezone(settings.TIME_ZONE)).strftime("%d %b %Y")
+
+
         for delta in range(21):
             date = startdate - timedelta(days=delta)
             day_arr = self.dots_casedata_for_day(date, art_num, non_art_num)
@@ -674,7 +681,7 @@ class PactPatient(BasePatient):
         address_props = sorted(filter(lambda x: x.startswith("address"), casedoc._dynamic_properties.keys()))
         ret = []
 
-        for n, x in enumerate(address_props, start=1):
+        for n, x in enumerate(address_props):
             p = {}
             p['address_id'] = n
             if hasattr(casedoc, 'address%d' % n):

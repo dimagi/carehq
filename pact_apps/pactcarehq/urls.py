@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.http import HttpResponse
 from pactcarehq.views import PactPatientSingleView
 from patient.views import PatientListView
 from pactpatient.models import PactPatient
@@ -9,6 +10,9 @@ urlpatterns = patterns ('',
     (r'^$', 'pactcarehq.views.my_patient_activity'),
     (r'^uptime$', 'pactcarehq.views.uptime'),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '%spactcarehq/img/favicon.png' % (settings.STATIC_URL)}),
+
+    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")), #from http://fredericiana.com/2010/06/09/three-ways-to-add-a-robots-txt-to-your-django-project/
+
 
 
 #    (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),

@@ -116,6 +116,6 @@ def run():
         c.save()
         print "saved"
 
-        xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], c, new_phone, new_addr)
+        xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], c.case_id, c.pact_id, new_phone, new_addr)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 

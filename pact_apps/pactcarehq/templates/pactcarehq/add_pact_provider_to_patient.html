@@ -2,6 +2,12 @@
 {% load uni_form_tags %}
 {% block content %}
 {% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#provider-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
 {#    <script>#}
 {#	$(function() {#}
 {#		$( "#newprovider_dlg" ).dialog({#}
@@ -73,15 +79,17 @@
             {% if all_providers %}
                 <h3>Choose from existing providers</h3>
 {#                <button id="newprovider_dlg_opener">Create New</button>#}
-                <table id="patient-table" class="tablesorter">
+                <table id="provider-table" class="tablesorter span-24 last">
                     <thead>
                     <tr>
                     <th class="span-3"></th>
-                    <th class="span-4">Name</th>
-                    <th class="span-4">Title</th>
+                    <th class="span-4">First Name</th>
+                    <th class="span-4">Last Name</th>
+                    <th class="span-4">Job Title</th>
                     <th class="span-4">Email</th>
                     <th class="span-3">Phone Number</th>
                     <th class="span-6">Facility</th>
+                    </tr>
                     </thead>
 
                     <tbody>
@@ -89,8 +97,9 @@
                         <tr>
                             <td><button onclick="link_provider_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}')">Add</button>&nbsp;
                             <a href="{% url pact_edit_provider prov.get_id %}?edit">Edit</a></td>
-                            <td>{{ prov.name }}</td>
-                            <td>{{ prov.title }}</td>
+                            <td>{{ prov.first_name }}</td>
+                            <td>{{ prov.last_name }}</td>
+                            <td>{{ prov.provider_title }}</td>
                             <td>{{ prov.email }}</td>
                             <td>{{ prov.phone_number }}</td>
                             <td>{{ prov.facility_name }}<br>

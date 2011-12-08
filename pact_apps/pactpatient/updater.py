@@ -62,33 +62,44 @@ def generate_submission_from_cpatient(couchdoc):
     """
     pass
 
-def update_patient_casexml(user, patient_doc, active_phones, active_addresses):
+def update_patient_casexml(user, case_id, pact_id, active_phones, active_addresses):
     """
     Update casexml
     """
     data_dict = {}
     data_dict['time_start'] = datetime.utcnow()#.isoformat()
+    filtered_phones = filter(lambda x: len(x['number']) > 0 and len(x['description']) >= 0, active_phones)
     phone_xml = []
-    for i, p in enumerate(active_phones, start=1):
-        print p
-        if p == None:
-            continue
-        phone_xml.append(get_phone_xml(i, p['number'], typestring=p['description']))
+    #for i, p in enumerate(active_phones, start=1):
+    for i in range(0,5):
+        if i < len(filtered_phones):
+            p = filtered_phones[i]
+        else:
+            p = {'number':'', 'description':''}
+        phone_xml.append(get_phone_xml(i+1, p['number'], typestring=p['description']))
 
     address_xml = []
-    for i, a in enumerate(active_addresses, start=1):
-        if a == None:
-            continue
-        address_xml.append(get_address_xml(i, a['address'], typestring=a['description']))
+
+    filtered_addresses = filter(lambda x: len(x['address']) > 0 and len(x['description']) >= 0, active_addresses)
+    #for i, a in enumerate(active_addresses, start=1):
+    for i in range(0,5):
+        if i < len(filtered_addresses):
+            a = filtered_addresses[i]
+        else:
+            a = {'address': '', 'description': ''}
+        address_xml.append(get_address_xml(i+1, a['address'], typestring=a['description']))
+
+    #print phone_xml
+    #print address_xml
 
     #case = CommCareCase.get(patient_doc.case_id)
     data_dict['update_block'] = ''.join(phone_xml + address_xml)
     data_dict['uid'] = uuid.uuid4().hex
-    data_dict['case_id'] = patient_doc.case_id
+    data_dict['case_id'] = case_id
     data_dict['username'] = user.username
     data_dict['chw_id'] = user.id
     data_dict['date_modified'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") # this is != to isoformat()!!!
-    data_dict['pact_id'] = patient_doc.pact_id
+    data_dict['pact_id'] = pact_id
     data_dict['time_end'] = datetime.utcnow() #datetime.utcnow().isoformat() + "Z"
     return xml_template % data_dict
 

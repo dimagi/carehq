@@ -38,7 +38,7 @@
 {% if comments %}
 {% for comment in comments %}
     {{ comment.0.comment }} <br>
-    <small> %nbsp; {{ comment.0.created_by }} on {{ comment.0.created|date }} {{ comment.0.created|time }}</small>
+    <div class="prepend-1"><small>by {{ comment.0.created_by }} on {{ comment.0.created|date }} {{ comment.0.created|time }}</small></div>
     <hr>
 {% endfor %}
 {% endif %}
