@@ -26,7 +26,7 @@ class BaseActorDocument(Document):
     _subclass_dict = {}
 
     def get_name(self):
-        return self.name
+        return "%s %s" % (self.first_name, self.last_name)
 
     def get_display(self):
         return self.name
@@ -198,7 +198,7 @@ class ProviderActor(BaseActorDocument):
         app_label = 'actorpermission'
 
     def get_name(self):
-        return "%s (%s)" % (self.name, self.title)
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.provider_title)
 
     def get_display(self):
         return "%s, %s" % (self.title, self.facility_name)
