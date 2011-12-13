@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from actorpermission.models.actortypes import ProviderActor
 from carehqadmin.forms.actor_form import get_actor_form
 from carehqadmin.forms.provider_form import ProviderForm
-from pactconfig import constants
+from pactconfig import constants, pact_api
 from pactpatient.models.pactmodels import PactPatient
 import permissions
 from permissions.models import Role, PrincipalRoleRelation
@@ -25,11 +25,7 @@ def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact
         if form.is_valid():
             provider_actor = form.save(commit=False)
             provider_actor.save(pact_tenant)
-            role_class = Role.objects.get(name=constants.role_external_provider)
-
-            permissions.utils.add_role(provider_actor.django_actor, role_class)
-            permissions.utils.add_local_role(pt.django_patient, provider_actor.django_actor, role_class)
-
+            pact_api.add_external_provider(pt, provider_actor)
             return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
         else:
             context['form'] = form
@@ -58,12 +54,8 @@ def view_add_pact_provider(request, template="pactcarehq/new_pact_provider.html"
             context['form'] = form
     else:
         context['form'] = ProviderForm(pact_tenant)
-    provider_role = Role.objects.get(name=constants.role_external_provider)
-    #just get PrincipalRoles that are globally defined. An actor in ASHand will inherently have some global principal role
-    django_provider_actors = PrincipalRoleRelation.objects.filter(role=provider_role).filter(content_id=None)
-    actor_doc_ids = django_provider_actors.distinct().values_list('actor__doc_id', flat=True)
-    actor_docs = ProviderActor.view('actorpermission/all_actors', keys=list(actor_doc_ids), include_docs=True).all()
-    context['provider_actors'] = actor_docs
+
+    context['provider_actors'] = pact_api.get_external_providers()
     return render_to_response(template, context_instance=context)
 
 

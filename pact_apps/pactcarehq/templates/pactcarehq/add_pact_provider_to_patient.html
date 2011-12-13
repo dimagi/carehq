@@ -1,11 +1,12 @@
-{%  extends base_template %}
+{% extends base_template %}
 {% load uni_form_tags %}
 {% block content %}
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
     <script type="text/javascript" charset="utf-8">
         $().ready(function(){
-            $("#provider-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+            $("#provider-table").tablesorter({sortList: [[2,0]],widgets:['zebra']});
         });
     </script>
 {#    <script>#}
@@ -87,7 +88,7 @@
                     <th class="span-4">Last Name</th>
                     <th class="span-4">Job Title</th>
                     <th class="span-4">Email</th>
-                    <th class="span-3">Phone Number</th>
+                    <th class="span-3">Phone</th>
                     <th class="span-6">Facility</th>
                     </tr>
                     </thead>

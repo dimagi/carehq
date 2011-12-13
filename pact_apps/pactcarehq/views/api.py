@@ -2,9 +2,9 @@ import urllib
 from django.contrib.contenttypes.models import ContentType
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactconfig import constants
-from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
+from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
