@@ -1,11 +1,10 @@
 DEMO_CARETEAMS = [
+    #No overlap
         {
         'patient': ["George", "", "Costanza", "m"],
         'caregivers': [['Jerry', 'Seinfeld'], ],
         'providers': [
             ["Leonard", "McCoy", "Doctor", "USS Enterprise"],
-            ["Beverly", "Crusher", "Oncologist", "USS Enterprise-D"],
-            ["Christine", "Chapel", "Nurse", "USS Enterprise"],
         ],
         },
         {
@@ -16,7 +15,6 @@ DEMO_CARETEAMS = [
             ["Julian", "Bashir", "Oncologist", "Deep Space 9"],
             ["Katherine", "Pulaski", "Doctor", "USS Enterprise-D"],
             ["Hubert", "Farnsworth", "Radiologist", "USS Enterprise-D"],
-            ["Beverly", "Crusher", "Oncologist", "USS Enterprise-D"],
         ],
         },
         {
@@ -25,17 +23,16 @@ DEMO_CARETEAMS = [
         'providers': [
             ["Thomas", "Paris", "Nurse", "Deep Space 9"],
             ["Alyssa", "Ogawa", "Nurse", "USS Enterprise-D"],
-            ["Christine", "Chapel", "Nurse", "USS Enterprise"]
+            ["Beverly", "Crusher", "Oncologist", "USS Enterprise-D"],
         ],
         },
         {
         'patient': ["Pat", "", "Patient", "f"],
         'caregivers': [['Casey', 'Caregiver'], ],
         'providers': [
-            ["Christine", "Chapel", "Nurse", "USS Enterprise"],
-            ["Leonard", "McCoy", "Doctor", "USS Enterprise"],
             ["Carol", "Hathaway", "Nurse", "Community General"],
             ["Samantha", "Taggart", "Nurse", "Community General"],
+            ["Christine", "Chapel", "Nurse", "USS Enterprise"],
         ],
         },
         {
@@ -43,18 +40,17 @@ DEMO_CARETEAMS = [
         'caregivers': [['Tory', 'Foster'], ],
         'providers': [
             ["Sherman", "Cottle", "Nutritionist", "BSG"],
-            ["Mark", "Sloan", "Social Worker", "Community General Hospital"],
-            ["John", "Carter", "Physical Therapy", "Community Rehabilitation Hopsital"]
         ],
         },
         {
         'patient': ["Kara", "", "Thrace", "f"],
         'caregivers': [['Lee', 'Adama'], ],
         'providers': [
-            ["Sherman", "Cottle", "Nutritionist", "BSG"],
-            ["John", "Carter", "Physical Therapy", "Community Rehabilitation Hopsital"]
+            ["John", "Carter", "Physical Therapy", "Community Rehabilitation Hopsital"],
+            ["Mark", "Sloan", "Social Worker", "Community General Hospital"],
         ],
         },
+    #end no overlap index 6
         {
         'patient': ["Jennifer", "", "Sisko", "f"],
         'caregivers': [['Jake', 'Sisko'], ],

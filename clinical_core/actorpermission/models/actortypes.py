@@ -1,3 +1,4 @@
+import pdb
 import simplejson
 import uuid
 from couchdbkit.ext.django.schema import Document
@@ -51,7 +52,7 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             self._django_actor = dja
         return self._django_actor
 
-    def save(self, tenant, *args, **kwargs):
+    def save(self, tenant, user=None, *args, **kwargs):
         if self.actor_uuid is None:
         #this is a new instance
         #first check global uniqueness
@@ -71,6 +72,8 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             django_actor.doc_id=doc_id
 
             django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
+            if user:
+                django_actor.user = user
 
             try:
                 django_actor.save()
