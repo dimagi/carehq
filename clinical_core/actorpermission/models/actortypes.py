@@ -71,9 +71,9 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             django_actor.id = actor_uuid
             django_actor.doc_id=doc_id
 
-            django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
             if user:
                 django_actor.user = user
+            django_actor.name = '%s-%s-%s_%s' % (tenant.prefix, self.__class__.__name__, self.first_name, self.last_name)
 
             try:
                 django_actor.save()

@@ -35,10 +35,10 @@ class ProviderForm(DocumentForm):
         return helper
 
     def clean(self):
-        actor_name = '%s-%s-%s' % (self.tenant.prefix, 'ProviderActor', self.cleaned_data['name'])
+        actor_name = '%s-%s-%s_%s' % (self.tenant.prefix, 'ProviderActor', self.cleaned_data['first_name'], self.cleaned_data['last_name'])
         do_check_name = False
 
-        if self.instance and self.instance.name != self.cleaned_data['name']:
+        if self.instance and (self.instance.first_name != self.cleaned_data['first_name'] and self.instance.last_name != self.cleaned_data['last_name']):
             do_check_name = True
 
         elif self.instance is None:

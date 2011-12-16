@@ -23,7 +23,7 @@ def get_actor_form(doc_class):
                         continue
 
         def clean(self):
-            actor_name = '%s-%s-%s' % (self.tenant.prefix, doc_class.__name__, self.cleaned_data['name'])
+            actor_name = '%s-%s-%s_%s' % (self.tenant.prefix, doc_class.__name__, self.cleaned_data['first_name'], self.cleaned_data['last_name'])
             if Actor.objects.filter(name=actor_name).count() > 0:
                 raise ValidationError("Error, a provider of this name already exists")
             return self.cleaned_data
