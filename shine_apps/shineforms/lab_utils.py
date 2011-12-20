@@ -28,6 +28,7 @@ def merge_labs(lab_submissions, as_dict=False):
         return ret_dict
 
 
+    #old style checks
     for sub in lab_submissions:
         if sub.form['hiv'] != "":
             hiv = sub.form['hiv']
@@ -54,6 +55,38 @@ def merge_labs(lab_submissions, as_dict=False):
             hivfollowup = fill_sub_dict(sub, 'hivfollowup')
         if 'bloodcts' in sub.form:
             bloodcts = fill_sub_dict(sub, 'bloodcts')
+
+        if sub.form.has_key('sections'):
+            #new style checks
+            for labkey, val in sub.form['sections'].items():
+                if labkey == 'labs_xray':
+                    #done: yes/no
+                    pass
+                if labkey == 'labs_wbc':
+                    #["blood_neutrophils", "blood_lymphocytes", "@name", "blood_eosinophils", "done", "blood_monocytes", "blood_wbc"]
+                    pass
+                if labkey == 'labs_prophylaxis':
+                    #done: yes/no
+                    pass
+                if labkey == 'labs_malaria':
+                    #done: yes/no
+                    pass
+                if labkey == 'labs_liver_func':
+                    #["blood_tp", "@name", "blood_alt", "blood_alb", "blood_ast", "done", "blood_dir_bili", "blood_tbili"]
+                    pass
+                if labkey == 'labs_hivstatus':
+                    #done: yes/no
+                    pass
+                if labkey == 'labs_hemogram':
+                    #["done", "blood_hgb", "@name", "blood_plts", "blood_mcv"]
+                    pass
+                if labkey == 'labs_basic_chem':
+                    #["blood_na", "blood_k", "blood_cr", "@name", "blood_glucose", "done", "blood_cl"]
+                    pass
+                if labkey == 'labs_afb_smear':
+                    #done: yes/no
+                    pass
+
 
     if as_dict:
         return {
