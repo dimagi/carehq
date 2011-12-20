@@ -1,0 +1,61 @@
+{% extends base_template %}
+{% include render_json_tags %}
+{#{% block extrahead %}#}
+{#<script type="text/javascript" charset="utf-8">#}
+{#$(document).ready(#}
+{#        function()#}
+{#        {#}
+{#			//placeholder for autorefresh, but turning off for now#}
+{#            //var autoRefresh = setInterval(refreshNotification, 30000);#}
+{#            jQuery("abbr.timeago").timeago();#}
+{#        }#}
+{#    );#}
+{#</script>#}
+{#{% endblock extrahead %}#}
+{% block content %}
+<h2>CHW List</h2>
+<div class="span-8 last">
+<strong>Schedule CSV Report for all CHWs</strong>
+    <br>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=7">CSV 7</a>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval={% now "j" %}">CSV MTD</a>&nbsp;
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=30">CSV 30</a>&nbsp;
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=all">All Data</a>&nbsp;
+<br>
+</div>
+<table>
+<thead>
+    <tr>
+        <th></th>
+        <th>First Name</th>
+        <th>Last  Name</th>
+        <th>Username</th>
+        <th>Total Submits</th>
+        <th>Last Received</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+
+{%  for chw, dashboard in chw_dashboard_dict.items %}
+    <tr>
+        <td><a href="{% url pact_chw_profile chw.get_id %}">Profile</a></td>
+        <td>{{ chw.first_name|title }}</td>
+        <td>{{ chw.last_name|title }}</td>
+        <td>{{ chw.django_actor.user.username }}</td>
+
+        {% if dashboard %}
+        <td>{{ dashboard.count }}</td>
+        <td>{{ dashboard.last_received|date:"Y-m-d H:i"}}</td>
+        {% else %}
+            <td>0</td>
+            <td>Never</td>
+        {% endif %}
+        <td>
+            <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+        </td>
+
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

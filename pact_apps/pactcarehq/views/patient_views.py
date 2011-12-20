@@ -27,12 +27,6 @@ def getpatient(pact_id):
         patient_pactid_cache[pact_id] = pt
         return pt
 
-
-
-
-
-
-
 class PactPatientSingleView(PatientSingleView):
     def get_context_data(self, **kwargs):
         """

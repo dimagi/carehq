@@ -8,6 +8,7 @@ TENANT_PREFIX = 'carehq'
 TENANT_FULL_NAME = "CareHQ Core"
 
 
+
 ### Role Constants
 role_suspended = '%sSuspended' % APP_PREFIX
 

@@ -3,6 +3,9 @@ from django.http import  Http404
 from ashandapp.models import CareTeam
 import logging
 
+
+
+
 def is_careteam_member(view_func):
     def _is_member(request, careteam_id, *args, **kwargs):
         #get careteam id

@@ -1,0 +1,89 @@
+{% extends "actortemplates/base_actor_profile.html" %}
+{% load i18n %}
+{% include render_json_tags %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        });
+    </script>
+{% endblock extrahead %}
+{% block hat_actions %}
+    {{ block.super }}
+{% endblock hat_actions %}
+
+{% block actor_badge %}
+    <dt>{% trans "First Name" %}</dt>
+        <dd>{{ actor_doc.first_name }}</dd>
+    <dt>{% trans "Last Name" %}</dt>
+        <dd>{{ actor_doc.last_name }}</dd>
+    <dt>{% trans "Username" %}</dt>
+        <dd>{{ actor_doc.django_actor.user.username }}</dd>
+{% endblock actor_badge %}
+
+
+{% block actor-tab-controller %}
+    <li><a href="#actor-info-tab" name="info">{% trans "Info" %}</a></li>
+    <li><a href="#permissions-tab">{% trans "Permissions" %}</a></li>
+    <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
+{% endblock actor-tab-controller %}
+
+{% block actor-tab-container %}
+    <div id="actor-info-tab">
+        {{ actor_doc.to_json }}
+    </div>
+    <div id="permissions-tab">
+        {% for role, subjects in permissions_dict.items %}
+            <div class="span-12">
+                Role {{ role.display }}<br>
+                {% for s in subjects %}
+                    <div class="span-10 prepend-2">
+                        {{ s }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="submissions-tab" class="ui-tabs-hide">
+        <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+        {% if submit_arr %}
+        <table id="submits-table" class="tablesorter">
+        <thead>
+            <tr>
+                <th class="span-4">Encounter Date</th>
+                <th class="span-2">ID</th>
+                <th class="span-3">Last Name</th>
+                <th class="span-3">First Name</th>
+                <th class="span-4">Form</th>
+
+                <th class="span-4">Started</th>
+                <th class="span-4">Finish Time</th>
+                <th class="span-4">Submit Time</th>
+                <th class="span-4">Submit Date</th>
+            </tr>
+        </thead>
+        {% for submission in submit_arr %}
+            <tr>
+                <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
+                <td> {{ submission.2.pact_id }}</td>
+                <td> {{ submission.2.last_name }}</td>
+                <td> {{ submission.2.first_name }}</td>
+                <td> {{ submission.3 }}</td>
+
+                <td> {{ submission.4|date:"Y-m-d H:i" }}</td> {# started date #}
+                <td> {{ submission.5 }}</td> {# start-end interval #}
+                <td> {{ submission.6 }}</td> {# end-submit interval #}
+                <td> {{ submission.7|date:"Y-m-d H:i" }}</td> {# submitted date #}
+            </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+            <div class="notice">No Submissions</div>
+        {% endif %} {#if there are any submits at all #}
+    </div>
+{% endblock actor-tab-container %}

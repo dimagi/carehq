@@ -39,7 +39,10 @@ urlpatterns = patterns ('',
     (r'^submits/mine$', 'pactcarehq.views.my_submits'),
     (r'^submits/mine/restore$', 'pactcarehq.views.xml_download'),
 
-    (r'^submits/chw/all$', 'pactcarehq.views.chw_list'),
+    (r'^submits/chw/all$', 'pactcarehq.views.chw_list'), #to deprecate
+    (r'^chws/all$', 'pactcarehq.views.chw_actor_list'),
+    url(r'^chws/(?P<chw_doc_id>[0-9a-zA-Z]{25,32})$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
+
     (r'^submits/chw/(?P<chw_username>.*)/submits$', 'pactcarehq.views.chw_submits'),
 
 

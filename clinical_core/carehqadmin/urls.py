@@ -6,6 +6,10 @@ urlpatterns = patterns('carehqadmin.views',
 
     url(r'^carehqadmin/landlord$', 'landlord.landing', name='landlord_landing'),
     url(r'^carehqadmin/tenant/(?P<tenant_id>[0-9a-fA-Z]{25,32})$', 'tenants.manage_tenant', name='manage_tenant'),
+    url(r'^carehqadmin/tenant/(?P<tenant_id>[0-9a-fA-Z]{25,32})/users$', 'tenants.manage_tenant_users', name='manage_tenant_users'),
+
+
+
     url(r'^carehqadmin/tenant/(?P<tenant_id>[0-9a-fA-Z]{25,32})/actor/new$', 'actors.new_actor', name='new_actor'),
 
 

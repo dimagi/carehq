@@ -25,7 +25,7 @@ def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact
         if form.is_valid():
             provider_actor = form.save(commit=False)
             provider_actor.save(pact_tenant)
-            pact_api.add_external_provider(pt, provider_actor)
+            pact_api.add_external_provider_to_patient(pt.django_patient, provider_actor.django_actor)
             return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
         else:
             context['form'] = form

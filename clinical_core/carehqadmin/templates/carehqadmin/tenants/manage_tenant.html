@@ -40,16 +40,22 @@
     <a href="{% url new_actor tenant.id %}?type=caregiver">Add Caregiver</a> &nbsp;
     {# this will tell you if this actor has any roles in which it is the principal of #}
     <h4>Actor Roles</h4>
-    <ul>
-    {% for arole in actor_roles %}
-        <li><strong>{{ arole.principal }}</strong> :: {{ arole.role }}
-        {% if arole.content %}
-                -> {{ arole.content }}
+    <div class="span-14">
+    {% for actor in tenant_actors %}
+        <div class="span-12 last">{{ actor.name }}</div>
+        {% for prr in actor.principal_roles.all %}
+            <div class="span-10 prepend-2 last">
+            {{ prr.role.display }}
+            {% if prr.content %}
+                    -> {{ prr.content }}
             {% endif %}
-        </li>
+            </div>
+            {% endfor %}
     {% endfor %}
-    </ul>
+    </div>
+
     <h4>Get roles</h4>
+    <a href="{% url manage_tenant_users tenant.id %}">Manage Users</a>
 
 
 

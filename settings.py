@@ -168,7 +168,7 @@ INSTALLED_APPS = (
 
     'uni_form',
     'smartagent',
-    #'south',
+    'south',
     #end third party apps
 
     ###########################

@@ -1,4 +1,6 @@
 
+#NOTE FOR ALL FUTURE GENERATIONS
+#All API calls must use the doc_id, NOT the django ID.  The doc_id is sacrosanct.
 
 
 #api functions to abstract the underlying permissions
@@ -6,11 +8,11 @@ from django.contrib.contenttypes.models import ContentType
 import permissions
 from permissions.models import PrincipalRoleRelation
 
-def add_to_careteam(django_patient, django_actor, role):
+def add_to_careteam(patient, actor, role):
     """
     For a given django patient and django actor, assign the given role
     """
-    permissions.utils.add_local_role(django_patient, django_actor, role)
+    permissions.utils.add_local_role(patient.django_patient, actor.django_actor, role)
 
 def remove_from_careteam(patient, actor):
     pass

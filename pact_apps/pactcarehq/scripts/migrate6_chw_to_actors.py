@@ -27,6 +27,7 @@ def run():
     users = User.objects.all().filter(username__in=hack_usernames)
     total_patients = 0
     seen_doc_ids = set()
+    pact_tenant = Tenant.objects.get(name="PACT")
 
     for u in users:
         actors = Actor.objects.all().filter(user=u)
@@ -42,15 +43,30 @@ def run():
             print "\tNo actors, need to create one\n"
 #            chw_actor = Actor(user=u)
             chw_actor = CHWActor()
+            chw_actor.first_name = u.first_name
+            chw_actor.last_name = u.last_name
+            chw_actor.title = "PACT CHW"
+            chw_actor.phone_number = settings.hack_chw_username_phones[u.username]
+            chw_actor.save(pact_tenant, user=u)
+            pact_api.add_chw(chw_actor)
 
-            #chw_actor.save()
         else:
             print "\tActors, check for roles and skip"
             chw_actor = actors[0]
         #check all patients to see if they have roles.
         for pt in django_pts:
             print "\tcheck permissions pt: %s" % pt
-            print "\tProviders:%s" % pact_api.get_careteam(pt)
+            careteam_qset = pact_api.get_careteam(pt)
+            print "\tProviders:%s" % careteam_qset
+            if careteam_qset.filter(actor=chw_actor.django_actor).count() > 0:
+                chw_has_permission=True
+            else:
+                chw_has_permission=False
+            print "\tIs provider accounted for: %s" % chw_has_permission
+            if not chw_has_permission:
+                pact_api.set_patient_primary_chw(pt, chw_actor.django_actor)
+                print "\tAdded chw actor to patient"
+
 
     print "total patients accounted for: %d/%d" % (total_patients, Patient.objects.all().count())
 
