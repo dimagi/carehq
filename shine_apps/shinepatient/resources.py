@@ -1,5 +1,6 @@
 from tastypie import fields
-from tastypie.authorization import Authorization
+from tastypie.authentication import  ApiKeyAuthentication, BasicAuthentication
+from tastypie.authorization import   ReadOnlyAuthorization
 from dimagi.utils.couch.tastykit import CouchdbkitResource
 from shinepatient.models import ShinePatient
 
@@ -15,7 +16,8 @@ class PatientDataResource(CouchdbkitResource):
         view_name = "shinepatient/shine_patients"
         doc_class = ShinePatient
         resource_name = 'ShinePatientData'
-        authorization = Authorization()
+        authorization = ReadOnlyAuthorization()
+        authentication = ApiKeyAuthentication()
 
 
 class ShinePatientResource(CouchdbkitResource):
@@ -34,7 +36,8 @@ class ShinePatientResource(CouchdbkitResource):
         view_name = "shinepatient/shine_patients"
         doc_class = ShinePatient
         resource_name = 'ShinePatient'
-        authorization = Authorization()
+        authorization = ReadOnlyAuthorization()
+        authentication = ApiKeyAuthentication()
 
 
 
