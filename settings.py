@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'account',
     'carehqadmin',
     'carehq_core',
+    'carehq_mobile',
     'casetracker',
     'keymaster',
     'webxforms',
