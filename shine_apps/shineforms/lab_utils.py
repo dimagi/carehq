@@ -4,7 +4,7 @@ def merge_labs(lab_submissions, as_dict=False):
     """
     """
     sorted_labs = sorted(lab_submissions, key=lambda x: x.received_on)
-    hiv = ""
+    hiv_test = ""
     mal_rapid = "" #rapid
     mal_smear = "" #smear
     prophylaxis = ""
@@ -28,10 +28,11 @@ def merge_labs(lab_submissions, as_dict=False):
         return ret_dict
 
 
-    #old style checks
     for sub in lab_submissions:
+
+        #old style checks
         if sub.form['hiv'] != "":
-            hiv = sub.form['hiv']
+            hiv_test = sub.form['hiv']
         if sub.form['rapid'] != "":
             mal_rapid = sub.form['rapid']
         if sub.form['smear'] != "":
@@ -61,52 +62,61 @@ def merge_labs(lab_submissions, as_dict=False):
             for labkey, val in sub.form['sections'].items():
                 if labkey == 'labs_xray':
                     #done: yes/no
-                    pass
+                    xray = val
                 if labkey == 'labs_wbc':
                     #["blood_neutrophils", "blood_lymphocytes", "@name", "blood_eosinophils", "done", "blood_monocytes", "blood_wbc"]
-                    pass
+                    bloodwbc = val
                 if labkey == 'labs_prophylaxis':
                     #done: yes/no
-                    pass
+                    prophylaxis = val['done']
                 if labkey == 'labs_malaria':
                     #done: yes/no
-                    pass
+                    if val['done'] == u'no':
+                        mal_rapid = 'no'
+                    elif val['done'] is dict:
+                        mal_rapid = 'done'
+                        #need to get value from malaria data?
                 if labkey == 'labs_liver_func':
                     #["blood_tp", "@name", "blood_alt", "blood_alb", "blood_ast", "done", "blood_dir_bili", "blood_tbili"]
-                    pass
+                    lft = val
                 if labkey == 'labs_hivstatus':
                     #done: yes/no
-                    pass
+                    if val['done'] == u'no':
+                        hiv_test = 'no'
+                    elif val['done'] is dict:
+                        hiv_test = 'done'
+                        #need to get data from malaria data?
                 if labkey == 'labs_hemogram':
                     #["done", "blood_hgb", "@name", "blood_plts", "blood_mcv"]
-                    pass
+                    bloodcts = dict(bloodcts.items() + val.items())
                 if labkey == 'labs_basic_chem':
                     #["blood_na", "blood_k", "blood_cr", "@name", "blood_glucose", "done", "blood_cl"]
+                    bloodcts = dict(bloodcts.items() + val.items())
                     pass
                 if labkey == 'labs_afb_smear':
                     #done: yes/no
-                    pass
+                    afb_smear = val['done']
 
 
     if as_dict:
         return {
-                'hiv': {'hiv_test': hiv, 'followup': hivfollowup},
+                'hiv': {'hiv_test': hiv_test, 'followup': hivfollowup},
                 'malaria': {'rapid': mal_rapid, 'smear': mal_smear},
                 'prophylaxis': prophylaxis,
                 'afb_smear': afb_smear,
                 'xray': xray,
                 'bloodwbc': bloodwbc,
                 'hemogram': bloodcts,
-                'lft': {},
+                'lft': lft,
         }
     else:
         return [
-            ('hiv', { 'hiv test': hiv, 'followup': hivfollowup}),
+            ('hiv', { 'hiv test': hiv_test, 'followup': hivfollowup}),
             ('malaria', {'rapid': mal_rapid, 'smear': mal_smear}),
             ('prophylaxis', prophylaxis),
             ('afb_smear', afb_smear),
             ('xray', xray),
             ('bloodwbc', bloodwbc),
             ('hemogram', bloodcts),
-            ('lft', dict()),
+            ('lft', lft),
         ]
