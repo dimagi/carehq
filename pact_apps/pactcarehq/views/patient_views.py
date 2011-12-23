@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import isodate
 from auditcare import inspect
-from auditcare.models.couchmodels import ModelActionAudit
+from auditcare.models import ModelActionAudit
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm

@@ -30,7 +30,9 @@
             <div class="span-24"> <!-- actor hat -->
                 {% block actor_hat %}
                     <div class="span-12">
+                        {% block actor_headline %}
                         <span class="ptpage_fn">{{actor_doc.first_name}} {{actor_doc.last_name}}</span>
+                        {% endblock actor_headline %}
                     </div>
                     <div class="span-12 last right pt_hat_actions_bar">
                         {% block hat_actions %}

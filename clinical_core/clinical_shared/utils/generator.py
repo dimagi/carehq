@@ -1,6 +1,5 @@
 #from clinical_core.casetracker.models import *
-import pdb
-from actorpermission.models.actortypes import BaseActorDocument, ProviderActor, CaregiverActor, PatientActor
+from actorpermission.models.actortypes import  ProviderActor, CaregiverActor, PatientActor
 from casetracker.models.casecore import Case
 from clinical_core.patient.models import *
 import uuid
@@ -9,11 +8,10 @@ import random
 from datetime import timedelta, datetime
 import string
 from django.contrib.webdesign import lorem_ipsum as lorem
-from pactpatient.models.pactmodels import PactPatient
 from patient import careteam_api
-from patient.utils.names import NAMES
-from patient.utils.scrambler import make_random_caddress, make_random_cphone
-from permissions.models import Actor, Role
+from clinical_shared.utils.names import NAMES
+from clinical_shared.utils.scrambler import make_random_caddress, make_random_cphone
+from permissions.models import  Role
 
 DEPARTMENTS = [
     'Emergency Medicine',
@@ -110,6 +108,18 @@ def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, 
     patient_role = Role.objects.get_or_create(name='mockPatient')[0]
     careteam_api.add_to_careteam(pt.django_patient, pt_actor.django_actor, patient_role)
     return pt
+
+def generate_random_user():
+    user = User()
+
+    user.username = random_word(length=24)
+    user.first_name = random_word(length=12)
+    user.last_name = random_word(length=12)
+    user.email = "%s@%s.com" % (random_word(length=8), random_word(length=12))
+    user.set_password("mockmock")
+    user.save()
+    return user
+
 
 
 def get_or_create_user(first_name=None, last_name=None):

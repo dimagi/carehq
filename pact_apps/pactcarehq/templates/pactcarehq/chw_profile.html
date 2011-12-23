@@ -8,10 +8,33 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
     <script type="text/javascript" charset="utf-8">
         $().ready(function(){
-            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+//            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+
+                $('#submits-table').dataTable( {
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "/pact/api/PactUserSubmissions/",
+                    "aoColumns": [
+                        { "mDataProp": "encounter_date" },
+                        { "mDataProp": "doc_id" },
+                        { "mDataProp": "last_name" },
+                        { "mDataProp": "first_name" },
+                        { "mDataProp": "formtype_display" },
+                        { "mDataProp": "start_time" },
+                        { "mDataProp": "end_time" },
+                        { "mDataProp": "finish_interval" },
+                        { "mDataProp": "submit_interval" },
+                    ]
+                } );
+
         });
     </script>
+    <script type="text/javascript" src="http://www.datatables.net/download/build/jquery.dataTables.min.js"></script>
 {% endblock extrahead %}
+
+{% block actor_headline %}
+    <span class="ptpage_fn">{{actor_doc.first_name}} {{actor_doc.last_name}} (CHW)</span>
+{% endblock actor_headline %}
 {% block hat_actions %}
     {{ block.super }}
 {% endblock hat_actions %}
@@ -23,6 +46,10 @@
         <dd>{{ actor_doc.last_name }}</dd>
     <dt>{% trans "Username" %}</dt>
         <dd>{{ actor_doc.django_actor.user.username }}</dd>
+    <dt>{% trans "Phone" %}</dt>
+        <dd>{{ actor_doc.phone_number }}</dd>
+    <dt>{% trans "Email" %}</dt>
+        <dd>{{ actor_doc.django_actor.user.emailjj }}</dd>
 {% endblock actor_badge %}
 
 
@@ -30,23 +57,45 @@
     <li><a href="#actor-info-tab" name="info">{% trans "Info" %}</a></li>
     <li><a href="#permissions-tab">{% trans "Permissions" %}</a></li>
     <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
+    <li><a href="#supervision-tab">{% trans "Supervision" %}</a></li>
+    <li><a href="#training-tab">{% trans "Training" %}</a></li>
 {% endblock actor-tab-controller %}
 
 {% block actor-tab-container %}
-    <div id="actor-info-tab">
-        {{ actor_doc.to_json }}
+    <div id="actor-info-tab" class="ui-tabs-hide">
+
+
+        <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
+        <table>
+            <tr>
+                <th class="span-4">Role Title</th>
+                <td>{{ actor_doc.title }}</td>
+            </tr>
+            <tr>
+                <th class="span-4">Notes</th>
+                <td>{{ actor_doc.notes }}
+                </td>
+            </tr>
+            <tr>
+            </tr>
+        </table>
     </div>
-    <div id="permissions-tab">
+    <div id="permissions-tab" class="ui-tabs-hide">
         {% for role, subjects in permissions_dict.items %}
-            <div class="span-12">
-                Role {{ role.display }}<br>
-                {% for s in subjects %}
-                    <div class="span-10 prepend-2">
-                        {{ s }}
-                    </div>
-                {% endfor %}
+            <div class="span-12 last">
+                Role <strong>{{ role.display }}</strong>
+                {% if subjects %}
+                    {% for s in subjects %}
+                        {% if s %}
+                        <div class="span-11 prepend-1">
+                            <a href="{{ s.get_absolute_url }}">{{ s }}</a>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endfor %}
+        <div style="clear:both;"></div>
     </div>
 
     <div id="submissions-tab" class="ui-tabs-hide">
@@ -67,23 +116,45 @@
                 <th class="span-4">Submit Date</th>
             </tr>
         </thead>
-        {% for submission in submit_arr %}
-            <tr>
-                <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
-                <td> {{ submission.2.pact_id }}</td>
-                <td> {{ submission.2.last_name }}</td>
-                <td> {{ submission.2.first_name }}</td>
-                <td> {{ submission.3 }}</td>
-
-                <td> {{ submission.4|date:"Y-m-d H:i" }}</td> {# started date #}
-                <td> {{ submission.5 }}</td> {# start-end interval #}
-                <td> {{ submission.6 }}</td> {# end-submit interval #}
-                <td> {{ submission.7|date:"Y-m-d H:i" }}</td> {# submitted date #}
-            </tr>
-        {% endfor %}
+{#        {% for submission in submit_arr %}#}
+{#            <tr>#}
+{#                <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>#}
+{#                <td> {{ submission.2.pact_id }}</td>#}
+{#                <td> {{ submission.2.last_name }}</td>#}
+{#                <td> {{ submission.2.first_name }}</td>#}
+{#                <td> {{ submission.3 }}</td>#}
+{##}
+{#                <td> {{ submission.4|date:"Y-m-d H:i" }}</td>#}
+{#                <td> {{ submission.5 }}</td>#}
+{#                <td> {{ submission.6 }}</td>#}
+{#                <td> {{ submission.7|date:"Y-m-d H:i" }}</td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
         </table>
         {% else %}
             <div class="notice">No Submissions</div>
-        {% endif %} {#if there are any submits at all #}
+        {% endif %}
+    </div>
+
+    <div id="supervision-tab" class="ui-tabs-hide">
+        <h3>Supervision Events</h3>
+        <ul>
+            <li>The</li>
+            <li>Quick</li>
+            <li>Brown</li>
+            <li>Fox</li>
+        </ul>
+
+    </div>
+
+    <div id="training-tab" class="ui-tabs-hide">
+        <h3>Training Events</h3>
+        <ul>
+            <li>Jumped</li>
+            <li>Over</li>
+            <li>The</li>
+            <li>Lazy</li>
+            <li>Dog</li>
+        </ul>
     </div>
 {% endblock actor-tab-container %}

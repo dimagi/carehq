@@ -7,6 +7,7 @@ from tenant.models import Tenant
 
 
 
+
 def get_external_providers():
     """
     Returns actor documents of external providers in the system
@@ -20,17 +21,17 @@ def get_external_providers():
 
 def add_chw(chw_actor):
     """
-    For a given django actor, give it a global role of CHW.
+    For a given actor document, give it a global role of CHW.
     """
     role_class = Role.objects.get(name=constants.role_chw)
     permissions.utils.add_role(chw_actor.django_actor, role_class)
 
-def set_patient_primary_chw(django_patient, django_actor):
+def set_patient_primary_chw(patient_doc, actor_doc):
     """
     Add an actor as an exteranl provider for the given patient.
     """
     role_class = Role.objects.get(name=constants.role_primary_chw)
-    permissions.utils.add_local_role(django_patient, django_actor, role_class)
+    permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)
 
 def add_external_provider_to_patient(django_patient, django_actor):
     """
@@ -51,6 +52,10 @@ def get_permissions(actor_doc, direct=False):
 
 
 def get_permissions_dict(actor_doc, direct=False):
+    """
+    Return a dictionary of permissions for this given actor
+    {role: [principalrolerelation, ... ],  }
+    """
     perms = get_permissions(actor_doc, direct=direct)
     ret = {}
     for p in perms:
@@ -79,6 +84,6 @@ def get_chws():
     chw_role = Role.objects.get(name=constants.role_chw)
     django_provider_actors = PrincipalRoleRelation.objects.filter(role=chw_role).filter(content_id=None)
     actor_doc_ids = django_provider_actors.distinct().values_list('actor__doc_id', flat=True)
-    actor_docs = ProviderActor.view('actorpermission/all_actors', keys=list(actor_doc_ids), include_docs=True).all()
+    actor_docs = CHWActor.view('actorpermission/all_actors', keys=list(actor_doc_ids), include_docs=True).all()
     return actor_docs
 

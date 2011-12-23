@@ -49,6 +49,14 @@ class Patient(models.Model):
     user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
 
 
+    def get_absolute_url(self):
+        if self.couchdoc is not None:
+            return self.couchdoc.get_absolute_url()
+        else:
+            return '#'
+
+
+
     class Meta:
         app_label = 'patient'
 

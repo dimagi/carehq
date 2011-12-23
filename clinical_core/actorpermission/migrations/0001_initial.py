@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
         
         # Adding model 'ClinicalUserProfile'
         db.create_table('actorpermission_clinicaluserprofile', (
-            ('id', self.gf('django.db.models.fields.CharField')(default='c3bc21dd34414b2280b0bc7e492c4733', unique=True, max_length=32, primary_key=True)),
+            ('id', self.gf('django.db.models.fields.CharField')(default='97c2b160022440e9962f59d269aaee1b', unique=True, max_length=32, primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='clinical_profile', unique=True, to=orm['auth.User'])),
             ('profile_doc_id', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=32, unique=True, null=True, blank=True)),
         ))
@@ -26,7 +26,7 @@ class Migration(SchemaMigration):
     models = {
         'actorpermission.clinicaluserprofile': {
             'Meta': {'object_name': 'ClinicalUserProfile'},
-            'id': ('django.db.models.fields.CharField', [], {'default': "'9fd79785d52d4991828ea22eea794cce'", 'unique': 'True', 'max_length': '32', 'primary_key': 'True'}),
+            'id': ('django.db.models.fields.CharField', [], {'default': "'dbb3bfe2a77245a7a28e34192607df29'", 'unique': 'True', 'max_length': '32', 'primary_key': 'True'}),
             'profile_doc_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '32', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'clinical_profile'", 'unique': 'True', 'to': "orm['auth.User']"})
         },

@@ -8,6 +8,8 @@ def get_actor_form(doc_class):
     includes = []
     excludes = ['actor_uuid', 'base_type', ]
     class ActorForm(DocumentForm):
+
+
         def __init__(self, tenant, *args, **kwargs):
             super(ActorForm, self).__init__(*args, **kwargs)
             all_fields = doc_class._properties.keys()

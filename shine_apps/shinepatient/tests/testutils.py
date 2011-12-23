@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from contrib_apps.django_digest.test import Client
 import Image, ImageDraw
 import settings
-from patient.utils.names import NAMES
+from clinical_shared.utils.names import NAMES
 from dimagi.utils.post import post_data
 
 patient_registration_xml = """

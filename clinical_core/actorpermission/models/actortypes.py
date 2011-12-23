@@ -1,3 +1,4 @@
+import hashlib
 import pdb
 import simplejson
 import uuid
@@ -42,6 +43,9 @@ class BaseActorDocument(Document, TypedSubclassMixin):
         self.base_type = "DeletedBaseActorDocument"
         super(BaseActorDocument, self).save()
 
+    def get_hash(self):
+        return hashlib.sha1(simplejson.dumps(self.to_json())).hexdigest()
+
     @property
     def django_actor(self):
         if not hasattr(self, '_django_actor'):
@@ -71,7 +75,7 @@ class BaseActorDocument(Document, TypedSubclassMixin):
             django_actor.id = actor_uuid
             django_actor.doc_id=doc_id
 
-            django_actor.name = '%s-%s-%s_%s' % (tenant.prefix, self.__class__.__name__, self.last_name, self.first_name)
+            django_actor.name = '%s.%s.%s_%s.%s' % (tenant.prefix, self.__class__.__name__, self.last_name, self.first_name, self.get_hash()[0:10])
             if user:
                 django_actor.user = user
 

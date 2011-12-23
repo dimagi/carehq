@@ -6,6 +6,7 @@ from couchdbkit.schema.properties import StringProperty, DateTimeProperty, Boole
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
+from django.core.urlresolvers import reverse
 import isodate
 from pytz import timezone
 from casexml.apps.case.models import CommCareCase
@@ -255,8 +256,8 @@ class PactPatient(BasePatient):
 
 
 
-
-
+    def get_absolute_url(self):
+        return reverse('view_pactpatient', kwargs={'patient_guid': self._id})
 
     @property
     def get_race(self):

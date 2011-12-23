@@ -4,19 +4,13 @@ import re
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
-from datetime import  datetime
-import random
+from clinical_shared.utils.scrambler import make_random_cphone, make_random_caddress
 from couchforms.models import XFormInstance
-from patient.models import CAddress
-from pactpatient.caseconvert import set_cphones_to_case
 from casexml.apps.case.models import CommCareCase
-from patient.models import CPhone
 from pactpatient.models import PactPatient
 from patient.models import Patient
 from .pactpatient_test_utils import delete_all
-from pactcarehq.scripts.scrambler import make_random_cphone, make_random_caddress
 from pactpatient.updater import generate_update_xml_old
-import receiver.views as receiver_views
 
 from django_digest.test import Client as DigestClient
 

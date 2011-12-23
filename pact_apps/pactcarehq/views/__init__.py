@@ -1,19 +1,19 @@
 from django.http import HttpResponse
-from pactcarehq.models import trial1mapping
-
-
-
-def _hack_get_old_caseid(new_case_id):
-    #hack to test the old ids
-    try:
-        oldpt = trial1mapping.objects.get(old_uuid=new_case_id)
-        old_case_id = oldpt.get_new_patient_doc_id()
-    except:
-        old_case_id=None
-    return old_case_id
-
-
-
+#from pactcarehq.models import trial1mapping
+#
+#
+#
+#def _hack_get_old_caseid(new_case_id):
+#    #hack to test the old ids
+#    try:
+#        oldpt = trial1mapping.objects.get(old_uuid=new_case_id)
+#        old_case_id = oldpt.get_new_patient_doc_id()
+#    except:
+#        old_case_id=None
+#    return old_case_id
+#
+#
+#
 
 
 def uptime(request):

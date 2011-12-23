@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from actorpermission.models.actortypes import BaseActorDocument, ProviderActor, CHWActor
-from pactconfig import pact_api
 from pactpatient.models.pactmodels import PactPatient
 from patient.models.patientmodels import Patient
 from permissions.models import Actor
@@ -41,14 +40,13 @@ def run():
 
         if actors.count() == 0:
             print "\tNo actors, need to create one\n"
-#            chw_actor = Actor(user=u)
             chw_actor = CHWActor()
             chw_actor.first_name = u.first_name
             chw_actor.last_name = u.last_name
             chw_actor.title = "PACT CHW"
             chw_actor.phone_number = settings.hack_chw_username_phones[u.username]
             chw_actor.save(pact_tenant, user=u)
-            pact_api.add_chw(chw_actor)
+            carehq_api.add_chw(chw_actor)
 
         else:
             print "\tActors, check for roles and skip"
@@ -56,7 +54,7 @@ def run():
         #check all patients to see if they have roles.
         for pt in django_pts:
             print "\tcheck permissions pt: %s" % pt
-            careteam_qset = pact_api.get_careteam(pt)
+            careteam_qset = carehq_api.get_careteam(pt)
             print "\tProviders:%s" % careteam_qset
             if careteam_qset.filter(actor=chw_actor.django_actor).count() > 0:
                 chw_has_permission=True
@@ -64,7 +62,7 @@ def run():
                 chw_has_permission=False
             print "\tIs provider accounted for: %s" % chw_has_permission
             if not chw_has_permission:
-                pact_api.set_patient_primary_chw(pt, chw_actor.django_actor)
+                carehq_api.set_patient_primary_chw(pt.couchdoc, chw_actor) # or could have iterated over assignments
                 print "\tAdded chw actor to patient"
 
 
