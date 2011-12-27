@@ -1,19 +1,16 @@
 from _collections import defaultdict
 from datetime import datetime, timedelta, date
-from cherrypy.wsgiserver import CherryPyWSGIServer
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty, DateProperty
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
 from django.core.cache import cache
 import simplejson
 from django.core.urlresolvers import reverse
-import isodate
 from pytz import timezone
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from dimagi.utils.couch.database import get_db
-from pactconfig import constants
-from pactpatient.enums import PACT_ARM_CHOICES, PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
+from pactpatient.enums import  PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
 from patient.models import BasePatient
 import logging
 from dimagi.utils import make_uuid
@@ -451,7 +448,7 @@ class PactPatient(BasePatient):
 
     def dots_casedata_for_day(self, date, art_num, non_art_num):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
-        from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
+        from dotsview.models.couchmodels import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
 
         def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
@@ -863,4 +860,3 @@ class PactPatient(BasePatient):
         return ret
 
 
-from pactpatient.models.signals import *

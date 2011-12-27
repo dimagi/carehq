@@ -2,8 +2,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from carehq_core import carehq_api
 from casetracker.models.casecore import Case
-from patient import careteam_api
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import Patient
@@ -62,7 +62,7 @@ class AshandPatientSingleView(PatientSingleView):
         context['cases'] = Case.objects.filter(patient=dj_patient)
 
 
-        role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
+        role_actor_dict = carehq_api.get_careteam_dict(pdoc)
         context['careteam_dict'] = role_actor_dict
 
         if address_edit and not new_address:

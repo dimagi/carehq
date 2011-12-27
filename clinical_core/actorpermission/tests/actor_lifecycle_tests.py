@@ -110,8 +110,6 @@ class tenantPermissionTests(TransactionTestCase):
         self.assertEquals(deprecated_doc['base_type'], 'DeletedBaseActorDocument')
         self.assertEquals(start_count, end_count+1)
 
-
-
     def testCreateUserMultipleActors(self):
         """
         Test to ensure that a single use with multiple actors can be identified with multiple actors.
@@ -134,8 +132,7 @@ class tenantPermissionTests(TransactionTestCase):
 
         for m in request.actors:
             self.assertTrue(m.actordoc._id in provider_doc_ids)
-
-
+        return user
 
 
 

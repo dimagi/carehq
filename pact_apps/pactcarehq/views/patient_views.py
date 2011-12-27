@@ -5,11 +5,10 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import isodate
 from auditcare import inspect
-from auditcare.models import ModelActionAudit
+from carehq_core import carehq_api
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
-from patient import careteam_api
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from .util import form_xmlns_to_names
@@ -61,7 +60,8 @@ class PactPatientSingleView(PatientSingleView):
         last_bw = pdoc.check_last_bloodwork
         context['last_bloodwork'] = last_bw
 
-        role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
+        #role_actor_dict = careteam_api.get_careteam(pdoc)
+        role_actor_dict = carehq_api.get_careteam_dict(pdoc)
         context['careteam_dict'] = role_actor_dict
 
         if last_bw == None:

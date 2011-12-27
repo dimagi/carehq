@@ -394,20 +394,34 @@
 {#                    <h4>{{ role.display }}(s)</h4>#}
                     <ul>
                     {% if role.display == "External Provider" %}
-                    {% for actor in actors %}
-                        <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
-                            <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }}</div>
-                            <div class="span-14 last">{{ actor.actordoc.provider_title }}</div>
-                            <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
-                            <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
-                            <div class="span-7 last">
-                                <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
-                                            Remove
-                                        </a>
-                                </small>
+                        {% for actor in actors %}
+                            <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
+                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }}</div>
+                                <div class="span-14 last">{{ actor.actordoc.provider_title }}</div>
+                                <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+                                <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                                <div class="span-7 last">
+                                    <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
+                                                Remove
+                                            </a>
+                                    </small>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if role.display == "Primary CHW" %}
+                        {% for actor in actors %}
+                            <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
+                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }}</div>
+                                <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                                <div class="span-7 last">
+                                    <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
+                                        Remove
+                                    </a>
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
                     {% endif %}
                     </ul>
                 {% endfor %}

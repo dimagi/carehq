@@ -1,11 +1,14 @@
 import pdb
 import random
+from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth.models import User
+from carehq_core import carehq_api, carehq_constants
 from carehqapp.scripts.demo.demo_careteams import DEMO_CARETEAMS
 from clinical_core.clinical_shared.utils import generator
 from patient.models import Patient
-from permissions.models import Actor
+from permissions import utils
+from permissions.models import Actor, PrincipalRoleRelation, Role
 from tenant.models import Tenant
 
 
@@ -32,9 +35,12 @@ class BasicPermissionsTest(TestCase):
         #print "Doctors:"  + str(Doctor.objects.all().count())
         User.objects.all().delete()
         Actor.objects.all().delete()
-        Actor.objects.all().delete()
         Patient.objects.all().delete()
-        self.tenant = Tenant.objects.get_or_create(name="foo_test")[0]
+        Role.objects.all()
+        PrincipalRoleRelation.objects.all()
+        #self.tenant = Tenant.objects.get_or_create(name="foo_test")[0]
+        call_command('carehq_init')
+        self.tenant = Tenant.objects.get(name='PACT')
         #print "Doctors:"  + str(Doctor.objects.all().count())
 
     def testCreateSingleCareTeamManually(self):
@@ -42,31 +48,28 @@ class BasicPermissionsTest(TestCase):
         pt, caregivers, providers = generator.generate_patient_and_careteam(self.tenant, team_dictionary=random.choice(DEMO_CARETEAMS))
         print "created careteam for one patient"
         for cg in caregivers:
-            self.assertEqual(cg.patients[0], pt)
-            self.assertTrue(Actor.permissions.can_view(pt, cg.user))
+            self.assertEqual(carehq_api.get_permissions(cg)[0].content.couchdoc._id, pt._id)
+            self.assertTrue(utils.has_permission(self.tenant, cg.django_actor, carehq_constants.perm_patient_view))
+            self.assertFalse(utils.has_permission(self.tenant, cg.django_actor, carehq_constants.perm_patient_edit))
         for prov in providers:
-            self.assertEqual(prov.patients[0], pt)
-            self.assertTrue(Actor.permissions.can_view(pt, prov.user))
+            self.assertEqual(carehq_api.get_permissions(prov)[0].content.couchdoc._id, pt._id)
+            self.assertTrue(utils.has_permission(self.tenant, prov.django_actor, carehq_constants.perm_patient_view))
+            self.assertTrue(utils.has_permission(self.tenant, prov.django_actor, carehq_constants.perm_patient_edit))
 
     def testCreateSingleCareTeamAPI(self):
         print "===========================\nCreating singular patient with careteam via API"
         pt = generator.get_or_create_patient(self.tenant)
 
-        provrole = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'provider')
-        pt.add_provider(provoler)
-        provrole = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'provider')
-        pt.add_provider(provoler)
-        provrole = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'provider')
-        pt.add_provider(provoler)
-
-        cgrole = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'caregiver')
-        pt.add_caregiver(cgoler)
-        cgrole = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'caregiver')
-        pt.add_caregiver(cgoler)
+        for x in range(0,3):
+            prov_actor = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'provider')
+            carehq_api.add_to_careteam(pt, prov_actor, Role.objects.get(name=carehq_constants.role_provider))
+        for x in range(0,2):
+            cg_actor = generator.generate_actor(self.tenant, generator.get_or_create_user(), 'caregiver')
+            carehq_api.add_to_careteam(pt, cg_actor, Role.objects.get(name=carehq_constants.role_caregiver))
 
         #next, verify single careteam exists via the patient access API.
-        cg_pull = pt.get_caregivers()
-        prov_pull = pt.get_providers()
+        cg_pull = carehq_api.get_patient_caregivers(pt)
+        prov_pull = carehq_api.get_patient_providers(pt)
 
         self.assertEqual(2, cg_pull.count())
         self.assertEqual(3, prov_pull.count())

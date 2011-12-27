@@ -1,10 +1,12 @@
 from datetime import datetime
+import simplejson
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import logging
@@ -114,7 +116,6 @@ def all_submits_by_patient(request, template_name="pactcarehq/submits_by_patient
 
 
 
-patient_case_id_cache = {}
 def _get_submissions_for_user(username):
     """For a given username, return an array of submissions with an element [doc_id, date, patient_name, formtype]"""
     xform_submissions = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
@@ -128,10 +129,11 @@ def _get_submissions_for_user(username):
 
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
-        if not patient_case_id_cache.has_key(case_id):
+        if cache.get("case.%s" % case_id, None) is None:
             patient = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
-            patient_case_id_cache[case_id]= patient
-        patient = patient_case_id_cache[case_id]
+            cache.set("case.%s" % case_id, simplejson.dumps(patient.to_json()))
+        else:
+            patient = PactPatient.wrap(simplejson.loads(cache.get("case.%s" % case_id)))
 
         if patient == None:
             patient_name = "Unknown"

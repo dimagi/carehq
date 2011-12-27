@@ -24,6 +24,8 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     first_name = StringProperty()
     title = StringProperty()
 
+    email = StringProperty()
+
     notes = StringProperty()
 
     _subclass_dict = {}
@@ -46,8 +48,7 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     def get_hash(self):
         return hashlib.sha1(simplejson.dumps(self.to_json())).hexdigest()
 
-    @property
-    def django_actor(self):
+    def __get_django_actor(self):
         if not hasattr(self, '_django_actor'):
             try:
                 dja = Actor.objects.get(id=self.actor_uuid)
@@ -55,27 +56,35 @@ class BaseActorDocument(Document, TypedSubclassMixin):
                 dja = None
             self._django_actor = dja
         return self._django_actor
+    def __set_django_actor(self, djactor):
+        self.actor_uuid = djactor.id
+        self._django_actor = djactor
+    django_actor = property(__get_django_actor, __set_django_actor )
+
+    def get_actor_djangoname(self, tenant):
+        """
+        Helper function for generating the human/machine readable name for the django actor
+        """
+        return '%s.%s.%s_%s.%s' % (tenant.prefix, self.__class__.__name__, self.last_name, self.first_name, self.get_hash()[0:10])
 
     def save(self, tenant, user=None, *args, **kwargs):
+            #this is a new instance
+        if self._id == None and self.new_document:
+            self._id = uuid.uuid4().hex
+
         if self.actor_uuid is None:
-        #this is a new instance
-        #first check global uniqueness
-        #            if not self.is_unique():
-        #                raise DuplicateIdentifierException()
-            django_actor = Actor()
-            actor_uuid = uuid.uuid4().hex
-            #doc_id = uuid.uuid4().hex
-            if self._id == None and self.new_document:
-                doc_id = uuid.uuid4().hex
-                self._id = doc_id
+            if self.django_actor is None:
+                django_actor = Actor()
+                actor_uuid = uuid.uuid4().hex
+
+                self.actor_uuid = actor_uuid
+                django_actor.id = actor_uuid
+                django_actor.doc_id=self._id
+
+                django_actor.name = self.get_actor_djangoname(tenant)
             else:
-                doc_id = self._id
+                django_actor = self.django_actor
 
-            self.actor_uuid = actor_uuid
-            django_actor.id = actor_uuid
-            django_actor.doc_id=doc_id
-
-            django_actor.name = '%s.%s.%s_%s.%s' % (tenant.prefix, self.__class__.__name__, self.last_name, self.first_name, self.get_hash()[0:10])
             if user:
                 django_actor.user = user
 
@@ -90,6 +99,13 @@ class BaseActorDocument(Document, TypedSubclassMixin):
                 raise ex
         else:
             #it's not new
+
+            #sanity check to make sure actor doc_ids match refernces
+            check_django = self.django_actor
+
+            if check_django is not None and check_django.doc_id != self._id:
+                #these must point back to each other exactly.
+                raise Exception("Error, integrity check of actor failed - document ID in django table does not match instance's _id")
             super(BaseActorDocument, self).save(*args, **kwargs)
 
         #Invalidate the cache entry of this instance
@@ -172,7 +188,6 @@ class ProviderActor(BaseActorDocument):
     """
     provider_title = StringProperty()
     phone_number = StringProperty()
-    email = StringProperty()
 
     facility_name = StringProperty()
     facility_address = StringProperty()

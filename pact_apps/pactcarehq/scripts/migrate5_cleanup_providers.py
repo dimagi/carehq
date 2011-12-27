@@ -27,13 +27,7 @@ def run():
             if len(parsed_name.title) > 0:
                 print "\tTitles: %s" % parsed_name.title
                 actor_doc.title=parsed_name.title
-
-
             print "\tFirst: %s" % parsed_name.first
-
-
-
-
 
             if len(parsed_name.middle) > 0:
                 print "\tMiddle: %s" % parsed_name.middle

@@ -1,9 +1,9 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from carehq_core import carehq_constants
 from patient.models.patientmodels import Patient
 from permissions.models import ObjectPermission, Role, Permission, PrincipalRoleRelation
 from tenant.models import Tenant, TenantActor
-from pactconfig import constants as pactconstants
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -19,8 +19,8 @@ def manage_tenant(request, tenant_id, template="carehqadmin/tenants/manage_tenan
 
     operms = ObjectPermission.objects.select_related('content_type').filter(content_type=ctype, content_id=tenant_id)
 
-    all_roles = Role.objects.all().filter(name__startswith=pactconstants.APP_PREFIX)
-    all_permissions = Permission.objects.all().select_related().filter(codename__startswith=pactconstants.APP_PREFIX)
+    all_roles = Role.objects.all().filter(name__startswith=carehq_constants.APP_NAMESPACE)
+    all_permissions = Permission.objects.all().select_related().filter(codename__startswith=carehq_constants.APP_NAMESPACE)
 
     role_permission_matrix = []
     for role in all_roles:

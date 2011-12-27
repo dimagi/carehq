@@ -8,25 +8,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
     <script type="text/javascript" charset="utf-8">
         $().ready(function(){
-//            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
-
-                $('#submits-table').dataTable( {
-                    "bProcessing": true,
-                    "bServerSide": true,
-                    "sAjaxSource": "/pact/api/PactUserSubmissions/",
-                    "aoColumns": [
-                        { "mDataProp": "encounter_date" },
-                        { "mDataProp": "doc_id" },
-                        { "mDataProp": "last_name" },
-                        { "mDataProp": "first_name" },
-                        { "mDataProp": "formtype_display" },
-                        { "mDataProp": "start_time" },
-                        { "mDataProp": "end_time" },
-                        { "mDataProp": "finish_interval" },
-                        { "mDataProp": "submit_interval" },
-                    ]
-                } );
-
+            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
         });
     </script>
     <script type="text/javascript" src="http://www.datatables.net/download/build/jquery.dataTables.min.js"></script>
@@ -116,20 +98,20 @@
                 <th class="span-4">Submit Date</th>
             </tr>
         </thead>
-{#        {% for submission in submit_arr %}#}
-{#            <tr>#}
-{#                <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>#}
-{#                <td> {{ submission.2.pact_id }}</td>#}
-{#                <td> {{ submission.2.last_name }}</td>#}
-{#                <td> {{ submission.2.first_name }}</td>#}
-{#                <td> {{ submission.3 }}</td>#}
-{##}
-{#                <td> {{ submission.4|date:"Y-m-d H:i" }}</td>#}
-{#                <td> {{ submission.5 }}</td>#}
-{#                <td> {{ submission.6 }}</td>#}
-{#                <td> {{ submission.7|date:"Y-m-d H:i" }}</td>#}
-{#            </tr>#}
-{#        {% endfor %}#}
+        {% for submission in submit_arr %}
+            <tr>
+                <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
+                <td> {{ submission.2.pact_id }}</td>
+                <td> {{ submission.2.last_name }}</td>
+                <td> {{ submission.2.first_name }}</td>
+                <td> {{ submission.3 }}</td>
+
+                <td> {{ submission.4|date:"Y-m-d H:i" }}</td>
+                <td> {{ submission.5 }}</td>
+                <td> {{ submission.6 }}</td>
+                <td> {{ submission.7|date:"Y-m-d H:i" }}</td>
+            </tr>
+        {% endfor %}
         </table>
         {% else %}
             <div class="notice">No Submissions</div>

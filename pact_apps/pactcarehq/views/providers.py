@@ -1,3 +1,5 @@
+import pdb
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -10,6 +12,7 @@ import permissions
 from permissions.models import Role, PrincipalRoleRelation
 from tenant.models import Tenant
 
+@login_required
 def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact_provider_to_patient.html"):
     """
     Add a provider to a patient's careteam by linking a permission to the patient/actor pair
@@ -24,7 +27,7 @@ def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact
         if form.is_valid():
             provider_actor = form.save(commit=False)
             provider_actor.save(pact_tenant)
-            carehq_api.add_external_provider_to_patient(pt.django_patient, provider_actor.django_actor)
+            carehq_api.add_external_provider_to_patient(pt, provider_actor)
             return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
         else:
             context['form'] = form

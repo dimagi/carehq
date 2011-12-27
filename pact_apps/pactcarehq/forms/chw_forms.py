@@ -5,7 +5,7 @@ from pactpatient.models.pactmodels import PactPatient
 
 days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
-from pactconfig.constants import hack_pact_usernames
+from pactconfig.pact_constants import hack_pact_usernames
 
 #pact_id = StringProperty() #pact_id of patient being supervised for
 #supervision_topics = ListProperty() # topics discussed

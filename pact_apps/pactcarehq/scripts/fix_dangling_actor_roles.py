@@ -1,5 +1,4 @@
 from actorpermission.models.actortypes import  ProviderActor
-from pactconfig import constants
 import permissions
 from permissions.models import Actor, Role, PrincipalRoleRelation
 from tenant.models import Tenant
@@ -17,7 +16,7 @@ def run():
         try:
             django_actor = Actor.objects.get(id=actor.actor_uuid)
             print "\tActor exists, setting role"
-            role_class = Role.objects.get(name=constants.role_external_provider)
+            role_class = Role.objects.get(name=carehq_constants.role_external_provider)
 
             prrs = PrincipalRoleRelation.objects.filter(role=role_class, actor=django_actor, content_id=None)
             if prrs.count() == 0:

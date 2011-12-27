@@ -1,7 +1,7 @@
 import urllib
 from django.contrib.contenttypes.models import ContentType
+from carehq_core import carehq_constants
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
-from pactconfig import constants
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
 from patient.forms.address_form import SimpleAddressForm
@@ -55,7 +55,7 @@ def do_add_provider_to_patient(request):
         pdoc = PactPatient.get(patient_guid)
         provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
         provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
-        role_class = Role.objects.get(name=constants.role_external_provider)
+        role_class = Role.objects.get(name=carehq_constants.role_external_provider)
         putils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         #return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
         resp.write("Success")
@@ -75,7 +75,7 @@ def rm_provider_from_patient(request):
         pdoc = PactPatient.get(patient_guid)
         provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
         provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
-        role_class = Role.objects.get(name=constants.role_external_provider)
+        role_class = Role.objects.get(name=carehq_constants.role_external_provider)
         #permissions.utils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         ctype = ContentType.objects.get_for_model(pdoc.django_patient)
         PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype, content_id=pdoc.django_uuid).delete()

@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
+from dimagi.utils.couch.pagination import ReportBase
 from pactcarehq.views.submission_views import _get_submissions_for_user
 from pactpatient.models.pactmodels import CActivityDashboard
 
@@ -59,7 +61,7 @@ def new_chw(request, template="pactcarehq/new_chw.html"):
 def chw_profile(request, chw_doc_id, template_name="pactcarehq/chw_profile.html"):
     context = RequestContext(request)
     chw = carehq_api.get_chw(chw_doc_id)
-#    submits = _get_submissions_for_user(chw.django_actor.user.username)
+    submits = _get_submissions_for_user(chw.django_actor.user.username)
 
 
     #form for supervision
@@ -81,10 +83,15 @@ def chw_profile(request, chw_doc_id, template_name="pactcarehq/chw_profile.html"
 #Patient Profile & Service Plan (from previously entered service plans)
 
     context['actor_doc'] = chw
+    context['username'] = chw.django_actor.user.username
     context['permissions_dict'] = carehq_api.get_permissions_dict(chw)
-#    context['submit_arr'] = submits
-    context['submit_arr'] = [1,2,3]
+    context['submit_arr'] = submits[0:100]
+#    context['submit_arr'] = [1,2,3]
     return render_to_response(template_name, context_instance=context)
+
+
+
+
 
 def new_chw(request):
     #form for: username, phone number email
@@ -94,3 +101,6 @@ def new_chw(request):
     #update workflow for patient change primary HP
     #change patient sidebar for primary_hp
     pass
+
+
+

@@ -26,3 +26,6 @@ class TenantActor(models.Model):
 
     class Meta:
         unique_together=('actor', 'tenant')
+
+    def __unicode__(self):
+        return "[%s] %s" % (self.tenant, self.actor.name)

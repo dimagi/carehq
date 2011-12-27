@@ -3,8 +3,8 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from actorpermission.models.actortypes import CaregiverActor, CHWActor, ProviderActor
+from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
-from pactconfig import constants
 import permissions
 from permissions.models import Role
 from tenant.models import Tenant
@@ -22,12 +22,12 @@ def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
         raise Http404
     elif provider_type == 'chw':
         doc_class = CHWActor
-        role_class = Role.objects.get(name=constants.role_chw)
+        role_class = Role.objects.get(name=carehq_constants.role_chw)
     elif provider_type == 'caregiver':
         doc_class = CaregiverActor
     elif provider_type == 'provider':
         doc_class = ProviderActor
-        role_class = Role.objects.get(name=constants.role_external_provider)
+        role_class = Role.objects.get(name=carehq_constants.role_external_provider)
 
     tenant = Tenant.objects.get(id=tenant_id)
     form_class = get_actor_form(doc_class)

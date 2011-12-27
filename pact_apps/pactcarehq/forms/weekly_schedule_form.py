@@ -3,7 +3,7 @@ from django.forms import widgets
 from django.contrib.auth.models import User
 days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 
-from pactconfig.constants import hack_pact_usernames
+from pactconfig.pact_constants import hack_pact_usernames
 
 
 class ScheduleForm(forms.Form):

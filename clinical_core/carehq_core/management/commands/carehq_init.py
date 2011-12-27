@@ -1,4 +1,5 @@
 # django imports
+import pdb
 from django.core.management.base import BaseCommand
 from django.contrib.contenttypes.models import ContentType
 
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         role_primary_chw =  permissions.utils.register_role(carehq_constants.role_primary_chw, "Primary CHW")
         role_navigator =    permissions.utils.register_role(carehq_constants.role_navigator, "Navigator")
         role_provider =     permissions.utils.register_role(carehq_constants.role_provider, "Provider")
+        role_primary_provider =    permissions.utils.register_role(carehq_constants.role_primary_provider, "Primary Provider")
         role_external_provider =    permissions.utils.register_role(carehq_constants.role_external_provider, "External Provider")
         role_patient =              permissions.utils.register_role(carehq_constants.role_patient, "Patient")
         role_caregiver =            permissions.utils.register_role(carehq_constants.role_caregiver, "Caregiver")
