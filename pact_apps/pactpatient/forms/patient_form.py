@@ -1,13 +1,16 @@
+import pdb
 from django import forms
 
 from couchdbkit.ext.django.forms import DocumentForm
 #from the models, we have this, (couchmodels.py)
 #flipping to tuple
 from django.core.exceptions import ValidationError
+from django.forms.models import ModelChoiceField
+from carehq_core import carehq_api, carehq_constants
+from pactconfig.pact_constants import hack_pact_usernames
 from pactpatient.enums import REGIMEN_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, PACT_RACE_CHOICES
 from pactpatient.models.pactmodels import PactPatient
 from django.forms import widgets
-from pactconfig.pact_constants import hack_pact_usernames
 from uni_form.helpers import FormHelper
 from uni_form.helpers import Layout, Fieldset, Row
 
@@ -20,8 +23,7 @@ from uni_form.helpers import Layout, Fieldset, Row
 #    ('TID', "TID"),
 #    ('QID', "QID"),
 #)
-
-
+from permissions.models import Actor, Role, PrincipalRoleRelation
 
 
 YES_OR_NO = (
@@ -29,7 +31,20 @@ YES_OR_NO = (
     (0, 'No')
 )
 
+def do_get_chws():
+    for x in carehq_api.get_chws():
+        yield (x.django_actor.user.username, x.django_actor.user.username)
 
+class ActorModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.user.username
+
+
+def do_get_chws_orm():
+    chw_role = Role.objects.get(name=carehq_constants.role_chw)
+    django_provider_actors = PrincipalRoleRelation.objects.filter(role=chw_role).filter(content_id=None)
+    actor_doc_ids = django_provider_actors.distinct().values_list('actor__id', flat=True)
+    return Actor.objects.all().filter(id__in=actor_doc_ids)
 
 class PactPatientForm(DocumentForm):
     """
@@ -38,8 +53,9 @@ class PactPatientForm(DocumentForm):
     arm = forms.ChoiceField(label="PACT ARM", choices=PACT_ARM_CHOICES)
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
-#    primary_hp = forms.ModelChoiceField(User.objects.filter(is_active=True, username__in=hack_pact_usernames), required=False)
-    primary_hp = forms.ChoiceField(label="Primary health promoter", choices=tuple([(x, x) for x in hack_pact_usernames]))
+
+    #primary_hp = forms.ChoiceField(label="Primary health promoter", choices=tuple([(x, x) for x in hack_pact_usernames])) #old style pre actor setup
+    primary_hp = forms.ChoiceField(label="Primary health promoter", choices=())
     notes = forms.CharField(widget = widgets.Textarea(attrs={'cols':80,'rows':5}), required=False)
     #source: http://stackoverflow.com/questions/1513502/django-how-to-format-a-datefields-date-representation
     birthdate = forms.DateField(input_formats=['%m/%d/%Y'], widget=forms.DateInput(format = '%m/%d/%Y', attrs={'class': 'jqui-dtpk'}))
@@ -80,6 +96,8 @@ class PactPatientForm(DocumentForm):
             includes = ['gender',]
         all_fields = PactPatient._properties.keys()
 
+        self.fields['primary_hp'].choices = do_get_chws()
+
         for field in all_fields:
             if includes.count(field) > 0:
                 continue
@@ -87,22 +105,19 @@ class PactPatientForm(DocumentForm):
                 try:
                     del self.fields[field]
                 except Exception, e:
-                    #print "can't delete %s: %s" % (field, e)
                     pass
 
     def clean_mass_health_expiration(self):
-        print "cleaning masshealth"
-        print self.cleaned_data['mass_health_expiration']
         if self.cleaned_data['mass_health_expiration'] is None:
             return self.cleaned_data['mass_health_expiration']
         else:
             return self.cleaned_data['mass_health_expiration']
 
     def clean_pact_id(self):
-       if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:
-           raise ValidationError("Error, pact id must be unique")
-       else:
-           return self.cleaned_data['pact_id']
+        if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:
+            raise ValidationError("Error, pact id must be unique")
+        else:
+            return self.cleaned_data['pact_id']
 
 
     @property

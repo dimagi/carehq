@@ -1,10 +1,10 @@
-import pdb
 import random
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from django.test.testcases import TransactionTestCase
+from django.test import TestCase
 from actorpermission.models.actortypes import CHWActor, ProviderActor, CaregiverActor
 from clinical_shared.middleware.identity import CareHQIdentityMiddleware
+from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import raddress
 from permissions.models import Actor, Role
@@ -12,37 +12,12 @@ from permissions.tests import RequestFactory
 from tenant.models import Tenant
 from django.contrib.sessions.backends.file import SessionStore
 
-class tenantPermissionTests(TransactionTestCase):
+class tenantPermissionTests(CareHQClinicalTestCase):
     def setUp(self):
         User.objects.all().delete()
         Actor.objects.all().delete()
         Role.objects.all().delete()
         call_command('carehq_init')
-
-    def _new_chw(self, tenant, user):
-        chw_actor = CHWActor()
-        chw_actor.first_name = user.first_name
-        chw_actor.last_name = user.last_name
-        chw_actor.title = "Mock CHW"
-        chw_actor.phone_number = generator.random_number()
-        chw_actor.save(tenant, user=user)
-        return chw_actor
-    def _new_provider(self, tenant, user):
-        provider_actor = ProviderActor()
-        provider_actor.provider_title=generator.random_word(length=12)
-        provider_actor.email= "%s@%s.com" % (generator.random_word(length=8), generator.random_word(length=8))
-        provider_actor.facility_name = generator.random_word(length=12)
-        provider_actor.facility_address = generator.random_text(length=12)
-        provider_actor.save(tenant, user=user)
-        return provider_actor
-
-    def _new_caregiver(self, tenant, user):
-        caregiver_actor = CaregiverActor()
-        caregiver_actor.phone_number=str(generator.random_number(length=11))
-        caregiver_actor.relation = random.choice(CaregiverActor.RELATIONSHIP_CHOICES)[0]
-        caregiver_actor.address=raddress()
-        caregiver_actor.save(tenant, user=user)
-        return caregiver_actor
 
     def testCreateActor(self, user=None, actor_type='chw'):
         """

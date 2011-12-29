@@ -27,13 +27,21 @@ def add_chw(chw_actor):
     """
     For a given actor document, give it a global role of CHW.
     """
+
     role_class = Role.objects.get(name=carehq_constants.role_chw)
-    permissions.utils.add_role(chw_actor.django_actor, role_class)
+    return permissions.utils.add_role(chw_actor.django_actor, role_class)
+
+def add_provider(actor_doc):
+    role_class = Role.objects.get(name=carehq_constants.role_provider)
+    return permissions.utils.add_role(actor_doc.django_actor, role_class)
+
+
 
 def set_patient_primary_chw(patient_doc, actor_doc):
     """
     Add an actor as an exteranl provider for the given patient.
     """
+
     role_class = Role.objects.get(name=carehq_constants.role_primary_chw)
     permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)
 
@@ -41,6 +49,7 @@ def add_external_provider_to_patient(patient_doc, actor_doc):
     """
     Add an actor as an exteranl provider for the given patient.
     """
+
     role_class = Role.objects.get(name=carehq_constants.role_external_provider)
     permissions.utils.add_role(actor_doc.django_actor, role_class)
     permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)

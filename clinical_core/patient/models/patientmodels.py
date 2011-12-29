@@ -1,3 +1,4 @@
+import pdb
 import uuid
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty

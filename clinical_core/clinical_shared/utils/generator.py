@@ -1,4 +1,5 @@
 #from clinical_core.casetracker.models import *
+from pytz import timezone
 from actorpermission.models.actortypes import  ProviderActor, CaregiverActor, PatientActor
 from carehq_core import carehq_api, carehq_constants
 from casetracker.models.casecore import Case
@@ -49,6 +50,12 @@ def random_text(length=64):
 
 def random_number(length=10):
     return generate_random_string(length=length, source=string.digits)
+
+def random_future_date():
+    return datetime.now(tz=timezone(settings.TIME_ZONE)) + timedelta(days=random.randint(1, 10000))
+    pass
+def random_past_date():
+    return datetime.now(tz=timezone(settings.TIME_ZONE)) - timedelta(days=random.randint(1, 28000))
 
 def generate_addresses(num):
     ret = []

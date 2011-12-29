@@ -51,7 +51,7 @@
             <td>Never</td>
         {% endif %}
         <td>
-            <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+            <a href="{% url pactcarehq.views.chw_calendar_submit_report chw.django_actor.user.username %}">Submission Schedule</a>
         </td>
 
     </tr>

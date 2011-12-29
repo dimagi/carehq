@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from carehq_core import carehq_api, carehq_constants
 from carehqapp.scripts.demo.demo_careteams import DEMO_CARETEAMS
 from clinical_core.clinical_shared.utils import generator
+from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from patient.models import Patient
 from permissions import utils
 from permissions.models import Actor, PrincipalRoleRelation, Role
@@ -15,22 +16,14 @@ from tenant.models import Tenant
 MAX_MULTI_PATIENTS = 10
 
 
-class BasicPermissionsTest(TestCase):
+class BasicPermissionsTest(CareHQClinicalTestCase):
     def _createActors(self):        
         pass
     def _createPatient(self):
         pt = Patient()
         pass
     
-    def _createUser(self):
-        usr = User()
-        usr.username = "TestUser%d" % (User.objects.all().count())
-        usr.first_name = "TestUser"
-        usr.first_name = "Test%d" % (User.objects.all().count())
-        usr.set_password("testtest")
-        usr.save()
-        return usr
-    
+
     def setUp(self):
         #print "Doctors:"  + str(Doctor.objects.all().count())
         User.objects.all().delete()
