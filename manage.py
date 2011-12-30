@@ -4,6 +4,7 @@ import sys, os
 filedir = os.path.dirname(__file__)
 
 sys.path.insert(0,'..')
+sys.path.insert(0, os.path.join(filedir,'submodules','deploy_tools_src'))
 sys.path.insert(0, os.path.join(filedir))
 sys.path.insert(0, os.path.join(filedir,'clinical_core'))
 sys.path.insert(0, os.path.join(filedir,'ashand_apps'))
