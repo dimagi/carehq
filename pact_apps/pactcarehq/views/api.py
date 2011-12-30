@@ -1,16 +1,21 @@
+import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
+from actorpermission.models.actortypes import BaseActorDocument
 from carehq_core import carehq_constants
+from carehqadmin.forms.actor_form import get_actor_form
+from dimagi.utils.couch.database import get_db
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
-from pactpatient.views import recompute_chw_actor_permissions
+from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
 from receiver.util import spoof_submission
+from tenant.models import Tenant
 from .util import DAYS_OF_WEEK
 from datetime import datetime, time
 from django.contrib.auth.decorators import login_required
@@ -127,8 +132,54 @@ def remove_address(request):
 
 
 @login_required
-def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
-    patient_guid = request.GET.get('patient_guid', None)
+def ajax_get_actor_form(request, template='pactcarehq/partials/ajax_actor_form.html'):
+    doc_id = request.GET.get('doc_id', None)
+    form_name = request.GET.get('form_name', None)
+    actor_doc = BaseActorDocument.get_typed_from_id(doc_id)
+    context = RequestContext(request)
+    context['doc_id'] = doc_id
+    context['form_name'] = form_name
+    title = ""
+    tenant = Tenant.objects.get(name='PACT')
+    if form_name == 'chweditprofile':
+        form_class = get_actor_form(actor_doc.__class__)
+        form = form_class(tenant, instance=actor_doc)
+        title = "Edit CHW"
+    context['form'] = form
+    context['title'] = title
+    return render_to_response(template, context_instance=context)
+
+@login_required
+@require_POST
+def ajax_post_actor_form(request, doc_id, form_name):
+    context=RequestContext(request)
+    resp = HttpResponse()
+    actor_doc = BaseActorDocument.get_typed_from_id(doc_id)
+    tenant = Tenant.objects.get(name='PACT')
+
+    if form_name == 'chweditprofile':
+        title = "Edit Profile"
+        form_class=get_actor_form(actor_doc.__class__)
+        form = form_class(tenant, data=request.POST, instance=actor_doc)
+    context['title'] = title
+    context['doc_id'] = doc_id
+    context['form_name'] = form_name
+
+    if form.is_valid():
+        get_chw_pt_permissions(from_cache=False)
+        instance = form.save(commit=False)
+        instance.save(tenant)
+        resp.status_code=204
+        return resp
+    else:
+        context['form']=form
+    resp.write(context['form'].as_table())
+    return resp
+
+
+@login_required
+def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_form.html'):
+    patient_guid = request.GET.get('doc_id', None)
     form_name = request.GET.get('form_name', None)
     edit_id = request.GET.get('edit_id', None)
     pdoc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
@@ -170,9 +221,12 @@ def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
     context['title'] = title
     return render_to_response(template, context_instance=context)
 
+
+
+
 @login_required
 @require_POST
-def ajax_post_form(request, patient_guid, form_name):
+def ajax_post_patient_form(request, patient_guid, form_name):
     context=RequestContext(request)
     resp = HttpResponse()
     pdoc = PactPatient.get(patient_guid)
@@ -264,9 +318,10 @@ def ajax_post_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
+            old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
             resp.status_code=204
-            recompute_chw_actor_permissions(pdoc)
+            recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
             return resp
         else:
             context['form']=form

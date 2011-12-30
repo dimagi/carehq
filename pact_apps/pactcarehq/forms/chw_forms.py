@@ -1,3 +1,4 @@
+from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.contrib.auth.models import User
@@ -26,7 +27,6 @@ SUPERVISION_TOPICS= (
    ('foo', 'foo'),
    ('bar', 'bar'),
 )
-
 
 class SupervisionForm(forms.Form):
     """

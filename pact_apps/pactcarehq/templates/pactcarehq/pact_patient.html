@@ -3,6 +3,7 @@
 {% block extrahead %}
     {{ block.super }}
 
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
     <script>
         function getCookie(name) {
             //basic get cookie, to facilitate getting the csrf token
@@ -92,74 +93,6 @@
 
 
     <script type="text/javascript">
-        //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
-
-        function ajax_get_form(patient_guid, form_name, target_div, edit_id) {
-            console.log(edit_id);
-            if (edit_id === undefined) {
-               var form_url = "{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name;
-            } else {
-                var form_url = "{% url ajax_get_form %}?patient_guid=" + patient_guid + "&form_name=" + form_name + "&edit_id=" + edit_id;
-            }
-            $.get(form_url, function(data) {
-                var context=$(data);
-                context.find('save attribute').click(function () {});
-                console.log(data);
-                $("#" + target_div).html(data).show("blind", {}, 300);
-                /* Override the submit handler to the ajax_form. */
-                $("#id_" + form_name).submit(function(event) {
-
-                    /* stop form from submitting normally */
-                    event.preventDefault();
-
-                    /* get some values from elements on the page: */
-                    var $form = $(this);
-                    var url = $form.attr('action');
-                    var values = $form.serializeArray();
-                    var submit_dict = {};
-                    for (var i = 0; i < values.length; i++) {
-                        submit_dict[values[i]['name']] = values[i]['value'];
-                    }
-                    console.log(submit_dict);
-                    /* Send the data using post and put the results in a div */
-                    $.ajax({
-                                type: "POST",
-                                url: url,
-                                data: submit_dict,
-                                statusCode: {
-                                    404: function () {
-                                    },
-                                    200: function (data) {
-                                        $("#tbl_" + form_name).html(data);
-                                    },
-                                    204: function(data) {
-                                        location.reload();
-                                    },
-                                    500: function(data) {
-                                        $('body').replaceWith(data.responseText);
-                                    }
-
-
-                                },
-                                success: function(data, textStatus, jqXHR) {
-//                                   #alert("in success:" + textStatus);
-//                                    console.log(jqXHR);
-                                },
-                                error: function(jqXHR, textStatus, errorThrown) {
-                                    alert(textStatus);
-                                }
-                            }
-                    );
-            });
-            });
-        }
-
-
-
-        
-
-
-
         $(function() {
             $("#id_active_date").datepicker({ showAnim: 'fadeIn' });
         });
@@ -268,7 +201,7 @@
             </table>
                         <div class="editctrl" style="float:right;">
                             <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                               href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
                                 <span class="ui-icon ui-icon-wrench"></span>
                                 Edit Info
                             </a>
@@ -326,15 +259,15 @@
                                 {% endif %}
                                 {{ patient_address.address }}<br>
                             <span class="editctrl">
-                                <a href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
+                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
                                 &nbsp;
-                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
+                                <a href="javascript:rm_phone_addr('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
                                 </span>
                             </div>
                         {% endfor %}
                         <div style="float:right;">
                             <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}','address', 'addressform');">
+                               href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}','address', 'addressform');">
                                 <span class="ui-icon ui-icon-circle-plus"></span>
                                 Add Address
                             </a>
@@ -355,7 +288,7 @@
                                 {% endif %}
                                 {{ phone.number }}<br>
                                 <span class="editctrl">
-                                <a href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
+                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
                                     &nbsp;
                                 <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>
                                 </span>
@@ -363,7 +296,7 @@
                         {% endfor %}
                         <div style="float:right;">
                             <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}','phone', 'phoneform');">
+                               href="javascript:ajax_get_form('{%url ajax_patient_form_get%}', '{{ patient_doc.get_id }}','phone', 'phoneform');">
                                 <span class="ui-icon ui-icon-circle-plus"></span>
                                 Add Phone
                             </a>
@@ -412,7 +345,7 @@
                     {% if role.display == "Primary CHW" %}
                         {% for actor in actors %}
                             <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
-                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }}</div>
+                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }} ({{ role.display }})</div>
                                 <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
                                 <div class="span-7 last">
                                     <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">

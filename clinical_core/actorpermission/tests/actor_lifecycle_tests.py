@@ -7,7 +7,7 @@ from clinical_shared.middleware.identity import CareHQIdentityMiddleware
 from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import raddress
-from permissions.models import Actor, Role
+from permissions.models import Actor, Role, PrincipalRoleRelation
 from permissions.tests import RequestFactory
 from tenant.models import Tenant
 from django.contrib.sessions.backends.file import SessionStore
@@ -17,6 +17,8 @@ class tenantPermissionTests(CareHQClinicalTestCase):
         User.objects.all().delete()
         Actor.objects.all().delete()
         Role.objects.all().delete()
+        PrincipalRoleRelation.objects.all().delete()
+        Tenant.objects.all().delete()
         call_command('carehq_init')
 
     def testCreateActor(self, user=None, actor_type='chw'):
@@ -25,8 +27,6 @@ class tenantPermissionTests(CareHQClinicalTestCase):
         Make an actor for that user
         Verify actor counts
         """
-        db = CHWActor.get_db()
-
         actor_docs_start = CHWActor.view('actorpermission/all_actors').count()
         actor_start = Actor.objects.all().count()
 

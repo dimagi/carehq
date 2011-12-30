@@ -18,6 +18,8 @@ class CareHQClinicalTestCase(TestCase):
     def setUp(self):
         User.objects.all().delete()
         Actor.objects.all().delete()
+        Role.objects.all().delete()
+        Tenant.objects.all().delete()
         PrincipalRoleRelation.objects.all().delete()
         call_command('carehq_init')
         self.tenant = Tenant.objects.all()[0]

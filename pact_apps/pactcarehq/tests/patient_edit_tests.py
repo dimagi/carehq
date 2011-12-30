@@ -1,3 +1,4 @@
+import pdb
 import random
 import uuid
 from django.contrib.auth.models import User
@@ -107,7 +108,7 @@ class patientEditTests(CareHQClinicalTestCase):
         Call view function directly for API testing verification
         """
         from pactcarehq.views.providers import pt_new_or_link_provider
-        start_prr = PrincipalRoleRelation.objects.count()
+        start_prr = int(PrincipalRoleRelation.objects.count())
         user = generator.generate_random_user()
         patient = generator.get_or_create_patient(self.tenant, user=None, first_name="Jean-luc", last_name="Picard")
         form_data = {'phone_number': u'6171234567', 'first_name': u'Gregory', 'last_name': u'House',

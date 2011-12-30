@@ -65,8 +65,12 @@ urlpatterns = patterns ('',
 
     #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
     url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
-    url(r'^ajax/getform/$', 'pactcarehq.views.ajax_get_form', name='ajax_get_form'),
-    url(r'^ajax/postform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_form', name='ajax_post_form'),
+
+    url(r'^ajax/getpatientform/$', 'pactcarehq.views.ajax_patient_form_get', name='ajax_patient_form_get'),
+    url(r'^ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_patient_form', name='ajax_post_patient_form'),
+
+    url(r'^ajax/getactorform/$', 'pactcarehq.views.ajax_get_actor_form', name='ajax_get_actor_form'),
+    url(r'^ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_actor_form', name='ajax_post_actor_form'),
 
 
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),

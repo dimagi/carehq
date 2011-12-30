@@ -50,10 +50,6 @@ def chw_actor_list(request, template_name="pactcarehq/chw_actor_list.html"):
     return render_to_response(template_name, context_instance=context)
 
 @login_required
-def chw_api(request, chw_doc_id, template='pactcarehq/partials/ajax_form.html'):
-    pass
-
-@login_required
 def new_chw(request, template="pactcarehq/new_chw.html"):
     pass
 

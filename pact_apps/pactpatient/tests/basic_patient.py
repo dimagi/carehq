@@ -174,7 +174,7 @@ class patientViewTests(CareHQClinicalTestCase):
 
         #next, repost
         patient_dict['primary_hp']=chws[1].django_actor.user.username
-        response=self.client.post(reverse('ajax_post_form', kwargs={'patient_guid': patient_doc._id, 'form_name':'ptedit'}), patient_dict)
+        response=self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid': patient_doc._id, 'form_name':'ptedit'}), patient_dict)
         self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[0].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
         self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[1].django_actor).filter(content_id=patient_doc.django_uuid).count(), 1)
         self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[2].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
