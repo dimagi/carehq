@@ -12,6 +12,9 @@ def add_to_careteam(patient_doc, actor_doc, role):
     """
     permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role)
 
+def remove_from_careteam(patient_doc, actor_doc, role):
+    permissions.utils.remove_local_role(patient_doc.django_patient, actor_doc.django_actor, role)
+
 def get_external_providers():
     """
     Returns actor documents of external providers in the system

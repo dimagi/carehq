@@ -4,6 +4,7 @@ from carehq_core import carehq_constants
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
+from pactpatient.views import recompute_chw_actor_permissions
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import  BasePatient, CPhone
@@ -265,6 +266,7 @@ def ajax_post_form(request, patient_guid, form_name):
         if form.is_valid():
             instance = form.save(commit=True)
             resp.status_code=204
+            recompute_chw_actor_permissions(pdoc)
             return resp
         else:
             context['form']=form

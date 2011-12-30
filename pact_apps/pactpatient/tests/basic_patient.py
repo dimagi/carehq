@@ -3,6 +3,7 @@ import pdb
 import uuid
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.contrib.webdesign import lorem_ipsum
 import random
@@ -134,6 +135,49 @@ class patientViewTests(CareHQClinicalTestCase):
         self.assertEquals(response.status_code, 200) #failure at 200
 
         self.assertTrue(response.content.count("Error, pact id must be unique") > 0)
+
+    def testCreateAndChangeHP(self):
+        chws = []
+        for x in range(0,5):
+            chws.append(self._new_chw(self.tenant, generator.get_or_create_user()))
+
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+
+        pact_id = uuid.uuid4().hex
+
+
+
+        patient_dict = {'first_name':'foo',
+                        'last_name': 'bar',
+                        'gender':'m',
+                        'birthdate': '1/1/2000',
+                        'pact_id': pact_id,
+                        'arm': 'DOT',
+                        'art_regimen': 'QD',
+                        'non_art_regimen': 'BID',
+                        'primary_hp': chws[0].django_actor.user.username,
+                        'patient_id': uuid.uuid4().hex,
+                        'race': 'asian',
+                        'is_latino': 'yes',
+                        'mass_health_expiration': '1/1/2020',
+                        'hiv_care_clinic': 'brigham_and_womens_hospital',
+                        'ssn': '1112223333',
+                        'preferred_language': 'english',
+                        }
+        response = self.client.get(reverse('new_pactpatient')) #in a regular world this is what happens, do a get first.
+        response = self.client.post(reverse('new_pactpatient'), patient_dict)
+        patient_doc = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()
+        #assert that the first CHW is now given a PRR for that patient.
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[0].django_actor).filter(content_id=patient_doc.django_uuid).count(), 1)
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[1].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[2].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
+
+        #next, repost
+        patient_dict['primary_hp']=chws[1].django_actor.user.username
+        response=self.client.post(reverse('ajax_post_form', kwargs={'patient_guid': patient_doc._id, 'form_name':'ptedit'}), patient_dict)
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[0].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[1].django_actor).filter(content_id=patient_doc.django_uuid).count(), 1)
+        self.assertEquals(PrincipalRoleRelation.objects.filter(actor=chws[2].django_actor).filter(content_id=patient_doc.django_uuid).count(), 0)
 
 class basicPatientTest(CareHQClinicalTestCase):
     """
