@@ -6,6 +6,8 @@ from issuetracker.models import Issue, CaseEvent
 from clinical_core.clinical_shared.utils import generator
 from issuetracker import constants
 from django.core.management import call_command
+from permissions.models import Actor, PrincipalRoleRelation, Role
+from tenant.models import Tenant
 
 
 INITIAL_DESCRIPTION = "this is a case made by the test case"
@@ -30,8 +32,14 @@ class EventActivityVerificationTest(TestCase):
     fixtures = []
 
     def setUp(self):
-        #$call_command('load_categories')]
-        pass
+        User.objects.all().delete()
+        Actor.objects.all().delete()
+        Role.objects.all().delete()
+        PrincipalRoleRelation.objects.all().delete()
+        Tenant.objects.all().delete()
+        Issue.objects.all().delete()
+        call_command('carehq_init')
+        self.tenant = Tenant.objects.get(name='ASHand')
 
 #    @transaction.commit_manually
 #    def tearDown(self):
@@ -45,19 +53,19 @@ class EventActivityVerificationTest(TestCase):
 #        transaction.commit()
 
 
-    def testCreateCaseView(self, description = INITIAL_DESCRIPTION):
+    def testCreateIssueView(self, description = INITIAL_DESCRIPTION):
         #self.assertFalse(True)
         pass
 
 
-    def testCreateCaseApi(self, description=INITIAL_DESCRIPTION):
+    def testCreateIssueApi(self, description=INITIAL_DESCRIPTION):
         ###########################
         #get the basic counts
         user1 = generator.get_or_create_user()
         user2 = generator.get_or_create_user()
 
-        role1 = generator.generate_actor(user1, 'caregiver')
-        role2 = generator.generate_actor(user2, 'provider')
+        actor_caregiver = generator.generate_actor(self.tenant, user1, 'caregiver')
+        actor_provider = generator.generate_actor(self.tenant, user2, 'provider')
 
         oldcasecount = Issue.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
@@ -76,7 +84,7 @@ class EventActivityVerificationTest(TestCase):
 #        newcase.save(activity=activity)
 
         newcase = Issue.objects.new_issue(constants.CATEGORY_CHOICES[0][0],
-                              role1,
+                              actor_caregiver.django_actor,
                               description,
                               "mock body %s" % (uuid.uuid4().hex),
                               constants.PRIORITY_MEDIUM,
@@ -101,15 +109,15 @@ class EventActivityVerificationTest(TestCase):
 
     def testCaseModifyDescriptionApi(self):
         desc= uuid.uuid4().hex
-        self.testCreateCaseApi(description=desc)
+        self.testCreateIssueApi(description=desc)
 
         user1 = generator.get_or_create_user()
-        actor1 = generator.generate_actor(user1, 'provider')
+        actor_provider_doc = generator.generate_actor(self.tenant, user1, 'provider')
 
 
         case = Issue.objects.all().get(description=desc)
         case.description = CHANGED_DESCRIPTION
-        case.last_edit_by = actor1
+        case.last_edit_by = actor_provider_doc.django_actor
         activity = constants.CASE_EVENT_EDIT
         case.save_comment="editing in testCaseModifyDescription"
         case.save(activity=activity)
@@ -129,23 +137,23 @@ class EventActivityVerificationTest(TestCase):
 
 
     def testCaseCreateChildCases(self):
-        self.testCreateCaseApi()
+        self.testCreateIssueApi()
         user1 = generator.get_or_create_user()
-        role1 = generator.generate_actor(user1, 'provider')
+        actor_provider_doc = generator.generate_actor(self.tenant, user1, 'provider')
 
-        case = Issue.objects.all().get(description =INITIAL_DESCRIPTION)
-        CHILD_CASES=10
-        for num in range(0,CHILD_CASES):
+        root_issue = Issue.objects.all().get(description =INITIAL_DESCRIPTION)
+        CHILD_ISSUES=10
+        for num in range(0,CHILD_ISSUES):
             desc = uuid.uuid4().hex
-            newcase = self.testCreateCaseApi(description=desc)
-            newcase.parent_case = case
-            newcase.last_edit_by = role1
+            subissue = self.testCreateIssueApi(description=desc)
+            subissue.parent_issue = root_issue
+            subissue.last_edit_by = actor_provider_doc.django_actor
             activity = constants.CASE_EVENT_EDIT
-            newcase.save_comment="editing in testCaseCreateChildCases"
-            newcase.save(activity=activity)
+            subissue.save_comment="editing in testCaseCreateChildCases"
+            subissue.save(activity=activity)
 
 
-        self.assertEqual(case.child_cases.count(), CHILD_CASES)
+        self.assertEqual(root_issue.child_issues.count(), CHILD_ISSUES)
 
 
 
