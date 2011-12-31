@@ -1,7 +1,7 @@
 import random
 
 from datetime import datetime, timedelta
-from issuetracker.models import Category, Case, Priority, Status, ActivityClass, CaseEvent
+from issuetracker.models import Category, Issue, Priority, Status, ActivityClass, CaseEvent
 from issuetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
@@ -26,7 +26,7 @@ def load_interaction(careteam, interaction_arr):
     if body.count("%s") == 1:
         body = body % careteam.patient.user.first_name
     
-    newcase = Case()
+    newcase = Issue()
     newcase.description = title
     newcase.body = body
     newcase.category = Category.objects.get(slug=category_txt)
@@ -105,7 +105,7 @@ def assign_interactions(careteam, num_encounters):
         load_interaction(careteam, interaction)
 
 
-def add_long_cases():
+def add_long_issue():
     """
     Specific hack to add a long case to Pat Patient's caseload
     """
@@ -114,8 +114,8 @@ def add_long_cases():
     for c in long_cases:
         load_interaction(ct, c)
 
-def create_case(patient, actor_creator, description, body, priority=None):
-        newcase = Case.objects.new_case(Category.objects.all()[0],
+def create_issue(patient, actor_creator, description, body, priority=None):
+        newcase = Issue.objects.new_issue(Category.objects.all()[0],
                               actor_creator,
                               description,
                               body,

@@ -1,4 +1,4 @@
-from issuetracker.models import CaseEvent, Case
+from issuetracker.models import CaseEvent, Issue
 from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
@@ -179,7 +179,7 @@ class Filter(models.Model):
             case_event_query_arr.append(Q(created_date__gte=self.last_event_date))
 
         #now, we got the queries built up, let's run the queries
-        cases = Case.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'carteam_set').all()
+        cases = Issue.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'carteam_set').all()
         for qu in case_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain

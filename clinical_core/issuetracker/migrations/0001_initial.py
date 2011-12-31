@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'CaseEvent'
         db.create_table('casetracker_caseevent', (
             ('id', self.gf('django.db.models.fields.CharField')(default='f942638ca17d4e6caca9fcb366f66c3a', unique=True, max_length=32, primary_key=True)),
-            ('case', self.gf('django.db.models.fields.related.ForeignKey')(related_name='case_events', to=orm['issuetracker.Case'])),
+            ('case', self.gf('django.db.models.fields.related.ForeignKey')(related_name='case_events', to=orm['issuetracker.Issue'])),
             ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('activity', self.gf('django.db.models.fields.CharField')(max_length=160)),
             ('created_date', self.gf('django.db.models.fields.DateTimeField')()),
@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('issuetracker', ['CaseEvent'])
 
-        # Adding model 'Case'
+        # Adding model 'Issue'
         db.create_table('casetracker_case', (
             ('id', self.gf('django.db.models.fields.CharField')(default='ecadd120018941368555c9d87ca2629f', unique=True, max_length=32, primary_key=True)),
             ('casexml_id', self.gf('django.db.models.fields.CharField')(max_length=32, unique=True, null=True, db_index=True)),
@@ -41,14 +41,14 @@ class Migration(SchemaMigration):
             ('closed_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('closed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='case_closed_by', null=True, to=orm['permissions.Actor'])),
             ('due_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('parent_case', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='child_cases', null=True, to=orm['issuetracker.Case'])),
+            ('parent_issue', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='child_cases', null=True, to=orm['issuetracker.Issue'])),
         ))
-        db.send_create_signal('issuetracker', ['Case'])
+        db.send_create_signal('issuetracker', ['Issue'])
 
         # Adding model 'ExternalCaseData'
         db.create_table('casetracker_externalcasedata', (
             ('id', self.gf('django.db.models.fields.CharField')(default='bd2455ddaa834e1483882584eda62569', unique=True, max_length=32, primary_key=True)),
-            ('case_id', self.gf('django.db.models.fields.related.ForeignKey')(related_name='external_data', to=orm['issuetracker.Case'])),
+            ('case_id', self.gf('django.db.models.fields.related.ForeignKey')(related_name='external_data', to=orm['issuetracker.Issue'])),
             ('doc_id', self.gf('django.db.models.fields.CharField')(default='f397c1856a704d76a2cb19e5d0a44bbe', unique=True, max_length=32, db_index=True)),
         ))
         db.send_create_signal('issuetracker', ['ExternalCaseData'])
@@ -123,7 +123,7 @@ class Migration(SchemaMigration):
         # Deleting model 'CaseEvent'
         db.delete_table('casetracker_caseevent')
 
-        # Deleting model 'Case'
+        # Deleting model 'Issue'
         db.delete_table('casetracker_case')
 
         # Deleting model 'ExternalCaseData'
@@ -176,7 +176,7 @@ class Migration(SchemaMigration):
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         'issuetracker.case': {
-            'Meta': {'object_name': 'Case'},
+            'Meta': {'object_name': 'Issue'},
             'assigned_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'assigned_to': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'case_assigned_to'", 'null': 'True', 'to': "orm['permissions.Actor']"}),
             'body': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
@@ -191,7 +191,7 @@ class Migration(SchemaMigration):
             'last_edit_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'opened_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'case_opened_by'", 'to': "orm['permissions.Actor']"}),
             'opened_date': ('django.db.models.fields.DateTimeField', [], {}),
-            'parent_case': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'child_cases'", 'null': 'True', 'to': "orm['issuetracker.Case']"}),
+            'parent_issue': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'child_cases'", 'null': 'True', 'to': "orm['issuetracker.Issue']"}),
             'patient': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['patient.Patient']", 'null': 'True', 'blank': 'True'}),
             'priority': ('django.db.models.fields.IntegerField', [], {}),
             'resolved_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'case_resolved_by'", 'null': 'True', 'to': "orm['permissions.Actor']"}),
@@ -201,7 +201,7 @@ class Migration(SchemaMigration):
         'issuetracker.caseevent': {
             'Meta': {'ordering': "['-created_date']", 'object_name': 'CaseEvent'},
             'activity': ('django.db.models.fields.CharField', [], {'max_length': '160'}),
-            'case': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'case_events'", 'to': "orm['issuetracker.Case']"}),
+            'case': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'case_events'", 'to': "orm['issuetracker.Issue']"}),
             'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['permissions.Actor']"}),
             'created_date': ('django.db.models.fields.DateTimeField', [], {}),
             'id': ('django.db.models.fields.CharField', [], {'default': "'a7216ce811b849b59e228704e9155e06'", 'unique': 'True', 'max_length': '32', 'primary_key': 'True'}),
@@ -210,7 +210,7 @@ class Migration(SchemaMigration):
         },
         'issuetracker.externalcasedata': {
             'Meta': {'object_name': 'ExternalCaseData'},
-            'case_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'external_data'", 'to': "orm['issuetracker.Case']"}),
+            'case_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'external_data'", 'to': "orm['issuetracker.Issue']"}),
             'doc_id': ('django.db.models.fields.CharField', [], {'default': "'f8f8c3691f014d53a5c1019ea5badbab'", 'unique': 'True', 'max_length': '32', 'db_index': 'True'}),
             'id': ('django.db.models.fields.CharField', [], {'default': "'65a07a1c5e83404c8d5af8ee857e7aa8'", 'unique': 'True', 'max_length': '32', 'primary_key': 'True'})
         },

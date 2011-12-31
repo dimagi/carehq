@@ -211,7 +211,7 @@ BASE_TEMPLATE = 'base.html'
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
-                    #'issuetracker.models.Case',
+                    #'issuetracker.models.Issue',
                     #'issuetracker.models.CaseEvent',
                     'patient.models.Patient',
                     #'patient.models.PatientIdentifier',

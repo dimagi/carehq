@@ -3,6 +3,8 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
+from issuetracker.feeds.caseevents import get_sorted_issueevent_dictionary
+from issuetracker.queries.caseevents import get_latest_for_issues
 from patient.models import Patient
 
 
@@ -69,11 +71,11 @@ def single(request, user_id=None):
 
 
         if context['is_provider_for'] or context['is_caregiver_for']:
-            context['events'] = get_latest_for_cases(context['selected_careteam'].cases.all())
+            context['events'] = get_latest_for_issues(context['selected_careteam'].cases.all())
             context['formatting'] = False
 
             sorted_dic = {}
-            sorted_dic = get_sorted_caseevent_dictionary(sort, context['events'])
+            sorted_dic = get_sorted_issueevent_dictionary(sort, context['events'])
 
             if (len(sorted_dic) > 0):
                 context['events'] = sorted_dic
@@ -120,7 +122,7 @@ def single(request, user_id=None):
 #        last_edit = Q(last_edit_by=user)
 #        assigned = Q(assigned_to=user)
 #
-#        cases = Case.objects.select_related('opened_by','last_edit_by','status').filter(opened | last_edit | assigned)
+#        cases = Issue.objects.select_related('opened_by','last_edit_by','status').filter(opened | last_edit | assigned)
 #        context['cases'] = cases
 
 #    raise Exception("not implemented, need to implement views using new actor permission framework")

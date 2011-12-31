@@ -31,7 +31,7 @@ class CaseEvent(models.Model):
     examples of what happened to a case.
     """
     id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    case = models.ForeignKey("Case", related_name='case_events')
+    case = models.ForeignKey("Issue", related_name='case_events')
     notes = models.TextField(blank=True)
 
     activity = models.CharField(choices=constants.CASE_EVENT_CHOICES, max_length=160)
@@ -49,7 +49,7 @@ class CaseEvent(models.Model):
 
         if self.created_date == None:
             if self.created_by == None:
-                raise Exception("Missing fields in Case creation - created by")
+                raise Exception("Missing fields in Issue creation - created by")
             self.created_date = datetime.utcnow()
         super(CaseEvent, self).save()
 
@@ -58,13 +58,13 @@ class CaseEvent(models.Model):
 
     class Meta:
         app_label = 'issuetracker'
-        verbose_name = "Case Event"
-        verbose_name_plural = "Case Events"
+        verbose_name = "Issue Event"
+        verbose_name_plural = "Issue Events"
         ordering = ['-created_date']
 
 
 
-class Case(models.Model):
+class Issue(models.Model):
     """
     A case in this system is the actual even that needs due diligence and subsequent closure.
 
@@ -76,8 +76,8 @@ class Case(models.Model):
     The uuid should be the primary key, but for the synchronization framework, having a uuid key do all the queries
     and potentially be the primary key should be a top priority.
     """
-    id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    casexml_id = models.CharField(_('CaseXML doc_id'), max_length=32, unique=True, db_index=True, editable=False, null=True) #casexml doc_id if there is one
+    id = models.CharField(_('Issue Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    #casexml_id = models.CharField(_('CaseXML doc_id'), max_length=32, unique=True, db_index=True, editable=False, null=True) #casexml doc_id if there is one
 
     description = models.CharField(max_length=160)
 
@@ -106,7 +106,7 @@ class Case(models.Model):
     closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
 
     due_date = models.DateTimeField(null=True, blank=True)
-    parent_case = models.ForeignKey('self', null=True, blank=True, related_name='child_cases')
+    parent_issue = models.ForeignKey('self', null=True, blank=True, related_name='child_issues')
 
 
     default_objects = models.Manager() # The default manager.
@@ -114,7 +114,7 @@ class Case(models.Model):
 
     def get_absolute_url(self):
         #return "/case/%s" % self.id
-        return reverse('manage_case', kwargs={'case_id': self.id})
+        return reverse('manage_issue', kwargs={'case_id': self.id})
 
     @property
     def is_active(self):
@@ -208,34 +208,34 @@ class Case(models.Model):
         """
 #        if unsafe:
 #            if self.opened_date == None:
-#                logging.warning("Case save unsafe: no opened date set")
+#                logging.warning("Issue save unsafe: no opened date set")
 #            if self.opened_by == None:
-#                logging.warning("Case save unsafe: no opened by set")
+#                logging.warning("Issue save unsafe: no opened by set")
 #            if self.last_edit_date == None:
-#                logging.warning("Case save unsafe: no last edit date set")
+#                logging.warning("Issue save unsafe: no last edit date set")
 #            if self.last_edit_by == None:
-#                logging.warning("Case save unsafe: no last edit by set")
-#            super(Case, self).save()
+#                logging.warning("Issue save unsafe: no last edit by set")
+#            super(Issue, self).save()
 #            return
 #
 
         if activity == None:
-            raise Exception("Error, you must set an ActivityClass for this Case Save")
+            raise Exception("Error, you must set an ActivityClass for this Issue Save")
         else:
             self.event_activity = activity
 
         if self.last_edit_by == None:
-            raise Exception("Missing fields in edited Case: last_edit_by")
+            raise Exception("Missing fields in edited Issue: last_edit_by")
 
         #now, we need to check the status change being done to this.
         if self.status == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
             if self.resolved_by == None:
-                raise Exception("Case state is now resolved, you must set a resolved_by")
+                raise Exception("Issue state is now resolved, you must set a resolved_by")
             else:
                 self.resolved_date = datetime.utcnow()
         elif self.status == constants.CASE_STATE_CLOSED:
             if self.closed_by == None:
-                raise Exception("Case state is now closed, you must set a closed_by")
+                raise Exception("Issue state is now closed, you must set a closed_by")
             else:
                 #ok, closed by is set, let's double check that it's been resolved
                 if self.resolved_by == None:
@@ -245,23 +245,23 @@ class Case(models.Model):
                 self.closed_date = datetime.utcnow()
 
         self.last_edit_date = datetime.utcnow()
-        super(Case, self).save()
+        super(Issue, self).save()
 
     def __unicode__(self):
-        return "(Case %s) %s" % (self.id, self.description)
+        return "(Issue %s) %s" % (self.id, self.description)
 
     def case_name(self):
-        #return "Case %s" % self.id
+        #return "Issue %s" % self.id
         return self.description
 
     def case_name_url(self):
-        #return "Case %s" % self.id
-        #reverse("issuetracker.views.manage_case", args=[obj.id])
+        #return "Issue %s" % self.id
+        #reverse("issuetracker.views.manage_issue", args=[obj.id])
         return '<a href="%s">%s</a>' % (reverse('manage-case', args=[self.id]), self.description)
 
     class Meta:
         app_label = 'issuetracker'
-        verbose_name = "Case"
+        verbose_name = "Issue"
         verbose_name_plural = "Cases"
         #ordering = ['-opened_date']
 
@@ -270,12 +270,12 @@ class ExternalCaseData(models.Model):
     """
     External documents attached to a case (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
     """
-    id = models.CharField(_('Case Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
-    case_id = models.ForeignKey(Case, related_name="external_data")
+    id = models.CharField(_('Issue Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
+    case_id = models.ForeignKey(Issue, related_name="external_data")
     doc_id = models.CharField(_('External Document id'), max_length=32, unique=True, default=make_uuid, db_index=True)
 
     class Meta:
         app_label = 'issuetracker'
-        verbose_name ="External Case Data"
-        verbose_name_plural= "External Case Data"
+        verbose_name ="External Issue Data"
+        verbose_name_plural= "External Issue Data"
 

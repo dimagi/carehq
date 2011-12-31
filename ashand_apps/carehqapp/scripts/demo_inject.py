@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import random_inject
-from issuetracker.models import Case
+from issuetracker.models import Issue
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
 from clinical_shared.utils import generator
@@ -8,7 +8,7 @@ import random
 from django.core.management import call_command
 from issuetracker import constants
 
-def inject_case_data(patient, event_arr):
+def inject_issue_data(patient, event_arr):
     """
     Pull data from the event_arr and assign it to a patient if they were new inbound triage cases
     """    
@@ -25,7 +25,7 @@ def inject_case_data(patient, event_arr):
     if body.count("%s") == 1:
         body = body % patient\
 
-    newcase = Case()
+    newcase = Issue()
     newcase.description = title
     newcase.body = body
     newcase.category = Category.objects.get(slug=category_txt)
@@ -72,7 +72,7 @@ def generate_triage():
         random_inject.shuffle(triage_arr)
         print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.title())
         for enc in range(0,max_encounters):    
-            inject_case_data(careteam, triage_arr[enc])
+            inject_issue_data(careteam, triage_arr[enc])
 
 
             
@@ -93,7 +93,7 @@ def run():
             provider_assigned = random.choice(providers)
             description = arr[0]
             body = arr[1]
-            newcase = Case.objects.new_case("question",
+            newcase = Issue.objects.new_issue("question",
                               actor_creator,
                               arr[0],
                               arr[1],
@@ -108,40 +108,40 @@ def run():
 
 #
 #    #establish initial data
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='william_adama')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='william_adama')[0],\
 #                        ["ashand-question","Patient daily measurements incomplete","Missing data alert: Missing weight and temperature","Home Monitor"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='william_adama')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='william_adama')[0],\
 #                        ["ashand-issue","%s has a runny nose","is it bad?","Caregiver"])
 #
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
 #                        ["ashand-issue","urgent","What order should I instruct the patient to take their anti nausea meds?","Caregiver"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
 #                        ["ashand-issue","not feeling well","%s has been reporting severe constipation the past few days","Caregiver"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='curzon_dax')[0],\
 #                        ["ashand-issue","help","Do I need to fast before my next visit?","patient"])
 #
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='jadzia_dax')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='jadzia_dax')[0],\
 #                        ["ashand-issue","not a big deal","Do I need to take all these meds you gave me?","Caregiver"])
 #
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='pat_patient')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='pat_patient')[0],\
 #                        ["ashand-issue","bleeding gums","was about to brush my teeth when I saw it","patient"],)
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='pat_patient')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='pat_patient')[0],\
 #                        ["ashand-issue","more skin problems for %s","Thanks for the tip on the last skin issue!","caregiver"],)
 #
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
 #                        ["ashand-issue","%s has severe diarrhea","%s was up most of the night, was able to stay hydrated, but am worried.","Caregiver"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
 #                        ["ashand-issue","fever","at what temperature should I know to call for help?","patient"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='joseph_sisko')[0],\
 #                        ["ashand-issue","is it bad?","not sure if this is hives or a rash","Caregiver"])
 #
 #    #inject home monitoring data
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='benjamin_sisko')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='benjamin_sisko')[0],\
 #                        ["ashand-question","Patient has not submitted daily measurements","Missing data alert","Home Monitor"])
-#    inject_case_data(CareTeam.objects.filter(patient__user__username='deanna_troi')[0],\
+#    inject_issue_data(CareTeam.objects.filter(patient__user__username='deanna_troi')[0],\
 #                        ["ashand-question","Patient has vomited 2 times in the past 24 hours","Daily reading alert","Home Monitor"])
 #
 #    num_cases= random_inject.randint(0,5)
 #    print "\tgenerating %d baseline interactions" % (num_cases)
 #    #assign_interactions(careteam, num_cases)
-#    #add_long_cases() #adds the longer commented case
+#    #add_long_issue() #adds the longer commented case

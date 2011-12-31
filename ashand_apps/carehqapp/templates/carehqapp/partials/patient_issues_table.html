@@ -13,7 +13,7 @@
 <ul>
 {% for case in cases %}
 <tr>
-	<td>{% patient_for_case case %} </td>
+	<td>{% patient_for_issue case %} </td>
 	<td>{{case.description}}</td>
 	<td>{{case.opened_date|date}}</td>
 	<td>{{case.opened_by}}</td>

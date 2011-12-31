@@ -2,7 +2,7 @@ from django.test import TestCase
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from issuetracker.models import Case, CaseEvent
+from issuetracker.models import Issue, CaseEvent
 from clinical_core.clinical_shared.utils import generator
 from issuetracker import constants
 from django.core.management import call_command
@@ -35,7 +35,7 @@ class EventActivityVerificationTest(TestCase):
 
 #    @transaction.commit_manually
 #    def tearDown(self):
-#        Case.objects.all().delete()
+#        Issue.objects.all().delete()
 #        Actor.objects.all().delete()
 #        Actor.objects.all().delete()
 #        CareTeamMember.objects.all().delete()
@@ -59,10 +59,10 @@ class EventActivityVerificationTest(TestCase):
         role1 = generator.generate_actor(user1, 'caregiver')
         role2 = generator.generate_actor(user2, 'provider')
 
-        oldcasecount = Case.objects.all().count()
+        oldcasecount = Issue.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
 
-#        newcase = Case()
+#        newcase = Issue()
 #        newcase.description = description
 #        newcase.opened_by = role1
 #        newcase.last_edit_by = role1
@@ -75,7 +75,7 @@ class EventActivityVerificationTest(TestCase):
 #        activity = ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
 #        newcase.save(activity=activity)
 
-        newcase = Case.objects.new_case(constants.CATEGORY_CHOICES[0][0],
+        newcase = Issue.objects.new_issue(constants.CATEGORY_CHOICES[0][0],
                               role1,
                               description,
                               "mock body %s" % (uuid.uuid4().hex),
@@ -85,7 +85,7 @@ class EventActivityVerificationTest(TestCase):
                               )
 
         #is the thing created?
-        self.assertEqual(Case.objects.all().count(), oldcasecount + 1)
+        self.assertEqual(Issue.objects.all().count(), oldcasecount + 1)
         self.assertEqual(CaseEvent.objects.all().count(), oldevents + 1)
         #verify that the case count created has created a new caseevent
         events = CaseEvent.objects.filter(case=newcase)
@@ -107,7 +107,7 @@ class EventActivityVerificationTest(TestCase):
         actor1 = generator.generate_actor(user1, 'provider')
 
 
-        case = Case.objects.all().get(description=desc)
+        case = Issue.objects.all().get(description=desc)
         case.description = CHANGED_DESCRIPTION
         case.last_edit_by = actor1
         activity = constants.CASE_EVENT_EDIT
@@ -124,7 +124,7 @@ class EventActivityVerificationTest(TestCase):
 
 
         #quickly verify that the original description is still unchanged
-        dbcase = Case.objects.all().get(description=CHANGED_DESCRIPTION)
+        dbcase = Issue.objects.all().get(description=CHANGED_DESCRIPTION)
         self.assertEqual(dbcase.id, case.id)
 
 
@@ -133,7 +133,7 @@ class EventActivityVerificationTest(TestCase):
         user1 = generator.get_or_create_user()
         role1 = generator.generate_actor(user1, 'provider')
 
-        case = Case.objects.all().get(description =INITIAL_DESCRIPTION)
+        case = Issue.objects.all().get(description =INITIAL_DESCRIPTION)
         CHILD_CASES=10
         for num in range(0,CHILD_CASES):
             desc = uuid.uuid4().hex

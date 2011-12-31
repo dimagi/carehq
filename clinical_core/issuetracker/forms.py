@@ -5,7 +5,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelForm
-from issuetracker.models import Case
+from issuetracker.models import Issue
 from issuetracker import constants
 
 class CaseCommentForm(forms.Form):    
@@ -56,7 +56,7 @@ class CaseModelForm(ModelForm):
     comment = forms.CharField(required=False, label="Reason", widget = widgets.Textarea(attrs={'cols':80, 'rows':4}))    
     
     class Meta:
-        model = Case
+        model = Issue
         #default exclude for basic editing
         exclude = ()
     def __init__(self, editor_user=None, activity=None, * args, **kwargs):      
@@ -86,7 +86,7 @@ class CaseModelForm(ModelForm):
                      'closed_by',
                      'assigned_to',
                      'assigned_date',
-                     'parent_case',
+                     'parent_issue',
                      ]
         
         if self.activity == constants.CASE_EVENT_EDIT:
@@ -103,7 +103,7 @@ class CaseModelForm(ModelForm):
                      'closed_by',
                      'assigned_to',
                      'assigned_date',
-                     'parent_case',
+                     'parent_issue',
                      ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'           
         

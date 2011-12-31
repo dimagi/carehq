@@ -2,7 +2,7 @@
 from pytz import timezone
 from actorpermission.models.actortypes import  ProviderActor, CaregiverActor, PatientActor
 from carehq_core import carehq_api, carehq_constants
-from issuetracker.models.issuecore import Case
+from issuetracker.models.issuecore import Issue
 from clinical_core.patient.models import *
 import uuid
 from django.contrib.auth.models import User
@@ -213,22 +213,22 @@ def mock_issue():
     patient = get_or_create_patient(get_or_create_user(always_new=False))
     print "Got Patient"
 
-    subs = Case.__subclasses__()
+    subs = Issue.__subclasses__()
 
-    print "Generating Case"
+    print "Generating Issue"
     newissue = generate_issue(caregiver_creator, lorem.sentence(), lorem.paragraph(), provider_assigned, subtype=subs[random.randrange(0, len(subs))])
     newissue.patient = patient.doc_id
     newissue.save()
-    print "Created and saved Case"
+    print "Created and saved Issue"
     return newissue
 
 def generate_issue(creator, description, body, assigned_to, subtype=None):
     if subtype:
-        casetype = subtype
+        issuetype = subtype
     else:
-        casetype=Case
-    newcase = casetype.create(creator, description, body, assigned_to=assigned_to)
-    return newcase
+        issuetype=Issue
+    newissue = issuetype.create(creator, description, body, assigned_to=assigned_to)
+    return newissue
 
 def generate_patient_and_careteam(tenant, team_dictionary=None):
     """
@@ -304,12 +304,12 @@ def generate_patient_and_careteam(tenant, team_dictionary=None):
 
 
 
-def create_case(self, description, actor, priority, status=None, body=None):
+def create_issue(self, description, actor, priority, status=None, body=None):
     """Create a case for testing purposes
     """
     if body == None:
         body = "mock body %s" % (uuid.uuid4().hex),
-    newcase = Case.objects.new_case(Category.objects.all()[0],
+    newcase = Issue.objects.new_issue(Category.objects.all()[0],
                           actor,
                           description,
                           body,

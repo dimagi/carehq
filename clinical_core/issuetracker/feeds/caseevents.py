@@ -1,7 +1,7 @@
-from issuetracker.models import Case
+from issuetracker.models import Issue
 
 
-def get_sorted_caseevent_dictionary(sort, arr):
+def get_sorted_issueevent_dictionary(sort, arr):
     sorted_dic = {} #sorted dictionary of organized events for newsfeed
     obj = None 
         

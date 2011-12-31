@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_save, post_init
 from django.db.models import Q
-from issuetracker.models import Case, CaseEvent
+from issuetracker.models import Issue, CaseEvent
 import logging
 from issuetracker import constants
 
@@ -40,7 +40,7 @@ def case_saved(sender, instance, created, **kwargs):
         if hasattr(instance, 'save_comment'):
             notes = instance.save_comment
         else:
-            notes = "Case edited by " + event_creator.name
+            notes = "Issue edited by " + event_creator.name
             
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity            
@@ -55,4 +55,4 @@ def case_saved(sender, instance, created, **kwargs):
     event_new.notes = notes    
     event_new.save()    
     
-post_save.connect(case_saved, sender=Case)
+post_save.connect(case_saved, sender=Issue)

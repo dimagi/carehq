@@ -9,7 +9,7 @@
 #
 #    def testVerifyEventActivitiesAreCorrect(self):
 #        #A test that verifies that each event activity, it has an appropriate
-#        #New Case, Edit Case, Resolve Case, Close Case, Reopen
+#        #New Issue, Edit Issue, Resolve Issue, Close Issue, Reopen
 #        #and that they are non zero and the special cases are only 1.
 #        classes = CASE_EVENT_CHOICES
 #        for cat in Category.objects.all():

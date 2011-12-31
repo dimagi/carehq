@@ -5,7 +5,7 @@ import random
 from issuetracker import constants
 import uuid
 from django.core.management import  call_command
-from issuetracker.models.issuecore import Case
+from issuetracker.models.issuecore import Issue
 from patient.models.patientmodels import Patient
 from permissions.models import Actor
 
@@ -27,7 +27,7 @@ class CasePermissionsTest(TestCase):
         #print "Doctors:"  + str(Doctor.objects.all().count())
         call_command('load_categories')
         User.objects.all().delete()
-        Case.objects.all().delete()
+        Issue.objects.all().delete()
         Actor.objects.all().delete()
         Actor.objects.all().delete()
         Patient.objects.all().delete()
@@ -40,7 +40,7 @@ class CasePermissionsTest(TestCase):
         if description == None:
             description = "mock body %s" % (uuid.uuid4().hex),
 
-        newcase = Case.objects.new_case(Category.objects.all()[0],
+        newcase = Issue.objects.new_issue(Category.objects.all()[0],
                               actor,
                               description,
                               'some body',
@@ -71,17 +71,17 @@ class CasePermissionsTest(TestCase):
             activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
 
-        self.assertEqual(total_cases, Case.objects.get_authored(actor_creator).count())
-        self.assertEqual(0, Case.objects.get_authored(actor_creator, patient=pt2).count())
+        self.assertEqual(total_cases, Issue.objects.get_authored(actor_creator).count())
+        self.assertEqual(0, Issue.objects.get_authored(actor_creator, patient=pt2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor1).count())
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor1).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor1, patient=pt1).count())
-        self.assertEqual(0, Case.objects.get_edited(actor_editor1, patient=pt2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor1, patient=pt1).count())
+        self.assertEqual(0, Issue.objects.get_edited(actor_editor1, patient=pt2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor2, patient=pt1).count())
-        self.assertEqual(0, Case.objects.get_edited(actor_editor2, patient=pt2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor2, patient=pt1).count())
+        self.assertEqual(0, Issue.objects.get_edited(actor_editor2, patient=pt2).count())
 
 
     def testDisparateCases(self):
@@ -116,12 +116,12 @@ class CasePermissionsTest(TestCase):
 
 
         print "verifying case creation 1:"
-        self.assertEqual(num_case1, Case.objects.all().filter(patient=pt1).count())
+        self.assertEqual(num_case1, Issue.objects.all().filter(patient=pt1).count())
         self.assertEqual(num_case1, pt1.cases.count())
 
 
         print "verifying case creation 2"
-        self.assertEqual(num_case2, Case.objects.all().filter(patient=pt2).count())
+        self.assertEqual(num_case2, Issue.objects.all().filter(patient=pt2).count())
         self.assertEqual(num_case2, pt2.cases.count())
 
 

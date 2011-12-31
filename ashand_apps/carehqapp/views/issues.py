@@ -3,35 +3,35 @@ from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
 from lib.crumbs import crumbs
 
-def my_cases_patient(request, template_name = "carehqapp/my_cases_patient.html"):
+def my_issues_patient(request, template_name = "carehqapp/my_issues_patient.html"):
     context = RequestContext(request)
     user = request.user
     context['user'] = user
     return render_to_response(template_name, context_instance=context)
 
-def my_cases_caregiver(request, template_name = 'carehqapp/my_cases_caregiver.html'):
+def my_issues_caregiver(request, template_name = 'carehqapp/my_issues_caregiver.html'):
     context = RequestContext(request)
     user = request.user
     context['user'] = user
     return render_to_response(template_name, context_instance=context)
 
-def my_case_provider(request, template_name = 'carehqapp/my_cases_provider.html'):
+def my_issues_provider(request, template_name = 'carehqapp/my_cases_provider.html'):
     context = RequestContext(request)
     user = request.user
     context['user'] = user
     return render_to_response(template_name, context_instance=context)
 
-def cases_patient(request, patient_id, template_name='carehqapp/cases_patient.html'):
+def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.html'):
     context = RequestContext(request)
     user = request.user
     context['user'] = user
     return render_to_response(template_name, context_instance=context)
 
 
-@crumbs("Case List", "case_list", "my_profile")
+@crumbs("Issue List", "case_list", "my_profile")
 @login_required
 def case_list(request, template_name="carehqapp/list_cases.html"):
-#    request.breadcrumbs("Case List", reverse(case_list))
+#    request.breadcrumbs("Issue List", reverse(case_list))
     context = RequestContext(request)
     user = request.user
     return render_to_response(template_name, context_instance=context)
@@ -94,7 +94,7 @@ def case_list(request, template_name="carehqapp/list_cases.html"):
 #        model_class = Priority
 #        split_headings = True
 #    elif group_by_col == 'category':
-#        model_class = Case
+#        model_class = Issue
 #        split_headings = True
 #
 #    qset_dict = {}

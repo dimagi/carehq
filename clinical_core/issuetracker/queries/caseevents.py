@@ -1,4 +1,4 @@
-from issuetracker.models import CaseEvent, Case
+from issuetracker.models import CaseEvent, Issue
 from django.db.models import Q
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ def get_latest_event(case):
         return None
 
 #for a given set of cases, get all the latest case events.
-def get_latest_for_cases(cases_qset, sort=None):
+def get_latest_for_issues(cases_qset, sort=None):
     ret = []
     for case in cases_qset:
         for event in get_latest_event(case):

@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
-from issuetracker.models.issuecore import Case
+from issuetracker.models.issuecore import Issue
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import Patient
@@ -59,7 +59,7 @@ class AshandPatientSingleView(PatientSingleView):
         context['patient_edit'] = patient_edit
 
         context['case_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
-        context['cases'] = Case.objects.filter(patient=dj_patient)
+        context['cases'] = Issue.objects.filter(patient=dj_patient)
 
 
         role_actor_dict = carehq_api.get_careteam_dict(pdoc)

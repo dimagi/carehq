@@ -3,7 +3,7 @@ from django import template
 register = template.Library() 
  
 @register.simple_tag
-def patient_for_case(case):    
+def patient_for_issue(case):
     #return CareTeam.objects.get(cases=case).patient
     raise Exception("not fixed to reflect new actor models")
 

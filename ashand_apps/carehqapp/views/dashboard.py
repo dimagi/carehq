@@ -2,7 +2,7 @@ from django.db.models.query_utils import Q
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
 from carehqapp import constants
-from issuetracker.models.issuecore import Case
+from issuetracker.models.issuecore import Issue
 from clinical_core.feed.models import FeedEvent
 from lib.crumbs import crumbs
 from django.contrib.auth.models import User
@@ -35,7 +35,7 @@ def ghetto_dashboard(request, template_name='carehqapp/ghetto_dashboard.html'):
 
     if request.is_patient:
         patient = proles.filter(role=patient_role)[0].content
-        cases = Case.objects.all().filter(patient=patient).select_related()
+        cases = Issue.objects.all().filter(patient=patient).select_related()
         context['cases'] = cases
 
     elif request.is_caregiver or request.is_provider or request.is_primary:
@@ -44,7 +44,7 @@ def ghetto_dashboard(request, template_name='carehqapp/ghetto_dashboard.html'):
         qcg = Q(role=caregiver_role)
         qprim = Q(role=primary_provider_role)
         patient_ids= proles.filter(qprov|qcg|qprim).values_list('content_id', flat=True)
-        cases = Case.objects.all().filter(patient__id__in=patient_ids).select_related()
+        cases = Issue.objects.all().filter(patient__id__in=patient_ids).select_related()
 
         prov_cg_actors = proles.filter(qprov|qcg|qprim).values_list('actor', flat=True)
         qmine = Q(opened_by__in=prov_cg_actors)
@@ -69,7 +69,7 @@ def ghetto_news_feed(request, template_name='carehqapp/ghetto_dashboard.html'):
 
     if request.is_patient:
         patient = proles.filter(role=patient_role)[0].content
-        cases = Case.objects.all().filter(patient=patient).select_related()
+        cases = Issue.objects.all().filter(patient=patient).select_related()
         context['cases'] = cases
 
     elif request.is_caregiver or request.is_provider or request.is_primary:
@@ -78,7 +78,7 @@ def ghetto_news_feed(request, template_name='carehqapp/ghetto_dashboard.html'):
         qcg = Q(role=caregiver_role)
         qprim = Q(role=primary_provider_role)
         patient_ids= proles.filter(qprov|qcg|qprim).values_list('content_id', flat=True)
-        cases = Case.objects.all().filter(patient__id__in=patient_ids).select_related()
+        cases = Issue.objects.all().filter(patient__id__in=patient_ids).select_related()
 
 
 

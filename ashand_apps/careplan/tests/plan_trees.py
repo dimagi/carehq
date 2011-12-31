@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from issuetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
+from issuetracker.models import Issue, Status, ActivityClass, CaseEvent, Priority, Category
 from careplan.models import *
 
 
@@ -23,12 +23,12 @@ class EventActivityVerificationTest(TestCase):
         pass
 
     def _testCreateCase(self):        
-        oldcasecount = Case.objects.all().count()
+        oldcasecount = Issue.objects.all().count()
         oldevents = CaseEvent.objects.all().count()
         
         
         user = User.objects.get(username='mockuser')
-        newcase = Case()
+        newcase = Issue()
         newcase.description = "this is a case made by the test case"
         newcase.opened_by = user
         newcase.assigned_date = datetime.utcnow()
@@ -41,7 +41,7 @@ class EventActivityVerificationTest(TestCase):
         newcase.save()
         
         #is the thing created?
-        self.assertEqual(Case.objects.all().count(), oldcasecount + 1)
+        self.assertEqual(Issue.objects.all().count(), oldcasecount + 1)
         self.assertEqual(CaseEvent.objects.all().count(), oldevents + 1)
         
         #verify that the case count created has created a new caseevent

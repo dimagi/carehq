@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from issuetracker.models import Case
+from issuetracker.models import Issue
 from patient.models import Patient
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
@@ -154,7 +154,7 @@ class TemplateCarePlanItem(models.Model):
 #section, specific instances of careplans.
 class CarePlanCaseLink(models.Model):
     careplan_item = models.ForeignKey("CarePlanItem")
-    case = models.ForeignKey(Case)
+    case = models.ForeignKey(Issue)
     
 
 class CarePlanItem(models.Model):
@@ -175,7 +175,7 @@ class CarePlanItem(models.Model):
     description = models.TextField()
     parent = models.ForeignKey('self', null=True, blank=True, related_name = 'child_plans')    
     
-    cases = models.ManyToManyField(Case, through="CarePlanCaseLink")
+    cases = models.ManyToManyField(Issue, through="CarePlanCaseLink")
     from_template = models.ForeignKey(TemplateCarePlanItem, blank=True, null=True, 
                                       related_name='template_inheritors')
     

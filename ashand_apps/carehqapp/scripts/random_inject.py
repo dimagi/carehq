@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 import os
 from carehq_core import carehq_api
 from issuetracker import constants as caseconstants
-from issuetracker.models import Case
+from issuetracker.models import Issue
 import csv
 from patient.models.patientmodels import Patient
 import random
@@ -13,7 +13,7 @@ def run():
     """
     inject cases into system for aug 2011 usability studies
     """
-    Case.objects.all().delete()
+    Issue.objects.all().delete()
     filepath = os.path.abspath(os.path.dirname(__file__))
     patients = Patient.objects.all()
     demo_reader = csv.reader(open(os.path.join(filepath, 'demo', 'demo_cases.csv'), 'rb'), delimiter=',', quotechar='"')
@@ -54,7 +54,7 @@ def run():
             body = row[1] % (pt.couchdoc.first_name)
         else:
             body=row[1]
-        newcase = Case.objects.new_case(row[2],
+        newcase = Issue.objects.new_issue(row[2],
                                         actor,
                               desc,
                               body,

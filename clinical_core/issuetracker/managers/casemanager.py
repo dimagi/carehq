@@ -49,7 +49,7 @@ class CaseManager(models.Manager):
             qset = qset.filter(category=category)
         return qset
 
-    def new_case(self, category, creator_actor, description, body, priority, patient=None, status=None, activity=None, other_data=None, *args, **kwargs):
+    def new_issue(self, category, creator_actor, description, body, priority, patient=None, status=None, activity=None, other_data=None, *args, **kwargs):
         """
         Create a new case of an arbitrary type, with the basic requirements for creating a case.
         Other arguments: commit=True - save the created case to the db immediately.

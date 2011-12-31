@@ -8,14 +8,14 @@ class GridColumn(models.Model):
     """
     The gridcolumn is the main, flat store for all columns that could be used in a grid.
     
-    It's flat, the name of the column is directly used in the Case column selector and sort criteria.
+    It's flat, the name of the column is directly used in the Issue column selector and sort criteria.
     So there's no need for namespacing it or anything like that.  If it's named something, it'll exist here.
     
     In other words, the GridColumn's name MUST be a property of case and casefilter for it to be useful.
     """
     
     GRIDCOLUMN_CHOICES = (
-                          ('case_field', "Case Field"),
+                          ('case_field', "Issue Field"),
                           ('related_field',"Related Field"),
                           ('custom_func',"Custom Function Call"),
                          )
@@ -43,7 +43,7 @@ class GridSort(models.Model):
     When a grid preference FKs to a GridColumn, this through model will tell how to represent it
     when using the column as a sorting column.  In representation it'll be either be name or -name.
     
-    The gridcolumn presents the actual case property of the Case queryset you pass into the ordering() method.
+    The gridcolumn presents the actual case property of the Issue queryset you pass into the ordering() method.
     The filter queryset will be built using these strings.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_sort')
@@ -81,7 +81,7 @@ class GridOrder (models.Model):
     when using the column as a column for display.  This tells us which columns will be arranged in what order
     for display on the data table.
     
-    The gridcolumn presents the actual Case queryset properties to actually render in the order they are reprsented
+    The gridcolumn presents the actual Issue queryset properties to actually render in the order they are reprsented
     in this through model.
     """
     column = models.ForeignKey("GridColumn", related_name='gridcolumn_displayorder')

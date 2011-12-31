@@ -6,9 +6,9 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from issuetracker.models import Case, CaseEvent
+from issuetracker.models import Issue, CaseEvent
 from issuetracker import constants
-from issuetracker.feeds.caseevents import get_sorted_caseevent_dictionary
+from issuetracker.feeds.caseevents import get_sorted_issueevent_dictionary
 from issuetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
@@ -46,7 +46,7 @@ def all_cases(request, template_name='issuetracker/cases_list.html'):
     count = request.GET.get('count',50)
     group_by = request.GET.get('groupBy','opened_date')
 
-    cases = Case.objects.all().select_related('opened_by','assigned_to','last_edit_by')
+    cases = Issue.objects.all().select_related('opened_by','assigned_to','last_edit_by')
     context['cases'] = cases
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
 
@@ -57,12 +57,12 @@ def all_cases(request, template_name='issuetracker/cases_list.html'):
 
 
 @login_required
-def manage_case(request, case_id, template_name='issuetracker/manage_case.html'):
+def manage_issue(request, case_id, template_name='issuetracker/manage_issue.html'):
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
     context = RequestContext(request)
-    thecase = Case.objects.get(id=case_id)
+    thecase = Issue.objects.get(id=case_id)
 
     do_edit = False    
     activity_slug = None
@@ -156,12 +156,12 @@ def manage_case(request, case_id, template_name='issuetracker/manage_case.html')
 #@cache_page(60 * 1)
 def case_newsfeed(request, case_id, template_name='issuetracker/partials/newsfeed_inline.html'):
     """
-    Generic inline view for all CaseEvents related to a Case.
+    Generic inline view for all CaseEvents related to a Issue.
     
     This is called form tabbed_newsfeed.html via the jQuery UI Tab control.
     """
     context = {}
-#    thecase = Case.objects.select_related('opened_by','last_edit_by',\
+#    thecase = Issue.objects.select_related('opened_by','last_edit_by',\
 #                                          'resolved_by','closed_by','assigned_to',
 #                                          'priority','category','status').get(id=case_id)
 #
@@ -177,7 +177,7 @@ def case_newsfeed(request, case_id, template_name='issuetracker/partials/newsfee
 #    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
 #    context['formatting'] = False
 #    event_arr = context['events']
-#    event_dic = get_sorted_caseevent_dictionary(sorting, event_arr)
+#    event_dic = get_sorted_issueevent_dictionary(sorting, event_arr)
 #    if len(event_dic) > 0:
 #        context['events'] = event_dic
 #        context['formatting'] = True
@@ -239,7 +239,7 @@ def user_cases(request, user_id, template_name="issuetracker/user_cases.html"):
     context = RequestContext(request)
     user = User.objects.get(id=user_id)
     roles = Actor.identities.for_user(user)
-    role_cases = [(role, Case.objects.filter(**{casefilter: role}))for role in roles]
+    role_cases = [(role, Issue.objects.filter(**{casefilter: role}))for role in roles]
 
     context['user'] = user
     context['casefilter'] = casefilter
@@ -251,7 +251,7 @@ def role_cases(request, role_id, template_name="issuetracker/role_cases.html"):
     context = RequestContext(request)
     role = Actor.objects.get(id=role_id)
     casefilter = str(request.GET.get('casefilter', 'opened_by'))
-    cases = Case.objects.filter(**{casefilter:role})
+    cases = Issue.objects.filter(**{casefilter:role})
 
     context['role'] = role
     context['cases'] = cases
@@ -262,7 +262,7 @@ def role_cases(request, role_id, template_name="issuetracker/role_cases.html"):
 def patient_cases(request, patient_id, template_name="issuetracker/patient_cases.html"):
     context = RequestContext(request)
     patient = Patient.objects.get(id=patient_id)
-    cases = Case.objects.filter(patient=patient)
+    cases = Issue.objects.filter(patient=patient)
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     context['patient'] = patient
     context['cases'] = cases
