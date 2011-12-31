@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save, pre_save, post_init
 from django.db.models import Q
-from casetracker.models import Case, CaseEvent
+from issuetracker.models import Case, CaseEvent
 import logging
-from casetracker import constants
+from issuetracker import constants
 
 def cache_values(sender, instance):
     instance.cache_values = instance.values

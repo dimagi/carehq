@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.template import Context, Template
 
-from casetracker.models import Filter
+from issuetracker.models import Filter
 from datetime import datetime
 
 from django.db.models import Q

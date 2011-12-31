@@ -23,7 +23,7 @@ urlpatterns += patterns('',
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'', include('account.urls')),
     (r'', include('auditcare.urls')),
-    #(r'', include('casetracker.urls')), #TODO
+    #(r'', include('issuetracker.urls')), #TODO
     (r'', include('clinical_core.carehqadmin.urls')),
     (r'', include('downloader.urls')),
     (r'', include('keymaster.urls')),

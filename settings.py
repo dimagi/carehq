@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'auditcare.middleware.AuditMiddleware',
-    #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    #'issuetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'clinical_core.clinical_shared.middleware.identity.CareHQIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
@@ -151,7 +151,7 @@ INSTALLED_APPS = (
     'account',
     'carehqadmin',
     'carehq_core',
-    'casetracker',
+    'clinical_core.issuetracker',
     'keymaster',
     'webxforms',
     'djangocouch',
@@ -211,8 +211,8 @@ BASE_TEMPLATE = 'base.html'
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
-                    #'casetracker.models.Case',
-                    #'casetracker.models.CaseEvent',
+                    #'issuetracker.models.Case',
+                    #'issuetracker.models.CaseEvent',
                     'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]

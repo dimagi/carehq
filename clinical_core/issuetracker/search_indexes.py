@@ -1,6 +1,6 @@
 from haystack.indexes import *
 from haystack import site
-from casetracker.models import *
+from issuetracker.models import *
 
 
 class CaseIndex(SearchIndex):

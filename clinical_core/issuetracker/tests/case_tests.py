@@ -2,9 +2,9 @@ from django.test import TestCase
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from casetracker.models import Case, CaseEvent
+from issuetracker.models import Case, CaseEvent
 from clinical_core.clinical_shared.utils import generator
-from casetracker import constants
+from issuetracker import constants
 from django.core.management import call_command
 
 

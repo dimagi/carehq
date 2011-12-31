@@ -1,6 +1,6 @@
 #from django.test import TestCase
-#from casetracker.models import Category
-#from casetracker.registry.handler import CategoryHandler
+#from issuetracker.models import Category
+#from issuetracker.registry.handler import CategoryHandler
 #from django.core.management import call_command
 #
 #class CategoryVerificationTest(TestCase):

@@ -5,15 +5,15 @@ from django.db import models
 from django.db.models import Q
 
 from datetime import datetime, timedelta
-from casetracker.middleware import threadlocals
+from issuetracker.middleware import threadlocals
 
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from casetracker import constants
+from issuetracker import constants
 from patient.models import Patient
 
-from casetracker.managers import CaseManager
+from issuetracker.managers import CaseManager
 from dimagi.utils import make_uuid
 import uuid
 from django.contrib.contenttypes.models import ContentType
@@ -57,7 +57,7 @@ class CaseEvent(models.Model):
         return "Event (%s} by %s on %s" % (self.activity, self.created_by, self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
 
     class Meta:
-        app_label = 'casetracker'
+        app_label = 'issuetracker'
         verbose_name = "Case Event"
         verbose_name_plural = "Case Events"
         ordering = ['-created_date']
@@ -256,11 +256,11 @@ class Case(models.Model):
 
     def case_name_url(self):
         #return "Case %s" % self.id
-        #reverse("casetracker.views.manage_case", args=[obj.id])
+        #reverse("issuetracker.views.manage_case", args=[obj.id])
         return '<a href="%s">%s</a>' % (reverse('manage-case', args=[self.id]), self.description)
 
     class Meta:
-        app_label = 'casetracker'
+        app_label = 'issuetracker'
         verbose_name = "Case"
         verbose_name_plural = "Cases"
         #ordering = ['-opened_date']
@@ -275,7 +275,7 @@ class ExternalCaseData(models.Model):
     doc_id = models.CharField(_('External Document id'), max_length=32, unique=True, default=make_uuid, db_index=True)
 
     class Meta:
-        app_label = 'casetracker'
+        app_label = 'issuetracker'
         verbose_name ="External Case Data"
         verbose_name_plural= "External Case Data"
 

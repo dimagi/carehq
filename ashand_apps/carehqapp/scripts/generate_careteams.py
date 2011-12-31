@@ -1,5 +1,5 @@
 from carehqapp import constants
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from clinical_shared.utils import generator
 from .demo.demo_careteams import DEMO_CARETEAMS
 from patient.models import Patient

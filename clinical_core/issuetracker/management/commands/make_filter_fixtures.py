@@ -5,7 +5,7 @@ import sys
 import os
 
 from django.core import serializers
-from casetracker.models import Filter, GridSort, GridOrder, GridPreference
+from issuetracker.models import Filter, GridSort, GridOrder, GridPreference
 
 
 

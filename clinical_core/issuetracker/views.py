@@ -6,13 +6,13 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from casetracker.models import Case, CaseEvent
-from casetracker import constants
-from casetracker.feeds.caseevents import get_sorted_caseevent_dictionary
-from casetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
+from issuetracker.models import Case, CaseEvent
+from issuetracker import constants
+from issuetracker.feeds.caseevents import get_sorted_caseevent_dictionary
+from issuetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
-from casetracker.models.filters import Filter
+from issuetracker.models.filters import Filter
 from patient.models import Patient
 from permissions.models import Actor
 
@@ -37,10 +37,10 @@ def _get_next(request):
     return next
 
 
-from casetracker.managers.casemanager import CaseManager
+from issuetracker.managers.casemanager import CaseManager
 casemanager = CaseManager()
 @login_required
-def all_cases(request, template_name='casetracker/cases_list.html'):
+def all_cases(request, template_name='issuetracker/cases_list.html'):
     context = RequestContext(request)
     start = request.GET.get('start', 0)
     count = request.GET.get('count',50)
@@ -57,7 +57,7 @@ def all_cases(request, template_name='casetracker/cases_list.html'):
 
 
 @login_required
-def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
+def manage_case(request, case_id, template_name='issuetracker/manage_case.html'):
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
@@ -154,7 +154,7 @@ def manage_case(request, case_id, template_name='casetracker/manage_case.html'):
 
 @login_required
 #@cache_page(60 * 1)
-def case_newsfeed(request, case_id, template_name='casetracker/partials/newsfeed_inline.html'):
+def case_newsfeed(request, case_id, template_name='issuetracker/partials/newsfeed_inline.html'):
     """
     Generic inline view for all CaseEvents related to a Case.
     
@@ -201,10 +201,10 @@ def view_filter(request, filter_id):
     context['gridpref'] = gridpref
     context['filter_cases'] = qset
 
-    template_name='casetracker/filter/filter_simpletable.html'
+    template_name='issuetracker/filter/filter_simpletable.html'
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
-def debug_reference(request, template_name="casetracker/debug_reference.html"):
+def debug_reference(request, template_name="issuetracker/debug_reference.html"):
     users = User.objects.all()
     roles = Actor.objects.all()
     patients = Patient.objects.all()
@@ -215,25 +215,25 @@ def debug_reference(request, template_name="casetracker/debug_reference.html"):
     return render_to_response(template_name, context_instance=context)
 
 
-def all_users(request, template_name="casetracker/all_users.html"):
+def all_users(request, template_name="issuetracker/all_users.html"):
     users = User.objects.all()
     context = RequestContext(request)
     context['users'] = users
     return render_to_response(template_name, context_instance=context)
 
-def all_roles(request, template_name="casetracker/all_roles.html"):
+def all_roles(request, template_name="issuetracker/all_roles.html"):
     roles = Roles.objects.all()
     context = RequestContext(request)
     context['roles'] = roles
     return render_to_response(template_name, context_instance=context)
 
-def all_patients(request, template_name="casetracker/all_patients.html"):
+def all_patients(request, template_name="issuetracker/all_patients.html"):
     patients = Patient.objects.all()
     context = RequestContext(request)
     context['patients'] = patients
     return render_to_response(template_name, context_instance=context)
 
-def user_cases(request, user_id, template_name="casetracker/user_cases.html"):
+def user_cases(request, user_id, template_name="issuetracker/user_cases.html"):
     casefilter = str(request.GET.get('casefilter', 'opened_by'))
 
     context = RequestContext(request)
@@ -247,7 +247,7 @@ def user_cases(request, user_id, template_name="casetracker/user_cases.html"):
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     return render_to_response(template_name, context_instance=context)
 
-def role_cases(request, role_id, template_name="casetracker/role_cases.html"):
+def role_cases(request, role_id, template_name="issuetracker/role_cases.html"):
     context = RequestContext(request)
     role = Actor.objects.get(id=role_id)
     casefilter = str(request.GET.get('casefilter', 'opened_by'))
@@ -259,7 +259,7 @@ def role_cases(request, role_id, template_name="casetracker/role_cases.html"):
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     return render_to_response(template_name, context_instance=context)
 
-def patient_cases(request, patient_id, template_name="casetracker/patient_cases.html"):
+def patient_cases(request, patient_id, template_name="issuetracker/patient_cases.html"):
     context = RequestContext(request)
     patient = Patient.objects.get(id=patient_id)
     cases = Case.objects.filter(patient=patient)

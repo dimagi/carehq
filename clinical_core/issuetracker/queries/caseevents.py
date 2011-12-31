@@ -1,4 +1,4 @@
-from casetracker.models import CaseEvent, Case
+from issuetracker.models import CaseEvent, Case
 from django.db.models import Q
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta

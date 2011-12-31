@@ -1,10 +1,10 @@
-from casetracker.models import CaseEvent, Case
+from issuetracker.models import CaseEvent, Case
 from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from casetracker import constants
+from issuetracker import constants
 from permissions.models import Actor
 
 class Filter(models.Model):
@@ -206,7 +206,7 @@ class Filter(models.Model):
         return "Model Filter - %s" % (self.description)
 
     class Meta:
-        app_label = 'casetracker'
+        app_label = 'issuetracker'
         #verbose_name = "Model Filter"
         #verbose_name_plural = "Model Filters"
 

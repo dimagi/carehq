@@ -1,8 +1,8 @@
 import random
 
 from datetime import datetime, timedelta
-from casetracker.models import Category, Case, Priority, Status, ActivityClass, CaseEvent
-from casetracker import constants
+from issuetracker.models import Category, Case, Priority, Status, ActivityClass, CaseEvent
+from issuetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
 from django.contrib.auth.models import User 

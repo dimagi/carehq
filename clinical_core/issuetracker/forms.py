@@ -5,8 +5,8 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelForm
-from casetracker.models import Case
-from casetracker import constants
+from issuetracker.models import Case
+from issuetracker import constants
 
 class CaseCommentForm(forms.Form):    
     comment = forms.CharField(required=True,

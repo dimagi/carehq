@@ -2,10 +2,10 @@ from speechd.client import Priority
 from django.test import TestCase
 from django.contrib.auth.models import User
 import random
-from casetracker import constants
+from issuetracker import constants
 import uuid
 from django.core.management import  call_command
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from patient.models.patientmodels import Patient
 from permissions.models import Actor
 

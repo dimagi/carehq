@@ -2,7 +2,7 @@
 from pytz import timezone
 from actorpermission.models.actortypes import  ProviderActor, CaregiverActor, PatientActor
 from carehq_core import carehq_api, carehq_constants
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from clinical_core.patient.models import *
 import uuid
 from django.contrib.auth.models import User
@@ -198,8 +198,8 @@ def generate_actor(tenant, user, role_type_string, name=None, title=None, depart
     return actor_doc
 
 
-def mock_case():
-    """Simple test:  Create a case and verify that it exists in the database via the API"""
+def mock_issue():
+    """Simple test:  Create a issue and verify that it exists in the database via the API"""
     #get the basic counts
     user1 = get_or_create_user(always_new=False)
     user2 = get_or_create_user(always_new=False)
@@ -216,13 +216,13 @@ def mock_case():
     subs = Case.__subclasses__()
 
     print "Generating Case"
-    newcase = generate_case(caregiver_creator, lorem.sentence(), lorem.paragraph(), provider_assigned, subtype=subs[random.randrange(0, len(subs))])
-    newcase.patient = patient.doc_id
-    newcase.save()
+    newissue = generate_issue(caregiver_creator, lorem.sentence(), lorem.paragraph(), provider_assigned, subtype=subs[random.randrange(0, len(subs))])
+    newissue.patient = patient.doc_id
+    newissue.save()
     print "Created and saved Case"
-    return newcase
+    return newissue
 
-def generate_case(creator, description, body, assigned_to, subtype=None):
+def generate_issue(creator, description, body, assigned_to, subtype=None):
     if subtype:
         casetype = subtype
     else:

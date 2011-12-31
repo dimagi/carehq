@@ -3,9 +3,9 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 
-from casetracker.models import  CaseEvent
+from issuetracker.models import  CaseEvent
 from datetime import datetime
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from patient.models import Patient
 from permissions.models import Actor
 

@@ -5,7 +5,7 @@ import sys
 import os
 
 from django.core import serializers
-from casetracker.models import GridColumn
+from issuetracker.models import GridColumn
 
 
 

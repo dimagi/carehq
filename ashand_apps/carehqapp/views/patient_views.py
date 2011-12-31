@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import Patient

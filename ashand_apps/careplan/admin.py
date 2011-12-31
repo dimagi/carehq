@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from models import TemplateCarePlan, PlanCategory, PlanTag, TemplateCarePlanItem, PlanRule, TemplateCarePlanItemLink
 from models import CarePlanItem, CarePlan, CarePlanCaseLink, CarePlanItemLink
-#from casetracker.admin import CaseInline
+#from issuetracker.admin import CaseInline
 
 class PlanCategoryAdmin(admin.ModelAdmin):
     list_display = ('name','description')

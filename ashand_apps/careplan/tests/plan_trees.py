@@ -3,7 +3,7 @@ from datetime import datetime
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from casetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
+from issuetracker.models import Case, Status, ActivityClass, CaseEvent, Priority, Category
 from careplan.models import *
 
 

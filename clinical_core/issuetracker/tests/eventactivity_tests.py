@@ -1,6 +1,6 @@
 #from django.test import TestCase
-#from casetracker.models import ActivityClass
-#from casetracker.models import CASE_EVENT_CHOICES
+#from issuetracker.models import ActivityClass
+#from issuetracker.models import CASE_EVENT_CHOICES
 #class EventActivityVerificationTest(TestCase):
 #    fixtures = []
 #

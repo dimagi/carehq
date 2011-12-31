@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from casetracker.models import Case
+from issuetracker.models import Case
 from patient.models import Patient
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _

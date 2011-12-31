@@ -2,8 +2,8 @@ from datetime import timedelta, datetime
 from django.contrib.contenttypes.models import ContentType
 import os
 from carehq_core import carehq_api
-from casetracker import constants as caseconstants
-from casetracker.models import Case
+from issuetracker import constants as caseconstants
+from issuetracker.models import Case
 import csv
 from patient.models.patientmodels import Patient
 import random

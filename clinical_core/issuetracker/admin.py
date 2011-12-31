@@ -1,5 +1,5 @@
 from django.contrib import admin
-from casetracker.models import CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
+from issuetracker.models import CaseEvent, Case, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 

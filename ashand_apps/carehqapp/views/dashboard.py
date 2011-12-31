@@ -2,7 +2,7 @@ from django.db.models.query_utils import Q
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
 from carehqapp import constants
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Case
 from clinical_core.feed.models import FeedEvent
 from lib.crumbs import crumbs
 from django.contrib.auth.models import User
