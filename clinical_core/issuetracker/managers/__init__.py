@@ -1,2 +1,2 @@
-from casemanager import *
+from issuemanager import *
 from filtermanager import *

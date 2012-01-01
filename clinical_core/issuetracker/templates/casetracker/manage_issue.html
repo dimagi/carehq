@@ -16,17 +16,17 @@
 
 <div class="span-24">	
 	<div class="span-18"> {# the basic case info block is span 18 #}
-		{% block case_info %}			
-		{% include "casetracker/partials/case/basic_case_info.html" %}
+		{% block issue_info %}
+		{% include "casetracker/partials/case/basic_issue_info.html" %}
 		{% endblock %}		
 		<hr>
 		{% if not show_form %}		
-			{% block case_actions %}
+			{% block issue_actions %}
 			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
-			{% endblock case_actions %}
+			{% endblock issue_actions %}
 		{% endif %}
 		{% if show_form %}
-			{% include "casetracker/manage/inline_case_edit.html" %}
+			{% include "casetracker/manage/inline_issue_edit.html" %}
 		{% endif %}	
 	
 		<div class="span-18 prepend-top">	
@@ -47,13 +47,13 @@
 		{% endblock caselink_area %}
 		</div>				
 		<div class = "span-6">
-		{% block case_metadata %}
+		{% block issue_metadata %}
 		{% comment %}
 		<strong>Basic Metadata</strong>
 		<ul>
 			<li>{{case.category}}</li>
 			<li>{{case.status}}</li>
-			<li>{{case.last_case_event}}</li>		
+			<li>{{case.last_issue_event}}</li>
 		</ul>
 		{% endcomment %}
 		{% endblock %}		

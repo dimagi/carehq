@@ -1,5 +1,5 @@
 from django.contrib import admin
-from issuetracker.models import CaseEvent, Issue, Filter, GridPreference,GridColumn,GridOrder,GridSort
+from issuetracker.models import IssueEvent, Issue, Filter, GridPreference,GridColumn,GridOrder,GridSort
 
 
 
@@ -11,7 +11,7 @@ class EventActivityAdmin(admin.ModelAdmin):
     }
 
 class CaseEventInline(admin.StackedInline):
-    model = CaseEvent
+    model = IssueEvent
 
 class CaseAdmin(admin.ModelAdmin):
     list_display=('description','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
@@ -77,5 +77,5 @@ class GridOrderAdmin(admin.ModelAdmin):
 admin.site.register(GridOrder, GridOrderAdmin)
 
 
-admin.site.register(CaseEvent, CaseEventAdmin)
+admin.site.register(IssueEvent, CaseEventAdmin)
 admin.site.register(Issue, CaseAdmin)

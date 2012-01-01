@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_save, post_init
 from django.db.models import Q
-from issuetracker.models import Issue, CaseEvent
+from issuetracker.models import Issue, IssueEvent
 import logging
 from issuetracker import constants
 
@@ -9,23 +9,23 @@ def cache_values(sender, instance):
 
 
 
-def case_saved(sender, instance, created, **kwargs):
+def issue_saved(sender, instance, created, **kwargs):
     """
     When a case is saved due to creation
     reversion will automatically save the original information.
     
-    However, we will be doing an additional operation to create a CaseEvent to record the actual happening.
+    However, we will be doing an additional operation to create a IssueEvent to record the actual happening.
     
     Other case events such as making phone calls or doing other work around a case will also be saved,
-    but this particular signal will create a CaseEvent of a specific type.
+    but this particular signal will create a IssueEvent of a specific type.
     """
-    event_new = CaseEvent()
-    event_new.case = instance
+    event_new = IssueEvent()
+    event_new.issue = instance
     
     if created:        
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
-        notes = "New case created by " + event_creator.name
+        notes = "New issue created by " + event_creator.name
         
         try:
             event_new.activity = constants.CASE_EVENT_OPEN
@@ -55,4 +55,4 @@ def case_saved(sender, instance, created, **kwargs):
     event_new.notes = notes    
     event_new.save()    
     
-post_save.connect(case_saved, sender=Issue)
+post_save.connect(issue_saved, sender=Issue)

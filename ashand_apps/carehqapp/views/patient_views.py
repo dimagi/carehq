@@ -58,8 +58,8 @@ class AshandPatientSingleView(PatientSingleView):
         context['address_edit'] = address_edit
         context['patient_edit'] = patient_edit
 
-        context['case_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
-        context['cases'] = Issue.objects.filter(patient=dj_patient)
+        context['issue_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+        context['issues'] = Issue.objects.filter(patient=dj_patient)
 
 
         role_actor_dict = carehq_api.get_careteam_dict(pdoc)

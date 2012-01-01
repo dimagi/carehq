@@ -28,10 +28,10 @@ def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.
     return render_to_response(template_name, context_instance=context)
 
 
-@crumbs("Issue List", "case_list", "my_profile")
+@crumbs("Issue List", "issue_list", "my_profile")
 @login_required
-def case_list(request, template_name="carehqapp/list_cases.html"):
-#    request.breadcrumbs("Issue List", reverse(case_list))
+def issue_list(request, template_name="carehqapp/list_cases.html"):
+#    request.breadcrumbs("Issue List", reverse(issue_list))
     context = RequestContext(request)
     user = request.user
     return render_to_response(template_name, context_instance=context)

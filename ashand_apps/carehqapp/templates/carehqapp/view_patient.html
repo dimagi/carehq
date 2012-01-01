@@ -1,6 +1,6 @@
 {% extends "patient/base_patient.html" %}
 {% load i18n %}
-{% load casetracker_tags %}
+{% load issuetracker_tags %}
 {% block extrahead %}
     <script>
         $(function() {
@@ -65,7 +65,7 @@
                     // instead of $.bbq.getState(). The second, 'true' argument coerces the
                     // string value to a number.
 //                    var idx = $.bbq.getState(this.id, true) || 0;
-                    var hash = $.bbq.getState(this.id, true) || "patient-casetracker-tab";
+                    var hash = $.bbq.getState(this.id, true) || "patient-issuetracker-tab";
                    // alert(hash); //todo, push a state here
 
                     // Select the appropriate tab for this tab widget by triggering the custom
@@ -105,19 +105,19 @@
     {% endblock patient_badge %}
 
     {% block patient-tab-controller %}
-            <li><a href="#patient-casetracker-tab">{% trans "Cases" %}</a></li>
+            <li><a href="#patient-issuetracker-tab">{% trans "Cases" %}</a></li>
             <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
             <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
             <li><a href="#patient-careplan-tab">{% trans "Care Plan" %}</a></li>
     {% endblock patient-tab-controller %}
     {% block patient-tab-container %}
-        <div id="patient-casetracker-tab" class="ui-tabs-hide">
+        <div id="patient-issuetracker-tab" class="ui-tabs-hide">
             <div class="span-19">
-            {% for case in cases %}
+            {% for issue in issues %}
                 <div class="span-18 last" style="margin-bottom:8px;">
-                    <div class="span-18 last"><strong>{{ case.opened_by.get_name }}</strong>  {{ case.opened_date|date }} {{ case.opened_date|time }}</div>
-                    <div class="span-18 prepend-1 last">{{ case.description }}</div>
-                    <div class="span-4"><a href="{% url manage-case case.id %}">View Case</a></div>
+                    <div class="span-18 last"><strong>{{ issue.opened_by.get_name }}</strong>  {{ issue.opened_date|date }} {{ issue.opened_date|time }}</div>
+                    <div class="span-18 prepend-1 last">{{ issue.description }}</div>
+                    <div class="span-4"><a href="{% url manage-issue issue.id %}">View Case</a></div>
                     &nbsp;
                 </div>
             {% endfor %}

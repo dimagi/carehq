@@ -47,19 +47,19 @@ def get_sorted_issueevent_dictionary(sort, arr):
                 if not sorted_dic.has_key(obj.activity.past_tense.title()):
                     sorted_dic[obj.activity.past_tense.title()] = [] 
                 sorted_dic[obj.activity.past_tense.title()].append(obj)                
-    elif (sort == "case"):            
+    elif (sort == "issue"):
         for event in arr:
             if (obj == None):
                 obj = event
-                if not sorted_dic.has_key(obj.case.case_name_url()):
-                    sorted_dic[obj.case.case_name_url()] = []
-                sorted_dic[obj.case.case_name_url()].append(obj)
-            elif obj.case.id == event.case.id:
-                sorted_dic[obj.case.case_name_url()].append(event)                
+                if not sorted_dic.has_key(obj.issue.issue_name_url()):
+                    sorted_dic[obj.issue.issue_name_url()] = []
+                sorted_dic[obj.issue.issue_name_url()].append(obj)
+            elif obj.issue.id == event.issue.id:
+                sorted_dic[obj.issue.issue_name_url()].append(event)
             else :
                 obj = event
-                if not sorted_dic.has_key(obj.case.case_name_url()):
-                    sorted_dic[obj.case.case_name_url()] = [] 
-                sorted_dic[obj.case.case_name_url()].append(obj) 
+                if not sorted_dic.has_key(obj.issue.issue_name_url()):
+                    sorted_dic[obj.issue.issue_name_url()] = []
+                sorted_dic[obj.issue.issue_name_url()].append(obj)
     
     return sorted_dic

@@ -24,8 +24,8 @@
 {% block content %}
     <div class="span-24 last"><h3>{{ title }}</h3></div>
     <div class="span-24">
-    {% for case in cases %}
-    {% include "casetracker/partials/cases_ul.html" %}
+    {% for issue in issues %}
+    {% include "issuetracker/partials/issues_ul.html" %}
     {% endfor %}
 
 

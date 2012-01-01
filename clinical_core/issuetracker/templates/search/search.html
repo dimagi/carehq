@@ -20,7 +20,7 @@
             {% for result in page.object_list %}
     			<div>
                     <a href="{{ result.object.get_absolute_url }}">{{ result.object.description }}</a>
-                        {% for comment in result.object.case_events.all %}
+                        {% for comment in result.object.issue_events.all %}
                             {% if query in comment.notes %}
                                 <p><strong>Comment:</strong> {% highlight comment.notes with query html_tag "em" max_length 60 %}</p>
                             {% endif %}

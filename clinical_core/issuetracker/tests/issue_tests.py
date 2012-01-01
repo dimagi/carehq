@@ -2,7 +2,7 @@ from django.test import TestCase
 import hashlib
 import uuid
 from django.contrib.auth.models import User
-from issuetracker.models import Issue, CaseEvent
+from issuetracker.models import Issue, IssueEvent
 from clinical_core.clinical_shared.utils import generator
 from issuetracker import constants
 from django.core.management import call_command
@@ -54,11 +54,17 @@ class EventActivityVerificationTest(TestCase):
 
 
     def testCreateIssueView(self, description = INITIAL_DESCRIPTION):
+        """
+        In the issue view functions, create an issue
+        """
         #self.assertFalse(True)
         pass
 
 
     def testCreateIssueApi(self, description=INITIAL_DESCRIPTION):
+        """
+        Create Issues in the queryset API
+        """
         ###########################
         #get the basic counts
         user1 = generator.get_or_create_user()
@@ -68,22 +74,9 @@ class EventActivityVerificationTest(TestCase):
         actor_provider = generator.generate_actor(self.tenant, user2, 'provider')
 
         oldcasecount = Issue.objects.all().count()
-        oldevents = CaseEvent.objects.all().count()
+        oldevents = IssueEvent.objects.all().count()
 
-#        newcase = Issue()
-#        newcase.description = description
-#        newcase.opened_by = role1
-#        newcase.last_edit_by = role1
-#
-#        newcase.assigned_date = datetime.utcnow()
-#        newcase.assigned_to = role2
-#        newcase.category = Category.objects.all()[0]
-#        newcase.status = Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0]
-#        newcase.priority = Priority.objects.all()[0]
-#        activity = ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
-#        newcase.save(activity=activity)
-
-        newcase = Issue.objects.new_issue(constants.CATEGORY_CHOICES[0][0],
+        newissue = Issue.objects.new_issue(constants.CATEGORY_CHOICES[0][0],
                               actor_caregiver.django_actor,
                               description,
                               "mock body %s" % (uuid.uuid4().hex),
@@ -94,20 +87,20 @@ class EventActivityVerificationTest(TestCase):
 
         #is the thing created?
         self.assertEqual(Issue.objects.all().count(), oldcasecount + 1)
-        self.assertEqual(CaseEvent.objects.all().count(), oldevents + 1)
+        self.assertEqual(IssueEvent.objects.all().count(), oldevents + 1)
         #verify that the case count created has created a new caseevent
-        events = CaseEvent.objects.filter(case=newcase)
+        events = IssueEvent.objects.filter(issue=newissue)
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
         self.assertEqual(constants.CASE_EVENT_OPEN, events[0].activity)
-        return newcase
+        return newissue
 
-    def testCaseModifyClient(self, description = "A test case that modifies a case via the webUI using the web client."):
+    def testIssueModifyClient(self, description = "A test case that modifies a case via the webUI using the web client."):
         #self.assertFalse(True)
         pass
 
 
-    def testCaseModifyDescriptionApi(self):
+    def testIssueModifyDescriptionApi(self):
         desc= uuid.uuid4().hex
         self.testCreateIssueApi(description=desc)
 
@@ -115,15 +108,15 @@ class EventActivityVerificationTest(TestCase):
         actor_provider_doc = generator.generate_actor(self.tenant, user1, 'provider')
 
 
-        case = Issue.objects.all().get(description=desc)
-        case.description = CHANGED_DESCRIPTION
-        case.last_edit_by = actor_provider_doc.django_actor
+        issue = Issue.objects.all().get(description=desc)
+        issue.description = CHANGED_DESCRIPTION
+        issue.last_edit_by = actor_provider_doc.django_actor
         activity = constants.CASE_EVENT_EDIT
-        case.save_comment="editing in testCaseModifyDescription"
-        case.save(activity=activity)
+        issue.save_comment="editing in testIssueModifyDescription"
+        issue.save(activity=activity)
 
 
-        events = CaseEvent.objects.filter(case=case)
+        events = IssueEvent.objects.filter(issue=issue)
         #we just did an edit, so it should be 2
         self.assertEqual(2, events.count())
 
@@ -132,11 +125,11 @@ class EventActivityVerificationTest(TestCase):
 
 
         #quickly verify that the original description is still unchanged
-        dbcase = Issue.objects.all().get(description=CHANGED_DESCRIPTION)
-        self.assertEqual(dbcase.id, case.id)
+        dbissue = Issue.objects.all().get(description=CHANGED_DESCRIPTION)
+        self.assertEqual(dbissue.id, issue.id)
 
 
-    def testCaseCreateChildCases(self):
+    def testIssueCreateChildCases(self):
         self.testCreateIssueApi()
         user1 = generator.get_or_create_user()
         actor_provider_doc = generator.generate_actor(self.tenant, user1, 'provider')
@@ -149,7 +142,7 @@ class EventActivityVerificationTest(TestCase):
             subissue.parent_issue = root_issue
             subissue.last_edit_by = actor_provider_doc.django_actor
             activity = constants.CASE_EVENT_EDIT
-            subissue.save_comment="editing in testCaseCreateChildCases"
+            subissue.save_comment="editing in testIssueCreateChildCases"
             subissue.save(activity=activity)
 
 

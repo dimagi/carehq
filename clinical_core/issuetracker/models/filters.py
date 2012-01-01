@@ -1,4 +1,4 @@
-from issuetracker.models import CaseEvent, Issue
+from issuetracker.models import IssueEvent, Issue
 from django.db.models.query_utils import Q
 from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
@@ -163,7 +163,7 @@ class Filter(models.Model):
             case_query_arr.append(Q(closed_date__gte=compare_date))
 
         #ok, this is getting a little tricky.
-        #query CaseEvent and we will get the actual cases.  we will get the id's of the cases and apply
+        #query IssueEvent and we will get the actual cases.  we will get the id's of the cases and apply
         #those back as a filter
         if self.last_event_type:
             case_event_query_arr.append(Q(activity=self.last_event_type))
@@ -190,15 +190,15 @@ class Filter(models.Model):
 
         if len(case_event_query_arr) > 0:
             #print "case event subquery"
-            case_events = CaseEvent.objects.select_related().all()
+            issue_events = IssueEvent.objects.select_related().all()
             for qe in case_event_query_arr:
-                case_events = case_events.filter(qe)
+                issue_events = issue_events.filter(qe)
 
             #get all the case ids from the case event filters
-            case_events_cases_ids = case_events.values_list('case', flat=True)
+            issue_events_issues_ids = issue_events.values_list('issue', flat=True)
 
-            if len(case_events_cases_ids) > 0:
-                cases = cases.filter(pk__in=case_events_cases_ids)
+            if len(issue_events_issues_ids) > 0:
+                cases = cases.filter(pk__in=issue_events_issues_ids)
 
         return cases
 

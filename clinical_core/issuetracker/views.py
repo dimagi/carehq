@@ -6,9 +6,9 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from issuetracker.models import Issue, CaseEvent
+from issuetracker.models import Issue, IssueEvent
 from issuetracker import constants
-from issuetracker.feeds.caseevents import get_sorted_issueevent_dictionary
+from issuetracker.feeds.issueevents import get_sorted_issueevent_dictionary
 from issuetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
 
 #taken from the threadecomments django project
@@ -37,17 +37,17 @@ def _get_next(request):
     return next
 
 
-from issuetracker.managers.casemanager import CaseManager
-casemanager = CaseManager()
+from issuetracker.managers.issuemanager import IssueManager
+issuemanager = IssueManager()
 @login_required
-def all_cases(request, template_name='issuetracker/cases_list.html'):
+def all_issues(request, template_name='issuetracker/issues_list.html'):
     context = RequestContext(request)
     start = request.GET.get('start', 0)
     count = request.GET.get('count',50)
     group_by = request.GET.get('groupBy','opened_date')
 
-    cases = Issue.objects.all().select_related('opened_by','assigned_to','last_edit_by')
-    context['cases'] = cases
+    issues = Issue.objects.all().select_related('opened_by','assigned_to','last_edit_by')
+    context['issues'] = issues
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
 
     return render_to_response(template_name, context_instance=context)
@@ -57,12 +57,12 @@ def all_cases(request, template_name='issuetracker/cases_list.html'):
 
 
 @login_required
-def manage_issue(request, case_id, template_name='issuetracker/manage_issue.html'):
+def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.html'):
     """
     This view handles all aspects of lifecycle depending on the URL params and the request type.
     """
     context = RequestContext(request)
-    thecase = Issue.objects.get(id=case_id)
+    theissue = Issue.objects.get(id=issue_id)
 
     do_edit = False    
     activity_slug = None
@@ -70,7 +70,7 @@ def manage_issue(request, case_id, template_name='issuetracker/manage_issue.html
     for key, value in request.GET.items():            
         if key == 'activity':            
             activity = value
-    context['case'] = thecase
+    context['issue'] = theissue
    
     ########################
     # Inline Form display
@@ -80,70 +80,70 @@ def manage_issue(request, case_id, template_name='issuetracker/manage_issue.html
 
         if request.method == 'POST':
             if activity == constants.CASE_EVENT_EDIT or activity == constants.CASE_EVENT_ASSIGN:
-                form = CaseModelForm(data=request.POST, instance=thecase, editor_user=request.user, activity=activity)
+                form = CaseModelForm(data=request.POST, instance=theissue, editor_user=request.user, activity=activity)
                 context['form'] = form
                 if form.is_valid():                    
-                    case = form.save(commit=False)
+                    issue = form.save(commit=False)
                     edit_comment = form.cleaned_data["comment"]
-                    case.last_edit_by = request.user
-                    case.last_edit_date = datetime.utcnow()                    
+                    issue.last_edit_by = request.user
+                    issue.last_edit_date = datetime.utcnow()
                     #next, we need to see the mode and flip the fields depending on who does what.
                     if activity == constants.CASE_EVENT_ASSIGN:
-                        case.assigned_date = datetime.utcnow()
-                        case.assigned_by = request.user            
-                        edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), case.assigned_to.title(), request.user.title())
+                        issue.assigned_date = datetime.utcnow()
+                        issue.assigned_by = request.user
+                        edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), issue.assigned_to.title(), request.user.title())
                         
-                    case.save(activity=activity, save_comment = edit_comment)                                        
-                    return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))            
+                    issue.save(activity=activity, save_comment = edit_comment)
+                    return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             
             elif activity == constants.CASE_EVENT_RESOLVE or activity == constants.CASE_EVENT_CLOSE:
-                form = CaseResolveCloseForm(data=request.POST, case=thecase, activity=activity)
+                form = CaseResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
                 context['form'] = form
                 if form.is_valid():                     
                     status = form.cleaned_data['state']                    
                     comment = form.cleaned_data['comment']                    
-                    thecase.status = status 
-                    thecase.last_edit_by = request.user
+                    theissue.status = status
+                    theissue.last_edit_by = request.user
                     
                     if activity == constants.CASE_EVENT_CLOSE:
-                        thecase.closed_by=request.user
+                        theissue.closed_by=request.user
                     elif activity == constants.CASE_EVENT_RESOLVE:
-                        thecase.resolved_by=request.user
+                        theissue.resolved_by=request.user
         
-                    thecase.save(activity = activity, save_comment = comment)
+                    theissue.save(activity = activity, save_comment = comment)
                     
-                    return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))                    
+                    return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             elif activity == constants.CASE_EVENT_COMMENT:
                 form = CaseCommentForm(data=request.POST)
                 context['form'] = form
                 if form.is_valid():    
                     if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
                         comment = form.cleaned_data["comment"]
-                    evt = CaseEvent()
-                    evt.case = thecase
+                    evt = IssueEvent()
+                    evt.issue = theissue
                     evt.notes = comment
                     evt.activity = constants.CASE_EVENT_COMMENT
                     evt.created_by = request.user
                     evt.save()
-                    return HttpResponseRedirect(reverse('manage-case', kwargs= {'case_id': case_id}))
+                    return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
         else:
             #it's a GET
             if activity==constants.CASE_EVENT_EDIT or activity==constants.CASE_EVENT_ASSIGN:
-                caseform = CaseModelForm
+                issueform = CaseModelForm
             elif activity == constants.CASE_EVENT_COMMENT:
-                caseform = CaseCommentForm
+                issueform = CaseCommentForm
             elif activity==constants.CASE_EVENT_RESOLVE or activity==constants.CASE_EVENT_CLOSE:
-                caseform = CaseResolveCloseForm
+                issueform = CaseResolveCloseForm
 
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 
-            if caseform == CaseModelForm:
-                context['form'] = caseform(instance=thecase, editor_user=request.user, activity=activity)
+            if issueform == CaseModelForm:
+                context['form'] = issueform(instance=theissue, editor_user=request.user, activity=activity)
                 context['can_comment'] = False
-            elif caseform== CaseResolveCloseForm:
-                context['form'] = caseform(case=thecase, activity=activity)
+            elif issueform== CaseResolveCloseForm:
+                context['form'] = issueform(issue=theissue, activity=activity)
                 context['can_comment'] = False                        
-            elif caseform == CaseCommentForm:
-                context['form'] = caseform()
+            elif issueform == CaseCommentForm:
+                context['form'] = issueform()
                         
                 
             else:
@@ -154,16 +154,16 @@ def manage_issue(request, case_id, template_name='issuetracker/manage_issue.html
 
 @login_required
 #@cache_page(60 * 1)
-def case_newsfeed(request, case_id, template_name='issuetracker/partials/newsfeed_inline.html'):
+def issue_newsfeed(request, issue_id, template_name='issuetracker/partials/newsfeed_inline.html'):
     """
     Generic inline view for all CaseEvents related to a Issue.
     
     This is called form tabbed_newsfeed.html via the jQuery UI Tab control.
     """
     context = {}
-#    thecase = Issue.objects.select_related('opened_by','last_edit_by',\
+#    theissue = Issue.objects.select_related('opened_by','last_edit_by',\
 #                                          'resolved_by','closed_by','assigned_to',
-#                                          'priority','category','status').get(id=case_id)
+#                                          'priority','category','status').get(id=issue_id)
 #
 #    sorting = None
 #    do_edit=False
@@ -172,8 +172,8 @@ def case_newsfeed(request, case_id, template_name='issuetracker/partials/newsfee
 #        if key == "sort":
 #            sorting = value
 #
-#    context['events'] = CaseEvent.objects.select_related('created_by','activity').filter(case=thecase).order_by('created_date')
-#    context['case'] = thecase
+#    context['events'] = IssueEvent.objects.select_related('created_by','activity').filter(issue=theissue).order_by('created_date')
+#    context['issue'] = theissue
 #    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
 #    context['formatting'] = False
 #    event_arr = context['events']
@@ -199,7 +199,7 @@ def view_filter(request, filter_id):
 
     context['filter'] = filter
     context['gridpref'] = gridpref
-    context['filter_cases'] = qset
+    context['filter_issues'] = qset
 
     template_name='issuetracker/filter/filter_simpletable.html'
     return render_to_response(template_name, context, context_instance=RequestContext(request))
@@ -233,38 +233,38 @@ def all_patients(request, template_name="issuetracker/all_patients.html"):
     context['patients'] = patients
     return render_to_response(template_name, context_instance=context)
 
-def user_cases(request, user_id, template_name="issuetracker/user_cases.html"):
-    casefilter = str(request.GET.get('casefilter', 'opened_by'))
+def user_issues(request, user_id, template_name="issuetracker/user_issues.html"):
+    issuefilter = str(request.GET.get('issuefilter', 'opened_by'))
 
     context = RequestContext(request)
     user = User.objects.get(id=user_id)
     roles = Actor.identities.for_user(user)
-    role_cases = [(role, Issue.objects.filter(**{casefilter: role}))for role in roles]
+    role_issues = [(role, Issue.objects.filter(**{issuefilter: role}))for role in roles]
 
     context['user'] = user
-    context['casefilter'] = casefilter
-    context['role_cases'] = role_cases
+    context['issuefilter'] = issuefilter
+    context['role_issues'] = role_issues
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     return render_to_response(template_name, context_instance=context)
 
-def role_cases(request, role_id, template_name="issuetracker/role_cases.html"):
+def role_issues(request, role_id, template_name="issuetracker/role_issues.html"):
     context = RequestContext(request)
     role = Actor.objects.get(id=role_id)
-    casefilter = str(request.GET.get('casefilter', 'opened_by'))
-    cases = Issue.objects.filter(**{casefilter:role})
+    issuefilter = str(request.GET.get('issuefilter', 'opened_by'))
+    issues = Issue.objects.filter(**{issuefilter:role})
 
     context['role'] = role
-    context['cases'] = cases
-    context['casefilter'] = casefilter
+    context['issues'] = issues
+    context['issuefilter'] = issuefilter
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     return render_to_response(template_name, context_instance=context)
 
-def patient_cases(request, patient_id, template_name="issuetracker/patient_cases.html"):
+def patient_issues(request, patient_id, template_name="issuetracker/patient_issues.html"):
     context = RequestContext(request)
     patient = Patient.objects.get(id=patient_id)
-    cases = Issue.objects.filter(patient=patient)
+    issues = Issue.objects.filter(patient=patient)
     context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
     context['patient'] = patient
-    context['cases'] = cases
+    context['issues'] = issues
     return render_to_response(template_name, context_instance=context)
 

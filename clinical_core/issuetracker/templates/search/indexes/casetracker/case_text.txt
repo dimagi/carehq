@@ -12,6 +12,6 @@
 {{object.closed_by.get_full_name}} {{object.closed_date|date}}           
 {% endif %}
 
-{% for case_event in object.case_events.all %}
+{% for case_event in object.issue_events.all %}
 {{case_event.notes}}
 {% endfor %}

@@ -3,8 +3,8 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User
-from issuetracker.feeds.caseevents import get_sorted_issueevent_dictionary
-from issuetracker.queries.caseevents import get_latest_for_issues
+from issuetracker.feeds.issueevents import get_sorted_issueevent_dictionary
+from issuetracker.queries.issueevents import get_latest_for_issues
 from patient.models import Patient
 
 
@@ -71,7 +71,7 @@ def single(request, user_id=None):
 
 
         if context['is_provider_for'] or context['is_caregiver_for']:
-            context['events'] = get_latest_for_issues(context['selected_careteam'].cases.all())
+            context['events'] = get_latest_for_issues(context['selected_careteam'].issues.all())
             context['formatting'] = False
 
             sorted_dic = {}
@@ -81,8 +81,8 @@ def single(request, user_id=None):
                 context['events'] = sorted_dic
                 context['formatting'] = True
 
-            cases = CareTeam.objects.get(patient__user=user).cases.all()
-            context['cases'] = cases
+            issues = CareTeam.objects.get(patient__user=user).cases.all()
+            context['issues'] = cases
 
 
 
@@ -122,8 +122,8 @@ def single(request, user_id=None):
 #        last_edit = Q(last_edit_by=user)
 #        assigned = Q(assigned_to=user)
 #
-#        cases = Issue.objects.select_related('opened_by','last_edit_by','status').filter(opened | last_edit | assigned)
-#        context['cases'] = cases
+#        issues = Issue.objects.select_related('opened_by','last_edit_by','status').filter(opened | last_edit | assigned)
+#        context['issues'] = cases
 
 #    raise Exception("not implemented, need to implement views using new actor permission framework")
         

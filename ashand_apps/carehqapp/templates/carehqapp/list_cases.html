@@ -38,11 +38,11 @@
 		</tr>
 	</thead>
 	{#<p>{{qset|length}} rows </p>#}	
-		{% for case in qset %}
+		{% for issue in qset %}
 			<tr>
 			{% for col in filter.get_gridpreference.get_display_columns %}
 				<td>
-					{% case_column_plain case col %}
+					{% issue_column_plain issue col %}
 				</td>
 			{% endfor %}
 			</tr>

@@ -11,15 +11,15 @@
 </tr>
 
 <ul>
-{% for case in cases %}
+{% for issue in issues %}
 <tr>
-	<td>{% patient_for_issue case %} </td>
-	<td>{{case.description}}</td>
-	<td>{{case.opened_date|date}}</td>
-	<td>{{case.opened_by}}</td>
-	<td>{{case.last_edit_date}}</td>
-	<td>{{case.last_edit_by}}</td>
-	<td>{{case.assigned_to}}</td>	
+	<td>{% patient_for_issue issue %} </td>
+	<td>{{issue.description}}</td>
+	<td>{{issue.opened_date|date}}</td>
+	<td>{{issue.opened_by}}</td>
+	<td>{{issue.last_edit_date}}</td>
+	<td>{{issue.last_edit_by}}</td>
+	<td>{{issue.assigned_to}}</td>
 </tr>
 {% endfor %}
 </table>

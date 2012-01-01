@@ -23,7 +23,7 @@ $(document).ready(function() {
 		{% if json_qset_url %}
 		  "sAjaxSource": "{{json_qset_url}}",
 		{% else %}
-		  "sAjaxSource": "{% url cases-for-obj-view obj_type obj.id %}?json",
+		  "sAjaxSource": "{% url issues-for-obj-view obj_type obj.id %}?json",
 		{% endif %}		
 		"bFilter": false,
 		"bSort": false,
@@ -45,7 +45,7 @@ $(document).ready(function() {
 	<thead>
 		<tr>		
 			{% for col in display_filter.gridpreference.get_display_columns %}
-				<th>{% case_column_plain case col.column.name %}</th>
+				<th>{% issue_column_plain issue col.column.name %}</th>
 			{%endfor %}
 		</tr>
 	</thead>

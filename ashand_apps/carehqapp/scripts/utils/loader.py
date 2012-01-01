@@ -1,7 +1,7 @@
 import random
 
 from datetime import datetime, timedelta
-from issuetracker.models import Category, Issue, Priority, Status, ActivityClass, CaseEvent
+from issuetracker.models import Category, Issue, Priority, Status, ActivityClass, IssueEvent
 from issuetracker import constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
@@ -76,7 +76,7 @@ def load_interaction(careteam, interaction_arr):
         if responder == None:
             print "wtf: " + str(subarr)
         
-        evt = CaseEvent()
+        evt = IssueEvent()
         evt.case = newcase
         if resp.count("%s") == 1:
             resp = resp % careteam.patient.user.first_name

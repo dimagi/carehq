@@ -94,7 +94,7 @@
 			<tr>
 			{% for col in filter.gridpreference.get_display_columns %}
 				<td>
-					{% case_column_plain case col.column.name %}
+					{% issue_column_plain case col.column.name %}
 				</td>
 			{% endfor %}
 			</tr>

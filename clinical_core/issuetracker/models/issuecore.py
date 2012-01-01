@@ -13,16 +13,16 @@ from django.utils.translation import ugettext_lazy as _
 from issuetracker import constants
 from patient.models import Patient
 
-from issuetracker.managers import CaseManager
+from issuetracker.managers import IssueManager
 from dimagi.utils import make_uuid
 import uuid
 from django.contrib.contenttypes.models import ContentType
 from permissions.models import Actor
 
 
-class CaseEvent(models.Model):
+class IssueEvent(models.Model):
     """
-    A CaseEvent is any action done revolving around a case.
+    A IssueEvent is any action done revolving around a case.
     A Interaction in our book is an actual medical document that happens for a particular medical document/domain.
 
     An encounter in this scope is an action that happens and is resolved around a particular case.
@@ -30,8 +30,8 @@ class CaseEvent(models.Model):
     It is meant to capture outside the scope of the case table itself, the actions and their accompanying
     examples of what happened to a case.
     """
-    id = models.CharField(_('CaseEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
-    case = models.ForeignKey("Issue", related_name='case_events')
+    id = models.CharField(_('IssueEvent Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    issue = models.ForeignKey("Issue", related_name='issue_events')
     notes = models.TextField(blank=True)
 
     activity = models.CharField(choices=constants.CASE_EVENT_CHOICES, max_length=160)
@@ -44,14 +44,14 @@ class CaseEvent(models.Model):
         if self.id == None:
             self.id = uuid.uuid4().hex
         if unsafe:
-            super(CaseEvent, self).save()
+            super(IssueEvent, self).save()
             return
 
         if self.created_date == None:
             if self.created_by == None:
                 raise Exception("Missing fields in Issue creation - created by")
             self.created_date = datetime.utcnow()
-        super(CaseEvent, self).save()
+        super(IssueEvent, self).save()
 
     def __unicode__(self):
         return "Event (%s} by %s on %s" % (self.activity, self.created_by, self.created_date.strftime("%I:%M%p %Z %m/%d/%Y"))
@@ -91,30 +91,30 @@ class Issue(models.Model):
 
 
     opened_date = models.DateTimeField()
-    opened_by = models.ForeignKey(Actor, related_name="case_opened_by") #cannot be null because this has to have originated from somewhere
+    opened_by = models.ForeignKey(Actor, related_name="issue_opened_by") #cannot be null because this has to have originated from somewhere
 
-    assigned_to = models.ForeignKey(Actor, related_name="case_assigned_to", null=True, blank=True)
+    assigned_to = models.ForeignKey(Actor, related_name="issue_assigned_to", null=True, blank=True)
     assigned_date = models.DateTimeField(null=True, blank=True)
 
     last_edit_date = models.DateTimeField(null=True, blank=True)
-    last_edit_by = models.ForeignKey(Actor, related_name="case_last_edit_by", null=True, blank=True)
+    last_edit_by = models.ForeignKey(Actor, related_name="issue_last_edit_by", null=True, blank=True)
 
     resolved_date = models.DateTimeField(null=True, blank=True)
-    resolved_by = models.ForeignKey(Actor, related_name="case_resolved_by", null=True, blank=True)
+    resolved_by = models.ForeignKey(Actor, related_name="issue_resolved_by", null=True, blank=True)
 
     closed_date = models.DateTimeField(null=True, blank=True)
-    closed_by = models.ForeignKey(Actor, related_name="case_closed_by", null=True, blank=True)
+    closed_by = models.ForeignKey(Actor, related_name="issue_closed_by", null=True, blank=True)
 
     due_date = models.DateTimeField(null=True, blank=True)
     parent_issue = models.ForeignKey('self', null=True, blank=True, related_name='child_issues')
 
 
     default_objects = models.Manager() # The default manager.
-    objects = CaseManager()
+    objects = IssueManager()
 
     def get_absolute_url(self):
         #return "/case/%s" % self.id
-        return reverse('manage_issue', kwargs={'case_id': self.id})
+        return reverse('manage_issue', kwargs={'issue_id': self.id})
 
     @property
     def is_active(self):
@@ -141,8 +141,8 @@ class Issue(models.Model):
     def last_case_event(self):
         #with the models split up for readability, need to make sure no circular dependencies are introduced on import
         if not getattr(self, '_last_case_event', None):
-            if CaseEvent.objects.select_related('case', 'activity').filter(case=self).order_by('-created_date').count() > 0:
-                self._last_case_event = CaseEvent.objects.filter(case=self).order_by('-created_date')[0]
+            if IssueEvent.objects.select_related('issue', 'activity').filter(case=self).order_by('-created_date').count() > 0:
+                self._last_case_event = IssueEvent.objects.filter(case=self).order_by('-created_date')[0]
                 return self._last_case_event
             else:
                 return None
@@ -183,7 +183,7 @@ class Issue(models.Model):
                 continue
             elif prop == 'Meta':
                 continue
-            elif prop == 'case_events': #skip stuff within myself
+            elif prop == 'issue_events': #skip stuff within myself
                 continue
 
             propclass = getattr(self, prop)
@@ -271,7 +271,7 @@ class ExternalCaseData(models.Model):
     External documents attached to a case (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
     """
     id = models.CharField(_('Issue Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
-    case_id = models.ForeignKey(Issue, related_name="external_data")
+    issue_id = models.ForeignKey(Issue, related_name="external_data")
     doc_id = models.CharField(_('External Document id'), max_length=32, unique=True, default=make_uuid, db_index=True)
 
     class Meta:
