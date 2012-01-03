@@ -34,6 +34,15 @@ class PatientIntegrityException(Exception):
 #preload all subclasses of BasePatient into a dictionary for easy access for casting documents to their instance class
 
 
+class PatientActorLink(models.Model):
+    """
+    Intermediary model to link django Patient stub to the Actor model
+    """
+    patient = models.OneToOneField("Patient", related_name='get_actor')
+    actor = models.OneToOneField(Actor, related_name='get_patient')
+
+    class Meta:
+        app_label='patient'
 
 
 class Patient(models.Model):
@@ -47,7 +56,7 @@ class Patient(models.Model):
     """
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True,  primary_key=True, editable=False)
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
+    #user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
 
 
     def get_absolute_url(self):
@@ -55,8 +64,6 @@ class Patient(models.Model):
             return self.couchdoc.get_absolute_url()
         else:
             return '#'
-
-
 
     class Meta:
         app_label = 'patient'
@@ -318,6 +325,7 @@ class BasePatient(Document, TypedSubclassMixin):
 
 
     def save(self, *args, **kwargs):
+        user = kwargs.get('user', None)
         if self.poly_types == None:
             self.poly_types = []
 

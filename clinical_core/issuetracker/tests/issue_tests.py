@@ -1,11 +1,14 @@
+import random
 from django.test import TestCase
 import hashlib
 import uuid
 from django.contrib.auth.models import User
+from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from issuetracker.models import Issue, IssueEvent
 from clinical_core.clinical_shared.utils import generator
 from issuetracker import constants
 from django.core.management import call_command
+from issuetracker.models.issuecore import IssueCategory
 from permissions.models import Actor, PrincipalRoleRelation, Role
 from tenant.models import Tenant
 
@@ -14,29 +17,13 @@ INITIAL_DESCRIPTION = "this is a case made by the test case"
 CHANGED_DESCRIPTION = 'i just changed it, foo'
 
 
-def create_user(username='mockuser', password='mockmock'):
-    user = User()
-    user.username = username
-    # here, we mimic what the django auth system does
-    # only we specify the salt to be 12345
-    salt = '12345'
-    hashed_pass = hashlib.sha1(salt+password).hexdigest()
-    user.password = 'sha1$%s$%s' % (salt, hashed_pass)
+from johnny.cache import invalidate
 
-    user.set_password(password)
-    user.save()
-    return user
-
-
-class EventActivityVerificationTest(TestCase):
-    fixtures = []
+class EventActivityVerificationTest(CareHQClinicalTestCase):
+    fixtures = ['basic_issue_categories']
 
     def setUp(self):
-        User.objects.all().delete()
-        Actor.objects.all().delete()
-        Role.objects.all().delete()
-        PrincipalRoleRelation.objects.all().delete()
-        Tenant.objects.all().delete()
+        self._superSetup()
         Issue.objects.all().delete()
         call_command('carehq_init')
         self.tenant = Tenant.objects.get(name='ASHand')
@@ -76,7 +63,7 @@ class EventActivityVerificationTest(TestCase):
         oldcasecount = Issue.objects.all().count()
         oldevents = IssueEvent.objects.all().count()
 
-        newissue = Issue.objects.new_issue(constants.CATEGORY_CHOICES[0][0],
+        newissue = Issue.objects.new_issue(random.choice(IssueCategory.objects.all()),
                               actor_caregiver.django_actor,
                               description,
                               "mock body %s" % (uuid.uuid4().hex),

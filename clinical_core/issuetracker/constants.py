@@ -22,13 +22,6 @@ CASE_EVENT_RESOLVE = 'event-resolve'
 CASE_EVENT_CLOSE = 'event-close'
 
 
-CATEGORY_CHOICES = (
-    ('threshold', 'Threshold Violation'),
-    ('appointment', 'Appointment'),
-    ('message', 'Message'),
-)
-
-
 CASE_EVENT_CHOICES = (
         (CASE_EVENT_OPEN, 'Open/Create'), #case state
         (CASE_EVENT_VIEW, 'View'),

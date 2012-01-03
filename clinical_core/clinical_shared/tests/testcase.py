@@ -14,8 +14,8 @@ class CareHQClinicalTestCase(TestCase):
     """
     Basic test case with bootstrap bits for basic carehq environment setup within a test suite.
     """
-
-    def setUp(self):
+    def _superSetup(self):
+        #the setUp method cannot be called via super(), so need to call it explicitly as a parent class method
         User.objects.all().delete()
         Actor.objects.all().delete()
         Role.objects.all().delete()
@@ -23,6 +23,11 @@ class CareHQClinicalTestCase(TestCase):
         PrincipalRoleRelation.objects.all().delete()
         call_command('carehq_init')
         self.tenant = Tenant.objects.all()[0]
+
+
+    def setUp(self):
+        self._superSetup()
+
 
     def _createUser(self):
         """

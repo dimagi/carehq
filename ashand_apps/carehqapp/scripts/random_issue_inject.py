@@ -1,10 +1,11 @@
 from datetime import timedelta, datetime
 from django.contrib.contenttypes.models import ContentType
 import os
-from carehq_core import carehq_api
+from carehq_core import carehq_api, carehq_constants
 from issuetracker import constants as caseconstants
 from issuetracker.models import Issue
 import csv
+from issuetracker.models.issuecore import IssueCategory
 from patient.models.patientmodels import Patient
 import random
 from permissions.models import Role, PrincipalRoleRelation
@@ -33,14 +34,13 @@ def run():
             actors+=a
 
         if row[3] == 'caregiver':
-            actor = random.choice(careteam_dict[Role.objects.get(name='ashand-Caregiver')])
+            actor = random.choice(careteam_dict[Role.objects.get(name=carehq_constants.role_caregiver)])
         elif row[3] == 'patient':
-            ctype = ContentType.objects.get_for_model(pt)
-            proles = PrincipalRoleRelation.objects.filter(content_type=ctype, content_id=pt.id).filter(role__display="Patient")
-            actor = proles[0].actor
+            #get the actor for the patient in question
+            actor = pt.get_actor.actor
         elif row[3] == 'provider':
             #actor = random.choice(careteam_dict[Role.objects.get(name='ashand-GeneralProvider')] + careteam_dict[Role.objects.get(name='ashand-PrimaryProvider')])
-            actor = random.choice(careteam_dict[Role.objects.get(name='ashand-GeneralProvider')])
+            actor = random.choice(careteam_dict[Role.objects.get(name=carehq_constants.role_provider)])
         else:
             actor =   random.choice(actors)
 
@@ -54,14 +54,15 @@ def run():
             body = row[1] % (pt.couchdoc.first_name)
         else:
             body=row[1]
-        newcase = Issue.objects.new_issue(row[2],
-                                        actor,
-                              desc,
-                              body,
-                              random.choice(caseconstants.PRIORITY_CHOICES)[0],
-                              patient=pt,
-                              status=caseconstants.STATUS_CHOICES[0][0],
-                              activity=caseconstants.CASE_EVENT_CHOICES[0][0],
+        newcase = Issue.objects.new_issue(
+                                      random.choice(IssueCategory.objects.all()),
+                                      actor,
+                                      desc,
+                                      body,
+                                      random.choice(caseconstants.PRIORITY_CHOICES)[0],
+                                      patient=pt,
+                                      status=caseconstants.STATUS_CHOICES[0][0],
+                                      activity=caseconstants.CASE_EVENT_CHOICES[0][0],
                               )
 
         startdelta = timedelta(hours=random.randint(0,200)) #sometime in the past 3

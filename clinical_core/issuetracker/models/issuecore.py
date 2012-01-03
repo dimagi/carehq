@@ -20,6 +20,23 @@ from django.contrib.contenttypes.models import ContentType
 from permissions.models import Actor
 
 
+class IssueCategory(models.Model):
+    id = models.CharField(_('Issue Category Unique ID'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override?
+    namespace = models.CharField(max_length=160, help_text="Namexpace subdivision of category (generically defined)", blank=True, null=True, db_index=True) # Instead of linking to tenant,
+    display = models.CharField(max_length=128, help_text="Actual display of the category text")
+    group = models.CharField(max_length=64, help_text="Category display grouping", blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s > %s" % (self.group, self.display)
+
+    class Meta:
+        app_label = 'issuetracker'
+        verbose_name = "Issue Category"
+        verbose_name_plural = "Issue Categories"
+        ordering = ['namespace', 'group', 'display']
+
+
+
 class IssueEvent(models.Model):
     """
     A IssueEvent is any action done revolving around a case.
@@ -81,7 +98,8 @@ class Issue(models.Model):
 
     description = models.CharField(max_length=160)
 
-    category = models.CharField(max_length=160, choices=constants.CATEGORY_CHOICES)
+    #category = models.CharField(max_length=160, choices=constants.CATEGORY_CHOICES)
+    category = models.ForeignKey(IssueCategory)
     status = models.CharField(max_length=160, choices=constants.STATUS_CHOICES)
     priority = models.IntegerField(choices=constants.PRIORITY_CHOICES)
 
@@ -262,7 +280,7 @@ class Issue(models.Model):
     class Meta:
         app_label = 'issuetracker'
         verbose_name = "Issue"
-        verbose_name_plural = "Cases"
+        verbose_name_plural = "Issues"
         #ordering = ['-opened_date']
 
 

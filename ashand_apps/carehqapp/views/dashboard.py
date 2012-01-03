@@ -1,7 +1,7 @@
 from django.db.models.query_utils import Q
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
-from carehqapp import constants
+from carehq_core import carehq_constants
 from issuetracker.models.issuecore import Issue
 from clinical_core.feed.models import FeedEvent
 from lib.crumbs import crumbs
@@ -26,10 +26,10 @@ def ghetto_dashboard(request, template_name='carehqapp/ghetto_dashboard.html'):
     user_actors = Actor.objects.filter(user=request.user)
     proles = PrincipalRoleRelation.objects.filter(actor__in=user_actors)
     #hack hack
-    patient_role = Role.objects.get(name=constants.role_patient)
-    provider_role = Role.objects.get(name=constants.role_provider)
-    caregiver_role = Role.objects.get(name=constants.role_caregiver)
-    primary_provider_role = Role.objects.get(name=constants.role_primary_provider)
+    patient_role = Role.objects.get(name=carehq_constants.role_patient)
+    provider_role = Role.objects.get(name=carehq_constants.role_provider)
+    caregiver_role = Role.objects.get(name=carehq_constants.role_caregiver)
+    primary_provider_role = Role.objects.get(name=carehq_constants.role_primary_provider)
     context['title'] = "My Cases"
 
 
@@ -60,10 +60,10 @@ def ghetto_news_feed(request, template_name='carehqapp/ghetto_dashboard.html'):
     user_actors = Actor.objects.filter(user=request.user)
     proles = PrincipalRoleRelation.objects.filter(actor__in=user_actors)
     #hack hack
-    patient_role = Role.objects.get(name=constants.role_patient)
-    provider_role = Role.objects.get(name=constants.role_provider)
-    caregiver_role = Role.objects.get(name=constants.role_caregiver)
-    primary_provider_role = Role.objects.get(name=constants.role_primary_provider)
+    patient_role = Role.objects.get(name=carehq_constants.role_patient)
+    provider_role = Role.objects.get(name=carehq_constants.role_provider)
+    caregiver_role = Role.objects.get(name=carehq_constants.role_caregiver)
+    primary_provider_role = Role.objects.get(name=carehq_constants.role_primary_provider)
     context['title'] = "News Feed (all patients)"
 
 

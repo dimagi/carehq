@@ -1,7 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
-from actorpermission.models.actortypes import ProviderActor, CHWActor
+from actorpermission.models.actortypes import ProviderActor, CHWActor, PatientActor
 from carehq_core import carehq_constants
+from patient.models.patientmodels import PatientActorLink
 import permissions
 from permissions.models import Role, PrincipalRoleRelation
 
@@ -80,6 +81,16 @@ def get_permissions_dict(actor_doc, direct=False):
         ret[p.role] = arr
     return ret
 
+def create_patient_actor(tenant, patient_doc, user=None):
+    """
+    Complete creation of a brand new patient from a completed Patient document, along with actor document.
+    """
+    #assume patient document is already saved
+    pt_actor = PatientActor()
+    pt_actor.patient_doc_id = patient_doc._id
+    pt_actor.save(tenant, user)
+    PatientActorLink.objects.get_or_create(patient=patient_doc.django_patient, actor=pt_actor.django_actor)
+    permissions.utils.add_role(pt_actor.django_actor, Role.objects.get(name=carehq_constants.role_patient))
 
 def get_patient_providers(patient_doc):
     all_prrs = get_careteam(patient_doc)

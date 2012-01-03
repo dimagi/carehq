@@ -1,6 +1,6 @@
 from django.contrib import admin
 from issuetracker.models import IssueEvent, Issue, Filter, GridPreference,GridColumn,GridOrder,GridSort
-
+from issuetracker.models.issuecore import IssueCategory
 
 
 class EventActivityAdmin(admin.ModelAdmin):
@@ -10,10 +10,16 @@ class EventActivityAdmin(admin.ModelAdmin):
         'event_class': admin.HORIZONTAL,
     }
 
-class CaseEventInline(admin.StackedInline):
+
+class IssueCategoryAdmin(admin.ModelAdmin):
+    list_display=('namespace',  'group','display')
+    list_filter=['group', 'namespace',]
+admin.site.register(IssueCategory, IssueCategoryAdmin)
+
+class IssueEventInline(admin.StackedInline):
     model = IssueEvent
 
-class CaseAdmin(admin.ModelAdmin):
+class IssueAdmin(admin.ModelAdmin):
     list_display=('description','status','category', 'last_edit_by', 'last_edit_date','assigned_to')
     list_filter=['status','category','opened_by', 'last_edit_by','assigned_to']
 
@@ -35,14 +41,14 @@ class CaseAdmin(admin.ModelAdmin):
                     "category": admin.HORIZONTAL,
                     "status": admin.VERTICAL,
                     }
-    inlines = [ CaseEventInline, ]
+    inlines = [ IssueEventInline, ]
 
 
-class CaseEventAdmin(admin.ModelAdmin):
-    list_display=('id','notes','case','activity')
+class IssueEventAdmin(admin.ModelAdmin):
+    list_display=('id','notes','issue','activity')
     list_filter = ['activity',]
 
-class CaseInline(admin.StackedInline):
+class IssueInline(admin.StackedInline):
     model = Issue
 
 class FilterAdmin(admin.ModelAdmin):
@@ -77,5 +83,5 @@ class GridOrderAdmin(admin.ModelAdmin):
 admin.site.register(GridOrder, GridOrderAdmin)
 
 
-admin.site.register(IssueEvent, CaseEventAdmin)
-admin.site.register(Issue, CaseAdmin)
+admin.site.register(IssueEvent, IssueEventAdmin)
+admin.site.register(Issue, IssueAdmin)

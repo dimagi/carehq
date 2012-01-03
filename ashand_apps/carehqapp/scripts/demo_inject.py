@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-import random_inject
+import random_issue_inject
 from issuetracker.models import Issue
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
@@ -13,7 +13,7 @@ def inject_issue_data(patient, event_arr):
     Pull data from the event_arr and assign it to a patient if they were new inbound triage cases
     """    
     print "Adding monitoring event to patient %s" % (patient)
-    startdelta = timedelta(minutes=random_inject.randint(1,200)) #sometime in the past 3
+    startdelta = timedelta(minutes=random_issue_inject.randint(1,200)) #sometime in the past 3
     main_info = event_arr[0:4]            
     category_txt = main_info[0].strip()            
     title = main_info[1].strip()
@@ -54,7 +54,7 @@ def inject_issue_data(patient, event_arr):
     if source.lower() == 'home monitor':
         newcase.priority = Priority.objects.all()[0]
     else:
-        newcase.priority = Priority.objects.all()[random_inject.randint(0, Priority.objects.all().count() -1)]
+        newcase.priority = Priority.objects.all()[random_issue_inject.randint(0, Priority.objects.all().count() -1)]
     newcase.save(unsafe=True)
     careteam.add_case(newcase)
 
@@ -68,8 +68,8 @@ def generate_triage():
     careteams = CareTeam.objects.all()    
     
     for careteam in careteams:
-        max_encounters = random_inject.randint(1,2)
-        random_inject.shuffle(triage_arr)
+        max_encounters = random_issue_inject.randint(1,2)
+        random_issue_inject.shuffle(triage_arr)
         print "Adding %d new triage events to patient %s" % (max_encounters, careteam.patient.user.title())
         for enc in range(0,max_encounters):    
             inject_issue_data(careteam, triage_arr[enc])
