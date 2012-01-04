@@ -66,7 +66,6 @@ def ghetto_news_feed(request, template_name='carehqapp/ghetto_dashboard.html'):
     primary_provider_role = Role.objects.get(name=carehq_constants.role_primary_provider)
     context['title'] = "News Feed (all patients)"
 
-
     if request.is_patient:
         patient = proles.filter(role=patient_role)[0].content
         issues = Issue.objects.all().filter(patient=patient).select_related()

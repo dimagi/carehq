@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:a="http://schemas.datacontract.org/2004/07/Intel.Healthcare.Integration.Extracts" xmlns:cfg="http://devdiem.intel.com/integration/extracts/config" xmlns:ext="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:napa2="http://www.intel.com/xslt" xmlns:psr="http://healthcare.intel.com/integration/extracts" xmlns:voc="urn:hl7-org:v3/voc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ../schema/CCD.xsd">
+	<typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+	<templateId root="2.16.840.1.113883.10.20.1"/>
+	<id root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+	<code code="34133-9" codeSystem="2.16.840.1.113883.6.1" displayName="Summarization of episode note"/>
+	<title>Intel Health - Continuity of Care Document</title>
+	<effectiveTime value="20100216141006+0500"/>
+	<confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+	<languageCode code="en-US"/>
+	<recordTarget>
+		<patientRole>
+			<id extension="PT92646204" root="7E4C7CC9-8A4D-490D-AF2F-DBE91829679F"/>
+			<addr>
+				<streetAddressLine>5558 Dunston St. Levers</streetAddressLine>
+				<city>Knerien</city>
+				<state>OR</state>
+				<postalCode/>
+				<country>USA</country>
+			</addr>
+			<telecom value="tel:(174) 385-7696"/>
+			<patient>
+				<name>
+					<given>Hector</given>
+					<family>Britt</family>
+					<suffix/>
+				</name>
+				<administrativeGenderCode code="UN" codeSystem="2.16.840.1.113883.5.1"/>
+				<birthTime/>
+			</patient>
+			<providerOrganization>
+				<id root="00000000-0000-0000-0000-000000000000"/>
+				<name>DOCSAMPLES11</name>
+			</providerOrganization>
+		</patientRole>
+	</recordTarget>
+	<author>
+		<time value="20090925090000"/>
+		<assignedAuthor>
+			<id extension="IntelHGS" root="00000000-0000-0000-0000-000000000000"/>
+			<assignedAuthoringDevice>
+				<softwareName>Intel HGS</softwareName>
+			</assignedAuthoringDevice>
+			<representedOrganization>
+				<id root="00000000-0000-0000-0000-000000000000"/>
+				<name>DOCSAMPLES11</name>
+			</representedOrganization>
+		</assignedAuthor>
+	</author>
+	<custodian>
+		<assignedCustodian>
+			<representedCustodianOrganization>
+				<id root="00000000-0000-0000-0000-000000000000"/>
+				<name>DOCSAMPLES11</name>
+			</representedCustodianOrganization>
+		</assignedCustodian>
+	</custodian>
+	<informationRecipient>
+		<intendedRecipient>
+			<id root="00000000-0000-0000-0000-000000000000"/>
+			<informationRecipient>
+				<name>DOCSAMPLES11</name>
+			</informationRecipient>
+		</intendedRecipient>
+	</informationRecipient>
+	<participant typeCode="REF">
+		<associatedEntity classCode="ASSIGNED">
+			<id extension="jsgfj836" root="E26FE8C7-2CC7-43DC-AAD3-C86F99B812EE"/>
+			<addr>
+				<streetAddressLine>intel</streetAddressLine>
+				<city>Beaverton</city>
+				<state>OR</state>
+				<postalCode>97006</postalCode>
+			</addr>
+			<telecom value="tel:(503) 696-1411"/>
+			<associatedPerson>
+				<name>
+					<given>Nurse</given>
+					<family>Admin</family>
+				</name>
+			</associatedPerson>
+			<scopingOrganization>
+				<id root="00000000-0000-0000-0000-000000000000"/>
+				<name>DOCSAMPLES11</name>
+			</scopingOrganization>
+		</associatedEntity>
+	</participant>
+	<documentationOf>
+		<serviceEvent classCode="PCPR">
+			<id root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+			<effectiveTime>
+				<low value="20090925090000"/>
+				<high value="20090925090446"/>
+			</effectiveTime>
+		</serviceEvent>
+	</documentationOf>
+	<component>
+		<structuredBody>
+			<component>
+				<section>
+					<templateId root="2.16.840.1.113883.10.20.1.3"/>
+					<code code="46240-8" codeSystem="2.16.840.1.113883.6.1"/>
+					<title>Encounters</title>
+					<text>
+						<table border="1" width="100%">
+							<thead>
+								<tr>
+									<th align="center" colspan="2">Session ID: 57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64</th>
+								</tr>
+								<tr>
+									<th align="left">Reminder Text:</th>
+									<th align="left">Time to take your measurements</th>
+								</tr>
+								<tr>
+									<th align="left">Encounter</th>
+									<th align="left">Date</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Intel Health Guide Session</td>
+									<td>09/25/2009 16:13:10</td>
+								</tr>
+							</tbody>
+						</table>
+					</text>
+					<entry typeCode="DRIV">
+						<encounter classCode="ENC" moodCode="EVN">
+							<templateId root="2.16.840.1.113883.10.20.1.21"/>
+							<id root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+							<code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session">
+								<originalText>Time to take your measurements</originalText>
+							</code>
+							<effectiveTime value="20090925090000"/>
+						</encounter>
+					</entry>
+				</section>
+			</component>
+			<component>
+				<section>
+					<templateId root="2.16.840.1.113883.10.20.1.5"/>
+					<code code="47420-5" codeSystem="2.16.840.1.113883.6.1"/>
+					<title>Functional Status</title>
+					<text>
+						<table border="1" width="100%">
+							<tbody align="left">
+								<tr>
+									<th align="center" colspan="3">Session ID: 57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64</th>
+								</tr>
+								<tr>
+									<th align="center" colspan="3">Session Date/Time: 09/25/2009 16:13:10</th>
+								</tr>
+								<tr>
+									<th align="left" colspan="3">Protocol Description: Blood Pressure</th>
+								</tr>
+								<tr>
+									<th>Sl.</th>
+									<th>Assessment/Protocol Performed</th>
+									<th>Answer/Comments</th>
+								</tr>
+								<tr>
+									<td>1</td>
+									<td>It is time to get ready to take your blood pressure. Please follow the directions on the next screens in order to measure and record your blood pressure.</td>
+									<td>Health Tip</td>
+								</tr>
+								<tr>
+									<td>2</td>
+									<td>Generally, your blood pressure should be 120/80 or lower, according to the American Heart Association. If you are unsure, check with your doctor what is considered a normal blood pressure for you.</td>
+									<td>Health Tip</td>
+								</tr>
+								<tr>
+									<th align="left" colspan="3">Protocol Description: Weight</th>
+								</tr>
+								<tr>
+									<th>Sl.</th>
+									<th>Assessment/Protocol Performed</th>
+									<th>Answer/Comments</th>
+								</tr>
+								<tr>
+									<td>1</td>
+									<td>It is time to get ready to measure your weight. Please follow the directions on the next screens in order to measure and record your weight.</td>
+									<td>Health Tip</td>
+								</tr>
+								<tr>
+									<td>2</td>
+									<td>Did the device record your measurement on the screen?</td>
+									<td>No</td>
+								</tr>
+								<tr>
+									<td>3</td>
+									<td>Ok. When your scheduled session ends, use the Take a Measurement button and take your measurement again. If that still does not work, please contact your nurse.</td>
+									<td>Health Tip</td>
+								</tr>
+							</tbody>
+						</table>
+					</text>
+					<entry typeCode="DRIV">
+						<encounter classCode="ENC" moodCode="EVN">
+							<id root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+							<code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session"/>
+							<statusCode code="completed"/>
+							<entryRelationship typeCode="REFR">
+								<observation classCode="OBS" moodCode="EVN">
+									<code code="48766-0" codeSystem="2.16.840.1.113883.6.1" displayName="Information source"/>
+									<text>Time to take your measurements</text>
+									<statusCode code="completed"/>
+									<value xsi:type="ST">Intel HGS</value>
+								</observation>
+							</entryRelationship>
+							<entryRelationship typeCode="COMP">
+								<organizer classCode="CLUSTER" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.1.32"/>
+									<id extension="d4db4f1d-3774-466a-87f8-7111eee0960b" root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+									<code nullFlavor="OTH">
+										<originalText>Blood Pressure</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="d90db8a4-6c2e-4ab4-9b51-65d07a5ec8d9" root="d4db4f1d-3774-466a-87f8-7111eee0960b"/>
+											<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925161310"/>
+											</effectiveTime>
+											<value nullFlavor="OTH" xsi:type="CD">
+												<originalText>It is time to get ready to take your blood pressure. Please follow the directions on the next screens in order to measure and record your blood pressure.</originalText>
+											</value>
+										</observation>
+									</component>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="1ce44b86-2b2f-4cb3-9cd7-4c0e7274cbdb" root="d4db4f1d-3774-466a-87f8-7111eee0960b"/>
+											<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925161310"/>
+											</effectiveTime>
+											<value nullFlavor="OTH" xsi:type="CD">
+												<originalText>Generally, your blood pressure should be 120/80 or lower, according to the American Heart Association. If you are unsure, check with your doctor what is considered a normal blood pressure for you.</originalText>
+											</value>
+										</observation>
+									</component>
+								</organizer>
+							</entryRelationship>
+							<entryRelationship typeCode="COMP">
+								<organizer classCode="CLUSTER" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.1.32"/>
+									<id extension="be5050a5-6f79-4a34-8ad4-19bef211994c" root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+									<code nullFlavor="OTH">
+										<originalText>Weight</originalText>
+									</code>
+									<statusCode code="completed"/>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="18b2a86c-5c44-48b9-b825-e5d5e6daf48e" root="be5050a5-6f79-4a34-8ad4-19bef211994c"/>
+											<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925161310"/>
+											</effectiveTime>
+											<value nullFlavor="OTH" xsi:type="CD">
+												<originalText>It is time to get ready to measure your weight. Please follow the directions on the next screens in order to measure and record your weight.</originalText>
+											</value>
+										</observation>
+									</component>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="a3a14676-66e3-4afb-a9ce-2e1910b6e4ab" root="be5050a5-6f79-4a34-8ad4-19bef211994c"/>
+											<code nullFlavor="OTH">
+												<originalText>Did the device record your measurement on the screen?</originalText>
+											</code>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925161310"/>
+											</effectiveTime>
+											<value displayName="No" nullFlavor="OTH" xsi:type="CD"/>
+											<participant typeCode="RCV">
+												<time value="20090925161310"/>
+												<participantRole>
+													<playingEntity>
+														<name>Intel HGS</name>
+													</playingEntity>
+												</participantRole>
+											</participant>
+										</observation>
+									</component>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="19d86f4b-8f03-470b-8276-bcd9de642e82" root="be5050a5-6f79-4a34-8ad4-19bef211994c"/>
+											<code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925161310"/>
+											</effectiveTime>
+											<value nullFlavor="OTH" xsi:type="CD">
+												<originalText>Ok. When your scheduled session ends, use the Take a Measurement button and take your measurement again. If that still does not work, please contact your nurse.</originalText>
+											</value>
+										</observation>
+									</component>
+								</organizer>
+							</entryRelationship>
+						</encounter>
+					</entry>
+				</section>
+			</component>
+			<component>
+				<section>
+					<templateId root="2.16.840.1.113883.10.20.1.16"/>
+					<code code="8716-3" codeSystem="2.16.840.1.113883.6.1"/>
+					<title>Vital Signs</title>
+					<text>
+						<table border="1" width="100%">
+							<thead>
+								<tr>
+									<th align="center" colspan="7">Session ID: 57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64</th>
+								</tr>
+								<tr>
+									<th align="center" colspan="7">Session Date/Time: 09/25/2009 16:13:10</th>
+								</tr>
+								<tr>
+									<th>Sl.</th>
+									<th>Date captured</th>
+									<th>Device Name</th>
+									<th>Measurement type</th>
+									<th>Value</th>
+									<th>Reference Range</th>
+									<th>Abnormal flag</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>1</td>
+									<td>09/25/2009 09:02:48</td>
+									<td>Weight Scale (A&amp;D Medical UC-321PL)</td>
+									<td>Weight</td>
+									<td>177.0 Lbs</td>
+									<td>120.0-230.0 Lbs</td>
+									<td>N</td>
+								</tr>
+								<tr>
+									<td>2</td>
+									<td>09/25/2009 09:03:09</td>
+									<td>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</td>
+									<td>Heart Rate</td>
+									<td>64 BpM</td>
+									<td>60-88 BpM</td>
+									<td>N</td>
+								</tr>
+								<tr>
+									<td>3</td>
+									<td>09/25/2009 09:03:09</td>
+									<td>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</td>
+									<td>Systolic Blood Pressure</td>
+									<td>137 mmHg</td>
+									<td>120-140 mmHg</td>
+									<td>N</td>
+								</tr>
+								<tr>
+									<td>4</td>
+									<td>09/25/2009 09:03:09</td>
+									<td>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</td>
+									<td>Diastolic Blood Pressure</td>
+									<td>84 mmHg</td>
+									<td>60-88 mmHg</td>
+									<td>N</td>
+								</tr>
+							</tbody>
+						</table>
+					</text>
+					<entry typeCode="DRIV">
+						<encounter classCode="ENC" moodCode="EVN">
+							<id root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+							<code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session"/>
+							<statusCode code="completed"/>
+							<entryRelationship typeCode="REFR">
+								<observation classCode="OBS" moodCode="EVN">
+									<code code="48766-0" codeSystem="2.16.840.1.113883.6.1" displayName="Information source"/>
+									<statusCode code="completed"/>
+									<value xsi:type="ST">Intel HGS</value>
+								</observation>
+							</entryRelationship>
+							<entryRelationship typeCode="COMP">
+								<organizer classCode="CLUSTER" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.1.35"/>
+									<id extension="0403ecd5-b29d-41a3-a675-f3ff6792a62b" root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+									<code code="27113001" codeSystem="2.16.840.1.113883.6.96" displayName="Weight Scale"/>
+									<statusCode code="completed"/>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="216" root="4843911a-4672-4f9b-9c09-b6f5ef8f147c"/>
+											<code code="27113001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Weight">
+												<translation code="3141-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Weight"/>
+											</code>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925090248"/>
+											</effectiveTime>
+											<value unit="[lb_av]" value="177.0" xsi:type="PQ"/>
+											<interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83"/>
+											<participant typeCode="DEV">
+												<participantRole classCode="MANU">
+													<templateId root="2.16.840.1.113883.10.20.1.52"/>
+													<playingDevice>
+														<code code="19892000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Weight Scale">
+															<originalText>Weight Scale (A&amp;D Medical UC-321PL)</originalText>
+														</code>
+													</playingDevice>
+												</participantRole>
+											</participant>
+											<participant typeCode="RCV">
+												<time value="20090925161310"/>
+												<participantRole>
+													<playingEntity>
+														<name>Intel HGS</name>
+													</playingEntity>
+												</participantRole>
+											</participant>
+											<referenceRange>
+												<observationRange>
+													<value xsi:type="IVL_PQ">
+														<low unit="[lb_av]" value="120.0"/>
+														<high unit="[lb_av]" value="230.0"/>
+													</value>
+												</observationRange>
+											</referenceRange>
+										</observation>
+									</component>
+								</organizer>
+							</entryRelationship>
+							<entryRelationship typeCode="COMP">
+								<organizer classCode="CLUSTER" moodCode="EVN">
+									<templateId root="2.16.840.1.113883.10.20.1.35"/>
+									<id extension="1a661007-fc15-47e3-92b1-1b7d907f3399" root="57A92F6C-2CFD-496A-B7C9-0B2A6CC19E64"/>
+									<code code="75367002" codeSystem="2.16.840.1.113883.6.96" displayName="Blood Pressure"/>
+									<statusCode code="completed"/>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="217" root="52f6c381-baf9-4c5f-9689-49f0f55e14a3"/>
+											<code code="78564009" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Heart Rate">
+												<translation code="8867-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Heart Rate"/>
+											</code>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925090309"/>
+											</effectiveTime>
+											<value unit="{h'b}/min" value="64" xsi:type="PQ"/>
+											<interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83"/>
+											<participant typeCode="DEV">
+												<participantRole classCode="MANU">
+													<templateId root="2.16.840.1.113883.10.20.1.52"/>
+													<playingDevice>
+														<code code="258057004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Blood Pressure Monitor">
+															<originalText>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</originalText>
+														</code>
+													</playingDevice>
+												</participantRole>
+											</participant>
+											<participant typeCode="RCV">
+												<time value="20090925161310"/>
+												<participantRole>
+													<playingEntity>
+														<name>Intel HGS</name>
+													</playingEntity>
+												</participantRole>
+											</participant>
+											<referenceRange>
+												<observationRange>
+													<value xsi:type="IVL_PQ">
+														<low unit="{h'b}/min" value="60"/>
+														<high unit="{h'b}/min" value="88"/>
+													</value>
+												</observationRange>
+											</referenceRange>
+										</observation>
+									</component>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="217" root="52f6c381-baf9-4c5f-9689-49f0f55e14a3"/>
+											<code code="271649006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Systolic Blood Pressure">
+												<translation code="8480-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Systolic Blood Pressure"/>
+											</code>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925090309"/>
+											</effectiveTime>
+											<value unit="mm[Hg]" value="137" xsi:type="PQ"/>
+											<interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83"/>
+											<participant typeCode="DEV">
+												<participantRole classCode="MANU">
+													<templateId root="2.16.840.1.113883.10.20.1.52"/>
+													<playingDevice>
+														<code code="258057004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Blood Pressure Monitor">
+															<originalText>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</originalText>
+														</code>
+													</playingDevice>
+												</participantRole>
+											</participant>
+											<participant typeCode="RCV">
+												<time value="20090925161310"/>
+												<participantRole>
+													<playingEntity>
+														<name>Intel HGS</name>
+													</playingEntity>
+												</participantRole>
+											</participant>
+											<referenceRange>
+												<observationRange>
+													<value xsi:type="IVL_PQ">
+														<low unit="mm[Hg]" value="120"/>
+														<high unit="mm[Hg]" value="140"/>
+													</value>
+												</observationRange>
+											</referenceRange>
+										</observation>
+									</component>
+									<component>
+										<observation classCode="OBS" moodCode="EVN">
+											<templateId root="2.16.840.1.113883.10.20.1.31"/>
+											<id extension="217" root="52f6c381-baf9-4c5f-9689-49f0f55e14a3"/>
+											<code code="271650006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Diastolic Blood Pressure">
+												<translation code="8462-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Diastolic Blood Pressure"/>
+											</code>
+											<statusCode code="completed"/>
+											<effectiveTime xsi:type="IVL_TS">
+												<center value="20090925090309"/>
+											</effectiveTime>
+											<value unit="mm[Hg]" value="84" xsi:type="PQ"/>
+											<interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83"/>
+											<participant typeCode="DEV">
+												<participantRole classCode="MANU">
+													<templateId root="2.16.840.1.113883.10.20.1.52"/>
+													<playingDevice>
+														<code code="258057004" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED_CT" displayName="Blood Pressure Monitor">
+															<originalText>Blood Pressure Monitor (A&amp;D Medical UA-767PC)</originalText>
+														</code>
+													</playingDevice>
+												</participantRole>
+											</participant>
+											<participant typeCode="RCV">
+												<time value="20090925161310"/>
+												<participantRole>
+													<playingEntity>
+														<name>Intel HGS</name>
+													</playingEntity>
+												</participantRole>
+											</participant>
+											<referenceRange>
+												<observationRange>
+													<value xsi:type="IVL_PQ">
+														<low unit="mm[Hg]" value="60"/>
+														<high unit="mm[Hg]" value="88"/>
+													</value>
+												</observationRange>
+											</referenceRange>
+										</observation>
+									</component>
+								</organizer>
+							</entryRelationship>
+						</encounter>
+					</entry>
+				</section>
+			</component>
+		</structuredBody>
+	</component>
+</ClinicalDocument>

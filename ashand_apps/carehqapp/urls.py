@@ -12,6 +12,7 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
         #url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
         #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
+        url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
 
 
         url(r'^patients/all$', 'patient_views.my_patients', name='my_patients'),
