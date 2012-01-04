@@ -33,3 +33,6 @@ gevent
 johnny-cache
 PIL
 django-smartagent
+pytz
+unidecode
+python-keyczar
