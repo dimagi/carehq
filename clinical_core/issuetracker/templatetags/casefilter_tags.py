@@ -11,7 +11,7 @@ from django.db.models import Q
 
 register = template.Library() 
 
-@register.inclusion_tag('casetracker/partials/casefilter_menu.html')
+@register.inclusion_tag('issuetracker/partials/issuefilter_menu.html')
 def get_casefilters_for_user_ul(user):
     user_filters = Filter.objects.filter(Q(creator=user)).order_by('description')
     shared_filters = Filter.objects.filter(Q(shared=True)).order_by('description')

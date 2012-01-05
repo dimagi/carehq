@@ -88,7 +88,10 @@ def create_patient_actor(tenant, patient_doc, user=None):
     #assume patient document is already saved
     pt_actor = PatientActor()
     pt_actor.patient_doc_id = patient_doc._id
+    pt_actor.first_name = patient_doc.first_name
+    pt_actor.last_name = patient_doc.last_name
     pt_actor.save(tenant, user)
+
     PatientActorLink.objects.get_or_create(patient=patient_doc.django_patient, actor=pt_actor.django_actor)
     permissions.utils.add_role(pt_actor.django_actor, Role.objects.get(name=carehq_constants.role_patient))
 

@@ -1,34 +1,34 @@
 <ul>
-{% for case in cases %}
+{% for issue in issues %}
 {% if request.is_patient %}
 
     <div class="span-24" style="margin: 8px;">
     <div class="span=24 last">
-        <a href="{%url casetracker.views.manage_case case.id %}">{{case.description}}</a>
+        <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
     </div>
     <div class="span-10 prepend-1">
-        Opened by {{ case.opened_by.get_name }}
-       {{ case.opened_date|date }}
+        Opened by {{ issue.opened_by.get_name }}
+       {{ issue.opened_date|date }}
     </div>
     <div class="span-8 last">
-        Last Activity {{ case.last_edit_date|date }} {{ case.last_edit_date|time }}
+        Last Activity {{ issue.last_edit_date|date }} {{ issue.last_edit_date|time }}
 {#        by {{ case.last_edit_by.get_name }}#}
     </div>
     </div>
     {% else %}
     <li>
         <div class="span=10">
-        <span style="font-size:110%">Patient: {{ case.patient }}</span>
+        <span style="font-size:110%">Patient: {{ issue.patient }}</span>
         </div>
         <div class="span=10 last">
-            {{ case.opened_date|date }} {{ case.opened_date|time }}
+            {{ issue.opened_date|date }} {{ issue.opened_date|time }}
         </div>
         <div class="span-24">
             <span style="font-size:125%">
-        <a href="{%url casetracker.views.manage_case case.id %}">{{case.description}}</a>
+        <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
                 </span>
         </div>
-        <strong>Opened By</strong> {{case.opened_by.get_name}} <strong>Edited by:</strong> {{case.last_edit_by.get_name}} <strong>Status:</strong> {{case.status}} <strong>Priority:</strong> {{case.priority}}</a></li>
+        <strong>Opened By</strong> {{issue.opened_by.get_name}} <strong>Edited by:</strong> {{issue.last_edit_by.get_name}} <strong>Status:</strong> {{issue.status}} <strong>Priority:</strong> {{issue.priority}}</a></li>
     <hr>
 {% endif %}
 {%endfor%}

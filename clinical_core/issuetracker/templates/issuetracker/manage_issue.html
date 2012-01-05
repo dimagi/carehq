@@ -15,36 +15,36 @@
 
 
 <div class="span-24">	
-	<div class="span-18"> {# the basic case info block is span 18 #}
+	<div class="span-18"> {# the basic issue info block is span 18 #}
 		{% block issue_info %}
-		{% include "casetracker/partials/case/basic_issue_info.html" %}
+		{% include "issuetracker/partials/issue/base_issue_info.html" %}
 		{% endblock %}		
 		<hr>
 		{% if not show_form %}		
 			{% block issue_actions %}
-			{% include "casetracker/partials/case/default_actions_toolbar.html" %}
+			{% include "issuetracker/partials/issue/default_actions_toolbar.html" %}
 			{% endblock issue_actions %}
 		{% endif %}
 		{% if show_form %}
-			{% include "casetracker/manage/inline_issue_edit.html" %}
+			{% include "issuetracker/manage/inline_issue_edit.html" %}
 		{% endif %}	
 	
 		<div class="span-18 prepend-top">	
 		<hr>		
 		{% block newsfeed-area %}
-		<div id="casehistory">			
+		<div id="issueehistory">
 		</div>
 		<script type="text/javascript">
-  			$("#casehistory").load("{%url case-newsfeed case.id %}");
+  			$("#issuehistory").load("{%url issue-newsfeed issue.id %}");
 		</script>		
-		{% include "casetracker/manage/comment.html" %}
+		{% include "issuetracker/manage/comment.html" %}
 		{% endblock newsfeed-area %}
 		</div>		
-	</div>	<!-- end case body and info container -->	
+	</div>	<!-- end issue body and info container -->
 	<div class="span-6 last"> <!-- specialized category block -->
 		<div class="span-6">						
-		{% block caselink_area %}				
-		{% endblock caselink_area %}
+		{% block issuelink_area %}
+		{% endblock issuelink_area %}
 		</div>				
 		<div class = "span-6">
 		{% block issue_metadata %}

@@ -120,6 +120,9 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     class Meta:
         app_label = 'actorpermission'
 
+    def __unicode__(self):
+        return "ActorDoc %s: %s %s" % (self.doc_type, self.first_name, self.last_name)
+
 
 class DeviceDocument(Document):
     device_id = StringProperty()

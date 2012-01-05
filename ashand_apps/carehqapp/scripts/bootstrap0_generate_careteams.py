@@ -9,6 +9,11 @@ from tenant.models import Tenant
 def run():
     """
     Requres carehq_init constants.
+
+    Regenerate a patients with careteams assigned to them (caregivers, providers, etc)
+
+    Note, johnny cache needs to be invalidated or else you're going to see weird behavior in your runserver.  The model changes done here
+    are not picked up by memcached or the middleware when the server is running
     """
     Patient.objects.all().delete()
     Actor.objects.all().delete()
