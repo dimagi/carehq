@@ -81,7 +81,8 @@ def chw_profile(request, chw_doc_id, template_name="pactcarehq/chw_profile.html"
     context['actor_doc'] = chw
     context['username'] = chw.django_actor.user.username
     context['permissions_dict'] = carehq_api.get_permissions_dict(chw)
-    context['submit_arr'] = submits[0:100]
+    #context['submit_arr'] = submits[0:100]
+    context['submit_arr'] = submits
 #    context['submit_arr'] = [1,2,3]
     return render_to_response(template_name, context_instance=context)
 
