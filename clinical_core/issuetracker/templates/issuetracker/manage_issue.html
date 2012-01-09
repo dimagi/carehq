@@ -33,6 +33,15 @@
 		<hr>		
 		{% block newsfeed-area %}
 		<div id="issueehistory">
+            <ul>
+            {% for evt in issue.issue_events.all %}
+                <li>
+                    {{ evt.notes }} :: {{ evt.activity }}<br>
+                    {{ evt.created_date }} :: {{ evt.created_by }}
+                    <hr>
+                </li>
+            {% endfor %}
+            </ul>
 		</div>
 		<script type="text/javascript">
   			$("#issuehistory").load("{%url issue-newsfeed issue.id %}");

@@ -37,8 +37,8 @@ def issue_saved(sender, instance, created, **kwargs):
         event_create_date = instance.last_edit_date
         event_creator = instance.last_edit_by
         
-        if hasattr(instance, 'save_comment'):
-            notes = instance.save_comment
+        if hasattr(instance, '_save_comment'):
+            notes = instance._save_comment
         else:
             notes = "Issue edited by " + event_creator.name
             

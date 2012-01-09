@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.contrib.sessions.backends.db import SessionStore
 from django.http import  Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -85,7 +86,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                 if form.is_valid():                    
                     issue = form.save(commit=False)
                     edit_comment = form.cleaned_data["comment"]
-                    issue.last_edit_by = request.user
+                    issue.last_edit_by = request.current_actor #learn to set current actor
                     issue.last_edit_date = datetime.utcnow()
                     #next, we need to see the mode and flip the fields depending on who does what.
                     if activity == constants.CASE_EVENT_ASSIGN:
@@ -93,13 +94,13 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                         issue.assigned_by = request.user
                         edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), issue.assigned_to.title(), request.user.title())
                         
-                    issue.save(activity=activity, save_comment = edit_comment)
+                    issue.save(request.current_actor, activity=activity, save_comment = edit_comment)
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             
             elif activity == constants.CASE_EVENT_RESOLVE or activity == constants.CASE_EVENT_CLOSE:
                 form = CaseResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
                 context['form'] = form
-                if form.is_valid():                     
+                if form.is_valid():
                     status = form.cleaned_data['state']                    
                     comment = form.cleaned_data['comment']                    
                     theissue.status = status
@@ -110,20 +111,20 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     elif activity == constants.CASE_EVENT_RESOLVE:
                         theissue.resolved_by=request.user
         
-                    theissue.save(activity = activity, save_comment = comment)
+                    theissue.save(request.current_actor, activity = activity, save_comment = comment)
                     
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             elif activity == constants.CASE_EVENT_COMMENT:
                 form = CaseCommentForm(data=request.POST)
                 context['form'] = form
-                if form.is_valid():    
+                if form.is_valid():
                     if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
                         comment = form.cleaned_data["comment"]
                     evt = IssueEvent()
                     evt.issue = theissue
                     evt.notes = comment
                     evt.activity = constants.CASE_EVENT_COMMENT
-                    evt.created_by = request.user
+                    evt.created_by = request.current_actor
                     evt.save()
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
         else:

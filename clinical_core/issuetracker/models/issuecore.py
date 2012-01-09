@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 
 from datetime import datetime, timedelta
+from pytz import timezone
 from issuetracker.middleware import threadlocals
 
 from django.core.urlresolvers import reverse
@@ -18,6 +19,7 @@ from dimagi.utils import make_uuid
 import uuid
 from django.contrib.contenttypes.models import ContentType
 from permissions.models import Actor
+import settings
 
 
 class IssueCategory(models.Model):
@@ -184,6 +186,21 @@ class Issue(models.Model):
         else:
             return None
 
+
+    def assign_case(self, assign_actor, actor_by=None, commit=True):
+        """
+        Assign the case to the actor.
+        Args:
+        commit - do a save() immediately
+        """
+        self.assigned_to = assign_actor
+        self.assigned_date = datetime.now(tz=timezone(settings.TIME_ZONE))
+        if commit:
+            if actor_by is None:
+                raise Exception("Error, for direct save, you must set the actor_by argument")
+            self.save(actor_by, activity=constants.CASE_EVENT_ASSIGN)
+
+
     def _get_related_objects(self):
         props = dir(self)
         qset_arr = []
@@ -218,7 +235,7 @@ class Issue(models.Model):
             self._related_objects = self._get_related_objects()
         return self._related_objects
 
-    def save(self, activity=None):
+    def save(self, actor, activity=None, save_comment=None):
         """
         Save a case.
         Note, this needs to be profoundly updated to be more thread safe using update()
@@ -236,14 +253,14 @@ class Issue(models.Model):
 #            super(Issue, self).save()
 #            return
 #
+        assert isinstance(actor, Actor), "An Actor instance must be passed for the save action to be completed"
 
         if activity == None:
             raise Exception("Error, you must set an ActivityClass for this Issue Save")
         else:
             self.event_activity = activity
 
-        if self.last_edit_by == None:
-            raise Exception("Missing fields in edited Issue: last_edit_by")
+        self.last_edit_by = actor
 
         #now, we need to check the status change being done to this.
         if self.status == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
@@ -263,16 +280,20 @@ class Issue(models.Model):
                 self.closed_date = datetime.utcnow()
 
         self.last_edit_date = datetime.utcnow()
+        if save_comment is not None:
+            self._save_comment=save_comment
+
+
         super(Issue, self).save()
 
     def __unicode__(self):
         return "(Issue %s) %s" % (self.id, self.description)
 
-    def case_name(self):
+    def issue_name(self):
         #return "Issue %s" % self.id
         return self.description
 
-    def case_name_url(self):
+    def issue_name_url(self):
         #return "Issue %s" % self.id
         #reverse("issuetracker.views.manage_issue", args=[obj.id])
         return '<a href="%s">%s</a>' % (reverse('manage-case', args=[self.id]), self.description)
@@ -286,7 +307,7 @@ class Issue(models.Model):
 
 class ExternalCaseData(models.Model):
     """
-    External documents attached to a case (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
+    External documents attached to a issue (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
     """
     id = models.CharField(_('Issue Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
     issue_id = models.ForeignKey(Issue, related_name="external_data")

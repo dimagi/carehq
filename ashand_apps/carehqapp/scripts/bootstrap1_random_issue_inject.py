@@ -69,7 +69,7 @@ def run():
         fixed_time = datetime.utcnow() - startdelta
         newcase.opened_date = fixed_time
         newcase.assigned_to = random.choice(actors)
-        newcase.save(activity=caseconstants.CASE_EVENT_CHOICES[2][0])
+        newcase.save(actor, activity=caseconstants.CASE_EVENT_CHOICES[2][0])
         print "Created case %s for patient %s by %s" % (newcase.description, pt.couchdoc.first_name+" "+pt.couchdoc.last_name, newcase.opened_by.name)
 
 

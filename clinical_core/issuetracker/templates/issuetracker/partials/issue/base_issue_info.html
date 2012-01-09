@@ -12,7 +12,7 @@
 			<div class="span-5 prepend-2">
                 {% if issue.assigned_to %}
                 <strong>{% trans "Assigned" %}</strong>
-                to <a href="{% url view_actor issue.assigned_to.id %}">{{issue.assigned_to.get_name}}</a><br>
+                to <a href="{% url view_actor issue.assigned_to.id %}">{{issue.assigned_to}}</a><br>
 				<small>{{issue.assigned_date|date}}</small>
                 {% else %}
                     <strong>Unassigned</strong>

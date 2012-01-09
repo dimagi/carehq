@@ -9,7 +9,7 @@
     <ul>
     {% for djangopt in patients %}
         <li>
-            <a href="{% url view_ashand_patient djangopt.couchdoc.get_id %}">
+            <a href="{% url patient_url djangopt.couchdoc.get_id %}">
                 {{ djangopt.couchdoc.first_name }} {{ djangopt.couchdoc.last_name }}
             </a>
         </li>

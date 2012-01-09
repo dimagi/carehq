@@ -7,6 +7,7 @@ from django.forms import widgets
 from django.forms.models import ModelForm
 from issuetracker.models import Issue
 from issuetracker import constants
+from permissions.models import Actor
 
 class CaseCommentForm(forms.Form):    
     comment = forms.CharField(required=True,
@@ -121,7 +122,7 @@ class CaseModelForm(ModelForm):
         if self.instance:
             #set all the User FK's to use a different choice system as defined by the Category Bridge class
             #else, it'll default to ALL users in the system.    
-            user_list_choices = self.instance.category.handler.get_user_list_choices(self.instance)
+            user_list_choices = Actor.objects.all()
             if user_list_choices:
                 if self.fields.has_key('assigned_to'):                
                     self.fields['assigned_to'].choices = user_list_choices

@@ -3,6 +3,7 @@ import uuid
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty
+from django.core.urlresolvers import reverse
 from django.utils.timesince import timesince
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -378,6 +379,10 @@ class SimplePatient(BasePatient):
     """
     def is_unique(self):
         return True
+
+    def get_absolute_url(self):
+        url= reverse('patient_url', kwargs={'patient_guid': self._id})
+        return url
 
     def __getattr__(self, key):
         # this hack allows this to be used in templates that expect it

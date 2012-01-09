@@ -28,7 +28,11 @@
         My Contexts (github)
         <ul>
         {% for actor in request.actors %}
-            <li>{{ actor }}</li>
+            {% if actor == request.current_actor %}
+                <li>{{ actor }}*</li>
+            {% else %}
+                <li>{{ actor }} <a href="{% url set_current_actor actor.id %}">Set</a></li>
+            {% endif %}
         {% endfor %}
         </ul>
         <h3>Permissions</h3>

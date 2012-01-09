@@ -100,7 +100,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
         issue.last_edit_by = actor_provider_doc.django_actor
         activity = constants.CASE_EVENT_EDIT
         issue.save_comment="editing in testIssueModifyDescription"
-        issue.save(activity=activity)
+        issue.save(actor_provider_doc.django_actor, activity=activity)
 
 
         events = IssueEvent.objects.filter(issue=issue)
@@ -130,7 +130,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
             subissue.last_edit_by = actor_provider_doc.django_actor
             activity = constants.CASE_EVENT_EDIT
             subissue.save_comment="editing in testIssueCreateChildCases"
-            subissue.save(activity=activity)
+            subissue.save(actor_provider_doc.django_actor, activity=activity)
 
 
         self.assertEqual(root_issue.child_issues.count(), CHILD_ISSUES)
