@@ -1,6 +1,7 @@
 #from provider.models import Provider
 import logging
 import pdb
+from django.contrib.auth.models import AnonymousUser
 from django.utils.hashcompat import sha_constructor
 from carehqapp import constants
 from patient.models import Patient
@@ -95,25 +96,27 @@ class CareHQIdentityMiddleware(object):
     """
     def process_request(self, request):
         assert hasattr(request, 'user'), "The ashand's identity middleware requires Django's authentication middleware to be installed. Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.auth.middleware.SessionMiddleware'."
-        request.__class__.actors = LazyActors()
-        request.__class__.current_actor = LazyCurrentActor()
+        if not isinstance(request.user, AnonymousUser): #CareHQ Identity Middleware requires the user be logged in.
+            request.__class__.actors = LazyActors()
+            request.__class__.current_actor = LazyCurrentActor()
         return None
 
     def process_response(self, request, response):
         #if the request's cookie and the cookie value are not in sync, or if the cookie doesn't exist, set the cookie here.
-        if response.cookies.has_key(COOKIE_ACTOR_CONTEXT):
-            if hasattr(request, CACHED_CURRENT_ACTOR):
-                delattr(request, CACHED_CURRENT_ACTOR)
-            return response
-        requests_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, None)
-        if requests_cookie is None:
-            #no cookie at all, generate the default cookie
-            if request.actors.count() > 0:
-                actor_to_use = request.actors[0]
-                actor_context_cookie = '%s.%s' % (actor_to_use.id, sha_constructor(actor_to_use.id + settings.SECRET_KEY).hexdigest())
-            else:
-                actor_context_cookie = ''
-            response.set_cookie(COOKIE_ACTOR_CONTEXT, actor_context_cookie)
+        if not isinstance(request.user, AnonymousUser): #CareHQ Identity Middleware requires the user be logged in.
+            if response.cookies.has_key(COOKIE_ACTOR_CONTEXT):
+                if hasattr(request, CACHED_CURRENT_ACTOR):
+                    delattr(request, CACHED_CURRENT_ACTOR)
+                return response
+            requests_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, None)
+            if requests_cookie is None:
+                #no cookie at all, generate the default cookie
+                if request.actors.count() > 0:
+                    actor_to_use = request.actors[0]
+                    actor_context_cookie = '%s.%s' % (actor_to_use.id, sha_constructor(actor_to_use.id + settings.SECRET_KEY).hexdigest())
+                else:
+                    actor_context_cookie = ''
+                response.set_cookie(COOKIE_ACTOR_CONTEXT, actor_context_cookie)
         return response
 
         
