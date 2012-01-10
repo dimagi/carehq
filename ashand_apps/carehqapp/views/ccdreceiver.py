@@ -21,7 +21,13 @@ def receive_ccd(request):
     #response_text = """<Response><Code>SUCCESS</Code><Message>doc submitted id:%s</Message></Response>""" % doc['_id']
 
     #Temporary method for submission until receiver logic is updated to handle patientsessiondata POST key
-    resp = spoof_submission(reverse('receiver.views.post'), request.FILES['patientsessiondata'].read(), hqsubmission=False)
+    if request.POST.has_key('patientsessiondata'):
+        payload = request.POST['patientsessiondata']
+    else:
+        if request.FILES.has_key('patientsessiondata'):
+            payload = request.POST['patientsessiondata'].read()
+    payload = str(request.META)
+    resp = spoof_submission(reverse('receiver.views.post'), payload, hqsubmission=False)
     response_text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response><Code>SUCCESS</Code><Message>Thank you %s</Message></Response>" % uuid.uuid4().hex
     return HttpResponse(response_text) #default this assumes is a 200 response code.
 
