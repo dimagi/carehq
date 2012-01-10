@@ -1,3 +1,4 @@
+import logging
 import uuid
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -21,13 +22,15 @@ def receive_ccd(request):
     #response_text = """<Response><Code>SUCCESS</Code><Message>doc submitted id:%s</Message></Response>""" % doc['_id']
 
     #Temporary method for submission until receiver logic is updated to handle patientsessiondata POST key
+    payload = None
     if request.POST.has_key('patientsessiondata'):
         payload = request.POST['patientsessiondata']
     else:
         if request.FILES.has_key('patientsessiondata'):
             payload = request.POST['patientsessiondata'].read()
-    payload = str(request.META)
+    if payload is None:
+        logging.error("Error receiving data, patientsession data key not in FILES or POST %s" % str(request.META))
     resp = spoof_submission(reverse('receiver.views.post'), payload, hqsubmission=False)
     response_text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response><Code>SUCCESS</Code><Message>Thank you %s</Message></Response>" % uuid.uuid4().hex
-    return HttpResponse(response_text) #default this assumes is a 200 response code.
+    return HttpResponse(response_text, content_type='text/xml') #default this assumes is a 200 response code.
 
