@@ -312,7 +312,7 @@
             {% include "pactcarehq/partials/dots_schedule_weekly_view.html" %}
             <div id="scheduleform"></div>
             <div style="float:right;" class="editctrl">
-                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:ajax_get_form('{{ patient_doc.get_id }}','schedule', 'scheduleform');">
+                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}','schedule', 'scheduleform');">
                     <span class="ui-icon ui-icon-circle-plus"></span>
                     Add Schedule
                 </a>
