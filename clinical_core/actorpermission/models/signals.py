@@ -21,6 +21,9 @@ def actor_post_delete(sender, instance, *args, **kwargs):
     """
     Cleanup procedure to ensure that a deleted actor is deprecated and removed from the view.
     """
+    if not instance.doc_id:
+        logging.debug("Document doesn't exist")
+        return
     if not hasattr(instance, 'actordoc'):
         doc = BaseActorDocument.get_typed_from_id(instance.doc_id)
     else:
