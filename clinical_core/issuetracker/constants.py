@@ -40,6 +40,17 @@ STATUS_CHOICES = (
         (CASE_STATE_RESOLVED, 'Resolved'),
         (CASE_STATE_CLOSED, 'Closed'),
 )
+STATUS_RESOLVE_CHOICES = (
+    (CASE_STATE_RESOLVED, 'Resolved'),
+    )
+
+STATUS_CLOSE_CHOICES = (
+    (CASE_STATE_CLOSED, 'Closed'),
+        )
+
+STATUS_REOPEN_CHOICES = (
+    (CASE_STATE_OPEN, 'Open'),
+    )
 
 PRIORITY_LOW = 100
 PRIORITY_MEDIUM = 500

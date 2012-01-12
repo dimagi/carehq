@@ -5,50 +5,54 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelForm
+from issuetracker.constants import STATUS_CHOICES, STATUS_RESOLVE_CHOICES, STATUS_CLOSE_CHOICES
 from issuetracker.models import Issue
 from issuetracker import constants
 from permissions.models import Actor
 
-class CaseCommentForm(forms.Form):    
+class IssueCommentForm(forms.Form):
     comment = forms.CharField(required=True,
                            error_messages = {'required': 'You must enter a comment'},
                            widget = widgets.Textarea(attrs={'cols':80,'rows':5}),                            
                           )
     
 
-class CaseResolveCloseForm(forms.Form):
+class IssueResolveCloseForm(forms.Form):
     #state = forms.ModelChoiceField(label="Reason", queryset = Status.objects.all(), required=True, widget=widgets.RadioSelect())
-    state = forms.CharField(required=True)
+    #state = forms.CharField(required=True)
+    state=forms.ChoiceField(choices=STATUS_CHOICES)
     comment = forms.CharField(required=True,
                             label="Note",
                            error_messages = {'required': 'You must enter a comment'},
                            widget = widgets.Textarea(attrs={'cols':80,'rows':5}),
                           )
 
-    def __init__(self, case=None, activity=None, *args, **kwargs):
-        super(CaseResolveCloseForm, self).__init__(*args, **kwargs)
-        event_class = activity.event_class
+    def __init__(self, issue=None, activity=None, *args, **kwargs):
+        super(IssueResolveCloseForm, self).__init__(*args, **kwargs)
+        event_class = activity
 
         if event_class == constants.CASE_EVENT_RESOLVE:
             state_class = constants.CASE_STATE_RESOLVED
             self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
+            self.fields['state'].choices=STATUS_RESOLVE_CHOICES
         if event_class == constants.CASE_EVENT_CLOSE:
             self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
             state_class = constants.CASE_STATE_CLOSED
+            self.fields['state'].choices=STATUS_CLOSE_CHOICES
 
-        if case is None:
-            raise Exception("Error, you must pass in a valid case to process this form")
+        if issue is None:
+            raise Exception("Error, you must pass in a valid issue to process this form")
 
         #self.fields['state'].choices = [(x.id, x.display.title()) for x in state_qset]
 
         #Thanks Django documentation to help set the initial value of the RadioSelect widget.
         #oh wait, yeah, THE DOC FOR THIS DOES NOT EXIST!!!
-        self.fields['state'].initial = state_qset[0].id
-        
+        #self.fields['state'].initial =
 
-class CaseModelForm(ModelForm):
+
+class IssueModelForm(ModelForm):
     """
-    A form to modify a case instance.
+    A form to modify a issue instance.
     The constants below try to establish a way to flip the active fields depending on the context of how to change it.  The idea here is that not all fields should be presentable to the user.
     """
         
@@ -61,17 +65,18 @@ class CaseModelForm(ModelForm):
         #default exclude for basic editing
         exclude = ()
     def __init__(self, editor_user=None, activity=None, * args, **kwargs):      
-        super(CaseModelForm, self).__init__(*args, **kwargs)
+        super(IssueModelForm, self).__init__(*args, **kwargs)
         self.editor_user = editor_user
         self.activity = activity
         #event_class = activity.event_class
-        
+
         
         #These are all the fields in this modelform, both the newly added ones and the ones
-        #within the case model.
+        #within the issue model.
         #To make the display different depending on the activity, pare down the exclusion list
         #and then the form will display the fields you remove from the exclusion list.
         fields_to_exclude = ['id',
+                             'patient',
                      'description',
                      'category',
                      'status',
@@ -88,31 +93,32 @@ class CaseModelForm(ModelForm):
                      'assigned_to',
                      'assigned_date',
                      'parent_issue',
+                     'due_date',
                      ]
-        
+
+
         if self.activity == constants.CASE_EVENT_EDIT:
             fields_to_exclude = ['id',
-                     'category',
-                     'status',
-                     'opened_date',
-                     'opened_by',
-                     'last_edit_by',
-                     'last_edit_date',
-                     'resolved_date',
-                     'resolved_by',
-                     'closed_date',
-                     'closed_by',
-                     'assigned_to',
-                     'assigned_date',
-                     'parent_issue',
-                     ]
-            self.fields['comment'].help_text = 'Please comment on the changes just made (required)'           
-        
+                                 'category',
+                                 'status',
+                                 'opened_date',
+                                 'opened_by',
+                                 'last_edit_by',
+                                 'last_edit_date',
+                                 'resolved_date',
+                                 'resolved_by',
+                                 'closed_date',
+                                 'closed_by',
+                                 'assigned_to',
+                                 'assigned_date',
+                                 'parent_issue',
+                                 ]
+            self.fields['comment'].help_text = 'Please comment on the changes just made (required)'
+
         elif self.activity == constants.CASE_EVENT_ASSIGN:
-            fields_to_exclude.remove('assigned_to')            
-            self.fields['assigned_to'].label = 'Assign to'            
-            self.fields['comment'].help_text = 'Please enter a short note'                       
-        
+            fields_to_exclude.remove('assigned_to')
+            self.fields['assigned_to'].label = 'Assign to'
+            self.fields['comment'].help_text = 'Please enter a short note'
         for field in fields_to_exclude:
             try:
                 del self.fields[field]
@@ -120,12 +126,10 @@ class CaseModelForm(ModelForm):
                 pass
             
         if self.instance:
-            #set all the User FK's to use a different choice system as defined by the Category Bridge class
-            #else, it'll default to ALL users in the system.    
             user_list_choices = Actor.objects.all()
             if user_list_choices:
                 if self.fields.has_key('assigned_to'):                
-                    self.fields['assigned_to'].choices = user_list_choices
+                    self.fields['assigned_to'].queryset = user_list_choices
                 if self.fields.has_key('resolved_by'):
                     self.fields['resolved_by'].choices = user_list_choices
                 if self.fields.has_key('closed_by'):
@@ -138,7 +142,7 @@ class CaseModelForm(ModelForm):
                     
     def clean(self):
         """
-        Do a default clean and validation, but then set other properties on the case instance before it's saved.
+        Do a default clean and validation, but then set other properties on the issue instance before it's saved.
         """
-        super(CaseModelForm, self).clean()        
+        super(IssueModelForm, self).clean()
         return self.cleaned_data

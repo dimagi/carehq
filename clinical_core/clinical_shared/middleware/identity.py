@@ -111,12 +111,15 @@ class CareHQIdentityMiddleware(object):
             requests_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, None)
             if requests_cookie is None:
                 #no cookie at all, generate the default cookie
-                if request.actors.count() > 0:
-                    actor_to_use = request.actors[0]
-                    actor_context_cookie = '%s.%s' % (actor_to_use.id, sha_constructor(actor_to_use.id + settings.SECRET_KEY).hexdigest())
+                if hasattr(request, 'actors'):
+                    if request.actors.count() > 0:
+                        actor_to_use = request.actors[0]
+                        actor_context_cookie = '%s.%s' % (actor_to_use.id, sha_constructor(actor_to_use.id + settings.SECRET_KEY).hexdigest())
+                    else:
+                        actor_context_cookie = ''
+                    response.set_cookie(COOKIE_ACTOR_CONTEXT, actor_context_cookie)
                 else:
-                    actor_context_cookie = ''
-                response.set_cookie(COOKIE_ACTOR_CONTEXT, actor_context_cookie)
+                    print "no context for actor yet"
         return response
 
         

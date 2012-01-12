@@ -6,6 +6,7 @@ from django.db.models import Q
 
 from datetime import datetime, timedelta
 from pytz import timezone
+from dimagi.utils.make_time import make_time
 from issuetracker.middleware import threadlocals
 
 from django.core.urlresolvers import reverse
@@ -69,7 +70,7 @@ class IssueEvent(models.Model):
         if self.created_date == None:
             if self.created_by == None:
                 raise Exception("Missing fields in Issue creation - created by")
-            self.created_date = datetime.utcnow()
+            self.created_date = make_time()
         super(IssueEvent, self).save()
 
     def __unicode__(self):
@@ -194,7 +195,7 @@ class Issue(models.Model):
         commit - do a save() immediately
         """
         self.assigned_to = assign_actor
-        self.assigned_date = datetime.now(tz=timezone(settings.TIME_ZONE))
+        self.assigned_date = make_time()
         if commit:
             if actor_by is None:
                 raise Exception("Error, for direct save, you must set the actor_by argument")
@@ -267,7 +268,7 @@ class Issue(models.Model):
             if self.resolved_by == None:
                 raise Exception("Issue state is now resolved, you must set a resolved_by")
             else:
-                self.resolved_date = datetime.utcnow()
+                self.resolved_date = make_time()
         elif self.status == constants.CASE_STATE_CLOSED:
             if self.closed_by == None:
                 raise Exception("Issue state is now closed, you must set a closed_by")
@@ -276,10 +277,10 @@ class Issue(models.Model):
                 if self.resolved_by == None:
                     #raise Exception("Error, this case must be resolved before it can be closed")
                     self.resolved_by = self.closed_by
-                    self.resolved_date = datetime.utcnow()
-                self.closed_date = datetime.utcnow()
+                    self.resolved_date = make_time()
+                self.closed_date = make_time()
 
-        self.last_edit_date = datetime.utcnow()
+        self.last_edit_date = make_time()
         if save_comment is not None:
             self._save_comment=save_comment
 

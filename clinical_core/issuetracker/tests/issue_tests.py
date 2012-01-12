@@ -39,7 +39,8 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
 #        User.objects.all().delete()
 #        transaction.commit()
 
-
+    def testUMLS(self):
+        pass
     def testCreateIssueView(self, description = INITIAL_DESCRIPTION):
         """
         In the issue view functions, create an issue

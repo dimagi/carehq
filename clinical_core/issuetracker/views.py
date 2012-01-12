@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+import pdb
 from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import  Http404, HttpResponseRedirect
@@ -10,7 +11,7 @@ from django.shortcuts import render_to_response
 from issuetracker.models import Issue, IssueEvent
 from issuetracker import constants
 from issuetracker.feeds.issueevents import get_sorted_issueevent_dictionary
-from issuetracker.forms import CaseModelForm, CaseCommentForm, CaseResolveCloseForm
+from issuetracker.forms import IssueModelForm, IssueCommentForm, IssueResolveCloseForm
 
 #taken from the threadecomments django project
 from issuetracker.models.filters import Filter
@@ -81,41 +82,39 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
 
         if request.method == 'POST':
             if activity == constants.CASE_EVENT_EDIT or activity == constants.CASE_EVENT_ASSIGN:
-                form = CaseModelForm(data=request.POST, instance=theissue, editor_user=request.user, activity=activity)
+                form = IssueModelForm(data=request.POST, instance=theissue, editor_user=request.current_actor, activity=activity)
                 context['form'] = form
                 if form.is_valid():                    
                     issue = form.save(commit=False)
                     edit_comment = form.cleaned_data["comment"]
-                    issue.last_edit_by = request.current_actor #learn to set current actor
-                    issue.last_edit_date = datetime.utcnow()
                     #next, we need to see the mode and flip the fields depending on who does what.
                     if activity == constants.CASE_EVENT_ASSIGN:
                         issue.assigned_date = datetime.utcnow()
-                        issue.assigned_by = request.user
-                        edit_comment += " (%s to %s by %s)" % (activity.past_tense.title(), issue.assigned_to.title(), request.user.title())
+                        issue.assigned_by = request.current_actor
+                        edit_comment += " (%s to %s by %s)" % (activity, issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
                         
                     issue.save(request.current_actor, activity=activity, save_comment = edit_comment)
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             
             elif activity == constants.CASE_EVENT_RESOLVE or activity == constants.CASE_EVENT_CLOSE:
-                form = CaseResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
+                form = IssueResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
                 context['form'] = form
                 if form.is_valid():
                     status = form.cleaned_data['state']                    
                     comment = form.cleaned_data['comment']                    
                     theissue.status = status
-                    theissue.last_edit_by = request.user
+                    theissue.last_edit_by = request.current_actor
                     
                     if activity == constants.CASE_EVENT_CLOSE:
-                        theissue.closed_by=request.user
+                        theissue.closed_by=request.current_actor
                     elif activity == constants.CASE_EVENT_RESOLVE:
-                        theissue.resolved_by=request.user
+                        theissue.resolved_by=request.current_actor
         
                     theissue.save(request.current_actor, activity = activity, save_comment = comment)
                     
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             elif activity == constants.CASE_EVENT_COMMENT:
-                form = CaseCommentForm(data=request.POST)
+                form = IssueCommentForm(data=request.POST)
                 context['form'] = form
                 if form.is_valid():
                     if form.cleaned_data.has_key('comment') and form.cleaned_data['comment'] != '':
@@ -129,27 +128,26 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
         else:
             #it's a GET
+            issueform = None
             if activity==constants.CASE_EVENT_EDIT or activity==constants.CASE_EVENT_ASSIGN:
-                issueform = CaseModelForm
+                issueform = IssueModelForm
             elif activity == constants.CASE_EVENT_COMMENT:
-                issueform = CaseCommentForm
+                issueform = IssueCommentForm
             elif activity==constants.CASE_EVENT_RESOLVE or activity==constants.CASE_EVENT_CLOSE:
-                issueform = CaseResolveCloseForm
+                issueform = IssueResolveCloseForm
 
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 
-            if issueform == CaseModelForm:
-                context['form'] = issueform(instance=theissue, editor_user=request.user, activity=activity)
+            if issueform == IssueModelForm:
+                context['form'] = issueform(instance=theissue, editor_user=request.current_actor, activity=activity)
                 context['can_comment'] = False
-            elif issueform== CaseResolveCloseForm:
+            elif issueform == IssueResolveCloseForm:
                 context['form'] = issueform(issue=theissue, activity=activity)
                 context['can_comment'] = False                        
-            elif issueform == CaseCommentForm:
+            elif issueform == IssueCommentForm:
                 context['form'] = issueform()
-                        
-                
             else:
                 logging.error("no form definition")
-            context['submit_url'] = ''    
+            context['submit_url'] = ''
     return render_to_response(template_name, context_instance=context)
 
 

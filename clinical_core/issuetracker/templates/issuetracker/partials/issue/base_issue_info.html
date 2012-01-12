@@ -1,35 +1,36 @@
 {% load i18n %}
 <div class="span-18">  <!-- issue info block -->
         <div class="span-18">
-            <span style="font-size:2.0em;">{{issue.description}}</span><br>
-            <span style="font-size:1.25em">for Patient {{ issue.patient.couchdoc.first_name }} {{ issue.patient.couchdoc.last_name }}</span> &nbsp;&nbsp;
-			<small>Created {{issue.opened_date|timesince}} ago by <a href="{% url view_actor issue.opened_by.id %}">{{issue.opened_by.get_name}}</a></small>
             <hr>
+            <div class="span-18 last">
+			<small>Created {{issue.opened_date|timesince}} ago by <a href="{% url view_actor issue.opened_by.id %}">{{issue.opened_by.actordoc.get_name}}</a></small>
+            </div>
+            <div class="span-18 last"><span style="font-size:2.0em;">{{issue.description}}</span></div>
             <p style="font-size:1.5em;">{{issue.body}}</p>
+            <hr>
         </div>
         
         <div class="span-18">        	
-			<div class="span-5 prepend-2">
+			<div class="span-5 prepend-1">
                 {% if issue.assigned_to %}
                 <strong>{% trans "Assigned" %}</strong>
-                to <a href="{% url view_actor issue.assigned_to.id %}">{{issue.assigned_to}}</a><br>
+                to <a href="{% url view_actor issue.assigned_to.id %}">{{issue.assigned_to.actordoc.get_name}}</a><br>
 				<small>{{issue.assigned_date|date}}</small>
                 {% else %}
                     <strong>Unassigned</strong>
-
                 {% endif %}
             </div>		
 			
 			{% if issue.is_resolved and not issue.is_closed%}
 			<div class="span-5">
-                <strong>{% trans "Resolved" %}</strong> by <a href="{% url view_actor issue.resolved_by.id %}">{{issue.resolved_by.get_name}}</a><br>
+                <strong>{% trans "Resolved" %}</strong> by <a href="{% url view_actor issue.resolved_by.id %}">{{issue.resolved_by.actordoc.get_name}}</a><br>
 				<small>{{issue.resolved_date|date}}</small>
             </div>
 			{% endif %}
 			
 			{% if issue.is_closed %}
 			<div class="span-5 notice">
-                <strong>{% trans "Closed" %}</strong> by <a href="{% url view_actor issue.closed_by.id %}">{{issue.closed_by.get_name}}</a><br>
+                <strong>{% trans "Closed" %}</strong> by <a href="{% url view_actor issue.closed_by.id %}">{{issue.closed_by.actordoc.get_name}}</a><br>
 				<small>{{issue.closed_date|date}}</small>
             </div>
 			{% endif %}			

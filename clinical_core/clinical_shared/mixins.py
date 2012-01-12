@@ -1,4 +1,5 @@
 import logging
+from couchdbkit.exceptions import ResourceNotFound
 
 class TypedSubclassMixin(object):
     @classmethod
@@ -26,5 +27,8 @@ class TypedSubclassMixin(object):
         """
         #todo this is hacky in a multitenant environment
         db = cls.get_db()
-        doc_dict = db.open_doc(doc_id)
-        return cls.get_typed_from_dict(doc_dict)
+        try:
+            doc_dict = db.open_doc(doc_id)
+            return cls.get_typed_from_dict(doc_dict)
+        except ResourceNotFound:
+            return None

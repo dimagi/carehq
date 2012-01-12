@@ -15,8 +15,7 @@ def my_patients(request, template="carehqapp/my_patients.html"):
     context = RequestContext(request)
 
     #get actor info
-    my_actors = Actor.objects.all().filter(user=request.user)
-    allowed_patients = PrincipalRoleRelation.objects.filter(actor__in=my_actors, content_type=ContentType.objects.get_for_model(Patient)).select_related()
+    allowed_patients = PrincipalRoleRelation.objects.filter(actor=request.current_actor, content_type=ContentType.objects.get_for_model(Patient)).select_related()
 
     pt_relation_dict = {}
 
