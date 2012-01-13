@@ -5,17 +5,20 @@ import sys
 import os
 
 from django.core import serializers
-from careplan.models import PlanRule, PlanItem, CarePlan
+from careplan.models import BaseCarePlan, PlanCategory, PlanTag, BaseCarePlanItem, TemplateCarePlanItemLink
 
 
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list
-    help = 'Regenerate the CarePlan instances to json.'
+    help = 'Regenerate the CarePlanInstance templates to json.'
     args = ""
  
-    def handle(self, *scripts, **options):                
-        models = [PlanRule, PlanItem, CarePlan]        
+    def handle(self, *scripts, **options):        
+                
+        models = [BaseCarePlan, PlanCategory, PlanTag, BaseCarePlanItem, TemplateCarePlanItemLink]
+        
+        
         all_data = []
         for model in models:
             fullset = model.objects.all()

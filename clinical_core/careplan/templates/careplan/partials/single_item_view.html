@@ -1,0 +1,23 @@
+<div class="span-24">
+    <div class="span-24">
+        <div class="span-8">
+            <h2>
+                {{ plan_item.title }}
+            </h2>
+        </div>
+        <div class="span-8">
+            <strong>Tags</strong><br>
+            {% for tag in plan_item.tags %}
+                {{ tag }}<br>
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+    <div class="span-24">
+        <h3>Description</h3>
+        {% autoescape off %}
+            {{ plan_item.description }}
+        {% endautoescape %}
+    </div>
+</div>
+     

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Plan Templates" %} {% endblock %}
+{% block content %}
+    <div class="span-24">
+        <h2><a href="{% url all_template_careplans %}">Templates</a></h2>
+
+        <h2>Plan Name: {{ careplan.title }}</h2>
+
+        <p>{{ careplan.description }}</p>
+        <dl>
+            <dt>Created by:</dt>
+            <dd>{{ careplan.created_by }}</dd>
+            <dt>Created date:</dt>
+            <dd>{{ careplan.created_date|date }}</dd>
+        </dl>
+    </div>
+    <div class="span-24">
+        <div class="span-12">
+            <h2>Care Plan Items</h2>
+            <ol>
+            {% for plan_item in careplan.plan_items %}
+                <li>
+                    <a href="{{plan_item.get_absolute_url}}">{{plan_item.title|title}}</a>
+                    <br>&nbsp;&nbsp;{{ plan_item.description }}
+                </li>
+            {% endfor %}
+            </ol>
+        </div>
+        <div class="span-12 last">
+            <div class="span-12 last">
+                <h4>Add New Base Item</h4>
+
+                <form action="{% url add_new_item_to_template careplan.get_id %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ new_form.as_table }}
+                    </table>
+                    <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+                           class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+            </div>
+            <div class="span-12 last">
+                <h4>Add Existing Base Item</h4>
+
+                <form action="{% url add_existing_item_to_template careplan.get_id %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ add_form.as_table }}
+                    </table>
+
+                    <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+                           class="fg-button ui-state-default ui-corner-all"/>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
