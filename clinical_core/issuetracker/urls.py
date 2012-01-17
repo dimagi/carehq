@@ -1,7 +1,6 @@
 from django.conf.urls.defaults import *
 from issuetracker import issue_constants
 #from haystack.views import SearchView
-from issuetracker.resources import IssueResource, ActorResource
 from permissions.models import Actor
 
 
