@@ -5,13 +5,6 @@ from dimagi.utils.make_uuid import make_uuid
 from permissions.models import Actor
 from django.utils.translation import ugettext_lazy as _
 
-class BaseNewsEvent(models.Model):
-    id = models.CharField(_('Unique News Event ID'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    message = models.CharField(max_length=350)
-    created = models.DateTimeField(default=make_time, auto_now_add=True)
-    class Meta:
-        abstract = True
-
 class FeedEvent(models.Model):
     # Examples:
     # subject = patient, actor = doctor, action = "Edited care plan"
