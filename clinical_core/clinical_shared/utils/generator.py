@@ -175,9 +175,9 @@ def generate_actor(tenant, user, role_type_string, name=None, title=None, depart
             title = random_text(length=32)
         doc_nurse = random.random()
         if doc_nurse > .33:
-            actor_doc = ProviderActor(name=name, title=title, facility_name=department, notes=lorem.paragraph())
+            actor_doc = ProviderActor(name=name, provider_title=title, facility_name=department, notes=lorem.paragraph())
         else:
-            actor_doc = ProviderActor(name=name, title=title, facility_name=department, specialty=random_text(), notes=lorem.paragraph())
+            actor_doc = ProviderActor(name=name, provider_title=title, facility_name=department, specialty=random_text(), notes=lorem.paragraph())
     elif role_type_string=='caregiver':
         actor_doc = CaregiverActor(name=name, notes=lorem.paragraph(), relation= random.choice(CaregiverActor.RELATIONSHIP_CHOICES)[0])
     elif role_type_string=='patient':

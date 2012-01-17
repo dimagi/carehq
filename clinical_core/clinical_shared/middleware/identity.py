@@ -14,6 +14,7 @@ from django.contrib.auth.middleware import AuthenticationMiddleware
 import settings
 
 CACHED_CURRENT_ACTOR = "_cached_current_actor"
+CACHED_CURRENT_TENANT = "_cached_current_tenant"
 CACHED_ACTORS = "_cached_actors"
 COOKIE_ACTOR_CONTEXT = "actor_context"
 
@@ -55,7 +56,10 @@ def get_current_actor_from_cookie(request):
         actor_id, verify = actor_hash_from_cookie.split('.')
         #verify the hash
         if sha_constructor(actor_id+settings.SECRET_KEY).hexdigest() == verify:
-            actor_to_use = Actor.objects.get(id=actor_id)
+            try:
+                actor_to_use = Actor.objects.get(id=actor_id)
+            except Actor.DoesNotExist:
+                return None
         else:
             logging.debug("Error, hash mismatch of cookie")
     if actor_to_use is None:
@@ -103,6 +107,8 @@ class CareHQIdentityMiddleware(object):
 
     def process_response(self, request, response):
         #if the request's cookie and the cookie value are not in sync, or if the cookie doesn't exist, set the cookie here.
+        if not hasattr(request, 'user'):
+            return response
         if not isinstance(request.user, AnonymousUser): #CareHQ Identity Middleware requires the user be logged in.
             if response.cookies.has_key(COOKIE_ACTOR_CONTEXT):
                 if hasattr(request, CACHED_CURRENT_ACTOR):

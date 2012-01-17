@@ -18,6 +18,7 @@ urlpatterns += patterns('',
 
     (r'^admin/', include(admin.site.urls)),
     (r'^couchforms/', include('couchforms.urls')),
+    (r'^carehq_core/', include('carehq_core.urls')),
     (r'^couchlog/', include('couchlog.urls')),
     (r'^djangocouch', include('djangocouch.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),

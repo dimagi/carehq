@@ -1,9 +1,25 @@
-{% extends "carehqapp/carehq_base.html" %}
+{% extends base_template %}
 {% load i18n %}
 
-{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block title %}{% trans "CarehQ Home" %}{% endblock %}
 {% block extrahead %}
 {% endblock %}
 {% block content %}
-
+    <h2>Home</h2>
+    <div class="span-24">
+    <h3>Recent Issues</h3>
+    {% for issue in issues %}
+        <div class="span-24 last">
+            <div class="span-14">
+                <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a>
+            </div>
+            <div class="span-5">
+                {{ issue.last_edit_by.actordoc.get_name }}
+            </div>
+            <div class="span-5 last">
+                {{ issue.last_edit_date|date }}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block extrahead %}
+<script>
+    var refreshNotification =
+        function()
+        {
+            location.reload();
+            fadeIn("slow");
+        };
+
+    $(document).ready(
+        function()
+        {
+			//placeholder for autorefresh, but turning off for now
+            //var autoRefresh = setInterval(refreshNotification, 30000);
+            jQuery("abbr.timeago").timeago();
+        }
+    );
+</script>
+{% endblock %}
+{% block content %}
+    <h2>Issues</h2>
+    <div class="span-24 last">
+    <ul class="clearfix">
+        <li>Filter: Foo</li>
+        <li>Open</li>
+        <li>Closed</li>
+        <li>All</li>
+        <li>Favorites</li>
+    </ul>
+
+    </div>
+{% endblock %}

@@ -34,6 +34,7 @@ class BaseCarePlanItem(Document):
     Instances of directives and recommendations and milestones that would be within a care plan.
     These can and will be stored as individal documents to be assembled later in BaseCarePlans
     """
+    tenant = StringProperty() #tenant membership of this careplan
     title = StringProperty()
     description = StringProperty()
     tags = StringListProperty()
@@ -69,6 +70,7 @@ class BaseCarePlan(Document):
     A container for BaseCarePlanItems to show a template grouping of care plan items to make a larger care plan document.
     A Care Plan is comprised of a one-deep listing of CarePlan items.
     """
+    tenant = StringProperty() #who does this careplan template belong to
     title = StringProperty()
     description = StringProperty()
     plan_items = SchemaListProperty(BaseCarePlanItem)

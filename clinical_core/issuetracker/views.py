@@ -8,8 +8,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView
 from issuetracker.models import Issue, IssueEvent
-from issuetracker import constants
+from issuetracker import issue_constants
 from issuetracker.feeds.issueevents import get_sorted_issueevent_dictionary
 from issuetracker.forms import IssueModelForm, IssueCommentForm, IssueResolveCloseForm
 
@@ -17,6 +19,10 @@ from issuetracker.forms import IssueModelForm, IssueCommentForm, IssueResolveClo
 from issuetracker.models.filters import Filter
 from patient.models import Patient
 from permissions.models import Actor
+
+
+
+
 
 def _get_next(request):
     """
@@ -38,20 +44,54 @@ def _get_next(request):
         raise Http404 # No next url was supplied in GET or POST.
     return next
 
+#
+#class IssueListView(TemplateView):
+#    """
+#    Generic class based view for viewing the patient list.
+#    """
+#    template_name="patient/patient_list.html"
+#    patient_type=None
+#    couch_view = 'patient/all'
+#
+#    @method_decorator(login_required)
+#    def dispatch(self, *args, **kwargs):
+#        return super(IssueListView,self).dispatch(*args, **kwargs)
+#
+#    def get_context_data(self, **kwargs):
+#        context = super(PatientListView, self).get_context_data(**kwargs)
+#        view_results = BasePatient.get_db().view(self.couch_view, include_docs=True).all()
+#        pats = [BasePatient.get_typed_from_dict(row["doc"]) for row in view_results]
+#
+#        if self.patient_type != None:
+#            pats = filter(lambda x: isinstance(x, self.patient_type), pats)
+#        context['patients'] = pats
+#        context['create_patient_url'] = reverse(self.create_patient_viewname)
+#        return context
+#
+#
+#
+#class IssueSingleView(TemplateView):
+#    template_name = 'patient/base_patient.html'
+#    patient_list_url = '/patient/list' #hardcoded from urls, because you can't do a reverse due to the urls not being bootstrapped yet.
+#    @method_decorator(login_required)
+#    def dispatch(self, *args, **kwargs):
+#        return super(PatientSingleView,self).dispatch(*args, **kwargs)
+#    def get_context_data(self, **kwargs):
+#        context = super(PatientSingleView, self).get_context_data(**kwargs)
+#        params = context['params']
+#        patient_guid =  params['patient_guid']
+#        pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+#        context['patient_doc'] = pat
+#        context['patient_django'] = Patient.objects.get(doc_id=pat._id)
+#        context['patient_list_url'] = self.patient_list_url
+#        return context
+
 
 from issuetracker.managers.issuemanager import IssueManager
 issuemanager = IssueManager()
 @login_required
 def all_issues(request, template_name='issuetracker/issues_list.html'):
     context = RequestContext(request)
-    start = request.GET.get('start', 0)
-    count = request.GET.get('count',50)
-    group_by = request.GET.get('groupBy','opened_date')
-
-    issues = Issue.objects.all().select_related('opened_by','assigned_to','last_edit_by')
-    context['issues'] = issues
-    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
-
     return render_to_response(template_name, context_instance=context)
 
 
@@ -81,14 +121,14 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
         context['form_headline' ] = activity
 
         if request.method == 'POST':
-            if activity == constants.CASE_EVENT_EDIT or activity == constants.CASE_EVENT_ASSIGN:
-                form = IssueModelForm(data=request.POST, instance=theissue, editor_user=request.current_actor, activity=activity)
+            if activity == issue_constants.CASE_EVENT_EDIT or activity == issue_constants.CASE_EVENT_ASSIGN:
+                form = IssueModelForm(data=request.POST, instance=theissue, editor_actor=request.current_actor, activity=activity)
                 context['form'] = form
                 if form.is_valid():                    
                     issue = form.save(commit=False)
                     edit_comment = form.cleaned_data["comment"]
                     #next, we need to see the mode and flip the fields depending on who does what.
-                    if activity == constants.CASE_EVENT_ASSIGN:
+                    if activity == issue_constants.CASE_EVENT_ASSIGN:
                         issue.assigned_date = datetime.utcnow()
                         issue.assigned_by = request.current_actor
                         edit_comment += " (%s to %s by %s)" % (activity, issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
@@ -96,7 +136,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     issue.save(request.current_actor, activity=activity, save_comment = edit_comment)
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             
-            elif activity == constants.CASE_EVENT_RESOLVE or activity == constants.CASE_EVENT_CLOSE:
+            elif activity == issue_constants.CASE_EVENT_RESOLVE or activity == issue_constants.CASE_EVENT_CLOSE:
                 form = IssueResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
                 context['form'] = form
                 if form.is_valid():
@@ -105,15 +145,15 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     theissue.status = status
                     theissue.last_edit_by = request.current_actor
                     
-                    if activity == constants.CASE_EVENT_CLOSE:
+                    if activity == issue_constants.CASE_EVENT_CLOSE:
                         theissue.closed_by=request.current_actor
-                    elif activity == constants.CASE_EVENT_RESOLVE:
+                    elif activity == issue_constants.CASE_EVENT_RESOLVE:
                         theissue.resolved_by=request.current_actor
         
                     theissue.save(request.current_actor, activity = activity, save_comment = comment)
                     
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
-            elif activity == constants.CASE_EVENT_COMMENT:
+            elif activity == issue_constants.CASE_EVENT_COMMENT:
                 form = IssueCommentForm(data=request.POST)
                 context['form'] = form
                 if form.is_valid():
@@ -122,23 +162,23 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     evt = IssueEvent()
                     evt.issue = theissue
                     evt.notes = comment
-                    evt.activity = constants.CASE_EVENT_COMMENT
+                    evt.activity = issue_constants.CASE_EVENT_COMMENT
                     evt.created_by = request.current_actor
                     evt.save()
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
         else:
             #it's a GET
             issueform = None
-            if activity==constants.CASE_EVENT_EDIT or activity==constants.CASE_EVENT_ASSIGN:
+            if activity==issue_constants.CASE_EVENT_EDIT or activity==issue_constants.CASE_EVENT_ASSIGN:
                 issueform = IssueModelForm
-            elif activity == constants.CASE_EVENT_COMMENT:
+            elif activity == issue_constants.CASE_EVENT_COMMENT:
                 issueform = IssueCommentForm
-            elif activity==constants.CASE_EVENT_RESOLVE or activity==constants.CASE_EVENT_CLOSE:
+            elif activity==issue_constants.CASE_EVENT_RESOLVE or activity==issue_constants.CASE_EVENT_CLOSE:
                 issueform = IssueResolveCloseForm
 
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 
             if issueform == IssueModelForm:
-                context['form'] = issueform(instance=theissue, editor_user=request.current_actor, activity=activity)
+                context['form'] = issueform(instance=theissue, editor_actor=request.current_actor, activity=activity)
                 context['can_comment'] = False
             elif issueform == IssueResolveCloseForm:
                 context['form'] = issueform(issue=theissue, activity=activity)
@@ -160,26 +200,6 @@ def issue_newsfeed(request, issue_id, template_name='issuetracker/partials/newsf
     This is called form tabbed_newsfeed.html via the jQuery UI Tab control.
     """
     context = {}
-#    theissue = Issue.objects.select_related('opened_by','last_edit_by',\
-#                                          'resolved_by','closed_by','assigned_to',
-#                                          'priority','category','status').get(id=issue_id)
-#
-#    sorting = None
-#    do_edit=False
-#    edit_mode = None
-#    for key, value in request.GET.items():
-#        if key == "sort":
-#            sorting = value
-#
-#    context['events'] = IssueEvent.objects.select_related('created_by','activity').filter(issue=theissue).order_by('created_date')
-#    context['issue'] = theissue
-#    context['custom_activity'] = ActivityClass.objects.filter(event_class='event-custom')
-#    context['formatting'] = False
-#    event_arr = context['events']
-#    event_dic = get_sorted_issueevent_dictionary(sorting, event_arr)
-#    if len(event_dic) > 0:
-#        context['events'] = event_dic
-#        context['formatting'] = True
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def view_filter(request, filter_id):
@@ -205,11 +225,9 @@ def view_filter(request, filter_id):
 
 def debug_reference(request, template_name="issuetracker/debug_reference.html"):
     users = User.objects.all()
-    roles = Actor.objects.all()
     patients = Patient.objects.all()
     context = RequestContext(request)
     context['users'] = users
-    context['roles'] = roles
     context['patients'] = patients
     return render_to_response(template_name, context_instance=context)
 
@@ -232,18 +250,18 @@ def all_patients(request, template_name="issuetracker/all_patients.html"):
     context['patients'] = patients
     return render_to_response(template_name, context_instance=context)
 
-def user_issues(request, user_id, template_name="issuetracker/user_issues.html"):
-    issuefilter = str(request.GET.get('issuefilter', 'opened_by'))
-
+def actor_issues(request, actor_id, template_name="issuetracker/actor_issues.html"):
     context = RequestContext(request)
-    user = User.objects.get(id=user_id)
-    roles = Actor.identities.for_user(user)
-    role_issues = [(role, Issue.objects.filter(**{issuefilter: role}))for role in roles]
+    actor=Actor.objects.get(id=actor_id)
+    context['actor'] = actor
+    #context['columns'] = ['description','last_edit_date', 'last_activity', 'last_edit_by_display']
+    prop = request.GET.get('issuefilter', 'assigned_to')
 
-    context['user'] = user
-    context['issuefilter'] = issuefilter
-    context['role_issues'] = role_issues
-    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+    if prop == 'opened_by':
+        context['issues'] = Issue.objects.filter(opened_by=actor)
+    elif prop == 'assigned_to':
+        context['issues'] = Issue.objects.filter(assigned_to=actor)
+
     return render_to_response(template_name, context_instance=context)
 
 def role_issues(request, role_id, template_name="issuetracker/role_issues.html"):
@@ -261,8 +279,7 @@ def role_issues(request, role_id, template_name="issuetracker/role_issues.html")
 def patient_issues(request, patient_id, template_name="issuetracker/patient_issues.html"):
     context = RequestContext(request)
     patient = Patient.objects.get(id=patient_id)
-    issues = Issue.objects.filter(patient=patient)
-    context['columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+    issues = Issue.objects.filter(patient=patient).select_related('patient', 'last_edit_by')
     context['patient'] = patient
     context['issues'] = issues
     return render_to_response(template_name, context_instance=context)

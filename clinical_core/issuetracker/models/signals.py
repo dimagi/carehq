@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save, post_init
 from django.db.models import Q
 from issuetracker.models import Issue, IssueEvent
 import logging
-from issuetracker import constants
+from issuetracker import issue_constants
 
 def cache_values(sender, instance):
     instance.cache_values = instance.values
@@ -28,9 +28,9 @@ def issue_saved(sender, instance, created, **kwargs):
         notes = "New issue created by " + event_creator.name
         
         try:
-            event_new.activity = constants.CASE_EVENT_OPEN
+            event_new.activity = issue_constants.CASE_EVENT_OPEN
         except Exception, ex:
-            logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, constants.CASE_EVENT_OPEN, ex))
+            logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, issue_constants.CASE_EVENT_OPEN, ex))
             
 
     else:
@@ -46,7 +46,7 @@ def issue_saved(sender, instance, created, **kwargs):
             event_new.activity = instance.event_activity            
         else:    
             try:
-                event_new.activity = ActivityClass.objects.get(event_class=constants.CASE_EVENT_EDIT)
+                event_new.activity = ActivityClass.objects.get(event_class=issue_constants.CASE_EVENT_EDIT)
             except Exception, ex:
                 logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
     

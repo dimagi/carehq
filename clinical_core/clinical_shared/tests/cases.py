@@ -2,7 +2,7 @@ from speechd.client import Priority
 from django.test import TestCase
 from django.contrib.auth.models import User
 import random
-from issuetracker import constants
+from issuetracker import issue_constants
 import uuid
 from django.core.management import  call_command
 from issuetracker.models.issuecore import Issue
@@ -45,8 +45,8 @@ class CasePermissionsTest(TestCase):
                               description,
                               'some body',
                               priority,
-                              status=Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0],
-                              activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
+                              status=Status.objects.all().filter(state_class=issue_constants.CASE_STATE_OPEN)[0],
+                              activity=ActivityClass.objects.filter(event_class=issue_constants.CASE_EVENT_OPEN)[0]
                               )
         return newcase
 
@@ -68,7 +68,7 @@ class CasePermissionsTest(TestCase):
             else:
                 case.last_edit_by = actor_editor2
             case.description = "edited, foolio: " + str(uuid.uuid4().hex)
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
 
         self.assertEqual(total_cases, Issue.objects.get_authored(actor_creator).count())
@@ -102,7 +102,7 @@ class CasePermissionsTest(TestCase):
             actor = prov1[0]
             case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt1
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
             case1.append(case)
 
@@ -110,7 +110,7 @@ class CasePermissionsTest(TestCase):
             actor = prov2[0]
             case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt2
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.CASE_EVENT_EDIT)[0]
             case.save(activity=activity)
             case2.append(case)
 

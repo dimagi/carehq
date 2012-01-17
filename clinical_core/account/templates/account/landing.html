@@ -3,12 +3,28 @@
 {% block content %}
     <h2>Hello {{ user.username }}</h2>
 
-    You have {{ profiles|length }} profiles linked to your account.
-    <a href="{% url request_profile %}">Request Profile</a>
+    You have {{ request.actors|length }} actor profiles linked to your account.
     <ul>
-    {% for prof in profiles %}
-        <li>{{ prof }}</li>
-    {% endfor %}
+        {% for actor in request.actors %}
+            {% if actor == request.current_actor %}
+                <li>{{ actor.actordoc.get_name }}* </li>
+
+            {% else %}
+                <li>{{ actor.actordoc.get_name }} <a href="{% url set_current_actor actor.id %}">Set</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+
+    <h3>Your Permissions</h3>
+    <ul>
+        {% for actor, permissions_dict in permissions.items %}
+            <li>{{ actor }} <br>
+                {% for role, subjects in permissions_dict.items %}
+                    {{ role }} :: {{ subjects }}<br>
+                {% endfor %}
+            </li>
+        {% endfor %}
     </ul>
 
 

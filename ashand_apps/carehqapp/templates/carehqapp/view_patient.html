@@ -91,9 +91,9 @@
         {% block hat_actions %}
             {{ block.super }}
             <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:alert('Popup for sending a message')">
+            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url new_carehq_patient_issue patient_doc.get_id %}">
                 <span class="ui-icon ui-icon-circle-plus"></span>
-                New Message
+                New Issue
             </a>
             </div>
     {% endblock %}
@@ -104,7 +104,7 @@
     {% endblock patient_badge %}
 
     {% block patient-tab-controller %}
-            <li><a href="#patient-issuetracker-tab">{% trans "Cases" %}</a></li>
+            <li><a href="#patient-issuetracker-tab">{% trans "Issues" %}</a></li>
             <li><a href="#patient-info-tab">{% trans "Info" %}</a></li>
             <li><a href="#patient-careteam-tab">{% trans "Careteam" %}</a></li>
             <li><a href="#patient-careplan-tab">{% trans "Care Plan" %}</a></li>
@@ -116,7 +116,7 @@
                 <div class="span-18 last" style="margin-bottom:8px;">
                     <div class="span-18 last"><strong>{{ issue.opened_by.get_name }}</strong>  {{ issue.opened_date|date }} {{ issue.opened_date|time }}</div>
                     <div class="span-18 prepend-1 last">{{ issue.description }}</div>
-                    <div class="span-4"><a href="{% url manage-issue issue.id %}">View Case</a></div>
+                    <div class="span-4"><a href="{% url manage-issue issue.id %}">View Issue</a></div>
                     &nbsp;
                 </div>
             {% endfor %}

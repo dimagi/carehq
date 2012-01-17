@@ -6,7 +6,7 @@ from .demo import DEMO_CARETEAMS, DEMO_CASES
 from clinical_shared.utils import generator
 import random
 from django.core.management import call_command
-from issuetracker import constants
+from issuetracker import issue_constants
 
 def inject_issue_data(patient, event_arr):
     """
@@ -46,7 +46,7 @@ def inject_issue_data(patient, event_arr):
     newcase.opened_date = datetime.utcnow() - startdelta
     newcase.last_edit_by = creator
     newcase.last_edit_date = newcase.opened_date
-    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=issue_constants.CASE_STATE_OPEN)[0]
 
     newcase.assigned_to = careteam.primary_provider.user
     newcase.assigned_date = newcase.opened_date 
@@ -97,13 +97,13 @@ def run():
                               actor_creator,
                               arr[0],
                               arr[1],
-                              constants.PRIORITY_CHOICES[0][0],
+                              issue_constants.PRIORITY_CHOICES[0][0],
                               patient=pt,
-                              status=constants.STATUS_CHOICES[0][0],
-                              activity=constants.CASE_EVENT_CHOICES[0][0],
+                              status=issue_constants.STATUS_CHOICES[0][0],
+                              activity=issue_constants.CASE_EVENT_CHOICES[0][0],
                               )
             newcase.patient=pt
-            newcase.save(activity=constants.CASE_EVENT_EDIT)
+            newcase.save(activity=issue_constants.CASE_EVENT_EDIT)
 
 
 #

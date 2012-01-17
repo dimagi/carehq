@@ -1,8 +1,9 @@
 {% extends base_template %}
 {% load i18n %}
-{% load casetracker_tags %}
 {% block title %}{% trans "All Cases" %}{% endblock title %}
 {% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/datatables_jui.css" type="text/css" media="screen, projection">
 <script>
     var refreshNotification =
         function()
@@ -11,42 +12,50 @@
             fadeIn("slow");
         };
 
-    $(document).ready(
-        function()
-        {
-			//placeholder for autorefresh, but turning off for now
-            //var autoRefresh = setInterval(refreshNotification, 30000);
-            jQuery("abbr.timeago").timeago();
-        }
-    );
+    $(document).ready(function() {
+        $('#issues_table').dataTable( {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "{% url api_dispatch_list "issue_api" %}",
+            "sPaginationType": "full_numbers",
+            "aoColumns": [
+                { "mDataProp": "description" },
+                { "mDataProp": "last_activity" },
+                { "mDataProp": "opened_date" },
+                { "mDataProp": "opened_by_display" },
+                { "mDataProp": "last_edit_date" },
+                { "mDataProp": "last_edit_by_display" }
+            ]
+        } );
+    } );
 </script>
 {% endblock extrahead %}
 {% block content %}
-<h4>All Cases</h4>
+<h2>All Issues</h2>
 <div class="ui-tabs span-24">
-<table>
-	<thead>
-		<tr>
-            <th>&nbsp;</th>
-            {% for col in columns %}
-			<th><a href="{{request.path}}?groupBy={{col}}">{{col|title}}</a></th>
-            {% endfor %}
-		</tr>
-	</thead>
-    <tbody>
-    {% for case in cases %}
-        <tr>
-            <td>
-                <a href="{% url manage-case case.id %}">View Case</a>
-            </td>
-            {% for col in columns %}
-            <td>
-                {% issue_column case col %}
-            </td>
-            {% endfor %}
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+    <div class="span-24">
+        <a href="{{ request.path }}?issuefilter=opened_by">Opened by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=assigned_to">Assigned to</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=last_edit_by">Last edit by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=resolved_by">Resolved by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=closed_by">Closed by</a> &nbsp; |
+            <div class="span-24 last">
+                <h3>{{ actor }} Issues</h3>
+                <table id="issues_table">
+                    <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Last Activity</th>
+                        <th>Opened Date</th>
+                        <th>Opened By</th>
+                        <th>Last Edit Date</th>
+                        <th>Last Edit By</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+    </div>
 </div>
 {% endblock content %}

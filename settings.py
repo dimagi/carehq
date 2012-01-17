@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'djangocouch',
     'hutch',
     'clinical_shared',
+    'careplan',
     #end clinical_core
 
     #########################
@@ -186,7 +187,7 @@ INSTALLED_APPS = (
 #DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'casexml.apps.phone', 'touchforms.formsplayer',]
 
 #to be overrided by localsettings if need be.  These are the BARE MINIMUM
-COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case', 'casexml.apps.phone']
+COUCHDB_APPS = ['careplan', 'patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case', 'casexml.apps.phone']
 
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -279,7 +280,6 @@ def get_server_url(server_root, username, password):
 
 COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
 COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
-
 
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]

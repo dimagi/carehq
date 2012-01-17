@@ -1,7 +1,13 @@
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
+from dimagi.utils.make_time import make_time
+from issuetracker.forms import NewIssueForm
+from issuetracker.issue_constants import CASE_STATE_OPEN, CASE_EVENT_OPEN
 from lib.crumbs import crumbs
+from patient.models.patientmodels import SimplePatient
 
 def my_issues_patient(request, template_name = "carehqapp/my_issues_patient.html"):
     context = RequestContext(request)
@@ -28,10 +34,30 @@ def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.
     return render_to_response(template_name, context_instance=context)
 
 
-@crumbs("Issue List", "issue_list", "my_profile")
 @login_required
-def issue_list(request, template_name="carehqapp/list_cases.html"):
-#    request.breadcrumbs("Issue List", reverse(issue_list))
+def new_issue_patient(request, patient_guid, template_name="carehqapp/activities/issue/new_issue.html"):
+    context = RequestContext(request)
+    patient_doc = SimplePatient.get(patient_guid)
+    if request.method == "POST":
+        form = NewIssueForm(patient_doc, request.current_actor, data=request.POST)
+        if form.is_valid():
+            newissue = form.save(commit=False)
+            newissue.last_edit_by = request.current_actor
+            newissue.last_edit_date = make_time()
+            newissue.patient = patient_doc.django_patient
+            newissue.opened_by=request.current_actor
+            newissue.opened_date = make_time()
+            newissue.status = CASE_STATE_OPEN
+            newissue.save(request.current_actor, activity=CASE_EVENT_OPEN)
+            return HttpResponseRedirect(patient_doc.get_absolute_url())
+    else:
+        context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor)
+    return render_to_response(template_name, context_instance=context)
+
+@crumbs("Issue List", "issue_home", "my_profile")
+@login_required
+def issue_home(request, template_name="carehqapp/issue_home.html"):
+#    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)
     user = request.user
     return render_to_response(template_name, context_instance=context)

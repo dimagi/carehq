@@ -5,9 +5,10 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelForm
-from issuetracker.constants import STATUS_CHOICES, STATUS_RESOLVE_CHOICES, STATUS_CLOSE_CHOICES
+from issuetracker.issue_constants import STATUS_CHOICES, STATUS_RESOLVE_CHOICES, STATUS_CLOSE_CHOICES, PRIORITY_CHOICES
 from issuetracker.models import Issue
-from issuetracker import constants
+from issuetracker import issue_constants
+from issuetracker.models.issuecore import IssueCategory
 from permissions.models import Actor
 
 class IssueCommentForm(forms.Form):
@@ -31,13 +32,13 @@ class IssueResolveCloseForm(forms.Form):
         super(IssueResolveCloseForm, self).__init__(*args, **kwargs)
         event_class = activity
 
-        if event_class == constants.CASE_EVENT_RESOLVE:
-            state_class = constants.CASE_STATE_RESOLVED
+        if event_class == issue_constants.CASE_EVENT_RESOLVE:
+            state_class = issue_constants.CASE_STATE_RESOLVED
             self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
             self.fields['state'].choices=STATUS_RESOLVE_CHOICES
-        if event_class == constants.CASE_EVENT_CLOSE:
+        if event_class == issue_constants.CASE_EVENT_CLOSE:
             self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
-            state_class = constants.CASE_STATE_CLOSED
+            state_class = issue_constants.CASE_STATE_CLOSED
             self.fields['state'].choices=STATUS_CLOSE_CHOICES
 
         if issue is None:
@@ -49,6 +50,21 @@ class IssueResolveCloseForm(forms.Form):
         #oh wait, yeah, THE DOC FOR THIS DOES NOT EXIST!!!
         #self.fields['state'].initial =
 
+
+class NewIssueForm(ModelForm):
+    description = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
+    body = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':8}))
+    priority = forms.CharField(widget=widgets.RadioSelect(choices=PRIORITY_CHOICES))
+    #category = forms.ModelChoiceField(queryset = IssueCategory.objects.all(), widget=widgets.RadioSelect())
+
+    def __init__(self, patient, creator_actor, *args, **kwargs):
+        super(NewIssueForm, self).__init__(*args, **kwargs)
+        self.patient = patient
+        self.creator_actor=creator_actor
+
+    class Meta:
+        model=Issue
+        exclude = ('id','patient','status','last_edit_date','last_edit_by','closed_date','closed_by','parent_issue','resolved_by','resolved_date', 'opened_date', 'opened_by','assigned_date')
 
 class IssueModelForm(ModelForm):
     """
@@ -63,10 +79,10 @@ class IssueModelForm(ModelForm):
     class Meta:
         model = Issue
         #default exclude for basic editing
-        exclude = ()
-    def __init__(self, editor_user=None, activity=None, * args, **kwargs):      
+        exclude=()
+    def __init__(self, editor_actor=None, activity=None, * args, **kwargs):
         super(IssueModelForm, self).__init__(*args, **kwargs)
-        self.editor_user = editor_user
+        self.editor_actor = editor_actor
         self.activity = activity
         #event_class = activity.event_class
 
@@ -97,7 +113,7 @@ class IssueModelForm(ModelForm):
                      ]
 
 
-        if self.activity == constants.CASE_EVENT_EDIT:
+        if self.activity == issue_constants.CASE_EVENT_EDIT:
             fields_to_exclude = ['id',
                                  'category',
                                  'status',
@@ -115,7 +131,7 @@ class IssueModelForm(ModelForm):
                                  ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'
 
-        elif self.activity == constants.CASE_EVENT_ASSIGN:
+        elif self.activity == issue_constants.CASE_EVENT_ASSIGN:
             fields_to_exclude.remove('assigned_to')
             self.fields['assigned_to'].label = 'Assign to'
             self.fields['comment'].help_text = 'Please enter a short note'

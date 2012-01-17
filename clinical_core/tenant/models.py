@@ -21,7 +21,7 @@ class Tenant(models.Model):
 
 class TenantActor(models.Model):
     id = models.CharField(_('Unique Tenant Actor ID'), max_length=32, unique=True, default=make_uuid, primary_key=True, editable=False)
-    actor = models.ForeignKey(Actor, related_name='actor_tenants')
+    actor = models.OneToOneField(Actor, related_name='actor_tenant')
     tenant = models.ForeignKey(Tenant, related_name='tenant_actors')
 
     class Meta:

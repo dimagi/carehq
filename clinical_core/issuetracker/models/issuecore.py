@@ -12,7 +12,7 @@ from issuetracker.middleware import threadlocals
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from issuetracker import constants
+from issuetracker import issue_constants
 from patient.models import Patient
 
 from issuetracker.managers import IssueManager
@@ -54,7 +54,7 @@ class IssueEvent(models.Model):
     issue = models.ForeignKey("Issue", related_name='issue_events')
     notes = models.TextField(blank=True)
 
-    activity = models.CharField(choices=constants.CASE_EVENT_CHOICES, max_length=160)
+    activity = models.CharField(choices=issue_constants.CASE_EVENT_CHOICES, max_length=160)
 
     created_date = models.DateTimeField()
     created_by = models.ForeignKey(Actor)
@@ -103,13 +103,12 @@ class Issue(models.Model):
 
     #category = models.CharField(max_length=160, choices=constants.CATEGORY_CHOICES)
     category = models.ForeignKey(IssueCategory)
-    status = models.CharField(max_length=160, choices=constants.STATUS_CHOICES)
-    priority = models.IntegerField(choices=constants.PRIORITY_CHOICES)
+    status = models.CharField(max_length=160, choices=issue_constants.STATUS_CHOICES)
+    priority = models.IntegerField(choices=issue_constants.PRIORITY_CHOICES)
 
     patient = models.ForeignKey(Patient, blank=True, null=True)
 
     body = models.TextField(blank=True, null=True)
-
 
     opened_date = models.DateTimeField()
     opened_by = models.ForeignKey(Actor, related_name="issue_opened_by") #cannot be null because this has to have originated from somewhere
@@ -135,45 +134,45 @@ class Issue(models.Model):
 
     def get_absolute_url(self):
         #return "/case/%s" % self.id
-        return reverse('manage_issue', kwargs={'issue_id': self.id})
+        return reverse('manage-issue', kwargs={'issue_id': self.id})
 
     @property
     def is_active(self):
-        if self.status == constants.CASE_STATE_OPEN:
+        if self.status == issue_constants.CASE_STATE_OPEN:
             return True
         else:
             return False
 
     @property
     def is_resolved(self):
-        if self.status == constants.CASE_STATE_RESOLVED or self.status == constants.CASE_STATE_CLOSED:
+        if self.status == issue_constants.CASE_STATE_RESOLVED or self.status == issue_constants.CASE_STATE_CLOSED:
             return True
         else:
             return False
 
     @property
     def is_closed(self):
-        if self.status == constants.CASE_STATE_CLOSED:
+        if self.status == issue_constants.CASE_STATE_CLOSED:
             return True
         else:
             return False
 
     @property
-    def last_case_event(self):
+    def last_event(self):
         #with the models split up for readability, need to make sure no circular dependencies are introduced on import
-        if not getattr(self, '_last_case_event', None):
-            if IssueEvent.objects.select_related('issue', 'activity').filter(case=self).order_by('-created_date').count() > 0:
-                self._last_case_event = IssueEvent.objects.filter(case=self).order_by('-created_date')[0]
-                return self._last_case_event
+        if not getattr(self, '_last_event', None):
+            if IssueEvent.objects.select_related('issue', 'activity').filter(issue=self).order_by('-created_date').count() > 0:
+                self._last_event = IssueEvent.objects.filter(issue=self).order_by('-created_date')[0]
+                return self._last_event
             else:
                 return None
         else:
-            return self._last_case_event
+            return self._last_event
 
 
     @property
     def last_event_date(self):
-        evt = self.last_case_event
+        evt = self.last_event
         if evt:
             return evt.created_date
         else:
@@ -181,14 +180,14 @@ class Issue(models.Model):
 
     @property
     def last_event_by(self):
-        evt = self.last_case_event
+        evt = self.last_event
         if evt:
             return evt.created_by
         else:
             return None
 
 
-    def assign_case(self, assign_actor, actor_by=None, commit=True):
+    def assign_issue(self, assign_actor, actor_by=None, commit=True):
         """
         Assign the case to the actor.
         Args:
@@ -199,7 +198,7 @@ class Issue(models.Model):
         if commit:
             if actor_by is None:
                 raise Exception("Error, for direct save, you must set the actor_by argument")
-            self.save(actor_by, activity=constants.CASE_EVENT_ASSIGN)
+            self.save(actor_by, activity=issue_constants.CASE_EVENT_ASSIGN)
 
 
     def _get_related_objects(self):
@@ -211,7 +210,7 @@ class Issue(models.Model):
                 continue
             elif prop == "objects":
                 continue
-            elif prop == "last_event_date" or prop == "last_event_by" or prop == "last_case_event":
+            elif prop == "last_event_date" or prop == "last_event_by" or prop == "last_event":
                 continue
             elif prop == "related_objects":
                 continue
@@ -264,12 +263,12 @@ class Issue(models.Model):
         self.last_edit_by = actor
 
         #now, we need to check the status change being done to this.
-        if self.status == constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+        if self.status == issue_constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
             if self.resolved_by == None:
                 raise Exception("Issue state is now resolved, you must set a resolved_by")
             else:
                 self.resolved_date = make_time()
-        elif self.status == constants.CASE_STATE_CLOSED:
+        elif self.status == issue_constants.CASE_STATE_CLOSED:
             if self.closed_by == None:
                 raise Exception("Issue state is now closed, you must set a closed_by")
             else:

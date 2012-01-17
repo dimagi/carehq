@@ -13,7 +13,7 @@ from dimagi.utils.make_time import make_time
 
 def all_template_careplans(request, template_name = "careplan/all_template_careplans.html"):
     context = {}    
-    context['template_careplans'] = BaseCarePlan.view('careplan/template_careplans', include_docs=True).all()
+    context['template_careplans'] = BaseCarePlan.view('careplan/template_careplans', startkey=[request.current_actor.actor_tenant.tenant.name], endkey=[request.current_actor.actor_tenant.tenant.name, {}], include_docs=True).all()
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 

@@ -1,25 +1,26 @@
 from django.conf.urls.defaults import *
-from issuetracker import constants
+from issuetracker import issue_constants
 #from haystack.views import SearchView
+from issuetracker.resources import IssueResource, ActorResource
+from permissions.models import Actor
+
 
 
 urlpatterns = patterns ('issuetracker.views',
-
-
     url(r'^filter/(?P<filter_id>[0-9a-f]{32})$', 'view_filter', name="view-filter"),
     url(r'^issue/(?P<issue_id>[0-9a-f]{32})$', 'manage_issue', name="manage-issue"),
     url(r'^issue/(?P<issue_id>[0-9a-f]{32})/feed$', 'issue_newsfeed', name='issue-newsfeed'),
     url(r'^issues/all$', 'all_issues'),
 
 
-    #debug views for issue management
+    #debug views for issue managemen{{issue.get_absolute_urlt
     url(r'^issues/reference', 'debug_reference'), #reference view to see all the different ways to view issues
 
     url(r'^issues/users/$', 'all_users'), #choose all users in system
     url(r'^issues/roles/$', 'all_roles'), #choose all roles in system
     url(r'^issues/patients/$', 'all_patients'), #choose all patients in system
 
-    url(r'^issues/users/(?P<user_id>\d+)/', 'user_issues'), #Cases per user by role
+    url(r'^issues/actors/(?P<actor_id>[0-9a-zA-Z]{32})/', 'actor_issues'), #Cases per user by role
     url(r'^issues/roles/(?P<role_id>[0-9a-f]{32})/', 'role_issues'), #issues for a user-role in system
     url(r'^issues/patients/(?P<patient_id>[0-9a-f]{32})/', 'patient_issues'), #issues for a user-role in system
 

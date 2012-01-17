@@ -1,41 +1,40 @@
 {% extends base_template %}
 {% load i18n %}
-{% load issue_tags %}
-{% block title %}{% trans "Casetracker Reference" %}{% endblock title %}
+{% block title %}{% trans "Issuetracker Reference" %}{% endblock title %}
 {% block extrahead %}
 
 {% endblock extrahead %}
 {% block content %}
-<h2>Casetracker application reference views</h2>
-<div class="ui-tabs span-24">
-<a href="{% url casetracker.views.debug_reference %}">Refernce Dashboard</a> &nbsp; | &nbsp;
-</div>
+    <h2>Issuetracker application reference views</h2>
+    <div class="ui-tabs span-24">
+        <a href="{% url issuetracker.views.debug_reference %}">Reference Dashboard</a> &nbsp; | &nbsp;
+    </div>
 
-<div class="span-24">
-    <h2>{{ patient }}'s Cases</h2>
-    <table>
-        <thead>
+    <div class="span-24">
+        <h2>{{ patient }}'s Issues</h2>
+        <table>
+            <thead>
             <tr>
                 <th>&nbsp;</th>
-                {% for col in columns %}
-                <th><a href="{{request.path}}?groupBy={{col}}">{{col|title}}</a></th>
-                {% endfor %}
+                <th>Description</th>
+                <th>Last Edit Date</th>
+                <th>Last Activity</th>
+                <th>Last Edit By</th>
             </tr>
-        </thead>
-        <tbody>
-        {% for case in cases %}
-            <tr>
-                <td>
-                    <a href="{% url manage-case case.id %}">View Case</a>
-                </td>
-                {% for col in columns %}
-                <td>
-                    {% issue_column case col %}
-                </td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+            {% for issue in issues %}
+                <tr>
+                    <td>
+                        <a href="{% url manage-issue issue.id %}">View Issue</a>
+                    </td>
+                    <td> {{ issue.description }} </td>
+                    <td> {{ issue.last_edit_date|date }} </td>
+                    <td> {{ issue.last_activity }} </td>
+                    <td> {{ issue.last_edit_by.actordoc.get_name }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}

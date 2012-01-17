@@ -3,20 +3,18 @@ from carehqapp.views.patient_views import AshandPatientSingleView
 
 urlpatterns = patterns('carehqapp.views',
         #url(r'^$', 'home.home_view', name='home'),
-        url(r'^$', 'dashboard.ghetto_news_feed', name='home'),
-        #url(r'^dashboard$', 'dashboard.dashboard_view', name='dashboard'),
-        url(r'^dashboard$', 'dashboard.ghetto_dashboard', name='dashboard'),
+        url(r'^$', 'dashboard.home_news', name='home'),
         url(r'^profile$', 'account.my_profile', name='my_profile'),
-        url(r'^issues$', 'issues.issue_list', name='issue_list'),
+        url(r'^issues$', 'issues.issue_home', name='issue_home'),
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
         #url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
         #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
 
-        url(r'^setactor/(?P<actor_id>[0-9a-zA-Z]{25,32})/$', 'dashboard.set_current_actor',name='set_current_actor') ,
-
         url(r'^patients/all$', 'patient_views.my_patients', name='my_patients'),
         url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', AshandPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_url'),
+        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/newissue$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
+
 
         url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
         url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),
@@ -50,7 +48,7 @@ urlpatterns = patterns('carehqapp.views',
 #    url(r'^patients/mine/$', 'ashandapp.views.careteam.network.my_patients', name='my_patients'),
 #    url(r'^recipients/$', 'ashandapp.views.careteam.network.my_care_recipients', name='my_care_recipients'),
 #
-#    url(r'^mobile/caselist$', 'ashandapp.views.mobile.issue_list', name='mobile_issue_list'),
+#    url(r'^mobile/caselist$', 'ashandapp.views.mobile.issue_home', name='mobile_issue_list'),
 #    url(r'^mobile/newprovider', 'ashandapp.views.mobile.new_provider', name='new_provider'),
 #
 #    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/issues$', 'carehqapp.views.careteam.ajax.view_careteam_issues', name='careteam-issues-tabpage'),
@@ -59,7 +57,7 @@ urlpatterns = patterns('carehqapp.views',
 #
 #    #careteam specific links
 #    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})$', 'carehqapp.views.careteam.single', name='view-careteam'),
-#    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/careplan$', 'carehqapp.views.careteam.single_careplan', name='view-careteam-careplan'),
+#    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/careplan$', 'carehqapp.views.careteam.single_template_careplan', name='view-careteam-careplan'),
 #    url(r'^careteam/(?P<careteam_id>[0-9a-f]{32})/history$', 'carehqapp.views.careteam.single_history', name='view-careteam-history'),
 #
 #    (r'^careteam/(?P<careteam_id>[0-9a-f]{32})/new/question$', 'ashandapp.views.issues.create.new_question'),

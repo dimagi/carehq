@@ -4,7 +4,7 @@ from datetime import timedelta, timedelta, datetime
 from dimagi.utils.make_uuid import make_uuid
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from issuetracker import constants
+from issuetracker import issue_constants
 from issuetracker.models.issuecore import IssueCategory
 from permissions.models import Actor
 
@@ -68,8 +68,8 @@ class Filter(models.Model):
 
     #case related properties
     category = models.ForeignKey(IssueCategory, null=True, blank=True)
-    status = models.CharField(max_length=160, null=True, blank=True, choices=constants.STATUS_CHOICES)
-    priority = models.IntegerField(null=True, blank=True, choices=constants.PRIORITY_CHOICES)
+    status = models.CharField(max_length=160, null=True, blank=True, choices=issue_constants.STATUS_CHOICES)
+    priority = models.IntegerField(null=True, blank=True, choices=issue_constants.PRIORITY_CHOICES)
 
     opened_by = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_opened_by")
     assigned_to = models.ForeignKey(Actor, null=True, blank=True, related_name="filter_assigned_to")

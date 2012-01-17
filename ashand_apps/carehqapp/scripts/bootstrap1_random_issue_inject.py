@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from django.contrib.contenttypes.models import ContentType
 import os
 from carehq_core import carehq_api, carehq_constants
-from issuetracker import constants as caseconstants
+from issuetracker import issue_constants as caseconstants
 from issuetracker.models import Issue
 import csv
 from issuetracker.models.issuecore import IssueCategory
