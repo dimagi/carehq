@@ -790,6 +790,7 @@ class PactPatient(BasePatient):
 
         if self.arm.lower().startswith('dot'):
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
+            #xml_dict['regimens'] = self.get_ghetto_regimen_xml()
             xml_dict['regimens'] = self.get_ghetto_regimen_xml()
         else:
             xml_dict['dot_schedule'] = ''
