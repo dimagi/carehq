@@ -31,7 +31,6 @@ def receive_ccd(request):
             payload = request.FILES['patientsessiondata'].read()
     if payload is None:
         logging.error("Error receiving data, patientsession data key not in FILES or POST %s" % str(request.META))
-    pdb.set_trace()
     resp = spoof_submission(reverse('receiver.views.post'), payload, hqsubmission=False)
     response_text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response><Code>SUCCESS</Code><Message>Thank you %s</Message></Response>" % uuid.uuid4().hex
     return HttpResponse(response_text, content_type='text/xml') #default this assumes is a 200 response code.

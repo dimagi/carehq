@@ -187,7 +187,6 @@ def generate_actor(tenant, user, role_type_string, name=None, title=None, depart
         actor_doc.first_name = user.first_name
         actor_doc.last_name = user.last_name
     else:
-        pdb.set_trace()
     actor_doc.save(tenant, user=user)
     return actor_doc
 
