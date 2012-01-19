@@ -109,10 +109,9 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
     do_edit = False    
     activity_slug = None
     activity = None
-    for key, value in request.GET.items():            
-        if key == 'activity':            
-            activity = value
+    activity = request.GET.get('activity',issue_constants.CASE_EVENT_COMMENT)
     context['issue'] = theissue
+    context['activity'] = activity
    
     ########################
     # Inline Form display

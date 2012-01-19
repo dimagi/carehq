@@ -44,21 +44,21 @@
                                         {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
                                         {#			</li>			#}
                                         {#		{% endfor %}#}
-                                        <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a
+                                        <li class="ui-state-default ui-corner-top  {% if activity == "event-comment" %}ui-state-active ui-tabs-selected{% endif %}"><a
                                                 href="{% url manage-issue issue.id %}?activity=event-comment">Update</a>
                                         </li>
-                                        <li class="ui-state-default ui-corner-top"><a
+                                        <li class="ui-state-default ui-corner-top {% if activity == "event-edit" %}ui-state-active ui-tabs-selected{% endif %}"><a
                                                 href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
-                                        <li class="ui-state-default ui-corner-top"><a
+                                        <li class="ui-state-default ui-corner-top {% if activity == "event-assign" %}ui-state-active ui-tabs-selected{% endif %}"><a
                                                 href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
                                         </li>
                                         {% if not issue.resolved_date %}
-                                            <li class="ui-state-default ui-corner-top"><a
+                                            <li class="ui-state-default ui-corner-top {% if activity == "event-resolve" %}ui-state-active ui-tabs-selected{% endif %}"><a
                                                     href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
                                             </li>
                                         {% else %}
                                             {% if not issue.closed_date %}
-                                                <li>
+                                                <li class="ui-state-default ui-corner-top {% if activity == "event-close" %}ui-state-active ui-tabs-selected{% endif %}">
                                                     <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
                                                 </li>
                                             {% endif %}
