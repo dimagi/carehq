@@ -1,5 +1,6 @@
 from _collections import defaultdict
 from datetime import datetime, timedelta, date
+import pdb
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, DateTimeProperty, BooleanProperty, IntegerProperty, DictProperty, DateProperty
 from couchdbkit.schema.properties_proxy import SchemaProperty, SchemaListProperty
@@ -260,7 +261,7 @@ class PactPatient(BasePatient):
         if hasattr(self, attrib):
             return getattr(self, attrib)
         else:
-            if xform_id in self._case.xform_ids:
+            if xform_id in self._case['xform_ids']:
                 instance = XFormInstance.get(xform_id)
                 setattr(self, attrib, instance)
                 return instance
