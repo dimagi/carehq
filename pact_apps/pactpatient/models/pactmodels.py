@@ -16,6 +16,8 @@ import logging
 from dimagi.utils import make_uuid
 import settings
 
+PACT_CACHE_TIMEOUT=14400
+
 ghetto_regimen_map = {
     "none":'0',
     "qd": '1',
@@ -193,34 +195,50 @@ class PactPatient(BasePatient):
         #iterate through xforms in case and get namespace by doing xforminstance.get()
         case_doc = self._cache_case()
 
-        if hasattr(case_doc, 'last_note'):
-            return case_doc.last_note
+        if case_doc.has_key('last_note'):
+            return case_doc['last_note']
         else:
-            return None
+            return '1969-12-31'
 
-    @property
+    #@property
     def last_dot_form_date(self):
         #todo: get case
         #iterate through xforms in case and get namespace by doing xforminstance.get()
         #if dots form, then break
         case_doc = self._cache_case()
-        if hasattr(case_doc, 'last_dot'):
-            return case_doc.last_dot
+        if case_doc.has_key('last_dot'):
+            return case_doc['last_dot']
         else:
-            for id in reversed(case_doc.xform_ids):
-                xform = self._get_case_submission(id)
-                if xform.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
-                    return xform['form']['encounter_date']
-            return ''
+#            for id in reversed(case_doc.xform_ids):
+#                xform = self._get_case_submission(id)
+#                if xform.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+#                    return xform['form']['encounter_date']
+            return '1969-12-13'
 
 
-    def _cache_case(self):
+    def _cache_case(self, invalidate=False):
+        if invalidate:
+            cache.delete('%s_casedoc' % self._id)
+
         if hasattr(self,'_case'):
             return self._case
 
-        self._case = CommCareCase.get(self.case_id)
+        mem_case_string = cache.get('%s_casedoc' % (self._id), None)
+        if mem_case_string is None:
+            #it's null, so it's a cache miss.
+            #do a requery
+            self._case = CommCareCase.get_db().get(self.case_id)
+            cache.set('%s_casedoc' % self._id, simplejson.dumps(self._case), PACT_CACHE_TIMEOUT)
+            self._cached_submits=True
+        else:
+            #it's a cache hit, retrieve and return the document
+            mem_case_json = simplejson.loads(mem_case_string)
+            #self._case = CommCareCase.wrap(mem_case_json)
+            self._case = mem_case_json
         self._cached_submits=True
         return self._case
+
+
 
 #    def _get_case_submissions(self):
 #        print "cache case submits for %s" % self._id
@@ -374,7 +392,7 @@ class PactPatient(BasePatient):
         bw_docs = sorted(bw_docs, key=lambda x: x['test_date'], reverse=True)
         if len(bw_docs) > 0:
             self._prior_bloodwork = bw_docs[0]
-            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()))
+            cache.set('%s_bloodwork' % (self._id), simplejson.dumps(bw_docs[0].to_json()), PACT_CACHE_TIMEOUT)
             return bw_docs[0]
 
         if self.prior_bloodwork.test_date is None:
@@ -405,8 +423,8 @@ class PactPatient(BasePatient):
                 #new version pulling from case
                 case_doc = self._cache_case()
                 ret = dict()
-                ret['count'] = len(set(case_doc.xform_ids))
-                last_form = self._get_case_submission(case_doc.xform_ids[-1])#self._XFormInstance.get(case_doc.xform_ids[-1])
+                ret['count'] = len(set(case_doc['xform_ids']))
+                last_form = self._get_case_submission(case_doc['xform_ids'][-1])#self._XFormInstance.get(case_doc.xform_ids[-1])
                 ret['doc_id'] = last_form._id
                 ret['last_xmlns'] = last_form.xmlns
                 ret['last_received'] = last_form.received_on.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -641,25 +659,24 @@ class PactPatient(BasePatient):
         self.address.append(new_address)
         self.save()
 
-    @property
     def active_phones(self):
         """
         Get casexml phones
         """
         casedoc = self._cache_case()
-        phone_properties = sorted(filter(lambda x: x.startswith("Phone"), casedoc._dynamic_properties.keys()))
+        phone_properties = sorted(filter(lambda x: x.startswith("Phone"), casedoc.keys()))
         #iterate through all phones properties and make an array of [ {description, number}, etc ]
         ret = []
 
         for n, x in enumerate(phone_properties, start=1):
             p = {}
             p['phone_id'] = n
-            if hasattr(casedoc, 'Phone%d' % n):
-                pnum = getattr(casedoc, 'Phone%d' % n)
-                if pnum != None and pnum != '':
+            if casedoc.has_key('Phone%d' % n):
+                pnum = casedoc['Phone%d' % n]
+                if pnum is not None and pnum != '':
                     p['number'] = pnum
-            if hasattr(casedoc, 'Phone%dType' % n):
-                p['description'] = getattr(casedoc, 'Phone%dType' % n)
+            if casedoc.has_key('Phone%dType' % n):
+                p['description'] = casedoc['Phone%dType' % n]
             else:
                 p['description'] = 'Other'
             if p.has_key('number'):
@@ -676,18 +693,18 @@ class PactPatient(BasePatient):
         """
         casedoc = self._cache_case()
         #iterate through all address properties and make an array of [ {description, address_string}, etc ]
-        address_props = sorted(filter(lambda x: x.startswith("address"), casedoc._dynamic_properties.keys()))
+        address_props = sorted(filter(lambda x: x.startswith("address"), casedoc.keys()))
         ret = []
 
         for n, x in enumerate(address_props):
             p = {}
             p['address_id'] = n
-            if hasattr(casedoc, 'address%d' % n):
-                pnum = getattr(casedoc, 'address%d' % n)
+            if casedoc.has_key('address%d' % n):
+                pnum = casedoc['address%d' % n]
                 if pnum != None and pnum != '':
                     p['address'] = pnum
-            if hasattr(casedoc, 'address%dtype' % n):
-                p['description'] = getattr(casedoc, 'address%dtype' % n)
+            if casedoc.has_key('address%dtype' % n):
+                p['description'] = casedoc['address%dtype' % n]
 
             if p.has_key('address'):
                 ret.append(p)
@@ -698,7 +715,8 @@ class PactPatient(BasePatient):
     def get_ghetto_phone_xml(self):
         ret = ''
         counter = 1
-        for num, phone in enumerate(self.active_phones, start=1):
+        aphones = self.active_phones()
+        for num, phone in enumerate(aphones, start=1):
             if phone['number'] == '':
                 continue
             else:
@@ -709,23 +727,36 @@ class PactPatient(BasePatient):
                     ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret
 
-    def get_ghetto_regimen_xml(self):
+    def get_ghetto_regimen_xml(self, invalidate=False):
         """
         Returns DOT regimens as well as DOT adherence information
         """
-        art_regimen = ghetto_regimen_map[self.art_regimen.lower()]
-        if art_regimen == '0':
-            art_regimen = ''
 
-        nonart_regimen = ghetto_regimen_map[self.non_art_regimen.lower()]
-        if nonart_regimen == '0':
-            nonart_regimen = ''
+        if invalidate:
+            cache.delete('%s_dot_xml' % self._id)
 
-        ret = ''
-        ret += "<artregimen>%s</artregimen>" % (art_regimen)
-        ret += "<nonartregimen>%s</nonartregimen>" % (nonart_regimen)
-        ret += "<dots>%s</dots>" % (simplejson.dumps(self.get_dots_data()))
-        return ret
+        xml_ret = cache.get('%s_dot_xml' % self._id, None)
+        if xml_ret is None:
+            art_regimen = ghetto_regimen_map[self.art_regimen.lower()]
+            if art_regimen == '0':
+                art_regimen = ''
+
+            nonart_regimen = ghetto_regimen_map[self.non_art_regimen.lower()]
+            if nonart_regimen == '0':
+                nonart_regimen = ''
+
+            dots_data = self.get_dots_data()
+            ret = ''
+            ret += "<artregimen>%s</artregimen>" % art_regimen
+            ret += "<nonartregimen>%s</nonartregimen>" % nonart_regimen
+            ret += "<dots>%s</dots>" % simplejson.dumps(dots_data)
+            cache.set('%s_dot_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
+            return ret
+        else:
+            return xml_ret
+
+
+
 
     def get_ghetto_address_xml(self):
         ret = ''
@@ -739,7 +770,15 @@ class PactPatient(BasePatient):
                 ret += "<address%dtype>Default</address%dtype>" % (num, num)
         return ret
 
-    def get_ghetto_schedule_xml(self):
+    def get_ghetto_schedule_xml(self, invalidate=False):
+
+        if invalidate:
+            cache.delete('%s_schedule_xml' % self._id)
+
+        xml_ret = cache.get('%s_schedule_xml' % self._id, None)
+        if xml_ret is not None:
+            return xml_ret
+
         ret = ''
         counter = 1
         days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
@@ -760,9 +799,11 @@ class PactPatient(BasePatient):
                     hp_username = self.primary_hp
                 ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day_of_week,hp_username, day_of_week)
                 counter += 1
+        cache.set('%s_schedule_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
         return ret
 
     def ghetto_xml(self):
+        casedoc = self._cache_case()
         xml_dict = defaultdict(lambda: '')
         xml_dict['case_id'] = self.case_id
         xml_dict['date_modified'] = self.date_modified.strftime("%Y-%m-%dT%H:%M:%S.000")
@@ -782,7 +823,7 @@ class PactPatient(BasePatient):
 
         #check the view if any exist.  if it's empty, check this property.
 
-        xml_dict['last_dot'] = self.last_dot_form_date
+        xml_dict['last_dot'] = self.last_dot_form_date()
         xml_dict['last_note'] = self.last_progress_note_date
 
         #todo: check bloodwork view
@@ -790,7 +831,6 @@ class PactPatient(BasePatient):
 
         if self.arm.lower().startswith('dot'):
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
-            #xml_dict['regimens'] = self.get_ghetto_regimen_xml()
             xml_dict['regimens'] = self.get_ghetto_regimen_xml()
         else:
             xml_dict['dot_schedule'] = ''

@@ -1,6 +1,7 @@
 import tempfile
 import uuid
 from couchdb.http import ResourceNotFound
+from devserver.modules.profile import devserver_profile
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -26,6 +27,8 @@ def debug_casexml_new(request):
     return render_to_response(template_name, context_instance=context)
 
 @httpdigest()
+#@profile('/home/dmyung/workspaces/pycharm/ashand-project/carehq/caselist.profile')
+@devserver_profile(follow=[PactPatient.ghetto_xml, PactPatient.get_ghetto_regimen_xml, PactPatient._cache_case])
 def get_caselist(request):
     """Intermediary/ghetto way of producing casexml, to be deprecated.
     """

@@ -39,7 +39,7 @@ def remove_phone(request):
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
         pdoc = PactPatient.get(patient_guid)
         phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
-        new_phones = pdoc.active_phones
+        new_phones = pdoc.active_phones()
         new_phones[phone_id] = {'number':'', 'description': ''}
 
         print "Remove phone: %s" % new_phones
@@ -122,7 +122,7 @@ def remove_address(request):
         new_addrs[address_id] = {'address': '', 'description': ''}
 #        new_addrs.pop(address_id)
 
-        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones, new_addrs)
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), new_addrs)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -212,7 +212,7 @@ def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_fo
             form = SimpleAddressForm(initial=addr)
             title = "Change Address"
         elif form_name == 'phone':
-            p = pdoc.active_phones[int(edit_id)]
+            p = pdoc.active_phones()[int(edit_id)]
             form = PhoneForm(initial=p)
             title = "New Phone"
 
@@ -282,7 +282,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 active_addresses[int(address_edit_id)-1] = addr_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones, active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 
             resp.status_code = 204
@@ -303,7 +303,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 is_new_phone = False
 
-            active_phones = pdoc.active_phones
+            active_phones = pdoc.active_phones()
             if is_new_phone:
                 active_phones.append(phone_dict)
             else:
