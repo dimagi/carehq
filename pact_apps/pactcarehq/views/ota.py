@@ -37,9 +37,6 @@ def get_caselist(request):
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
     response['Content-Length'] = len(resp_text)
-    from guppy import hpy
-    h = hpy()
-    print h.heap()
     return response
 
 
