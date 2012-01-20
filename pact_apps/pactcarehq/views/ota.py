@@ -28,7 +28,7 @@ def debug_casexml_new(request):
 
 @httpdigest()
 #@profile('/home/dmyung/workspaces/pycharm/ashand-project/carehq/caselist.profile')
-@devserver_profile(follow=[PactPatient.ghetto_xml, PactPatient.get_ghetto_regimen_xml, PactPatient._cache_case])
+#@devserver_profile(follow=[PactPatient.ghetto_xml, PactPatient.get_ghetto_regimen_xml, PactPatient._cache_case])
 def get_caselist(request):
     """Intermediary/ghetto way of producing casexml, to be deprecated.
     """
