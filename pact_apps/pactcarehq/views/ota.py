@@ -1,16 +1,8 @@
-import tempfile
 import uuid
-from couchdb.http import ResourceNotFound
-from devserver.modules.profile import devserver_profile
-from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
-from couchforms.models import XFormInstance
-from dimagi.utils import logging
-from dimagi.utils.couch.database import get_db
-from dimagi.utils.decorators.profile import profile
 from pactpatient.models.pactmodels import PactPatient
 
 @httpdigest()
