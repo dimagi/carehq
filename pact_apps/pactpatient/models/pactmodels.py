@@ -760,15 +760,15 @@ class PactPatient(BasePatient):
 
 
     def get_ghetto_address_xml(self):
+        """you idiot, you've been sending the wrong addresses down the whole time"""
         ret = ''
         counter = 1
-        for num, addr in enumerate(self.address, start=1):
-            addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
-            ret += "<address%d>%s</address%d>" % (num,addconcat, num)
-            if addr.description != None and len(addr.description) > 0:
-                ret += "<address%dtype>%s</address%dtype>" % (num,addr.description, num)
-            else:
-                ret += "<address%dtype>Default</address%dtype>" % (num, num)
+        addresses = self.active_addresses
+        for addr_dict in addresses:
+            #addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
+            ret += "<address%d>%s</address%d>" % (addr_dict['address_id'],addr_dict['address'], addr_dict['address_id'])
+            desc = addr_dict.get('description', 'No Label')
+            ret += "<address%dtype>%s</address%dtype>" % (addr_dict['address_id'],desc, addr_dict['address_id'])
         return ret
 
     def get_ghetto_schedule_xml(self, invalidate=False):

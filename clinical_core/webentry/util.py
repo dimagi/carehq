@@ -18,7 +18,7 @@ def get_remote_form(xform_url):
     Get a remote form from a url
     source: http://stackoverflow.com/questions/1020892/urllib2-read-to-unicode
     """
-    punctuation = { 0x2018:0x27, 0x2019:0x27, 0x201C:0x22, 0x201D:0x22 }
+    punctuation = { 0x2018:0x27, 0x2019:0x27, 0x201C:0x22, 0x201D:0x22 , 0x2012:0x2d, 0x2013:0x2d}
 
     req = urllib2.urlopen(xform_url)
     encoding ='utf8'
