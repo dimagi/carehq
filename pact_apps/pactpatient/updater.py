@@ -45,7 +45,7 @@ phone_template = """
 """
 
 address_template_full = """
-<address%(num)s>%(street)s %(city)s %(state)s %(postal_code)s</address%(num)s>
+<address%(num)s>%(street)s %(city)s, %(state)s %(postal_code)s</address%(num)s>
 <address%(num)stype>%(typestring)s</address%(num)stype>
 """
 
