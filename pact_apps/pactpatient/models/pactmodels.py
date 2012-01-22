@@ -760,7 +760,6 @@ class PactPatient(BasePatient):
 
 
     def get_ghetto_address_xml(self):
-        """you idiot, you've been sending the wrong addresses down the whole time"""
         ret = ''
         counter = 1
         addresses = self.active_addresses
