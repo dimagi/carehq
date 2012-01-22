@@ -4,50 +4,14 @@
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
     <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
     <script type="text/javascript" charset="utf-8">
         $().ready(function(){
             $("#provider-table").tablesorter({sortList: [[2,0]],widgets:['zebra']});
         });
     </script>
-{#    <script>#}
-{#	$(function() {#}
-{#		$( "#newprovider_dlg" ).dialog({#}
-{#			height: 620,#}
-{#            width: 640,#}
-{#			modal: true,#}
-{#            autoOpen: false,#}
-{#            buttons: {#}
-{#                "Create Provider": function() {#}
-{#                    #}
-{#                },#}
-{#                Cancel: function() {$(this).dialog("close")},#}
-{#            },#}
-{#		});#}
-{#        $("#newprovider_dlg_opener").click(function() {#}
-{#			$( "#newprovider_dlg" ).dialog( "open" );#}
-{#			return false;#}
-{#		});#}
-{#	});#}
-{#	</script>#}
     <script>
         function link_provider_patient(patient_guid, prov_actor_id) {
-            function getCookie(name) {
-                //basic get cookie, to facilitate getting the csrf token
-                var cookieValue = null;
-                if (document.cookie && document.cookie != '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
             var payload = {
                         'csrfmiddlewaretoken': getCookie("csrftoken"),
                         'patient_guid': patient_guid,
@@ -65,6 +29,7 @@
                         } else {
                             alert ("An error occurred in linking provider to the patient.")
                         }
+                        $('body').replaceWith(data.responseText);
                     }, //end success
                     "error": function(data) {
                         $('body').replaceWith(data.responseText);

@@ -97,10 +97,8 @@ def edit_xform_interaction(request, xform_id):
     pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
 
     if xform_url is None:
-        print "no url"
         raise Http404
     if len(pts) == 0:
-        print "no patient"
         raise Http404
 
     xform_def = fetch_xform_def(xform_url) # get existing data

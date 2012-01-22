@@ -85,6 +85,8 @@ urlpatterns = patterns ('',
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
     url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
+    url(r'^submission/pact/rm$', 'pactcarehq.views.rm_dot_submission', name='rm_pact_submission'),
+
     url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),

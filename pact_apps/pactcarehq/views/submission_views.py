@@ -1,5 +1,6 @@
 from datetime import datetime
 import simplejson
+import urllib
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -14,6 +15,7 @@ import isodate
 from couchforms.models import XFormInstance
 from couchforms.util import post_xform_to_couch
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
+from permissions.models import Actor
 from .util import form_xmlns_to_names, ms_from_timedelta
 from pactcarehq.views.patient_views import _get_submissions_for_patient
 from pactpatient.models.pactmodels import PactPatient
@@ -213,6 +215,33 @@ def my_submits(request, template_name="pactcarehq/submits_by_chw.html"):
     submit_dict[username] = submissions
     context['submit_dict'] = submit_dict
     return render_to_response(template_name, context_instance=context)
+
+@login_required
+@require_POST
+def rm_dot_submission(request):
+    """
+    Remove a DOT submission
+    """
+    resp = HttpResponse()
+    try:
+        doc_id = request.POST.get('doc_id', None)
+        if doc_id is not None:
+            doc_to_delete = XFormInstance.get(doc_id)
+            if doc_to_delete.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+                case_id = doc_to_delete.form['case']['case_id']
+                pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
+                doc_to_delete.delete()
+                if len(pts) == 1:
+                    patient_doc = pts[0]
+                    return HttpResponse(status=202,content=reverse('view_pactpatient', kwargs={'patient_guid': patient_doc._id}))
+            else:
+                logging.error("Error, attempt to delete non DOT form.  User: %s, doc_id %s" % (request.user.username, doc_id))
+                return HttpResponse(status=405, content="Improper attempt to delete document")
+        return HttpResponseRedirect(reverse('pact_providers'))
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
 
 
 @login_required

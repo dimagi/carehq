@@ -48,6 +48,11 @@ def set_chw_pt_permissions():
 
 
 def recompute_chw_actor_permissions(patient_doc, old_map_full=None):
+    """
+    Once the primary hp is reset, need to recompute all the actor permissions for the patients and the CHWs.
+    """
+    #invalidate the schedule cache
+    patient_doc.get_ghetto_schedule_xml(invalidate=True)
     if old_map_full is None:
         old_map = get_chw_pt_permissions().get(patient_doc._id, [])
     else:

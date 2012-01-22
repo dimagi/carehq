@@ -180,6 +180,35 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
             self.assertTrue(hasattr(casedoc_updated, 'address%dtype' % n))
             self.assertEquals(address.description, getattr(casedoc_updated, 'address%dtype' % n))
 
+        #next verify OTA restore
+        client = DigestClient()
+        client.set_authorization(self.user.username, 'mockmock', 'Digest')
+        restore_payload = client.get('/provider/caselist')
+
+        for n in range(1, self.NUM_PHONES + 1):
+            phone = phones[n - 1]
+            phone_re = re.compile('<Phone%d>(?P<phone>.*)<\/Phone%d>' % (n, n))
+            phone_str = phone_re.search(restore_payload.content).group('phone')
+            self.assertEquals(phone.number, phone_str)
+
+            desc_re = re.compile('<Phone%dType>(?P<desc>.*)<\/Phone%dType>' % (n, n))
+            desc_str = desc_re.search(restore_payload.content).group('desc')
+            self.assertEquals(phone.description, desc_str)
+
+
+
+        for n in range(1, self.NUM_ADDRESSES + 1):
+            address = addresses[n - 1]
+            address_re = re.compile('<address%d>(?P<address>.*)<\/address%d>' % (n, n))
+            address_str = address_re.search(restore_payload.content).group('address')
+            self.assertEquals(address.get_full_address(), address_str)
+
+            desc_re = re.compile('<address%dtype>(?P<desc>.*)<\/address%dtype>' % (n, n))
+            desc_str = desc_re.search(restore_payload.content).group('desc')
+            self.assertEquals(address.description, desc_str)
+
+
+        casedoc = CommCareCase.get(patient_doc.case_id)
         return patient_doc, phones, addresses
 
     def test0CreatePatient(self):
@@ -210,9 +239,6 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                                                      'preferred_language': 'english',
                                                      })
 
-        fout = open('foo.html','w')
-        fout.write(response.content)
-        fout.close()
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
 
 #        rf = RequestFactory()
