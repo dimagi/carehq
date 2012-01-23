@@ -6,7 +6,7 @@ from issuetracker import issue_constants
 import uuid
 from django.core.management import  call_command
 from issuetracker.models.issuecore import Issue
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import Actor
 
 MAX_MULTI_PATIENTS = 10

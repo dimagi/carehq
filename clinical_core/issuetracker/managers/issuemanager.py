@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from datetime import datetime
 from django.db.models.query_utils import Q
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import PrincipalRoleRelation
 
 class IssueManager(models.Manager):

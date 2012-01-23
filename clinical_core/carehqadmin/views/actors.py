@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from actorpermission.models.actortypes import CaregiverActor, CHWActor, ProviderActor
+from actorpermission.models import CaregiverActor, CHWActor, ProviderActor
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
 import permissions

@@ -3,7 +3,7 @@ import random
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
-from actorpermission.models.actortypes import CaregiverActor, ProviderActor, CHWActor
+from actorpermission.models import CaregiverActor, ProviderActor, CHWActor
 from carehq_core import carehq_api
 from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import raddress

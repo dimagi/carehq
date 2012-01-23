@@ -3,7 +3,7 @@ import logging
 import random
 import simplejson
 from clinical_core.issuetracker.models.issuecore import IssueCategory, Issue
-from clinical_core.patient.models.patientmodels import Patient
+from clinical_core.patient.models import Patient
 from issuetracker import issue_constants as caseconstants
 from permissions.models import Actor, get_system_actor
 

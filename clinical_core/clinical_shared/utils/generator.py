@@ -1,6 +1,6 @@
 #from clinical_core.casetracker.models import *
 from pytz import timezone
-from actorpermission.models.actortypes import  ProviderActor, CaregiverActor, PatientActor
+from actorpermission.models import  ProviderActor, CaregiverActor, PatientActor
 from carehq_core import carehq_api, carehq_constants
 from issuetracker.models.issuecore import Issue
 from clinical_core.patient.models import *
@@ -186,7 +186,7 @@ def generate_actor(tenant, user, role_type_string, name=None, title=None, depart
     if user is not None:
         actor_doc.first_name = user.first_name
         actor_doc.last_name = user.last_name
-    else:
+
     actor_doc.save(tenant, user=user)
     return actor_doc
 

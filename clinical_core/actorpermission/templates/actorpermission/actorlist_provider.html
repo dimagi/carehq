@@ -1,0 +1,26 @@
+<div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
+    {% block actor_display_left %}
+        <div class="span-10">
+            {% block actorname_block %}
+                <div class="span-10 last careteam_name">{{ actor.actordoc.get_name }}</div>
+            {% endblock actorname_block %}
+            {% block actorinfo_block %}
+            {% endblock actorinfo_block %}
+        </div>
+    {% endblock %}
+
+    <div class="span-4 last">
+    {% block actorrelation_right %}
+    {% endblock %}
+    </div>
+
+    <div class="span-14 last">{{ actor.actordoc.provider_title }}</div>
+    <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+    <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
+    <div class="span-7 last">
+        <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
+            Remove
+        </a>
+        </small>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-from actorpermission.models.actortypes import  ProviderActor
+from actorpermission.models import  ProviderActor
 import permissions
 from permissions.models import Actor, Role, PrincipalRoleRelation
 from tenant.models import Tenant

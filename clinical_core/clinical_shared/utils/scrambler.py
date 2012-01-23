@@ -1,5 +1,5 @@
 from clinical_shared.utils import streets
-from patient.models.patientmodels import CAddress, CPhone
+from patient.models import CAddress, CPhone
 import random
 
 

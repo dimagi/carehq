@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test.client import Client
-from actorpermission.models.actortypes import CHWActor, ProviderActor, CaregiverActor
+from actorpermission.models import CHWActor, ProviderActor, CaregiverActor
 from carehq_core import carehq_api
 from casexml.apps.case.models import CommCareCase
 from clinical_shared.tests.testcase import CareHQClinicalTestCase
@@ -15,7 +15,7 @@ from clinical_shared.utils.scrambler import raddress
 from pactpatient.enums import REGIMEN_CHOICES, PACT_RACE_CHOICES, PACT_HIV_CLINIC_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES
 from pactpatient.models.pactmodels import PactPatient
 from pactpatient.views import new_patient
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import Actor, Role, PrincipalRoleRelation
 from permissions.tests import RequestFactory
 from tenant.models import Tenant

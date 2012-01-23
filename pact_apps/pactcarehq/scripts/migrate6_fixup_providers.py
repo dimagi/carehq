@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from actorpermission.models.actortypes import BaseActorDocument, ProviderActor, CHWActor
+from actorpermission.models import BaseActorDocument, ProviderActor, CHWActor
 from carehq_core import carehq_constants, carehq_api
 from pactconfig import pact_constants
 from pactpatient.models.pactmodels import PactPatient
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import Actor, PrincipalRoleRelation, Role
 from nameparser import HumanName
 import settings

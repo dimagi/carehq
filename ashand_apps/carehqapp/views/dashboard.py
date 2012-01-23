@@ -12,7 +12,7 @@ from clinical_core.feed.models import FeedEvent
 from lib.crumbs import crumbs
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import Role, PrincipalRoleRelation, Actor
 import settings
 

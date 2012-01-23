@@ -1,7 +1,7 @@
 import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
-from actorpermission.models.actortypes import BaseActorDocument
+from actorpermission.models import BaseActorDocument
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
 from dimagi.utils.couch.database import get_db
@@ -11,7 +11,7 @@ from pactpatient.updater import update_patient_casexml
 from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
-from patient.models.patientmodels import  BasePatient, CPhone
+from patient.models import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
 from receiver.util import spoof_submission
@@ -26,7 +26,7 @@ from django.template.context import RequestContext
 from django.views.decorators.http import require_POST
 import logging
 from pactpatient.models.pactmodels import PactPatient, CDotWeeklySchedule
-from patient.models.patientmodels import  Patient
+from patient.models import  Patient
 
 @login_required
 @require_POST

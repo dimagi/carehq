@@ -1,6 +1,6 @@
 from django import template
 from django.core.urlresolvers import reverse
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 
 register = template.Library()
 

@@ -13,7 +13,7 @@ from django.template.context import RequestContext
 from patient.models import BasePatient
 from patient.forms import BasicPatientForm
 from django.contrib import messages
-from patient.models.patientmodels import SimplePatient
+from patient.models import SimplePatient
 from django.conf import settings
 
 

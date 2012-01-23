@@ -6,7 +6,7 @@ from carehq_core import carehq_api
 from issuetracker.models.issuecore import Issue
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from patient.views import PatientSingleView
 from permissions.models import Actor, PrincipalRoleRelation
 from datetime import datetime, timedelta

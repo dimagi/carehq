@@ -7,7 +7,7 @@ from dimagi.utils.make_time import make_time
 from issuetracker.forms import NewIssueForm
 from issuetracker.issue_constants import CASE_STATE_OPEN, CASE_EVENT_OPEN
 from lib.crumbs import crumbs
-from patient.models.patientmodels import SimplePatient
+from patient.models import SimplePatient
 
 def my_issues_patient(request, template_name = "carehqapp/my_issues_patient.html"):
     context = RequestContext(request)

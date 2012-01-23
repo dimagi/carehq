@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+import pdb
 from django.contrib.contenttypes.models import ContentType
 import os
 from carehq_core import carehq_api, carehq_constants
@@ -6,7 +7,7 @@ from issuetracker import issue_constants as caseconstants
 from issuetracker.models import Issue
 import csv
 from issuetracker.models.issuecore import IssueCategory
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 import random
 from permissions.models import Role, PrincipalRoleRelation
 
@@ -54,6 +55,9 @@ def run():
             body = row[1] % (pt.couchdoc.first_name)
         else:
             body=row[1]
+
+        if actor is None:
+            pdb.set_trace()
         newcase = Issue.objects.new_issue(
                                       random.choice(IssueCategory.objects.all()),
                                       actor,

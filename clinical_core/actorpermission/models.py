@@ -8,6 +8,7 @@ from couchdbkit.schema.properties_proxy import  SchemaListProperty
 import logging
 from django.core.cache import cache
 from clinical_shared.mixins import TypedSubclassMixin
+from patient.models import Patient
 from permissions.models import Actor
 from tenant.models import TenantActor
 
@@ -182,7 +183,17 @@ class CaregiverActor(BaseActorDocument):
 
 class PatientActor(BaseActorDocument):
     patient_doc_id = StringProperty()
-    pass
+
+    def get_django_patient(self):
+        try:
+            return Patient.objects.get(doc_id=self.patient_doc_id)
+        except Patient.DoesNotExist:
+            return None
+
+    def get_couch_patient(self):
+        django_patient = self.get_django_patient()
+        if django_patient is not None:
+            return django_patient.couchdoc
 
 class ProviderActor(BaseActorDocument):
     """
@@ -207,3 +218,4 @@ class ProviderActor(BaseActorDocument):
 
 
 
+from signals import *

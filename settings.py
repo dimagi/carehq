@@ -133,7 +133,7 @@ INSTALLED_APPS = (
 
     # Core clinical apps #####################
     'tenant',
-    'clinical_core.actorpermission',
+    'actorpermission',
     'permissions',
     'couchforms',
     'couchexport',

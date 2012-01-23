@@ -14,7 +14,7 @@ from couchexport.schema import get_docs
 from couchforms.models import XFormInstance
 from dimagi.utils.export import WorkBook
 from dimagi.utils.web import json_request
-from patient.models.patientmodels import BasePatient, Patient
+from patient.models import BasePatient, Patient
 from datetime import datetime, timedelta
 from shinecarehq.tasks import schema_export
 import simplejson as json

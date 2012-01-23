@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from actorpermission.models.actortypes import ProviderActor
+from actorpermission.models import ProviderActor
 from carehq_core import carehq_api, carehq_constants
 from carehqadmin.forms.provider_form import ProviderForm
 from pactpatient.models.pactmodels import PactPatient

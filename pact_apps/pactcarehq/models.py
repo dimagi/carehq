@@ -1,5 +1,5 @@
 from couchdbkit.ext.django.schema import Document, DocumentSchema, ListProperty, StringProperty, DateTimeProperty, SchemaListProperty, DictProperty
-from actorpermission.models.actortypes import CHWActor
+from actorpermission.models import CHWActor
 #
 #Remains to be seen if this should be xform'ed or django formed
 #class TrainingLog(DocumentSchema):

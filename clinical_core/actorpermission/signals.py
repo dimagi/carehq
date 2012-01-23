@@ -1,7 +1,7 @@
 from couchdbkit.exceptions import ResourceNotFound
 from django.db.models.signals import   post_init, post_delete
 import logging
-from actorpermission.models.actortypes import BaseActorDocument
+from actorpermission.models import BaseActorDocument, PatientActor, ProviderActor, CaregiverActor
 from permissions.models import Actor
 
 def get_actor_doc(sender, instance, *args, **kwargs):
@@ -15,6 +15,30 @@ def get_actor_doc(sender, instance, *args, **kwargs):
         except ResourceNotFound:
             pass
 post_init.connect(get_actor_doc, sender=Actor)
+
+
+def set_actor_props(sender, instance, *args, **kwargs):
+    """
+    Set properties on the django actor based upon the roles of the actor
+    """
+    if hasattr(instance, 'actordoc'):
+        if isinstance(instance.actordoc, PatientActor):
+            setattr(instance, 'is_patient', True)
+        else:
+            setattr(instance, 'is_patient', False)
+
+        if isinstance(instance.actordoc, ProviderActor):
+            setattr(instance, 'is_provider', True)
+        else:
+            setattr(instance, 'is_provider', False)
+
+        if isinstance(instance.actordoc, CaregiverActor):
+            setattr(instance, 'is_caregiver',True)
+        else:
+            setattr(instance, 'is_caregiver', True)
+post_init.connect(set_actor_props, sender=Actor)
+
+
 
 
 def actor_post_delete(sender, instance, *args, **kwargs):

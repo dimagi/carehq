@@ -1,4 +1,4 @@
-from actorpermission.models.actortypes import BaseActorDocument
+from actorpermission.models import BaseActorDocument
 from permissions.models import Actor
 
 def run():

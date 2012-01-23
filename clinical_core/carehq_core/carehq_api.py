@@ -1,8 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
-from actorpermission.models.actortypes import ProviderActor, CHWActor, PatientActor
+from actorpermission.models import ProviderActor, CHWActor, PatientActor
 from carehq_core import carehq_constants
-from patient.models.patientmodels import PatientActorLink
+from patient.models import PatientActorLink
 import permissions
 from permissions.models import Role, PrincipalRoleRelation
 
@@ -60,6 +60,9 @@ def add_external_provider_to_patient(patient_doc, actor_doc):
 
 
 def get_permissions(actor_doc, direct=False):
+    """
+    Get all principal role relations for the given actor document
+    """
     djactor = actor_doc.django_actor
     if direct:
         direct_permissions = PrincipalRoleRelation.objects.filter(actor=djactor).exclude(content_id=None)

@@ -1,7 +1,7 @@
 from couchdbkit.ext.django.forms import DocumentForm
 from django.core.exceptions import ValidationError
 from uni_form.helpers import FormHelper, Layout, Fieldset, Row
-from actorpermission.models.actortypes import ProviderActor
+from actorpermission.models import ProviderActor
 from permissions.models import Actor
 
 class ProviderForm(DocumentForm):

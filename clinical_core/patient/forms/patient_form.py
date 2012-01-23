@@ -1,7 +1,7 @@
 from django import forms
 from couchdbkit.ext.django.forms import DocumentForm
 from pactpatient.enums import  GENDER_CHOICES
-from patient.models.patientmodels import SimplePatient
+from patient.models import SimplePatient
 
 
 class BasicPatientForm(DocumentForm):
