@@ -46,6 +46,15 @@ def mepi_production():
     env.user = prompt("Username: ", default=env.user)
     _setup_mepi_production()
 
+def ashand_production():
+    """ use ashand environment on remote host for MEPI"""
+    env.code_branch = 'ashand-dev'
+    env.sudo_user = 'carehq'
+    env.hosts = ['10.84.168.99']
+    env.environment = 'mepi_production'
+    env.user = prompt("Username: ", default=env.user)
+    _setup_mepi_production()
+
 def _setup_shine_staging():
     env.virtualenv_root = '/home/dimagivm/.virtualenvs/carehq_shine'
     env.root = '/home/dimagivm/'
