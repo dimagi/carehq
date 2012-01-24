@@ -5,33 +5,13 @@
     My Careteam
 {% endblock network_title %}
 {% block network_content %}
-    {% if request.current_actor.is_patient %}
-        {% for prr in patient_careteam %}
-            {% with prr.actor.actordoc as actor %}
-                {% include "actorpermission/actorlist_provider.html" %}
-            {% endwith %}
-        {% endfor %}
-    {% endif %}
-
-
-    {% for prr in all_relations %}
-        {{ prr.content }}<br>
+    {% for prr in patient_careteam %}
+        {% include "carehqapp/network/careteam_listitem.html" %}
     {% endfor %}
 {% endblock network_content %}
 
 
 
 
-{% extends "base.html" %}
-{% load i18n %}
-{% block title %}{% trans "My Care Network" %} {% endblock %}
-{% block content %}	
-<h2>Care Network</h2>
-
-<h2>My Care Team</h2>
-{%with my_careteam as careteam %}
-	{% include "carehqapp/partials/inline_careteam.html" %}
-{% endwith %}
-{% endblock %}
 
 

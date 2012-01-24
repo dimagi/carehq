@@ -373,7 +373,7 @@ class BasePatient(Document, TypedSubclassMixin):
         app_label = 'patient'
 
 
-class SimplePatient(BasePatient):
+class CarehqPatient(BasePatient):
     """
     A stub implementation of the Patient model
     """

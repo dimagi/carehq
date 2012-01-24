@@ -1,15 +1,21 @@
 from django.conf.urls.defaults import *
-from carehqapp.views.patient_views import AshandPatientSingleView
+from carehqapp.views.patient_views import CarehqPatientSingleView
 
 urlpatterns = patterns('carehqapp.views',
         #url(r'^$', 'home.home_view', name='home'),
         url(r'^$', 'dashboard.home_news', name='home'),
         url(r'^profile$', 'account.my_profile', name='my_profile'),
-        url(r'^issues$', 'issues.issue_home', name='issue_home'),
+        url(r'^issues/$', 'issues.issue_home', name='issue_home'),
+        url(r'^issues/(?P<issue_filter>.*)/$', 'issues.issue_filter', name='issue_filter'),
         url(r'^users/(?P<user_id>.*)$', 'users.single', name='user_profile'),
         #url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
         #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
+
+
+        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', CarehqPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_url'),
+        url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_home'),
+
 
         url(r'^network/$', 'network_views.my_network', name='my_network'),
         url(r'^network/mypatients/$', 'network_views.my_patients', name='my_patients'),

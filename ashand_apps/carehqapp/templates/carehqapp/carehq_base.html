@@ -16,6 +16,13 @@
                    <a href="{% url home %}">Home</a>
                 </span>
             </li>
+            {% if request.current_actor.is_patient %}
+                <li>
+                    <span class="head_menu">
+                    <a href="{% url patient_home %}">My Care</a>
+                    </span>
+                </li>
+            {% endif %}
             <li>
                 <span class="head_menu">
                 <a href="{% url issue_home %}">Issues</a>
@@ -31,14 +38,14 @@
                              <a href="{% url my_patients %}">My Patients</a>
                              {% endif %}
                              {% if request.current_actor.is_patient %}
-                                 <a href="#">My Careteam</a>
+                                 <a href="{% url my_careteam %}">My Careteam</a>
                              {% endif %}
                          </div>
                  </span>
                 </li>
                 <li>
              <span class="head_menu">
-             <a href="#">Account</a>
+             <a href="{% url account_landing %}">Account</a>
              </span>
                 </li>
             {% endblock %}

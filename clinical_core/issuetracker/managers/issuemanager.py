@@ -23,7 +23,7 @@ class IssueManager(models.Manager):
         Returns any case relevant of interest.
         """
         q_opened = Q(opened_by=actor)
-        q_edited = Q(last_edited_by=actor)
+        q_edited = Q(last_edit_by=actor)
         q_resolved = Q(resolved_by=actor)
         q_closed = Q(closed_by=actor)
 

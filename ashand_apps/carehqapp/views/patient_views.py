@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
@@ -14,14 +15,12 @@ from datetime import datetime, timedelta
 
 
 
-class AshandPatientSingleView(PatientSingleView):
+class CarehqPatientSingleView(PatientSingleView):
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
         """
-
         request = self.request
-        patient_guid = self.kwargs['patient_guid']
 
         schedule_show = request.GET.get("schedule", "active")
         schedule_edit = request.GET.get("edit_schedule", False)
@@ -32,8 +31,19 @@ class AshandPatientSingleView(PatientSingleView):
         patient_edit = request.GET.get('edit_patient', None)
         show_all_schedule = request.GET.get('allschedules', None)
 
+        is_me=False
+        patient_guid = self.kwargs.get('patient_guid', None)
+        if patient_guid is None:
+            #verify that this is the patient itself.
+            if request.current_actor.is_patient:
+                patient_guid = request.current_actor.actordoc.patient_doc_id
+                kwargs['patient_guid'] = patient_guid
+                is_me=True
+            else:
+                raise Http404
 
-        context = super(AshandPatientSingleView, self).get_context_data(**kwargs)
+        context = super(CarehqPatientSingleView, self).get_context_data(**kwargs)
+        context['is_me'] = is_me
         pdoc = context['patient_doc']
         dj_patient = context['patient_django']
         context['patient_list_url'] = reverse('my_patients')
@@ -48,7 +58,8 @@ class AshandPatientSingleView(PatientSingleView):
 
 
         role_actor_dict = carehq_api.get_careteam_dict(pdoc)
-        context['careteam_dict'] = role_actor_dict
+        #context['careteam_dict'] = role_actor_dict
+        context['careteam_prrs'] = carehq_api.get_careteam(pdoc)
 
         if address_edit and not new_address:
             if len(pdoc.address) > 0:

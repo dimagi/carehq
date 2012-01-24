@@ -6,8 +6,9 @@ from django.contrib.auth.decorators import login_required
 from dimagi.utils.make_time import make_time
 from issuetracker.forms import NewIssueForm
 from issuetracker.issue_constants import CASE_STATE_OPEN, CASE_EVENT_OPEN
+from issuetracker.models.issuecore import Issue
 from lib.crumbs import crumbs
-from patient.models import SimplePatient
+from patient.models import CarehqPatient
 
 def my_issues_patient(request, template_name = "carehqapp/my_issues_patient.html"):
     context = RequestContext(request)
@@ -37,7 +38,7 @@ def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.
 @login_required
 def new_issue_patient(request, patient_guid, template_name="carehqapp/activities/issue/new_issue.html"):
     context = RequestContext(request)
-    patient_doc = SimplePatient.get(patient_guid)
+    patient_doc = CarehqPatient.get(patient_guid)
     if request.method == "POST":
         form = NewIssueForm(patient_doc, request.current_actor, data=request.POST)
         if form.is_valid():
@@ -54,12 +55,39 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
         context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor)
     return render_to_response(template_name, context_instance=context)
 
+@login_required
+def issue_filter(request, issue_filter, template_name="carehqapp/issue_home.html"):
+#    request.breadcrumbs("Issue List", reverse(issue_home))
+    context = RequestContext(request)
+    active_tab = 'open'
+    if issue_filter == 'open':
+        active_tab = 'open'
+    elif issue_filter == 'all':
+        active_tab = 'all'
+    elif issue_filter == 'closed':
+        active_tab = 'closed'
+    elif issue_filter == 'favorites':
+        active_tab = 'favorites'
+    elif issue_filter == 'filter':
+        active_tab = 'filter'
+
+    context['active_tab'] = active_tab
+
+
+
+
+    user = request.user
+    return render_to_response(template_name, context_instance=context)
+
+
 @crumbs("Issue List", "issue_home", "my_profile")
 @login_required
 def issue_home(request, template_name="carehqapp/issue_home.html"):
 #    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)
     user = request.user
+    issues = Issue.objects.care_issues(request.current_actor)
+    context['issues'] = issues
     return render_to_response(template_name, context_instance=context)
 #
 #    ########################

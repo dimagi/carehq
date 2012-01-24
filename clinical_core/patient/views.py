@@ -13,7 +13,7 @@ from django.template.context import RequestContext
 from patient.models import BasePatient
 from patient.forms import BasicPatientForm
 from django.contrib import messages
-from patient.models import SimplePatient
+from patient.models import CarehqPatient
 from django.conf import settings
 
 
@@ -27,7 +27,7 @@ class PatientSingleView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(PatientSingleView, self).get_context_data(**kwargs)
         params = context['params']
-        patient_guid =  params['patient_guid']
+        patient_guid =  params.get('patient_guid', None)
         pat = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
         context['patient_doc'] = pat
         context['patient_django'] = Patient.objects.get(doc_id=pat._id)
@@ -80,7 +80,7 @@ def new_patient(request, form_class=BasicPatientForm, validate_callback=None):
         form = form_class(data=request.POST)
         # make patient
         if form.is_valid():
-            newptdoc = SimplePatient()
+            newptdoc = CarehqPatient()
             newptdoc.patient_id = form.cleaned_data['patient_id']
             newptdoc.gender = form.cleaned_data['gender']
             newptdoc.birthdate = form.cleaned_data['birthdate']

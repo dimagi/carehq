@@ -7,7 +7,7 @@
 {% block network_content %}
 
 {% for prr in patient_relations %}
-        {{ prr.content }} :: {{ prr.role }}<br>
-    {% endfor %}
+    {% include "carehqapp/network/patient_prr_listitem.html" %}
+{% endfor %}
 {% endblock network_content %}
 

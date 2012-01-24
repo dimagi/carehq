@@ -29,7 +29,9 @@
         <div class="span-24"> <!-- patient hat -->
         {% block patient_hat %}
             <div class="span-12">
-                <span class="ptpage_fn"><a href="{{ patient_list_url }}">Patients</a> / {{patient_doc.first_name}} {{patient_doc.last_name}}</span>
+                {% block patient_name_display %}
+                <span class="ptpage_fn">Patient / {{patient_doc.first_name}} {{patient_doc.last_name}}</span>
+                {% endblock patient_name_display %}
             </div>
             <div class="span-12 last right pt_hat_actions_bar">
             {% block hat_actions %}

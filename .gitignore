@@ -12,3 +12,4 @@ settings_local_*.py
 *.class
 staticfiles/*
 mediafiles/*
+/celerybeat-schedule

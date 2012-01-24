@@ -79,7 +79,7 @@ def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, 
     if user is None:
         user = get_or_create_user(first_name=first_name, last_name=last_name)
 
-    pt = SimplePatient()
+    pt = CarehqPatient()
     pt.patient_id = str(random_number(length=10))
     pt.birthdate = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
 

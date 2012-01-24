@@ -24,13 +24,49 @@
 {% block content %}
     <h2>Issues</h2>
     <div class="span-24 last">
-    <ul class="clearfix">
-        <li>Filter: Foo</li>
-        <li>Open</li>
-        <li>Closed</li>
-        <li>All</li>
-        <li>Favorites</li>
-    </ul>
+        <div class="tabs ui-tabs ui-widget ui-widget-content ui-corner-all">
+            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+                {#		{% for activity in case.status.transitional_actions %}#}
+                {#			<li>#}
+                {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
+                {#			</li>			#}
+                {#		{% endfor %}#}
+
+                <li class="ui-state-default ui-corner-top  {% if active_tab == "filter" %}ui-state-active ui-tabs-selected{% endif %}">
+                    <a href="{% url issue_filter "open" %}">Filter: Assigned to me</a>
+                </li>
+                <li class="ui-state-default ui-corner-top  {% if active_tab == "open" %}ui-state-active ui-tabs-selected{% endif %}">
+                    <a href="{% url issue_filter "open" %}">Open</a>
+                </li>
+
+                <li class="ui-state-default ui-corner-top  {% if active_tab == "closed" %}ui-state-active ui-tabs-selected{% endif %}">
+                    <a href="{% url issue_filter "open" %}">Closed</a>
+                </li>
+
+                <li class="ui-state-default ui-corner-top  {% if active_tab == "all" %}ui-state-active ui-tabs-selected{% endif %}">
+                    <a href="{% url issue_filter "open" %}">All</a>
+                </li>
+
+                <li class="ui-state-default ui-corner-top  {% if active_tab == "favorites" %}ui-state-active ui-tabs-selected{% endif %}">
+                    <a href="{% url issue_filter "open" %}">Favorites</a>
+                </li>
+            </ul>
+            {% for issue in issues %}
+                <div class="span-24 last">
+                    <div class="span-14">
+                        <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a>
+                    </div>
+                    <div class="span-5">
+                        {{ issue.last_edit_by.actordoc.get_name }}
+                    </div>
+                    <div class="span-5 last">
+                        {{ issue.last_edit_date|date }}
+                    </div>
+                </div>
+            {% endfor %}
+        &nbsp;
+        </div>
+
 
     </div>
 {% endblock %}

@@ -1,9 +1,11 @@
 {% extends base_template %}
 {% load i18n %}
 {% block content %}
-    <h2>Hello {{ user.username }}</h2>
+    <h2>Hello, {{ user.first_name }} {{ user.last_name }}</h2>
 
-    You have {{ request.actors|length }} actor profiles linked to your account.
+    You have {{ request.actors|length }} actor profiles linked to your account.<br>
+
+    <strong>Please choose which profile you'd like to switch to:</strong>
     <ul>
         {% for actor in request.actors %}
             {% if actor == request.current_actor %}
@@ -16,12 +18,22 @@
     </ul>
 
 
-    <h3>Your Permissions</h3>
+    <hr>
+    <h2>Your Permissions</h2>
     <ul>
         {% for actor, permissions_dict in permissions.items %}
-            <li>{{ actor }} <br>
+            <li><h3>As {{ actor.actordoc.get_name }}</h3>
                 {% for role, subjects in permissions_dict.items %}
-                    {{ role }} :: {{ subjects }}<br>
+                    <strong>With role: {{ role.display }}</strong>
+                    {% if subjects %}
+                        <ul>
+                        {% for subj in subjects %}
+                        <li>{{ subj }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        No Permissions
+                    {% endif %}
                 {% endfor %}
             </li>
         {% endfor %}

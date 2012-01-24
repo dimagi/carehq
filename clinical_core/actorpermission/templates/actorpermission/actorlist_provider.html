@@ -1,6 +1,7 @@
 {% extends "actorpermission/actor_listitem_base.html" %}
             {% block actorname_block %}
-                <div class="span-10 last careteam_name">{{ actor.actordoc.get_name }}</div>
+
+                <div class="span-10 last careteam_name"><a href="{% url view_actor issue.opened_by.id %}">{{ actor.actordoc.get_name }}</a></div>
             {% endblock actorname_block %}
             {% block actorinfo_block %}
                 <div class="span-10 last">{{ actor.actordoc.provider_title }}</div>

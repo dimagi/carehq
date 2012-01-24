@@ -97,6 +97,14 @@
             </a>
             </div>
     {% endblock %}
+
+
+{% if is_me == True %}
+    {% block patient_name_display %}
+    <span class="ptpage_fn">Patient / {{patient_doc.first_name}} {{patient_doc.last_name}}</span> (this is you)
+    {% endblock patient_name_display %}
+{% endif %}
+
     {% block patient_badge %}
         {{ block.super }}
         <dt>{% trans "MRN" %}</dt>
@@ -209,6 +217,11 @@
 {#                       href="{% url pt_add_provider patient_doc.get_id %}">#}
                     <span class="ui-icon ui-icon-circle-plus"></span>
                     Add Provider </a>
+
+                {% for prr in careteam_prrs %}
+                    {% include "carehqapp/network/careteam_listitem.html" %}
+                {% endfor %}
+            {% comment %}
                 {% for role, actors in careteam_dict.items %}
                     <div class="span-16 last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
                     {% for actor in actors %}
@@ -220,6 +233,7 @@
                         &nbsp;
                     {% endfor %}
                 {% endfor %}
+                {% endcomment %}
 
 
             </div>
