@@ -132,9 +132,9 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
 
     # Core clinical apps #####################
+    'permissions',
     'tenant',
     'actorpermission',
-    'permissions',
     'couchforms',
     'couchexport',
     'soil', 
@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'hutch',
     'clinical_shared',
     'careplan',
+    'deploy_tools',
     #end clinical_core
 
     #########################
