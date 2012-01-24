@@ -26,8 +26,8 @@ urlpatterns = patterns ('issuetracker.views',
 
 
     
-    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/close$', 'issuetrackerclose_or_resolve_issue', {'edit_mode': constants.CASE_STATE_CLOSED}, name="close-issue"),
-    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/resolve$', 'issuetrackerclose_or_resolve_issue', {'edit_mode': constants.CASE_STATE_RESOLVED}, name="resolve-issue"),
+    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/close$', 'issuetrackerclose_or_resolve_issue', {'edit_mode': constants.ISSUE_STATE_CLOSED}, name="close-issue"),
+    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/resolve$', 'issuetrackerclose_or_resolve_issue', {'edit_mode': constants.ISSUE_STATE_RESOLVED}, name="resolve-issue"),
     #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/edit$', 'issuetrackeredit_issue', name="edit-issue"),
     #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/comment$', 'issuetrackerissue_comment', name="issue-comment"),
    

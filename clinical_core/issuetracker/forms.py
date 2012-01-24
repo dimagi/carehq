@@ -32,13 +32,13 @@ class IssueResolveCloseForm(forms.Form):
         super(IssueResolveCloseForm, self).__init__(*args, **kwargs)
         event_class = activity
 
-        if event_class == issue_constants.CASE_EVENT_RESOLVE:
-            state_class = issue_constants.CASE_STATE_RESOLVED
+        if event_class == issue_constants.ISSUE_EVENT_RESOLVE:
+            state_class = issue_constants.ISSUE_STATE_RESOLVED
             self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
             self.fields['state'].choices=STATUS_RESOLVE_CHOICES
-        if event_class == issue_constants.CASE_EVENT_CLOSE:
+        if event_class == issue_constants.ISSUE_EVENT_CLOSE:
             self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
-            state_class = issue_constants.CASE_STATE_CLOSED
+            state_class = issue_constants.ISSUE_STATE_CLOSED
             self.fields['state'].choices=STATUS_CLOSE_CHOICES
 
         if issue is None:
@@ -113,7 +113,7 @@ class IssueModelForm(ModelForm):
                      ]
 
 
-        if self.activity == issue_constants.CASE_EVENT_EDIT:
+        if self.activity == issue_constants.ISSUE_EVENT_EDIT:
             fields_to_exclude = ['id',
                                  'category',
                                  'status',
@@ -131,7 +131,7 @@ class IssueModelForm(ModelForm):
                                  ]
             self.fields['comment'].help_text = 'Please comment on the changes just made (required)'
 
-        elif self.activity == issue_constants.CASE_EVENT_ASSIGN:
+        elif self.activity == issue_constants.ISSUE_EVENT_ASSIGN:
             fields_to_exclude.remove('assigned_to')
             self.fields['assigned_to'].label = 'Assign to'
             self.fields['comment'].help_text = 'Please enter a short note'

@@ -25,12 +25,12 @@ def issue_saved(sender, instance, created, **kwargs):
     if created:        
         event_create_date = instance.opened_date
         event_creator = instance.opened_by
-        notes = "New issue created by " + event_creator.name
+        notes = "New issue created"
         
         try:
-            event_new.activity = issue_constants.CASE_EVENT_OPEN
+            event_new.activity = issue_constants.ISSUE_EVENT_OPEN
         except Exception, ex:
-            logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, issue_constants.CASE_EVENT_OPEN, ex))
+            logging.error("Error, Event category [%s] activity [%s] does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (instance.category, issue_constants.ISSUE_EVENT_OPEN, ex))
             
 
     else:
@@ -40,13 +40,13 @@ def issue_saved(sender, instance, created, **kwargs):
         if hasattr(instance, '_save_comment'):
             notes = instance._save_comment
         else:
-            notes = "Issue edited by " + event_creator.name
+            notes = "Issue edited"
             
         if hasattr(instance, 'event_activity'):
             event_new.activity = instance.event_activity            
         else:    
             try:
-                event_new.activity = ActivityClass.objects.get(event_class=issue_constants.CASE_EVENT_EDIT)
+                event_new.activity = ActivityClass.objects.get(event_class=issue_constants.ISSUE_EVENT_EDIT)
             except Exception, ex:
                 logging.error("Error, Event Activity does not exist in the database - perhaps the configuration is not fully loaded:: %s" % (ex))
     

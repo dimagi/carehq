@@ -69,8 +69,8 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
                               description,
                               "mock body %s" % (uuid.uuid4().hex),
                               issue_constants.PRIORITY_MEDIUM,
-                              status=issue_constants.CASE_STATE_OPEN,
-                              activity=issue_constants.CASE_EVENT_OPEN
+                              status=issue_constants.ISSUE_STATE_OPEN,
+                              activity=issue_constants.ISSUE_EVENT_OPEN
                               )
 
         #is the thing created?
@@ -80,7 +80,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
         events = IssueEvent.objects.filter(issue=newissue)
         self.assertEqual(1,events.count())
         #verify that said case count is a new case event of type "open"
-        self.assertEqual(issue_constants.CASE_EVENT_OPEN, events[0].activity)
+        self.assertEqual(issue_constants.ISSUE_EVENT_OPEN, events[0].activity)
         return newissue
 
     def testIssueModifyClient(self, description = "A test case that modifies a case via the webUI using the web client."):
@@ -99,7 +99,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
         issue = Issue.objects.all().get(description=desc)
         issue.description = CHANGED_DESCRIPTION
         issue.last_edit_by = actor_provider_doc.django_actor
-        activity = issue_constants.CASE_EVENT_EDIT
+        activity = issue_constants.ISSUE_EVENT_EDIT
         issue.save_comment="editing in testIssueModifyDescription"
         issue.save(actor_provider_doc.django_actor, activity=activity)
 
@@ -109,7 +109,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
         self.assertEqual(2, events.count())
 
         #the top one due to the sort ordering should be the one we just did
-        self.assertEqual(issue_constants.CASE_EVENT_EDIT, events[0].activity)
+        self.assertEqual(issue_constants.ISSUE_EVENT_EDIT, events[0].activity)
 
 
         #quickly verify that the original description is still unchanged
@@ -129,7 +129,7 @@ class EventActivityVerificationTest(CareHQClinicalTestCase):
             subissue = self.testCreateIssueApi(description=desc)
             subissue.parent_issue = root_issue
             subissue.last_edit_by = actor_provider_doc.django_actor
-            activity = issue_constants.CASE_EVENT_EDIT
+            activity = issue_constants.ISSUE_EVENT_EDIT
             subissue.save_comment="editing in testIssueCreateChildCases"
             subissue.save(actor_provider_doc.django_actor, activity=activity)
 

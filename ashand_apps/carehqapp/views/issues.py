@@ -5,7 +5,7 @@ from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
 from dimagi.utils.make_time import make_time
 from issuetracker.forms import NewIssueForm
-from issuetracker.issue_constants import CASE_STATE_OPEN, CASE_EVENT_OPEN
+from issuetracker.issue_constants import ISSUE_STATE_OPEN, ISSUE_EVENT_OPEN, ISSUE_STATE_CLOSED
 from issuetracker.models.issuecore import Issue
 from lib.crumbs import crumbs
 from patient.models import CarehqPatient
@@ -48,8 +48,8 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
             newissue.patient = patient_doc.django_patient
             newissue.opened_by=request.current_actor
             newissue.opened_date = make_time()
-            newissue.status = CASE_STATE_OPEN
-            newissue.save(request.current_actor, activity=CASE_EVENT_OPEN)
+            newissue.status = ISSUE_STATE_OPEN
+            newissue.save(request.current_actor, activity=ISSUE_EVENT_OPEN)
             return HttpResponseRedirect(patient_doc.get_absolute_url())
     else:
         context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor)
@@ -62,21 +62,22 @@ def issue_filter(request, issue_filter, template_name="carehqapp/issue_home.html
     active_tab = 'open'
     if issue_filter == 'open':
         active_tab = 'open'
+        issues = Issue.objects.care_issues(request.current_actor).filter(status=ISSUE_STATE_OPEN)
     elif issue_filter == 'all':
         active_tab = 'all'
+        issues = Issue.objects.care_issues(request.current_actor)
     elif issue_filter == 'closed':
         active_tab = 'closed'
-    elif issue_filter == 'favorites':
-        active_tab = 'favorites'
+        issues = Issue.objects.care_issues(request.current_actor).filter(status=ISSUE_STATE_CLOSED)
     elif issue_filter == 'filter':
         active_tab = 'filter'
+        filter_title = 'Assigned to me'
+        context['filter_title'] = filter_title
+        issues = Issue.objects.filter(assigned_to=request.current_actor)
 
     context['active_tab'] = active_tab
 
-
-
-
-    user = request.user
+    context['issues'] = issues
     return render_to_response(template_name, context_instance=context)
 
 

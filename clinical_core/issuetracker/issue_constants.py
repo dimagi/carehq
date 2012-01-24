@@ -3,53 +3,53 @@ SYSTEM_USERNAME='ASHand-System'
 
 #constants for model Status
 #CASE_STATE_NEW = 'state-new' # a state-new case is one that is brand new and unassigned, needing triageing.
-CASE_STATE_OPEN = 'state-open'
-CASE_STATE_RESOLVED = 'state-resolved'
-CASE_STATE_CLOSED = 'state-closed'
+ISSUE_STATE_OPEN = 'state-open'
+ISSUE_STATE_RESOLVED = 'state-resolved'
+ISSUE_STATE_CLOSED = 'state-closed'
 
 
 #constants for case event activities
-CASE_EVENT_OPEN = 'event-open'
-CASE_EVENT_VIEW = 'event-view'
-CASE_EVENT_EDIT = 'event-edit'
-CASE_EVENT_ASSIGN = 'event-assign'
-CASE_EVENT_WORKING = 'event-working'
-CASE_EVENT_COMMENT = 'event-comment'
-CASE_EVENT_CUSTOM = 'event-custom'
+ISSUE_EVENT_OPEN = 'event-open'
+ISSUE_EVENT_VIEW = 'event-view'
+ISSUE_EVENT_EDIT = 'event-edit'
+ISSUE_EVENT_ASSIGN = 'event-assign'
+ISSUE_EVENT_WORKING = 'event-working'
+ISSUE_EVENT_COMMENT = 'event-comment'
+ISSUE_EVENT_CUSTOM = 'event-custom'
 
-CASE_EVENT_REOPEN = 'event-reopen'
-CASE_EVENT_RESOLVE = 'event-resolve'
-CASE_EVENT_CLOSE = 'event-close'
+ISSUE_EVENT_REOPEN = 'event-reopen'
+ISSUE_EVENT_RESOLVE = 'event-resolve'
+ISSUE_EVENT_CLOSE = 'event-close'
 
 
 CASE_EVENT_CHOICES = (
-        (CASE_EVENT_OPEN, 'Open/Create'), #case state
-        (CASE_EVENT_VIEW, 'View'),
-        (CASE_EVENT_EDIT, 'Edit'),
-        (CASE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous
-        (CASE_EVENT_REOPEN, 'Reopen'), #case state
-        (CASE_EVENT_COMMENT, 'Comment'),
-        (CASE_EVENT_CUSTOM, 'Custom'), #custom are activities that don't resolve around the basic open/edit/view/resolve/close
-        (CASE_EVENT_RESOLVE, 'Resolve'), #case status state
-        (CASE_EVENT_CLOSE, 'Close'), #case status state
+        (ISSUE_EVENT_OPEN, 'Open/Create'), #case state
+        (ISSUE_EVENT_VIEW, 'View'),
+        (ISSUE_EVENT_EDIT, 'Edit'),
+        (ISSUE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous
+        (ISSUE_EVENT_REOPEN, 'Reopen'), #case state
+        (ISSUE_EVENT_COMMENT, 'Comment'),
+        (ISSUE_EVENT_CUSTOM, 'Custom'), #custom are activities that don't resolve around the basic open/edit/view/resolve/close
+        (ISSUE_EVENT_RESOLVE, 'Resolve'), #case status state
+        (ISSUE_EVENT_CLOSE, 'Close'), #case status state
     )
 
 
 STATUS_CHOICES = (
-        (CASE_STATE_OPEN, 'Open'),
-        (CASE_STATE_RESOLVED, 'Resolved'),
-        (CASE_STATE_CLOSED, 'Closed'),
+        (ISSUE_STATE_OPEN, 'Open'),
+        (ISSUE_STATE_RESOLVED, 'Resolved'),
+        (ISSUE_STATE_CLOSED, 'Closed'),
 )
 STATUS_RESOLVE_CHOICES = (
-    (CASE_STATE_RESOLVED, 'Resolved'),
+    (ISSUE_STATE_RESOLVED, 'Resolved'),
     )
 
 STATUS_CLOSE_CHOICES = (
-    (CASE_STATE_CLOSED, 'Closed'),
+    (ISSUE_STATE_CLOSED, 'Closed'),
         )
 
 STATUS_REOPEN_CHOICES = (
-    (CASE_STATE_OPEN, 'Open'),
+    (ISSUE_STATE_OPEN, 'Open'),
     )
 
 PRIORITY_LOW = 100

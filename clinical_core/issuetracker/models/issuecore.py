@@ -138,21 +138,21 @@ class Issue(models.Model):
 
     @property
     def is_active(self):
-        if self.status == issue_constants.CASE_STATE_OPEN:
+        if self.status == issue_constants.ISSUE_STATE_OPEN:
             return True
         else:
             return False
 
     @property
     def is_resolved(self):
-        if self.status == issue_constants.CASE_STATE_RESOLVED or self.status == issue_constants.CASE_STATE_CLOSED:
+        if self.status == issue_constants.ISSUE_STATE_RESOLVED or self.status == issue_constants.ISSUE_STATE_CLOSED:
             return True
         else:
             return False
 
     @property
     def is_closed(self):
-        if self.status == issue_constants.CASE_STATE_CLOSED:
+        if self.status == issue_constants.ISSUE_STATE_CLOSED:
             return True
         else:
             return False
@@ -198,7 +198,7 @@ class Issue(models.Model):
         if commit:
             if actor_by is None:
                 raise Exception("Error, for direct save, you must set the actor_by argument")
-            self.save(actor_by, activity=issue_constants.CASE_EVENT_ASSIGN)
+            self.save(actor_by, activity=issue_constants.ISSUE_EVENT_ASSIGN)
 
 
     def _get_related_objects(self):
@@ -263,12 +263,12 @@ class Issue(models.Model):
         self.last_edit_by = actor
 
         #now, we need to check the status change being done to this.
-        if self.status == issue_constants.CASE_STATE_RESOLVED: #from choices of CASE_STATES
+        if self.status == issue_constants.ISSUE_STATE_RESOLVED: #from choices of CASE_STATES
             if self.resolved_by == None:
                 raise Exception("Issue state is now resolved, you must set a resolved_by")
             else:
                 self.resolved_date = make_time()
-        elif self.status == issue_constants.CASE_STATE_CLOSED:
+        elif self.status == issue_constants.ISSUE_STATE_CLOSED:
             if self.closed_by == None:
                 raise Exception("Issue state is now closed, you must set a closed_by")
             else:

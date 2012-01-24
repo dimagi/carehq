@@ -109,7 +109,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
     do_edit = False    
     activity_slug = None
     activity = None
-    activity = request.GET.get('activity',issue_constants.CASE_EVENT_COMMENT)
+    activity = request.GET.get('activity',issue_constants.ISSUE_EVENT_COMMENT)
     context['issue'] = theissue
     context['activity'] = activity
    
@@ -120,14 +120,14 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
         context['form_headline' ] = activity
 
         if request.method == 'POST':
-            if activity == issue_constants.CASE_EVENT_EDIT or activity == issue_constants.CASE_EVENT_ASSIGN:
+            if activity == issue_constants.ISSUE_EVENT_EDIT or activity == issue_constants.ISSUE_EVENT_ASSIGN:
                 form = IssueModelForm(data=request.POST, instance=theissue, editor_actor=request.current_actor, activity=activity)
                 context['form'] = form
                 if form.is_valid():                    
                     issue = form.save(commit=False)
                     edit_comment = form.cleaned_data["comment"]
                     #next, we need to see the mode and flip the fields depending on who does what.
-                    if activity == issue_constants.CASE_EVENT_ASSIGN:
+                    if activity == issue_constants.ISSUE_EVENT_ASSIGN:
                         issue.assigned_date = datetime.utcnow()
                         issue.assigned_by = request.current_actor
                         edit_comment += " (%s to %s by %s)" % (activity, issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
@@ -135,7 +135,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     issue.save(request.current_actor, activity=activity, save_comment = edit_comment)
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
             
-            elif activity == issue_constants.CASE_EVENT_RESOLVE or activity == issue_constants.CASE_EVENT_CLOSE:
+            elif activity == issue_constants.ISSUE_EVENT_RESOLVE or activity == issue_constants.ISSUE_EVENT_CLOSE:
                 form = IssueResolveCloseForm(data=request.POST, issue=theissue, activity=activity)
                 context['form'] = form
                 if form.is_valid():
@@ -144,15 +144,15 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     theissue.status = status
                     theissue.last_edit_by = request.current_actor
                     
-                    if activity == issue_constants.CASE_EVENT_CLOSE:
+                    if activity == issue_constants.ISSUE_EVENT_CLOSE:
                         theissue.closed_by=request.current_actor
-                    elif activity == issue_constants.CASE_EVENT_RESOLVE:
+                    elif activity == issue_constants.ISSUE_EVENT_RESOLVE:
                         theissue.resolved_by=request.current_actor
         
                     theissue.save(request.current_actor, activity = activity, save_comment = comment)
                     
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
-            elif activity == issue_constants.CASE_EVENT_COMMENT:
+            elif activity == issue_constants.ISSUE_EVENT_COMMENT:
                 form = IssueCommentForm(data=request.POST)
                 context['form'] = form
                 if form.is_valid():
@@ -161,18 +161,18 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     evt = IssueEvent()
                     evt.issue = theissue
                     evt.notes = comment
-                    evt.activity = issue_constants.CASE_EVENT_COMMENT
+                    evt.activity = issue_constants.ISSUE_EVENT_COMMENT
                     evt.created_by = request.current_actor
                     evt.save()
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
         else:
             #it's a GET
             issueform = None
-            if activity==issue_constants.CASE_EVENT_EDIT or activity==issue_constants.CASE_EVENT_ASSIGN:
+            if activity==issue_constants.ISSUE_EVENT_EDIT or activity==issue_constants.ISSUE_EVENT_ASSIGN:
                 issueform = IssueModelForm
-            elif activity == issue_constants.CASE_EVENT_COMMENT:
+            elif activity == issue_constants.ISSUE_EVENT_COMMENT:
                 issueform = IssueCommentForm
-            elif activity==issue_constants.CASE_EVENT_RESOLVE or activity==issue_constants.CASE_EVENT_CLOSE:
+            elif activity==issue_constants.ISSUE_EVENT_RESOLVE or activity==issue_constants.ISSUE_EVENT_CLOSE:
                 issueform = IssueResolveCloseForm
 
             # This is a bit ugly at the moment as this view itself is the only place that instantiates the forms 

@@ -46,7 +46,7 @@ def inject_issue_data(patient, event_arr):
     newcase.opened_date = datetime.utcnow() - startdelta
     newcase.last_edit_by = creator
     newcase.last_edit_date = newcase.opened_date
-    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=issue_constants.CASE_STATE_OPEN)[0]
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=issue_constants.ISSUE_STATE_OPEN)[0]
 
     newcase.assigned_to = careteam.primary_provider.user
     newcase.assigned_date = newcase.opened_date 
@@ -103,7 +103,7 @@ def run():
                               activity=issue_constants.CASE_EVENT_CHOICES[0][0],
                               )
             newcase.patient=pt
-            newcase.save(activity=issue_constants.CASE_EVENT_EDIT)
+            newcase.save(activity=issue_constants.ISSUE_EVENT_EDIT)
 
 
 #
