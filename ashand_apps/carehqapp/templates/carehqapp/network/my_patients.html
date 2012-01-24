@@ -1,0 +1,13 @@
+{% extends "carehqapp/network/network_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "My Patients" %} {% endblock %}
+{% block network_title %}
+    My Patients
+{% endblock network_title %}
+{% block network_content %}
+
+{% for prr in patient_relations %}
+        {{ prr.content }} :: {{ prr.role }}<br>
+    {% endfor %}
+{% endblock network_content %}
+

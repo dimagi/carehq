@@ -2,50 +2,47 @@
 {% block branding %}
     <div class="span-2">
         <a title="Return to the Dashboard" href="/">
-        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">
+            <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">
         </a>
     </div>
 {% endblock branding %}
 {% block navigation_menu %}
     {% if user.is_authenticated %}
-    <div id="menu" style="z-index:-1;">
-     <ul>
-        {% block nav_list %}
-         <li>
-             <span class="head_menu">
-               <a href="{% url home %}">Home</a>
-             </span>
-         </li>
-         <li>
-             <span class="head_menu">
-             <a href="{% url issue_home %}">Issues</a>
-             </span>
-         </li>
-
-         <li>
-             <span class="head_menu">
-             <a href="{% url my_patients %}">My Patients</a>
-                 <img src="{{ STATIC_URL }}carehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
-             <div class="sub_menu">
-             </span>
-             <a href="#">My Cases</a>
-                <a href="#">Patient Foo's Cases</a>
-                <a href="#">Patient Bar's Cases</a>
-            </div>
-         </li>
-
-         <li>
-             <span class="head_menu">
-             <a href="#">My Careteam</a>
-             </span>
-         </li>
-         <li>
+        <div id="menu" style="z-index:-1;">
+        <ul>
+            {% block nav_list %}
+            <li>
+                <span class="head_menu">
+                   <a href="{% url home %}">Home</a>
+                </span>
+            </li>
+            <li>
+                <span class="head_menu">
+                <a href="{% url issue_home %}">Issues</a>
+                </span>
+            </li>
+            <li>
+                 <span class="head_menu">
+                     <a href="{% url my_network %}">Care Network</a>
+                         <img src="{{ STATIC_URL }}carehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
+                         <div class="sub_menu">
+                             <a href="{% url my_network %}">All</a>
+                             {% if request.current_actor.is_provider or request.current_actor.is_caregiver %}
+                             <a href="{% url my_patients %}">My Patients</a>
+                             {% endif %}
+                             {% if request.current_actor.is_patient %}
+                                 <a href="#">My Careteam</a>
+                             {% endif %}
+                         </div>
+                 </span>
+                </li>
+                <li>
              <span class="head_menu">
              <a href="#">Account</a>
              </span>
-         </li>
-        {% endblock %}
-     </ul>
+                </li>
+            {% endblock %}
+        </ul>
     {% endif %} {# end autenticated if#}
 </div>
 {% endblock navigation_menu %}

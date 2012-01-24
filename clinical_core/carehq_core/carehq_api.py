@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
 from actorpermission.models import ProviderActor, CHWActor, PatientActor
 from carehq_core import carehq_constants
-from patient.models import PatientActorLink
+from patient.models import PatientActorLink, Patient
 import permissions
 from permissions.models import Role, PrincipalRoleRelation
 
@@ -141,6 +141,13 @@ def get_careteam_dict(patient_doc, omit_patient=True):
         role_actor_dict[pr.role] = actors
     return role_actor_dict
 
+def get_patients_for_actor(actor_doc):
+    """
+    Return a list of PRRs for the patients in which this actor is caring for
+    """
+    ctype = ContentType.objects.get_for_model(Patient)
+    proles = PrincipalRoleRelation.objects.filter(content_type=ctype, actor=actor_doc.django_actor)
+    return proles
 
 def get_chw(chw_doc_id):
     """

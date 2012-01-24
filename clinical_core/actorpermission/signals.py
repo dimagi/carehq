@@ -35,7 +35,7 @@ def set_actor_props(sender, instance, *args, **kwargs):
         if isinstance(instance.actordoc, CaregiverActor):
             setattr(instance, 'is_caregiver',True)
         else:
-            setattr(instance, 'is_caregiver', True)
+            setattr(instance, 'is_caregiver', False)
 post_init.connect(set_actor_props, sender=Actor)
 
 

@@ -5,6 +5,14 @@ import logging
 
 
 
+def actor_required(view_func):
+    def _has_actor(request, *args, **kwargs):
+        if not hasattr(request, 'current_actor'):
+            raise Http404
+        return view_func(request, * args, **kwargs)
+    return _has_actor
+
+
 
 def is_careteam_member(view_func):
     def _is_member(request, careteam_id, *args, **kwargs):

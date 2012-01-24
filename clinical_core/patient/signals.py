@@ -2,8 +2,8 @@ from django.db.models.signals import post_init, post_delete
 from functools import partial
 import simplejson
 import logging
-from .patientmodels import BasePatient
-from .patientmodels import Patient
+from models import BasePatient
+from models import Patient
 from django.core.cache import cache
 
 def patient_post_delete(sender, instance, *args, **kwargs):

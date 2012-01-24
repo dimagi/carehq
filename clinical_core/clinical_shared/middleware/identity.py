@@ -35,8 +35,8 @@ def is_actor_cookie_synced(request, cached_actor):
     """
     Check the actor cookie value with the current cached actor value
     """
-    actor_hash_from_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, None)
-    if actor_hash_from_cookie is not None:
+    actor_hash_from_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, '')
+    if actor_hash_from_cookie != '':
         cookie_actor_id, verify = actor_hash_from_cookie.split('.')
         #verify the hash
         if sha_constructor(cookie_actor_id+settings.SECRET_KEY).hexdigest() == verify:
@@ -50,9 +50,9 @@ def get_current_actor_from_cookie(request):
     """
     Efficiently retrieve the current actor from the cookie
     """
-    actor_hash_from_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, None)
+    actor_hash_from_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, '')
     actor_to_use = None
-    if actor_hash_from_cookie is not None:
+    if actor_hash_from_cookie is not '':
         actor_id, verify = actor_hash_from_cookie.split('.')
         #verify the hash
         if sha_constructor(actor_id+settings.SECRET_KEY).hexdigest() == verify:

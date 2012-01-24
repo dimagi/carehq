@@ -11,21 +11,7 @@ from patient.views import PatientSingleView
 from permissions.models import Actor, PrincipalRoleRelation
 from datetime import datetime, timedelta
 
-def my_patients(request, template="carehqapp/my_patients.html"):
-    context = RequestContext(request)
 
-    #get actor info
-    allowed_patients = PrincipalRoleRelation.objects.filter(actor=request.current_actor, content_type=ContentType.objects.get_for_model(Patient)).select_related()
-
-    pt_relation_dict = {}
-
-    for prole in allowed_patients:
-        for_role = pt_relation_dict.get(prole.role, [])
-        for_role.append(prole.content)
-        pt_relation_dict[prole.role] = for_role
-
-    context['patient_relations'] = pt_relation_dict
-    return render_to_response(template, context_instance=context)
 
 
 class AshandPatientSingleView(PatientSingleView):

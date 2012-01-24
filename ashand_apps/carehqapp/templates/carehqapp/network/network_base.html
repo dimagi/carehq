@@ -1,0 +1,14 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "Care Network" %} {% endblock %}
+{% block content %}
+    <h2><a href="{% url my_network %}">Care Network</a> /
+    {% block network_title %}
+        All
+    {% endblock network_title %}
+    </h2>
+    <div class="span-24">
+        {% block network_content %}
+        {% endblock network_content %}
+    </div>
+{% endblock %}

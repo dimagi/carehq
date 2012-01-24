@@ -11,8 +11,11 @@ urlpatterns = patterns('carehqapp.views',
         #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
 
-        url(r'^patients/all$', 'patient_views.my_patients', name='my_patients'),
-        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', AshandPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_url'),
+        url(r'^network/$', 'network_views.my_network', name='my_network'),
+        url(r'^network/mypatients/$', 'network_views.my_patients', name='my_patients'),
+        url(r'^network/mycareteam/$', 'network_views.my_careteam', name='my_careteam'),
+
+
         url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/newissue$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
 
 
