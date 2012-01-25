@@ -57,7 +57,9 @@
 			<div id="identityblock">
 		        {% if user.is_authenticated %}
 		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp;
-                    <a href="{% url account_landing %}">{%trans "My Account" %}</a>&nbsp;|&nbsp;
+                    {% comment %}
+                     <a href="{% url account_landing %}">{%trans "My Account" %}</a>
+                     {% endcomment %}&nbsp;|&nbsp;
                     {% if user.is_superuser %}
                         <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
                     {% endif %}
