@@ -1,5 +1,4 @@
 from functools import partial
-import pdb
 from django.db.models.signals import post_init
 from carehq_core import carehq_api
 from patient.models import Patient
@@ -30,3 +29,4 @@ def patient_post_init(sender, instance, *args, **kwargs):
         setattr(instance, 'get_providers', partial(_get_providers, instance))
 
 post_init.connect(patient_post_init, sender=Patient)
+
