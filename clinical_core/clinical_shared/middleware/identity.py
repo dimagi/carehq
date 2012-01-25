@@ -52,7 +52,7 @@ def get_current_actor_from_cookie(request):
     """
     actor_hash_from_cookie = request.COOKIES.get(COOKIE_ACTOR_CONTEXT, '')
     actor_to_use = None
-    if actor_hash_from_cookie is not '':
+    if actor_hash_from_cookie != '':
         actor_id, verify = actor_hash_from_cookie.split('.')
         #verify the hash
         if sha_constructor(actor_id+settings.SECRET_KEY).hexdigest() == verify:
@@ -124,8 +124,8 @@ class CareHQIdentityMiddleware(object):
                     else:
                         actor_context_cookie = ''
                     response.set_cookie(COOKIE_ACTOR_CONTEXT, actor_context_cookie)
-                else:
-                    print "no context for actor yet"
+        else:
+            response.delete_cookie(COOKIE_ACTOR_CONTEXT)
         return response
 
         
