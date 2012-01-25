@@ -2,6 +2,16 @@
 {% load i18n %}
 {% block title %}{% trans "New Issue" %}{% endblock %}
 {% block extrahead %}
+    <script>
+        $(function() {
+            $( "#id_due_date" ).datepicker( {
+                        changeMonth: true,
+                        mindate: "+0",
+
+                    }
+            );
+        });
+    </script>
 {%endblock %}
 
 {% block content %}

@@ -2,12 +2,21 @@
 {% load i18n %}
 {% block title %}{% trans "View Issue" %}{% endblock %}
 {% block extrahead %}
-    <script type="text/javascript" src="/my_admin/jsi24n"></script>
-    <script type="text/javascript" src="/media/admin/js/core.js"></script>
     <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
-    <link rel="stylesheet" href="{{STATIC_URL}}ashandapp/css/ashand-forms.css" type="text/css">
+    <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/ashand-forms.css" type="text/css">
     {{ form.media }}
+
+    <script>
+        $(function() {
+            $( "#id_due_date" ).datepicker( {
+                        changeMonth: true,
+                        minDate: "-0"
+                    }
+            );
+        });
+    </script>
 {% endblock extrahead %}
+
 {% block content %}
     <script type="text/javascript">
         $('#result').load('ajax/test.html');
