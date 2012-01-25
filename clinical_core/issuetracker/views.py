@@ -130,7 +130,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     if activity == issue_constants.ISSUE_EVENT_ASSIGN:
                         issue.assigned_date = datetime.utcnow()
                         issue.assigned_by = request.current_actor
-                        edit_comment += " (%s to %s by %s)" % (activity, issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
+                        edit_comment += " (Issue assigned to %s by %s)" % (issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
                         
                     issue.save(request.current_actor, activity=activity, save_comment = edit_comment)
                     return HttpResponseRedirect(reverse('manage-issue', kwargs= {'issue_id': issue_id}))
@@ -140,7 +140,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                 context['form'] = form
                 if form.is_valid():
                     status = form.cleaned_data['state']                    
-                    comment = form.cleaned_data['comment']                    
+                    comment = form.cleaned_data['comment']
                     theissue.status = status
                     theissue.last_edit_by = request.current_actor
                     
