@@ -4,17 +4,42 @@ from couchdbkit.ext.django.forms import DocumentForm
 
 from django import forms
 from django.forms import widgets
-from django.forms.models import ModelForm
+from django.forms.models import ModelForm, ModelChoiceField
+from carehq_core import carehq_api
 from issuetracker.issue_constants import STATUS_CHOICES, STATUS_RESOLVE_CHOICES, STATUS_CLOSE_CHOICES, PRIORITY_CHOICES
 from issuetracker.models import Issue
 from issuetracker import issue_constants
 from issuetracker.models.issuecore import IssueCategory
 from permissions.models import Actor
 
+class CareteamActorIterator(forms.models.ModelChoiceIterator):
+    def __init__(self, careteam_dict, *args, **kwargs):
+        super(forms.models.ModelChoiceIterator, self).__init__(*args, **kwargs)
+        self.careteam_dict = careteam_dict
+    def __iter__(self):
+        for category, actors in self.careteam_dict.items():
+            yield (category.display, [(x.id, x.actordoc.get_name()) for x in actors])
+        #yield ('food', [(1L, u'burger'), (2L, u'pizza')])
+        #yield ('drinks', [(3L, u'coke'), (4L, u'pepsi')])
+        pass
+
+
+class ActorModelChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.get_full_name()
+
+#class ListMenuOrderForm(forms.ModelForm):
+    #def __init__(self, *args, **kwargs):
+        #super(ListMenuOrderForm, self).__init__(*args, **kwargs)
+        #self.fields['itemWanted'].choices = FooIterator()
+    #class Meta:
+        #model = PatronOrder
+
+
 class IssueCommentForm(forms.Form):
     comment = forms.CharField(required=True,
                            error_messages = {'required': 'You must enter a comment'},
-                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),                            
+                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),
                           )
     
 
@@ -61,6 +86,7 @@ class NewIssueForm(ModelForm):
         super(NewIssueForm, self).__init__(*args, **kwargs)
         self.patient = patient
         self.creator_actor=creator_actor
+        self.fields['assigned_to'].choices = CareteamActorIterator(carehq_api.get_careteam_dict(patient.couchdoc))
 
     class Meta:
         model=Issue
@@ -84,6 +110,10 @@ class IssueModelForm(ModelForm):
         super(IssueModelForm, self).__init__(*args, **kwargs)
         self.editor_actor = editor_actor
         self.activity = activity
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            if instance.patient is not None:
+                self.fields['assigned_to'].choices = CareteamActorIterator(carehq_api.get_careteam_dict(instance.patient.couchdoc))
         #event_class = activity.event_class
 
         
