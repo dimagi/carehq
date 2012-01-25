@@ -100,7 +100,7 @@ def run():
                               issue_constants.PRIORITY_CHOICES[0][0],
                               patient=pt,
                               status=issue_constants.STATUS_CHOICES[0][0],
-                              activity=issue_constants.CASE_EVENT_CHOICES[0][0],
+                              activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
                               )
             newcase.patient=pt
             newcase.save(activity=issue_constants.ISSUE_EVENT_EDIT)

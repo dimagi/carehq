@@ -31,7 +31,7 @@ def process_ccd_submission(sender, xform, **kwargs):
             random.choice(caseconstants.PRIORITY_CHOICES)[0],
             patient=patient,
             status=caseconstants.STATUS_CHOICES[0][0],
-            activity=caseconstants.CASE_EVENT_CHOICES[0][0],
+            activity=caseconstants.ISSUE_EVENT_CHOICES[0][0],
         )
         newcase.save()
 
@@ -45,7 +45,7 @@ def process_ccd_submission(sender, xform, **kwargs):
             random.choice(caseconstants.PRIORITY_CHOICES)[0],
             patient=patient,
             status=caseconstants.STATUS_CHOICES[0][0],
-            activity=caseconstants.CASE_EVENT_CHOICES[0][0],
+            activity=caseconstants.ISSUE_EVENT_CHOICES[0][0],
         )
         newcase.save()
         print "Vomit threshold violation"

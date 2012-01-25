@@ -54,7 +54,7 @@ class IssueEvent(models.Model):
     issue = models.ForeignKey("Issue", related_name='issue_events')
     notes = models.TextField(blank=True)
 
-    activity = models.CharField(choices=issue_constants.CASE_EVENT_CHOICES, max_length=160)
+    activity = models.CharField(choices=issue_constants.ISSUE_EVENT_CHOICES, max_length=160)
 
     created_date = models.DateTimeField()
     created_by = models.ForeignKey(Actor)

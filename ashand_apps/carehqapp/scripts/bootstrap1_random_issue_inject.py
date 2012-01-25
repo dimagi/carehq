@@ -66,14 +66,14 @@ def run():
                                       random.choice(caseconstants.PRIORITY_CHOICES)[0],
                                       patient=pt,
                                       status=caseconstants.STATUS_CHOICES[0][0],
-                                      activity=caseconstants.CASE_EVENT_CHOICES[0][0],
+                                      activity=caseconstants.ISSUE_EVENT_CHOICES[0][0],
                               )
 
         startdelta = timedelta(hours=random.randint(0,200)) #sometime in the past 3
         fixed_time = datetime.utcnow() - startdelta
         newcase.opened_date = fixed_time
         newcase.assigned_to = random.choice(actors)
-        newcase.save(actor, activity=caseconstants.CASE_EVENT_CHOICES[2][0])
+        newcase.save(actor, activity=caseconstants.ISSUE_EVENT_CHOICES[2][0])
         print "Created case %s for patient %s by %s" % (newcase.description, pt.couchdoc.first_name+" "+pt.couchdoc.last_name, newcase.opened_by.name)
 
 

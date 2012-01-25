@@ -22,8 +22,9 @@ ISSUE_EVENT_RESOLVE = 'event-resolve'
 ISSUE_EVENT_CLOSE = 'event-close'
 
 
-CASE_EVENT_CHOICES = (
+ISSUE_EVENT_CHOICES = (
         (ISSUE_EVENT_OPEN, 'Open/Create'), #case state
+        (ISSUE_EVENT_ASSIGN, 'Assign'), #case state
         (ISSUE_EVENT_VIEW, 'View'),
         (ISSUE_EVENT_EDIT, 'Edit'),
         (ISSUE_EVENT_WORKING, 'Working'), #working on case?  this seems a bit ridiculous
