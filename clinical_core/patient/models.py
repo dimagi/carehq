@@ -381,6 +381,11 @@ class CarehqPatient(BasePatient):
     device_id = StringProperty()
     checkin_time = TimeProperty(verbose_name='Preferred survey time')
 
+    enrolled_date = DateProperty()
+    hcms_registered_date = DateProperty()
+    install_date = DateProperty()
+
+
     #time window in which avalaible
     available_start = TimeProperty(verbose_name='Start time available for contact')
     available_end = TimeProperty(verbose_name='End time available for contact')
