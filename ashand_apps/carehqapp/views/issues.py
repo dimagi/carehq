@@ -89,6 +89,7 @@ def issue_home(request, template_name="carehqapp/issue_home.html"):
     user = request.user
     issues = Issue.objects.care_issues(request.current_actor)
     context['issues'] = issues
+    context['active_tab'] = 'open'
     return render_to_response(template_name, context_instance=context)
 #
 #    ########################

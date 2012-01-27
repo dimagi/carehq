@@ -13,8 +13,8 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
 
 
-        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', CarehqPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_url'),
-        url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/view_patient.html'), name='patient_home'),
+        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient.html'), name='patient_url'),
+        url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient.html'), name='patient_home'),
 
 
         url(r'^network/$', 'network_views.my_network', name='my_network'),
@@ -33,6 +33,19 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
 
         url(r'^actors/(?P<actor_id>[0-9a-f]{32})?$', 'users.view_actor', name='view_actor'),
+
+        url(r'^carehq/ajax/getpatientform/$', 'ajax.ajax_patient_form_get', name='ajax_patient_form_get'),
+        url(r'^carehq/ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_patient_form', name='ajax_post_patient_form'),
+        url(r'^carehq/ajax/phone$', 'ajax.remove_phone', name='remove_phone'),
+        url(r'^carehq/ajax/address$', 'ajax.remove_address', name='remove_address'),
+
+        url(r'^carehq/ajax/getactorform/$', 'ajax.ajax_get_actor_form', name='ajax_get_actor_form'),
+        url(r'^carehq/ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_actor_form', name='ajax_post_actor_form'),
+
+
+
+
+
 
 #
 #    (r'^my_admin/jsi18n', 'django.views.i18n.javascript_catalog'),

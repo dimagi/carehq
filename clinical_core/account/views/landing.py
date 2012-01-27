@@ -12,9 +12,11 @@ import settings
 def landing(request, template='account/landing.html'):
     context = RequestContext(request)
     permissions = {}
+    context['num_actors'] = len(request.actors)
     for actor in request.actors:
         permissions[actor] = carehq_api.get_permissions_dict(actor.actordoc)
     context['permissions'] = permissions
+
 
     return render_to_response(template, context)
 

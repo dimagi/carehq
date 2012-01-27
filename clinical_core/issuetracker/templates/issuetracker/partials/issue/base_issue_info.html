@@ -25,8 +25,7 @@
             Opened By: <a href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a>
         </div>
         <div class="span-8">
-            Patient: <a href="{{ patient.couchdoc.get_absolute_url }}">{{ issue.patient }}</a><br>
-            Careteam: <a href="{{ patient.get_absolute_url }}">{{ issue.patient }}</a><br>
+            Patient: <a href="{{ issue.patient.get_absolute_url }}">{{ issue.patient }}</a><br>
             Status: {{ issue.get_status_display }}
         </div>
         <div class="span-8 last">

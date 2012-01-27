@@ -1,0 +1,12 @@
+<dl>
+    <dt>Name</dt>
+    <dd>{{ actor.actordoc.first_name }} {{ actor.actordoc.last_name }}</dd>
+    {% if actor.actordoc.title %}
+    <dt>Title</dt>
+    <dd>{{ actor.actordoc.title}} </dd>
+    {% endif %}
+    <dt>Role Type</dt>
+    <dd>{{ qctor.actordoc.actordoc.get_class_display }} <a href="{% url view_actor actor.actor_uuid %}">View Profile</a>
+    </dd>
+
+</dl>

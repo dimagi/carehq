@@ -52,7 +52,7 @@ def single(request, user_id=None):
     #=======================================
     #Section to determine request.user's relationship with selected user beinga patient        
     try:
-        template_name = "carehqapp/view_patient.html"
+        template_name = "carehqapp/carehq_patient.html"
         patient = Patient.objects.all().get(user=user)
         context['selected_is_patient'] = True
         context['selected_patient'] = patient

@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 
 
 class CarehqPatientSingleView(PatientSingleView):
+    #template carehqapp/carehq_patient.html
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.

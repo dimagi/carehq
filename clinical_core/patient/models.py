@@ -1,6 +1,6 @@
 import pdb
 import uuid
-from couchdbkit.ext.django.schema import Document
+from couchdbkit.ext.django.schema import Document, TimeProperty, IntegerProperty
 from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from django.core.urlresolvers import reverse
@@ -193,7 +193,7 @@ class Patient(models.Model):
 
 
 class CPhone(Document):
-    phone_id=StringProperty(default=make_uuid)
+    phone_id= IntegerProperty()
     is_default = BooleanProperty()
     description = StringProperty()
     number = StringProperty()
@@ -214,7 +214,7 @@ class CAddress(Document):
     An address.
     """
     description = StringProperty() #the title so to speak
-    address_id = StringProperty(default=make_uuid)
+    address_id = IntegerProperty()
     street = StringProperty()
     city = StringProperty()
     state = StringProperty()
@@ -377,6 +377,14 @@ class CarehqPatient(BasePatient):
     """
     A stub implementation of the Patient model
     """
+    start_date = DateProperty(verbose_name='Date of trial start')
+    device_id = StringProperty()
+    checkin_time = TimeProperty(verbose_name='Preferred survey time')
+
+    #time window in which avalaible
+    available_start = TimeProperty(verbose_name='Start time available for contact')
+    available_end = TimeProperty(verbose_name='End time available for contact')
+
     def is_unique(self):
         return True
 

@@ -3,20 +3,30 @@
 {% block content %}
     <h2>Hello, {{ user.first_name }} {{ user.last_name }}</h2>
 
+    {% if request.actors|length > 1 %}
     You have {{ request.actors|length }} actor profiles linked to your account.<br>
 
     <strong>Please choose which profile you'd like to switch to:</strong>
-    <ul>
+    <ol>
         {% for actor in request.actors %}
-            {% if actor == request.current_actor %}
-                <li>{{ actor.actordoc.get_name }}* </li>
+                <li>
+                    {{ actor.actordoc.get_name }}
+                    {% if actor == request.current_actor %}
+                        <strong>Current</strong>
+                    {% else %}
+                        <a href="{% url set_current_actor actor.id %}">Switch</a>
+                    {% endif %}
+                </li>
 
-            {% else %}
-                <li>{{ actor.actordoc.get_name }} <a href="{% url set_current_actor actor.id %}">Set</a></li>
-            {% endif %}
         {% endfor %}
-    </ul>
+    </ol>
 
+    {% else %}
+        {% with request.current_actor as actor %}
+            {% include "account/actor_fragment.html" %}
+        {% endwith %}
+
+    {% endif %}
 
     <hr>
     <h2>Your Permissions</h2>

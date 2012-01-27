@@ -1,0 +1,25 @@
+
+<div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
+<h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
+<form id="id_{{ form_name }}" action="{% url ajax_post_actor_form doc_id form_name %}" class="uniForm" method="POST">
+    {% csrf_token %}
+    <table id="tbl_{{ form_name }}">
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />
+    <input type="button" name="cancel" value="Cancel" onclick="$(this).parent().parent().parent().hide('blind',{},300);$(this).parent().parent().parent().html('');"
+           class="fg-button ui-state-default ui-corner-all"/>
+</form>
+<script>
+	$(function() {
+		$( "#id_active_date" ).datepicker( {
+                changeMonth: true,
+                mindate: "+0",
+
+            }
+        );
+	});
+</script>
+    
+
+</div>

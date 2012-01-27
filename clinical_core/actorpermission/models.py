@@ -26,7 +26,6 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     title = StringProperty()
 
     email = StringProperty()
-
     notes = StringProperty()
 
     _subclass_dict = {}
@@ -36,6 +35,9 @@ class BaseActorDocument(Document, TypedSubclassMixin):
 
     def get_display(self):
         pass
+
+    def get_class_display(self):
+        return "Base Actor"
 
     @classmethod
     def _get_my_type(cls):
@@ -172,11 +174,14 @@ class CaregiverActor(BaseActorDocument):
     address = StringProperty()
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
 
+    def get_class_display(self):
+        return "Caregiver"
+
     class Meta:
         app_label = 'actorpermission'
 
     def get_name(self):
-        return "%s (%s)" % (self.name, self.relation)
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.relation)
 
     def get_display(self):
         return self.relation
@@ -195,6 +200,9 @@ class PatientActor(BaseActorDocument):
         if django_patient is not None:
             return django_patient.couchdoc
 
+    def get_class_display(self):
+        return "Patient"
+
 class ProviderActor(BaseActorDocument):
     """
     Health Provider identification.
@@ -207,6 +215,9 @@ class ProviderActor(BaseActorDocument):
     facility_address = StringProperty()
 
     affiliation = StringProperty()
+
+    def get_class_display(self):
+        return "Provider"
     class Meta:
         app_label = 'actorpermission'
 

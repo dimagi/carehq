@@ -108,9 +108,9 @@ def run():
                 prop_keys = case._dynamic_properties.keys()
                 addr_keys = filter(filter_addr_phone, prop_keys)
                 addr_keys.sort()
-                merged_phones = pt.couchdoc.active_phones()
+                merged_phones = pt.couchdoc.casexml_phones()
 
-                merged_addrs = pt.couchdoc.active_addresses
+                merged_addrs = pt.couchdoc.casexml_addresses
             else:
 
                 merged_phones = []

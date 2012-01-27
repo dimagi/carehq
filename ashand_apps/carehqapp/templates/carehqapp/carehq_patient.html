@@ -1,7 +1,44 @@
 {% extends "patient/base_patient.html" %}
 {% load i18n %}
 {% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timePicker.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
     <script>
+        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
+            var payload = {
+                'csrfmiddlewaretoken': getCookie("csrftoken"),
+                'patient_guid': patient_guid,
+            };
+
+            var remove_url = '';
+            if (phone_addr == "phone") {
+                attr_name = 'phone_id';
+                remove_url = "{% url remove_phone %}";
+                payload['phone_id'] = item_idx;
+            } else if (phone_addr == "address") {
+                attr_name = 'address_id';
+                var remove_url = "{% url remove_address %}";
+                payload['address_id'] = item_idx;
+            }
+            console.log(payload);
+            console.log(remove_url);
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  remove_url,
+                    "data":payload,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        alert("error");
+                        console.log(data);
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+
         $(function() {
                  $('.editctrl').each(function() {
                     $(this).hide();
@@ -155,13 +192,13 @@
                     <td>{{ patient_doc.notes }}</td>
                 </tr>
             </table>
-                        <div class="editctrl" style="float:right;">
+                    <div class="editctrl" style="float:right;">
                             <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                               href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                               href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
                                 <span class="ui-icon ui-icon-wrench"></span>
                                 Edit Info
                             </a>
-                        </div>
+                    </div>
             </div> <!-- end patient info display-->
             <br>
             <br>
@@ -172,6 +209,7 @@
                         Address
                     </th>
                     <td>
+                        <div id="addressform"></div>
                         {% for patient_address in patient_doc.address %}
                             <div class="ptprofile_address">
                                 {% if patient_address.description %}
@@ -180,8 +218,20 @@
                                 {{ patient_address.street }}<br>
                                 {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>
                             <hr>
+                                <span class="editctrl">
+                                    <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
+                                    &nbsp;
+                                    <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
+                                </span>
                             </div>
                         {% endfor %}
+                        <div style="float:right;">
+                            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}','address', 'addressform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Address
+                            </a>
+                        </div>
                     </td>
                 </tr>
 
@@ -190,6 +240,7 @@
                         Phone
                     </th>
                     <td>
+                        <div id="phoneform"></div>
                         {% for phone in patient_doc.phones %}
                             <div class="ptprofile_phone">
                                 {% if phone.description %}
@@ -197,8 +248,20 @@
                                 {% endif %}
                                 {{ phone.number }}<br>
                             <hr>
+                                <span class="editctrl">
+                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
+                                    &nbsp;
+                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>
+                                </span>
                             </div>
                         {% endfor %}
+                        <div style="float:right;">
+                            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                               href="javascript:ajax_get_form('{%url ajax_patient_form_get%}', '{{ patient_doc.get_id }}','phone', 'phoneform');">
+                                <span class="ui-icon ui-icon-circle-plus"></span>
+                                Add Phone
+                            </a>
+                        </div>
                     </td>
                 </tr>
 
