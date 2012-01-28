@@ -23,18 +23,18 @@
     </script>
 
 
-    <div class="span-24">
-        <div class="span-24"> {# the basic issue info block is span 24 #}
+    <div class="span16">
+        <div class="span16"> {# the basic issue info block is span 24 #}
             {% block issue_info %}
                 {% include "issuetracker/partials/issue/base_issue_info.html" %}
             {% endblock %}
 
-            <div class="span-24 prepend-top">
+            <div class="span16 prepend-top">
                 <hr>
                 {% block newsfeed-area %}
-                    <div class="span-24">
+                    <div class="span16">
                             {% for event in issue.issue_events.all %}
-                                <div class="span-24 {% cycle 'odd' 'even' %}">
+                                <div class="span16 {% cycle 'odd' 'even' %}">
                                     <strong>{{event.get_activity_display }}</strong> by <a href="{% url view_actor event.created_by.id %}">{{event.created_by.actordoc.get_name }}</a> - <small> {{ event.created_date|timesince }}</small>
                                     <div>{{event.notes}}</div>
                                 </div>
@@ -44,7 +44,7 @@
                         $("#issuehistory").load("{%url issue-newsfeed issue.id %}");
                     </script>
 
-                    <div class="span-24">
+                    <div class="span16">
                             {% block issue_actions %}
                                 <div class="tabs ui-tabs ui-widget ui-widget-content ui-corner-all">
                                     <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
@@ -82,12 +82,12 @@
             </div>
         </div>
         <!-- end issue body and info container -->
-        <div class="span-6 last"> <!-- specialized category block -->
-            <div class="span-6">
+        <div class="span4 last"> <!-- specialized category block -->
+            <div class="span4">
                 {% block issuelink_area %}
                 {% endblock issuelink_area %}
             </div>
-            <div class="span-6">
+            <div class="span4">
                 {% block issue_metadata %}
                 {% endblock %}
             </div>

@@ -66,9 +66,9 @@
 
 
 {% block content %}
-<div class="container span-24">
-    <div class="span-24">
-    <div class="span-17">
+<div class="container span16">
+    <div class="span16">
+    <div class="span-two-thirds">
             <h4>DOT Adherence Data for
                 <select id="patients">
                     <option value="dots" {% if not patient %} selected="selected" {% endif %}>
@@ -101,27 +101,27 @@
                 <strong>{{ max_date|date }}</strong><br>
             {% endif %}
         </div>
-    <div class="span-7 last">
+    <div class="span-one-third last">
         &nbsp;
     </div>
     </div>
 
-    <div class="span-2">
+    <div class="span1">
         <h3><strong>Date</strong></h3>
     </div>
-    <div class="span-22 last">
+    <div class="span15 last">
         <h3><strong>Data (Calendar Data, Case Output, Raw Submits)</strong></h3>
     </div>
         {%  for date, cal_entries, case_data, raw_obs in debug_data %}
-            <div class="span-2">
+            <div class="span1">
                <strong>{{ date|date:"m-d-Y" }}</strong>
             </div>
-            <div class="span-22 last">
+            <div class="span15 last">
             <hr>
-                <div class="span-9">
+                <div class="span-one-third">
                 {# calendar data #}
                     {% for drug_type, times in cal_entries %}
-                        <div class="span-4">
+                        <div class="span3">
                             <strong>{{ drug_type }}</strong>
                             {% for t, obs in times reversed %}
                                 {% if obs %}
@@ -173,10 +173,10 @@
 {#                    Adherence Data#}
 {#                    Submit ID#}
                 </div>
-                <div class="span-9">
+                <div class="span-one-third">
                     {#case data#}
                     {% for drug_arr in case_data %}
-                        <div class="span-4">
+                        <div class="span3">
                             {% if forloop.first %}
                             <strong>Non-ART</strong>
                             {% else %}
@@ -224,7 +224,7 @@
 {#                    Adherence Data#}
 {#                    Submit ID#}
                 </div>
-                <div class="span-3 last">
+                <div class="span2 last">
                     {#raw observations #}
                     <a href="javascript:show_raw_obs('{{ date|date:"m_d_Y" }}')">Raw Observations</a>
 

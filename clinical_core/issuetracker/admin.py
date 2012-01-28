@@ -52,7 +52,7 @@ class IssueInline(admin.StackedInline):
     model = Issue
 
 class FilterAdmin(admin.ModelAdmin):
-    list_display=('id','description','shared','creator')
+    list_display=('description','shared','creator')
     list_filter= ['shared','creator']
 #    inlines=[GridPreferenceInline]
 admin.site.register(Filter, FilterAdmin)

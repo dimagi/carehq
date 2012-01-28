@@ -156,12 +156,12 @@
     {% endblock patient-tab-controller %}
     {% block patient-tab-container %}
         <div id="patient-issuetracker-tab" class="ui-tabs-hide">
-            <div class="span-19">
+            <div class="span-two-thirds">
             {% for issue in issues %}
-                <div class="span-18 last" style="margin-bottom:8px;">
-                    <div class="span-18 last"><strong>{{ issue.opened_by.get_name }}</strong>  {{ issue.opened_date|date }} {{ issue.opened_date|time }}</div>
-                    <div class="span-18 prepend-1 last">{{ issue.description }}</div>
-                    <div class="span-4"><a href="{% url manage-issue issue.id %}">View Issue</a></div>
+                <div class="span12 last" style="margin-bottom:8px;">
+                    <div class="span12 last"><strong>{{ issue.opened_by.get_name }}</strong>  {{ issue.opened_date|date }} {{ issue.opened_date|time }}</div>
+                    <div class="span12 offset1 last">{{ issue.description }}</div>
+                    <div class="span3"><a href="{% url manage-issue issue.id %}">View Issue</a></div>
                     &nbsp;
                 </div>
             {% endfor %}
@@ -178,7 +178,7 @@
                 <tr>
                 </tr>
                 <tr>
-                    <th class="span-4">Language</th>
+                    <th class="span3">Language</th>
                     <td>English/Spanish</td>
                 </tr>
                 <tr>
@@ -205,7 +205,7 @@
             <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
             <table>
                 <tr>
-                    <th class="span-4">
+                    <th class="span3">
                         Address
                     </th>
                     <td>
@@ -236,7 +236,7 @@
                 </tr>
 
                 <tr>
-                    <th lass="span-4">
+                    <th lass="span3">
                         Phone
                     </th>
                     <td>
@@ -274,7 +274,7 @@
 
 
         <div id="patient-careteam-tab">
-            <div class="span-20">
+            <div class="span13">
                     <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
                        href="javascript:alert('todo')">
 {#                       href="{% url pt_add_provider patient_doc.get_id %}">#}
@@ -286,11 +286,11 @@
                 {% endfor %}
             {% comment %}
                 {% for role, actors in careteam_dict.items %}
-                    <div class="span-16 last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
+                    <div class="span-two-thirds last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
                     {% for actor in actors %}
-                        <div class="span-16 last" style="border: 1px solid black;padding: 8px;margin: 4px;">
-                            <div class="span-10 careteam_name">{{ actor.actordoc.get_name }}</div>
-                            <div class="span-6 last">{{ actor.actordoc.get_display|title }}</div>
+                        <div class="span-two-thirds last" style="border: 1px solid black;padding: 8px;margin: 4px;">
+                            <div class="span7 careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span4 last">{{ actor.actordoc.get_display|title }}</div>
                             &nbsp;
                         </div>
                         &nbsp;

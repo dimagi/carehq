@@ -1,8 +1,8 @@
 {% extends base_template %}
 {% load patient_lookup %}
 {% block content %}
-<div class="span-10"><span style="font-size: 125%;">CHW Submission Schedule for {{ username }} </span><br>{{ end_date|date:"m/d/Y" }}-{{ start_date|date:"m/d/Y" }}</div>
-<div class="span-6">
+<div class="span7"><span style="font-size: 125%;">CHW Submission Schedule for {{ username }} </span><br>{{ end_date|date:"m/d/Y" }}-{{ start_date|date:"m/d/Y" }}</div>
+<div class="span4">
 {% if total_scheduled == total_visited %}
     <div class="success">
 {% else %}
@@ -12,7 +12,7 @@
             {{ total_visited }} / {{ total_scheduled }}
     </div>
 </div>
-<div class="span-8 last" style="text-align:right;">
+<div class="span-one-third last" style="text-align:right;">
     <a href="{{ request.path }}?interval=1">Today</a> &nbsp;
     <a href="{{ request.path }}?interval={% now "w" %}">Week to date</a> &nbsp;
     <a href="{{ request.path }}?interval=7">7 days</a> &nbsp;
@@ -23,38 +23,38 @@
     <a href="{{ request.path }}?getcsv&interval={% now "j" %}">CSV MTD</a>&nbsp;
     <a href="{{ request.path }}?getcsv&interval=30">CSV 30</a>&nbsp;
 </div>
-<div class="container span-24">
-    <div class="span-4">
+<div class="container span16">
+    <div class="span3">
         <strong>Date</strong>
     </div>
-    <div class="span-5"><strong>Patient Scheduled</strong></div>
-    <div class="span-15 last"><strong>Visits</strong></div>
+    <div class="span3"><strong>Patient Scheduled</strong></div>
+    <div class="span10 last"><strong>Visits</strong></div>
 
     {%  for visit_date, patient_visits in date_arr %}
         {% if patient_visits %}
             {% for cpatient, visit in patient_visits %}
                 {% if forloop.counter0 == 0 %}
-                     <div class="span-4">
+                     <div class="span3">
                         <strong>{{ visit_date|date:"D N j, Y" }}</strong>
                      </div>
                 {% else %}
-                    <div class="span-4">&nbsp;</div>
+                    <div class="span3">&nbsp;</div>
                 {% endif %}
 
-                <div class="span-5">
+                <div class="span3">
                     <div class="success">
                     <a href="{% url view_pactpatient cpatient.get_id %}">{{ cpatient.first_name }} {{ cpatient.last_name }}</a>
                     </div>
                 </div>
-                <div class="span-15 last">
+                <div class="span10 last">
                      {% if visit %}
-                        <div class="notice span-14">
-                        <div class="span-5">
+                        <div class="notice span9">
+                        <div class="span3">
                             <strong>
                             <a href="{% patient_url_from_form visit %}">{%  name_from_pactid visit %}</a>
                             </strong>
                         </div>
-                        <div class="span-4">
+                        <div class="span3">
                             {% if visit.form.scheduled == "yes" %}
                                 Scheduled
                             {% else %}
@@ -62,7 +62,7 @@
                             {% endif %}
                             ({{ visit.form.visit_type|title }})
                         </div>
-                        <div class="span-3">
+                        <div class="span2">
                             by
                             {% if visit.form.Meta.username == username %}
                                 <strong>{{ visit.form.Meta.username }}</strong>
@@ -70,26 +70,26 @@
                                 <em>{{ visit.form.Meta.username }}</em>
                             {% endif %}
                         </div>
-                        <div class="span-2 last">
+                        <div class="span1 last">
                             <a href="{% url show_submission visit.get_id %}">View</a>
                         </div>
                         </div>
                      {% else %}
-                        <div class="error span-14">
+                        <div class="error span9">
                             No Visit
                         </div>
                      {% endif %}
                 </div>
                 {% endfor %}
         {% else %}
-            <div class="span-4">
+            <div class="span3">
                 <strong>{{ visit_date|date:"D N j, Y" }}</strong>
             </div>
-            <div class="span-5">
+            <div class="span3">
                 -- No Patients --
             </div>
-            <div class="span-15 last">
-                <div class="span-14" style="padding:.8em;margin-bottom:1em;border:2px solid #fff;">
+            <div class="span10 last">
+                <div class="span9" style="padding:.8em;margin-bottom:1em;border:2px solid #fff;">
                 </div>
             </div>
         {% endif %}

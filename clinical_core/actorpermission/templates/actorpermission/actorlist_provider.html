@@ -1,12 +1,12 @@
 {% extends "actorpermission/actor_listitem_base.html" %}
             {% block actorname_block %}
 
-                <div class="span-10 last careteam_name"><a href="{% url view_actor issue.opened_by.id %}">{{ actor.actordoc.get_name }}</a></div>
+                <div class="span7 last careteam_name"><a href="{% url view_actor issue.opened_by.id %}">{{ actor.actordoc.get_name }}</a></div>
             {% endblock actorname_block %}
             {% block actorinfo_block %}
-                <div class="span-10 last">{{ actor.actordoc.provider_title }}</div>
-                <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
-                <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                <div class="span7 last">{{ actor.actordoc.provider_title }}</div>
+                <div class="span9 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+                <div class="span-one-third careteam_detail">{{ actor.actordoc.phone_number }}</div>
             {% endblock actorinfo_block %}
     {% block actorrelation_right %}
         boo

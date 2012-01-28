@@ -1,8 +1,8 @@
-<div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
+<div class="span9" style="border: 1px solid black;padding:8px;margin:4px;">
     {% block actor_display_left %}
-        <div class="span-10">
+        <div class="span7">
             {% block actorname_block %}
-                <div class="span-10 last careteam_name">
+                <div class="span7 last careteam_name">
                     <a href="{{ prr.content.couchdoc.get_absolute_url }}">
                     {{ prr.content.couchdoc.first_name }} {{  prr.content.couchdoc.last_name }}
                         </a>
@@ -13,14 +13,14 @@
         </div>
     {% endblock %}
 
-    <div class="span-4 last">
+    <div class="span3 last">
     {% block actorrelation_right %}
     {% endblock %}
     </div>
 
-    <div class="span-14 last">{{ actor.actordoc.provider_title }}</div>
-    <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
-    <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
-    <div class="span-7 last">
+    <div class="span9 last">{{ actor.actordoc.provider_title }}</div>
+    <div class="span9 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+    <div class="span-one-third careteam_detail">{{ actor.actordoc.phone_number }}</div>
+    <div class="span-one-third last">
     </div>
 </div>

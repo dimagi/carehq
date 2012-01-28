@@ -213,7 +213,7 @@ def view_filter(request, filter_id):
             group_by_col = value
     
     split_headings = True
-    qset = filter.get_filter_queryset()    
+    qset = filter.get_filter_queryset(request.current_actor)
 
     context['filter'] = filter
     context['gridpref'] = gridpref
@@ -228,6 +228,7 @@ def debug_reference(request, template_name="issuetracker/debug_reference.html"):
     context = RequestContext(request)
     context['users'] = users
     context['patients'] = patients
+    context['filters'] = Filter.objects.all()
     return render_to_response(template_name, context_instance=context)
 
 

@@ -1,13 +1,13 @@
 {% load i18n %}
 
 <div> <!-- careteam header -->	
-	<div class="span-6">
+	<div class="span4">
 		<h3>{{careteam.patient.user.get_full_name}}</h3>
 	</div>	
-	<div class="span-3">
+	<div class="span2">
 	   <a href="{% url view-careteam careteam.id %}" class="fg-button ui-state-default ui-corner-all">Care Plan</a>
 	</div>
-	<div class="span-3">
+	<div class="span2">
 		<a id="careteam_flipper_{{careteam.id}}" class="fg-button ui-state-default ui-corner-all">Care Team</a>			
 	</div>
 </div> <!-- end careteam header -->

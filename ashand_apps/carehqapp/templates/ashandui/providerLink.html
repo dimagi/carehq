@@ -41,16 +41,16 @@ Link patient to provider.
 
         
     </div>
-    <div id="#careteam" class="prepend-1 span-24 last">
+    <div id="#careteam" class="offset1 span16 last">
         <h3>Current Care Team:</h3>
         {% for d in careTeam %}
-            <div class="carebox span-7">
+            <div class="carebox span-one-third">
                 {% include "ashandui/careTeamBox.html" %}
             </div>
         {% endfor %}
     </div>
     <hr />
-    <div id="#addprovider" class="span-24 last">
+    <div id="#addprovider" class="span16 last">
     <h3>Add Provider:</h3>
     <form action="/linkProvider/{{ patient.id }}" method="post">
         {% csrf_token %}

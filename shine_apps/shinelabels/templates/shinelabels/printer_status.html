@@ -1,15 +1,15 @@
 
-<div class="span-6">
+<div class="span4">
     <h4>Printer Status {{ printer_name }}</h4>
     {% if status %}
-        <div class="span-2 success">
+        <div class="span1 success">
             Active
         </div>
     {% else %}
-        <div class="span-2 error">
+        <div class="span1 error">
             Inactive
         </div>
-        <div class="span-4 last">
+        <div class="span3 last">
             Last Event:
             {{ last.status|title }}: {{ last.event_date|date }}
         </div>

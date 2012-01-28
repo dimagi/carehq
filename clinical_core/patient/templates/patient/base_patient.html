@@ -25,15 +25,15 @@
 {% endblock extrahead %}
 {% block content %}
 <div class="container">
-	<div class="span-24">
-        <div class="span-24"> <!-- patient hat -->
+	<div class="span16">
+        <div class="span16"> <!-- patient hat -->
         {% block patient_hat %}
-            <div class="span-12">
+            <div class="span8">
                 {% block patient_name_display %}
                 <span class="ptpage_fn">Patient / {{patient_doc.first_name}} {{patient_doc.last_name}}</span>
                 {% endblock patient_name_display %}
             </div>
-            <div class="span-12 last right pt_hat_actions_bar">
+            <div class="span8 last right pt_hat_actions_bar">
             {% block hat_actions %}
                 <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:toggle_edit()">
                 <span class="ui-icon ui-icon-gear"></span>
@@ -44,7 +44,7 @@
             <hr>
         {% endblock %}
         </div> <!-- end patient hat -->
-        <div class="span-4"> <!-- patient badge -->
+        <div class="span3"> <!-- patient badge -->
         <dl>
         {% block patient_badge %}
             <dt>{% trans "Age" %}</dt>
@@ -54,7 +54,7 @@
         {% endblock patient_badge %}
         </dl>
         </div> <!-- end patient badge -->
-        <div class="span-20 last">
+        <div class="span13 last">
             {% block patient-content-tabs %}
             <div id="ptabs" class="tabs">
                 <ul>

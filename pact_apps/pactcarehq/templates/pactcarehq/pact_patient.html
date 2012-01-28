@@ -148,11 +148,11 @@
             <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
             <table>
                 <tr>
-                    <th class="span-4">Race</th>
+                    <th class="span3">Race</th>
                     <td>{{ patient_doc.get_race }}</td>
                 </tr>
                 <tr>
-                    <th class="span-4">Latino</th>
+                    <th class="span3">Latino</th>
                     <td>{% if  patient_doc.is_latino %}
                             Yes
                         {% else %}
@@ -161,11 +161,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <th class="span-4">Language</th>
+                    <th class="span3">Language</th>
                     <td>{{ patient_doc.get_preferred_language }}</td>
                 </tr>
                 <tr>
-                    <th class="span-4">MassHealth Expiration</th>
+                    <th class="span3">MassHealth Expiration</th>
                     <td>{{ patient_doc.mass_health_expiration }} - {{ patient_doc.mass_health_expiration|timeuntil }}</td>
                 </tr>
                 <tr>
@@ -194,7 +194,7 @@
             <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
             <table>
 {#                <tr>#}
-{#                    <th class="span-4">#}
+{#                    <th class="span3">#}
 {#                        PDoc Address(es)#}
 {#                    </th>#}
 {#                    <td>#}
@@ -211,7 +211,7 @@
 {#                    </td>#}
 {#                </tr>#}
 {#                <tr>#}
-{#                    <th lass="span-4">#}
+{#                    <th lass="span3">#}
 {#                        PDoc Phone(s)#}
 {#                    </th>#}
 {#                    <td>#}
@@ -229,7 +229,7 @@
 
 
                 <tr>
-                    <th class="span-4">
+                    <th class="span3">
                         Address(es)<br>
                     </th>
                     <td>
@@ -258,7 +258,7 @@
                 </tr>
 
                 <tr>
-                    <th class="span-4">
+                    <th class="span3">
                         Phone(s)
                     </th>
                     <td>
@@ -303,19 +303,19 @@
         </div>
 
         <div id="patient-careteam-tab">
-            <div class="span-20">
+            <div class="span13">
                 <h3>CareTeam</h3>
                 {% for role, actors in careteam_dict.items %}
 {#                    <h4>{{ role.display }}(s)</h4>#}
                     <ul>
                     {% if role.display == "External Provider" %}
                         {% for actor in actors %}
-                            <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
-                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }}</div>
-                                <div class="span-14 last">{{ actor.actordoc.provider_title }}</div>
-                                <div class="span-14 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
-                                <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
-                                <div class="span-7 last">
+                            <div class="span9" style="border: 1px solid black;padding:8px;margin:4px;">
+                                <div class="span9 last careteam_name">{{ actor.actordoc.get_name }}</div>
+                                <div class="span9 last">{{ actor.actordoc.provider_title }}</div>
+                                <div class="span9 last careteam_detail">{{ actor.actordoc.facility_name }}</div>
+                                <div class="span-one-third careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                                <div class="span-one-third last">
                                     <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
                                                 Remove
                                             </a>
@@ -326,10 +326,10 @@
                     {% endif %}
                     {% if role.display == "Primary CHW" %}
                         {% for actor in actors %}
-                            <div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
-                                <div class="span-14 last careteam_name">{{ actor.actordoc.get_name }} ({{ role.display }})</div>
-                                <div class="span-7 careteam_detail">{{ actor.actordoc.phone_number }}</div>
-                                <div class="span-7 last">
+                            <div class="span9" style="border: 1px solid black;padding:8px;margin:4px;">
+                                <div class="span9 last careteam_name">{{ actor.actordoc.get_name }} ({{ role.display }})</div>
+                                <div class="span-one-third careteam_detail">{{ actor.actordoc.phone_number }}</div>
+                                <div class="span-one-third last">
                                     <small><a href="javascript:unlink_patient_provider('{{ patient_doc.get_id }}','{{ actor.id }}')" class="editctrl" style="float:right;">
                                         Remove
                                     </a>
@@ -355,9 +355,9 @@
                 <table>
                     <thead>
                     <tr>
-                        <th class="span-4">Date</th>
-                        <th class="span-4">CHW</th>
-                        <th class="span-4">Form</th>
+                        <th class="span3">Date</th>
+                        <th class="span3">CHW</th>
+                        <th class="span3">Form</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -379,15 +379,15 @@
             Raw Case stuff
         </div>
         <div id="patient-history-tab">
-            <div class="span-20">
+            <div class="span13">
             {% with narratives=history_logs.change_narratives %}
                 {% if narratives %}
                 <h3>Patient Progress Changes</h3>
                 {% for rc in narratives %}
-                    <div class="span-15">
+                    <div class="span10">
                     {{ rc.revision.event_date}} by: {{ rc.revision.user }}
                     </div>
-                    <div class="span-15 prepend-1">
+                    <div class="span10 offset1">
                     <dl>
                         {% for c  in rc.changes %}
                          <dt>{{ c.0 }}</dt>
@@ -401,14 +401,14 @@
                     No major changes
                 {% endif %}
             {% endwith %}
-            </div> {# span-20 div #}
+            </div> {# span13 div #}
         &nbsp;
         </div> {# tab div #}
         <div id="patient-log-tab">
-            <div class="span-20">
+            <div class="span13">
             &nbsp;
             {% for rev in all_changes.filtered_changes %}
-                <div class="span-20">
+                <div class="span13">
                     {% if rev.changed_fields.0 or rev.changed_fields.1 or rev.changed_fields.2 %}
                     {% if rev.changed_fields.0 %}
                     Changed: {{ rev.changed_fields.0|join:", " }} <br>

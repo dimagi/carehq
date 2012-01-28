@@ -1,7 +1,7 @@
 {% load issue_tags %}
-<div class="span-18">
+<div class="span12">
 	{% for event in events %}				
-		<div class = "span-18">
+		<div class = "span12">
 			{#<strong>{{event.activity.past_tense|title }}</strong> by <a href="{% url carehqapp.views.users.single event.created_by.id %}">{{event.created_by.title}}</a> - <small> {% time_interval event.created_date %}</small>#}
 			<div>{{event.notes}}</div>
 			<hr>						

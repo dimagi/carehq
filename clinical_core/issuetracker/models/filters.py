@@ -66,7 +66,7 @@ class Filter(models.Model):
     filter_class = models.CharField(max_length=64, blank=True, null=True,
                                      help_text=_('This is the actual method name of the model filter you wish to run.'))
 
-    #case related properties
+    #issue related properties
     category = models.ForeignKey(IssueCategory, null=True, blank=True)
     status = models.CharField(max_length=160, null=True, blank=True, choices=issue_constants.STATUS_CHOICES)
     priority = models.IntegerField(null=True, blank=True, choices=issue_constants.PRIORITY_CHOICES)
@@ -83,8 +83,7 @@ class Filter(models.Model):
     resolved_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     closed_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
 
-    #case Event information
-    #last_event_type = models.ForeignKey(ActivityClass, null=True, blank=True)
+    #issue Event information
     last_event_date = models.IntegerField(choices=TIME_DURATION_PAST_CHOICES, null=True, blank=True)
     last_event_by = models.ForeignKey(Actor, null=True, blank=True)
 
@@ -97,111 +96,102 @@ class Filter(models.Model):
     #http://stackoverflow.com/questions/310732/in-django-how-does-one-filter-a-queryset-with-dynamic-field-lookups
     #http://stackoverflow.com/questions/353489/cleaner-way-to-query-on-a-dynamic-number-of-columns-in-django
 
-    def get_filter_queryset(self):
+    def get_filter_queryset(self, requesting_actor):
         """
         On a given filter instance, we will generate a query set by applying all the FKs as query objects
 
         The return value is a queryset after applying all the query filters and doing a filter with
-        the case events as well.
+        the issue events as well.
         """
         utcnow = datetime.utcnow()
 
-        case_query_arr = []
-        case_event_query_arr = []
+        issue_query_arr = []
+        issue_event_query_arr = []
 
         if self.category:
-            case_query_arr.append(Q(category=self.category))
+            issue_query_arr.append(Q(category=self.category))
         if self.status:
-            case_query_arr.append(Q(status=self.status))
+            issue_query_arr.append(Q(status=self.status))
         if self.priority:
-            case_query_arr.append(Q(priority=self.priority))
+            issue_query_arr.append(Q(priority=self.priority))
         if self.assigned_to:
-            if self.assigned_to.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_query_arr.append(Q(assigned_to=threadlocals.get_current_user()))
+            if self.assigned_to.name == "Me":
+                issue_query_arr.append(Q(assigned_to=requesting_actor))
             else:
-                case_query_arr.append(Q(assigned_to=self.assigned_to))
+                issue_query_arr.append(Q(assigned_to=self.assigned_to))
 
         if self.opened_by:
-            if self.opened_by.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_query_arr.append(Q(opened_by=threadlocals.get_current_user()))
+            if self.opened_by.name == "Me":
+                issue_query_arr.append(Q(opened_by=requesting_actor))
             else:
-                case_query_arr.append(Q(opened_by=self.opened_by))
+                issue_query_arr.append(Q(opened_by=self.opened_by))
         if self.last_edit_by:
-            if self.last_edit_by.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_query_arr.append(Q(last_edit_by=threadlocals.get_current_user()))
+            if self.last_edit_by.name == "Me":
+                issue_query_arr.append(Q(last_edit_by=requesting_actor))
             else:
-                case_query_arr.append(Q(last_edit_by=self.last_edit_by))
+                issue_query_arr.append(Q(last_edit_by=self.last_edit_by))
         if self.resolved_by:
-            if self.resolved_by.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_query_arr.append(Q(resolved_by=threadlocals.get_current_user()))
+            if self.resolved_by.name == "Me":
+                issue_query_arr.append(Q(resolved_by=requesting_actor))
             else:
-                case_query_arr.append(Q(resolved_by=self.resolved_by))
+                issue_query_arr.append(Q(resolved_by=self.resolved_by))
         if self.closed_by:
-            if self.closed_by.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_query_arr.append(Q(closed_by=threadlocals.get_current_user()))
+            if self.closed_by.name == "Me":
+                issue_query_arr.append(Q(closed_by=requesting_actor))
             else:
-                case_query_arr.append(Q(closed_by=self.closed_by))
+                issue_query_arr.append(Q(closed_by=self.closed_by))
 
         if self.opened_date:
             compare_date = utcnow + timedelta(days=self.opened_date)
-            case_query_arr.append(Q(opened_date__gte=compare_date))
+            issue_query_arr.append(Q(opened_date__gte=compare_date))
         if self.assigned_date:
             compare_date = utcnow + timedelta(days=self.assigned_date)
-            case_query_arr.append(Q(assigned_date__gte=compare_date))
+            issue_query_arr.append(Q(assigned_date__gte=compare_date))
         if self.last_edit_date:
             compare_date = utcnow + timedelta(days=self.last_edit_date)
-            case_query_arr.append(Q(last_edit_date__gte=compare_date))
+            issue_query_arr.append(Q(last_edit_date__gte=compare_date))
         if self.resolved_date:
             compare_date = utcnow + timedelta(days=self.resolved_date)
-            case_query_arr.append(Q(resolved_date__gte=compare_date))
+            issue_query_arr.append(Q(resolved_date__gte=compare_date))
         if self.closed_date:
             compare_date = utcnow + timedelta(days=self.closed_date)
-            case_query_arr.append(Q(closed_date__gte=compare_date))
+            issue_query_arr.append(Q(closed_date__gte=compare_date))
 
         #ok, this is getting a little tricky.
-        #query IssueEvent and we will get the actual cases.  we will get the id's of the cases and apply
+        #query IssueEvent and we will get the actual issues.  we will get the id's of the issues and apply
         #those back as a filter
-        if self.last_event_type:
-            case_event_query_arr.append(Q(activity=self.last_event_type))
         if self.last_event_by:
-            if self.last_event_by.id == 1: #this is a hackish way of saying it's the reflexive user
-                #run the query with the threadlocals current user
-                case_event_query_arr.append(Q(created_by=threadlocals.get_current_user()))
+            if self.last_event_by.name == "Me":
+                issue_event_query_arr.append(Q(created_by=requesting_actor))
             else:
-                case_event_query_arr.append(Q(created_by=self.last_event_by))
+                issue_event_query_arr.append(Q(created_by=self.last_event_by))
 
         if self.last_event_date:
             compare_date = utcnow + timedelta(days=self.last_event_date)
-            case_event_query_arr.append(Q(created_date__gte=self.last_event_date))
+            issue_event_query_arr.append(Q(created_date__gte=self.last_event_date))
 
         #now, we got the queries built up, let's run the queries
-        cases = Issue.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'carteam_set').all()
-        for qu in case_query_arr:
+        issues = Issue.objects.select_related('opened_by', 'last_edit_by', 'resolved_by', 'closed_by', 'assigned_to', 'carteam_set').all()
+        for qu in issue_query_arr:
             #dmyung 12-8-2009
             #doing the filters iteratively doesn't seem to be the best way.  there ought to be a way to chain
             #them all in an evaluation to the filter() call a-la the kwargs or something.  since these
             # are ANDED, we want them to be done sequentially (ie, filter(q1,q2,q3...)
             #negations should be handled by the custom search
-            cases = cases.filter(qu)
+            issues = issues.filter(qu)
 
-        if len(case_event_query_arr) > 0:
-            #print "case event subquery"
+        if len(issue_event_query_arr) > 0:
             issue_events = IssueEvent.objects.select_related().all()
-            for qe in case_event_query_arr:
+            for qe in issue_event_query_arr:
                 issue_events = issue_events.filter(qe)
 
-            #get all the case ids from the case event filters
+            #get all the issue ids from the case event filters
             issue_events_issues_ids = issue_events.values_list('issue', flat=True)
 
             if len(issue_events_issues_ids) > 0:
-                cases = cases.filter(pk__in=issue_events_issues_ids)
+                issues = issues.filter(pk__in=issue_events_issues_ids)
 
-        return cases
+        return issues
 
     def __unicode__(self):
         return "Model Filter - %s" % (self.description)

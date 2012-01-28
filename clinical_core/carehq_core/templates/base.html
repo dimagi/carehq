@@ -1,50 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 {% load i18n %}
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
-        <link rel="shortcut icon" href="{{ STATIC_URL }}carehq/img/favicon.png" />
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<head>
+    <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ STATIC_URL }}carehq/img/favicon.png"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 
-        {% block javascripts %}
+    {% block javascripts %}
         <!-- javascripts (global, app, page) -->
-        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-1.5.1.min.js"></script>
-		<script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-ui-1.8.14.custom.min.js"></script>
-		<script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.flickrmenu.js"></script>
-		<script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.cookie.yc.js"></script>
-		<script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timeago.js"></script>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-ui-1.8.16.custom.min.js"></script>
+        <link rel="stylesheet/less" href="{{ STATIC_URL }}carehq/tbootstrap/less/bootstrap.less">
+        <script src="{{ STATIC_URL }}carehq/js/less-1.2.1.min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.flickrmenu.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.cookie.yc.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timeago.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.ba-bbq.min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-dropdown.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+    {% endblock javascripts %}
+    {% block stylesheets %}
+        <!-- stylesheets -->
+        {% include "uni_form/includes.html" %}
+{#        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/carehq.css" type="text/css">#}
+        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-1.8.16.custom.css" type="text/css">
+        {#            <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-aristo.css" type="text/css">#}
+        {#			<link rel="stylesheet" href="{{STATIC_URL}}carehq/css/flickr-menu-style.css" type="text/css">#}
 
-        <script type="text/javascript" charset="utf-8">
-            $().ready(function(){
-                $("#menu").flickrmenu();
-            });
-        </script>
-        {% endblock javascripts %}
-        {% block stylesheets %}
-			<!-- stylesheets -->
-            {% include "uni_form/includes.html" %}
-	        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/blueprint/screen.css" type="text/css" media="screen, projection">
-	        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/blueprint/print.css" type="text/css" media="print">
-	        <!--[if lt IE 8]>
-	        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/blueprint/ie.css" type="text/css" media="screen, projection">
-	        <![endif]-->
-	        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/carehq.css" type="text/css">
-            <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-1.8.14.custom.css" type="text/css">
-{#            <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-aristo.css" type="text/css">#}
-			<link rel="stylesheet" href="{{STATIC_URL}}carehq/css/flickr-menu-style.css" type="text/css">
+        {% block page_stylesheets %}{% endblock %}
+    {% endblock %} {# stylesheets #}
 
-	        {% block page_stylesheets %}{% endblock %}
-        {% endblock %} {# stylesheets #}
-
-        {% block extrahead %}{% endblock %}
-    </head>
-    <body>
-		{% block tophat %}
-  		<div id="tophat">
-			{% block searchbar %}
-			{% comment %}
+    {% block extrahead %}{% endblock %}
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+        }
+    </style>
+</head>
+<body>
+{% block tophat %}
+    <div id="tophat">
+        {% block searchbar %}
+            {% comment %}
 			<div id="searchbar">
 			<form method="POST" action="{{request.path}}?activity=issue-event-comment" >
 				<textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>
@@ -52,63 +56,93 @@
 				</form>
 			</div>
 			{% endcomment %}
-			{% endblock searchbar %}
-			{% block auth %}
-			<div id="identityblock">
-		        {% if user.is_authenticated %}
-		            <strong>{{ user.first_name }} {{user.last_name}}</strong>&nbsp;
-                    {% comment %}
-                     <a href="{% url account_landing %}">{%trans "My Account" %}</a>
-                     {% endcomment %}&nbsp;|&nbsp;
-                    {% if user.is_superuser %}
-                        <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
-                    {% endif %}
-                    &nbsp;
-                    &nbsp;
-                    <a href="/accounts/logout/">{% trans "Log out" %} </a>
-		        {% else %}
-		            {#<a href="/accounts/login/">{% trans "Log in" %}</a>#}
-		        {% endif %}
-        	</div>
-        	{% endblock auth %}
-    	</div>
-	    {% endblock tophat %}
+        {% endblock searchbar %}
+    </div>
+{% endblock tophat %}
 
-		<div class="container">
-      		<div class="span-24"> <!-- Header div -->
-				{% block branding %}
-				<div class="span-2">
-					<a title="Return to the Dashboard" href="/">
-					<img src="{{STATIC_URL}}carehq/img/dimagilogo.png">
-					</a>
-				</div>
-				{% endblock branding %}
+<div class="topbar" data-dropdown="dropdown">
+    <div class="topbar-inner">
+        <div class="container">
+            {% block branding %}
+                <a class="brand" href="/">
+                    {#                        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">#}
+                    <h2>CareHQ</h2>
+                </a>
+            {% endblock branding %}
+            <ul class="nav">
+                {% block navigation_menu %}
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                {% endblock navigation_menu %}
+            </ul>
+            {% block top_useridentity %}
+                {% if user.is_authenticated %}
+                    <ul class="nav secondary-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">
+                                {% if request.user.first_name and request.user.last_name %}
+                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                    {% else %}
+                                    {{ request.user.username }}
+                                    {% endif %}
+                                </a>
+                            <ul class="dropdown-menu">
+                                {% if user.is_superuser %}
+                                    <li>
+                                    <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
+                                    </li>
+                                {% endif %}
+                                <li><a href="#">Secondary link</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                            <li>
+                                <a href="/accounts/logout/">{% trans "Log out" %} </a>
+                            </li>
+                            </ul>
+                        </li>
+                    </ul>
+                {% else %}
+                <p class="pull-right">
+                    <form method="post" action="." class="pull-right">
+                    {% csrf_token %}
+                        <input id="id_username" name="username" class="input-medium" type="text" placeholder="username">
+{#                        <input id="id_username" type="text" name="username" maxlength="30">#}
 
-				<div class="span-22 last">
-                    <div id="menu" style="z-index:-1;">
-                     <ul>
-                         {% block navigation_menu %}
-                             <li>Foo</li>
-                             <li>Bar</li>
-                         {% endblock navigation_menu %}
-                     </ul>
-                    </div> {# div id=menu #}
-				</div>
-			</div> <!-- end header class -->
+                        <input id="id_password" name="password" class="input-medium" type="password" placeholder="password">
+{#                        <input type="password" name="password" id="id_password">#}
 
-            <div class="span-24">
-            {% block content %}
-			{% endblock %}
-            </div>
-
-            {% block footer %}
-            <div id="footer span-24">
-                <p class="rights prepend-19">
-                    Copyright &copy; {% now "Y" %} <a href="http://dimagi.com">Dimagi Inc.</a><br />
+                        <input type="hidden" name="next" value="{{ next }}" />
+                        <button class="btn" value="Login" type="submit">Sign in</button>
+                    </form>
                 </p>
-            </div>
-            {% endblock %}
+                {% endif %}
+            {% endblock top_useridentity %}
         </div>
-      </div>
-    </body>
+    </div>
+</div>
+<div class="container">
+        {% block page_crumbs %}
+            <ul class="breadcrumb">
+                <li><a href="#">Home</a> <span class="divider">/</span></li>
+                <li><a href="#">Middle page</a> <span class="divider">/</span></li>
+                <li><a href="#">Another one</a> <span class="divider">/</span></li>
+                <li class="active">You are here</li>
+            </ul>
+        {% endblock page_crumbs %}
+    <div class="page-header">
+        {% block page_header %}
+            <h1>Title goes here <small>Plus some more</small></h1>
+        {% endblock %}
+    </div>
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+            <footer>
+                <p>&copy; {% now "Y" %} <a href="http://www.dimagi.com">Dimagi, Inc.</a></p>
+            </footer>
+        {% endblock footer %}
+    </div>
+</body>
 </html>

@@ -1,40 +1,60 @@
 {% extends base_template %}
 {% load i18n %}
-{% block title %}Login{% endblock %}
+{% block title %}{% trans "Welcome to CareHQ" %}{% endblock %}
+
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Welcome to CareHQ <small></small></h1>
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated %}
 <p>You're already logged in!</p>
 {% else %}
-<div class="span-24">
-<div class="span-10 prepend-2 prepend-top note box">
-<h2>CareHQ</h2>
-<h4>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about</h4>
-</div>
-<div class="span-10 prepend-2 last">    
-<script type="text/javascript">
-		(function($) {
-			$(document).ready(function(){
-				$('#id_username').focus();
-			});
-		})(jQuery);
-</script>
-
-    <h4>Please sign in</h4>
-    <fieldset>
-    <form method="post" action=".">{% csrf_token %}     	
-        <table>
-            <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
-            <tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
-        </table>
-        {% if form.errors %}
-            <p><font color="red">Your username and password didn't match. Please try again.</font></p>
-        {% endif %}
-        <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
-        <input type="hidden" name="next" value="{{ next }}" />
-    </form>
-    </fieldset>
+<div class="span16">
+<div class="row">
+    <div class="span2">
+        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_care_staff.svg" type="image/svg+xml" height="75" width="75"></object>
+        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_home.svg" type="image/svg+xml" height="75" width="75"></object>
+        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_family_med.svg" type="image/svg+xml" height="75" width="75"></object>
     </div>
+    <div class="span14">
+    <h4>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about.</h4>
+{#    <script type="text/javascript">#}
+{#            (function($) {#}
+{#                $(document).ready(function(){#}
+{#                    $('#id_username').focus();#}
+{#                });#}
+{#            })(jQuery);#}
+{#    </script>#}
+
+{#    {% if form.errors %}#}
+        <div class="row">
+            <div class="span8 offset4">
+                <h4>Please sign in</h4>
+                <fieldset>
+                <form method="post" action=".">{% csrf_token %}
+                    <table>
+                        <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
+                        <tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
+                    </table>
+                    {% if form.errors %}
+                        <p>
+                        <span class="label important">Your username and password didn't match. Please try again.</span>
+                        </p>
+                    {% endif %}
+                    <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+                </fieldset>
+            </div>
+        </div>
+{#        {% endif %}#}
+    </div>
+    {% endif %}
+
 </div>
-{% endif %}
+</div>
 {% endblock %}
 

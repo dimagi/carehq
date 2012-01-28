@@ -4,6 +4,12 @@ SYSTEM_USERNAME='ASHand-System'
 #constants for model Status
 #CASE_STATE_NEW = 'state-new' # a state-new case is one that is brand new and unassigned, needing triageing.
 ISSUE_STATE_OPEN = 'state-open'
+ISSUE_STATE_PROVIDER_FEEDBACK = 'state-provider-feedback'
+ISSUE_STATE_PATIENT_FEEDBACK = 'state-patient-feedback'
+ISSUE_STATE_CAREGIVER_FEEDBACK = 'state-caregiver-feedback'
+ISSUE_STATE_CHW_FEEDBACK = 'state-chw-feedback'
+ISSUE_STATE_SUPERVISOR_FEEDBACK = 'state-supervisor-feedback'
+ISSUE_STATE_RESPONDED = 'state-responded'
 ISSUE_STATE_RESOLVED = 'state-resolved'
 ISSUE_STATE_CLOSED = 'state-closed'
 
@@ -23,7 +29,7 @@ ISSUE_EVENT_CLOSE = 'event-close'
 
 
 ISSUE_EVENT_CHOICES = (
-        (ISSUE_EVENT_OPEN, 'Open/Create'), #case state
+        (ISSUE_EVENT_OPEN, 'New'), #case state
         (ISSUE_EVENT_ASSIGN, 'Assign'), #case state
         (ISSUE_EVENT_VIEW, 'View'),
         (ISSUE_EVENT_EDIT, 'Edit'),

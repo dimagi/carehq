@@ -6,11 +6,11 @@
 {% endblock extrahead %}
 {% block content %}
     <h2>issuetracker application reference views</h2>
-    <div class="ui-tabs span-24">
+    <div class="ui-tabs span16">
         <a href="{% url issuetracker.views.debug_reference %}">Reference Dashboard</a> &nbsp; | &nbsp;
     </div>
 
-    <div class="span-24">
+    <div class="span16">
         <h2>{{ actor.user.username }}'s issues</h2>
         <a href="{{ request.path }}?issuefilter=opened_by">Opened by</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=assigned_to">Assigned to</a> &nbsp; |
@@ -18,7 +18,7 @@
         <a href="{{ request.path }}?issuefilter=resolved_by">Resolved by</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=closed_by">Closed by</a> &nbsp; |
         <ul>
-            <div class="span-24 last">
+            <div class="span16 last">
                 <h3>{{ actor }} Issues</h3>
                 <table>
                     <thead>

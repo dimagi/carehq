@@ -1,10 +1,10 @@
 {% load issue_tags %}
 {% if not formatting %}
-<div class="span-18">
+<div class="span12">
 	{% for event in events %}				
-		<div class = "span-17">	
+		<div class = "span-two-thirds">
 			<div>{{event.notes}}</div>
-			<div class="prepend-1">
+			<div class="offset1">
 				<small>
 				{% if case %}
 				{{event.activity.past_tense|capfirst}} by
@@ -23,13 +23,13 @@
 	{% endfor %}
 </div>
 {% else %}
-<div class="span-18">
+<div class="span12">
 	{% for key, value in events.items %}	
-		<div class="span-17"><strong>{{key|safe}}</strong></div>
+		<div class="span-two-thirds"><strong>{{key|safe}}</strong></div>
 		{% for event in value%}
-		<div class="span-17">
+		<div class="span-two-thirds">
 				<div>{{event.notes}}</div>
-				<div class="prepend-1">
+				<div class="offset1">
 				<small>
 				{% if case %}
 				{{event.activity.past_tense|capfirst}} by

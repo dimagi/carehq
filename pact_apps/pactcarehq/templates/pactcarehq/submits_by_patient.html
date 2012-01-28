@@ -3,18 +3,18 @@
 {% block content %}
 <h2>Submissions by Patient</h2>
 {%  for patient, submit_arr in patient_list %}
-    <div class="span-24">
-        <div class="span-6">
+    <div class="span16">
+        <div class="span4">
             <strong>{{ patient.couchdoc.pact_id}} {{ patient.couchdoc.first_name}} {{  patient.couchdoc.last_name }} {{ submit_arr|length }}</strong>
         </div>
-        <div class="span-2">
+        <div class="span1">
             <a href="{% url view_patient patient.id %}">Info</a>
         </div>
         {% if patient.couchdoc.arm == "DOT" %}
-        <div class="span-4">
+        <div class="span3">
             <a href="{% url dots_view %}?patient={{patient.id}}">DOT Adherence</a>	
         </div>
-        <div class="span-4">
+        <div class="span3">
             {#<a href="{% url pactcarehq.views.patient_schedule_report patient.id%}">Visit Schedule</a>#}
         </div>
         {% endif %}
@@ -25,9 +25,9 @@
     <table>
     <thead>
         <tr>
-            <th class="span-4">Date</th>
-            <th class="span-4">CHW</th>
-            <th class="span-4">Form</th>
+            <th class="span3">Date</th>
+            <th class="span3">CHW</th>
+            <th class="span3">Form</th>
         </tr>
     </thead>
     {% for submission in submit_arr %}
@@ -39,7 +39,7 @@
     {% endfor %}
     </table>
     {% else %}
-        <div class="notice span-24">No Submissions</div>
+        <div class="notice span16">No Submissions</div>
     {% endif %} {#if there are any submits at all #}
 {% endfor %}
 {% endblock %}

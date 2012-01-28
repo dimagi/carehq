@@ -1,26 +1,26 @@
 {% load filter_tags %}
 {% load i18n %}
 
-<div class="span-24"> <!-- careteam header -->	
+<div class="span16"> <!-- careteam header -->
 	<hr>
-	<div class="span-6">
+	<div class="span4">
 		<h3>{{careteam.patient.user.get_full_name}}</h3>
 	</div>	
-	<div class="span-12">
+	<div class="span8">
 		{# {% now "m/d/Y" %}#}
 		&nbsp;
 	</div>	
-	<div class="span-3">
+	<div class="span2">
 	   <a href="{% url view-careteam careteam.id %}" class="fg-button ui-state-default ui-corner-all">Care History</a>
 
 	</div>
-	<div class="span-3 last">
+	<div class="span2 last">
 		<a id="careteam_flipper_{{careteam.id}}" href="javascript:toggle_careteam_block('{{ careteam.id }}')" class="fg-button ui-state-default ui-corner-all">Show People</a>			
 	</div>
 </div> <!-- end careteam header -->
 	
-<div class="span-24 box hidden" id="careteam_block_{{careteam.id}}">	
-	<div class="span-6">
+<div class="span16 box hidden" id="careteam_block_{{careteam.id}}">
+	<div class="span4">
 		<table>				    
 			<tr>
 		        <td><strong>Age</strong></td>
@@ -43,7 +43,7 @@
 		</table>
 	</div>
 	
-	<div class="span-7 prepend-1"> <!-- provider block -->
+	<div class="span-one-third offset1"> <!-- provider block -->
 		<h3>{%trans "Providers" %}</h3>
 		<ul>
 		{% for prov in careteam.providers.all %}
@@ -56,7 +56,7 @@
 		</ul>
 	</div> <!-- end provider block -->
 	
-	<div class="span-7 last"> <!-- caregiver block -->
+	<div class="span-one-third last"> <!-- caregiver block -->
 		<h3>{%trans "Caregivers"%}</h3> 		
 		{% if careteam.caregiver_data %}
 			<ul>

@@ -1,6 +1,6 @@
 {% load i18n %}
-<div class="mepi_status_matrix span-6">
-    <div class="span-6">
+<div class="mepi_status_matrix span4">
+    <div class="span4">
         <div class="mepi_half">
             {% if enrollment %}
                 <div class="mepi_completed">Enrolled</div>
@@ -18,7 +18,7 @@
             </div>
         </div>
     </div>
-    <div class="span-6">
+    <div class="span4">
         <div class="mepi_quarter">
             {% if lab_hiv.hiv_test == 'yes' %}
                 <div class="mepi_completed">
@@ -57,7 +57,7 @@
             </div>
         </div>
     </div>
-    <div class="span-6">
+    <div class="span4">
             <div class="mepi_third">
                 {% if lab_bloodwbc.blood_neutrophils or lab_bloodwbc.blood_lymphocytes %}
                 <div class="mepi_completed">
@@ -82,7 +82,7 @@
             </div>
             </div>
     </div>
-    <div class="span-6">
+    <div class="span4">
 
         <div class="mepi_quarter">
         {% if emergency_lab %}
@@ -144,7 +144,7 @@
             {% endif %}
         {% endif %}
     </div>
-    <div class="span-6">
+    <div class="span4">
                 {% if outcome %}
                     <div class="mepi_completed">
                 {% else %}

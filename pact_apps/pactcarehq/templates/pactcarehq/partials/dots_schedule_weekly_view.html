@@ -86,7 +86,7 @@ function post_schedule_delete(patient_id, schedule_id) {
                 <td> {{pschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="8" class="prepend-1">
+                <td colspan="8" class="offset1">
                     <small><em>
                         Applied {{ pschedule.started|date }} -
                         {% if pschedule.ended %}
@@ -130,7 +130,7 @@ function post_schedule_delete(patient_id, schedule_id) {
             <td> {{patient_doc.current_schedule.comment}}</td>
         </tr>
         <tr>
-            <td colspan="8" class="prepend-1">
+            <td colspan="8" class="offset1">
                 <small><em>
                     Active {{ patient_doc.current_schedule.started|date }}
                     {% if patient_doc.current_schedule.ended %}
@@ -174,7 +174,7 @@ function post_schedule_delete(patient_id, schedule_id) {
                 <td> {{fschedule.comment}}</td>
             </tr>
             <tr>
-                <td colspan="8" class="prepend-1">
+                <td colspan="8" class="offset1">
                     <small><em>
                         Applies {{ fschedule.started|date }}
                         {% if fschedule.ended %}

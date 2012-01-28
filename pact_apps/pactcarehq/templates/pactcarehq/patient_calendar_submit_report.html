@@ -9,9 +9,9 @@
 <table>
 <thead>
     <tr>
-        <th class="span-4">Date</th>
-        <th class="span-5">CHW Scheduled</th>
-        <th class="span-15">Visits</th>
+        <th class="span3">Date</th>
+        <th class="span3">CHW Scheduled</th>
+        <th class="span10">Visits</th>
     </tr>
 </thead>
 <tbody>
@@ -36,7 +36,7 @@
     </td>
     <td>
             {% for form_item in item_arr.2 %}
-                <div class="span-15 last notice">
+                <div class="span10 last notice">
                     <strong>
                     {% if form_item.form.scheduled == "yes" %}
                         Scheduled

@@ -1,33 +1,33 @@
-<div class="span-14" style="border: 1px solid black;padding:8px;margin:4px;">
+<div class="span9" style="border: 1px solid black;padding:8px;margin:4px;">
     {% block actor_display_left %}
-        <div class="span-10">
+        <div class="span7">
             {% block actorname_block %}
-                <div class="careteam_name span-10 last">
+                <div class="careteam_name span7 last">
                     <a href="{% url view_actor prr.actor.id %}">{{ prr.actor.actordoc.first_name }} {{ prr.actor.actordoc.last_name }}</a>
                 </div>
             {% endblock actorname_block %}
             {% block actorinfo_block %}
                 {% if prr.actor.is_provider %}
-                <div class="span-10 last">{{ prr.actor.actordoc.provider_title }}</div>
-                <div class="span-10 last careteam_detail">{{ prr.actor.actordoc.facility_name }}</div>
+                <div class="span7 last">{{ prr.actor.actordoc.provider_title }}</div>
+                <div class="span7 last careteam_detail">{{ prr.actor.actordoc.facility_name }}</div>
                 {% endif %}
 
                 {% if prr.actor.is_caregiver %}
-                    <div class="span-10 last">{{ prr.actor.actordoc.relation|title }}</div>
+                    <div class="span7 last">{{ prr.actor.actordoc.relation|title }}</div>
                 {% endif %}
                 {% if prr.actor.actordoc.phone_number %}
-                <div class="span-10 careteam_detail">{{ prr.actor.actordoc.phone_number }}</div>
+                <div class="span7 careteam_detail">{{ prr.actor.actordoc.phone_number }}</div>
                 {% endif %}
             {% endblock actorinfo_block %}
         </div>
     {% endblock %}
 
-    <div class="span-4 last">
+    <div class="span3 last">
     {% block relation_right %}
         {{ prr.role.display }}
     {% endblock %}
     </div>
 
-    <div class="span-7 last">
+    <div class="span-one-third last">
     </div>
 </div>

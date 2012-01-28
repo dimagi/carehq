@@ -1,34 +1,23 @@
 {% extends base_template %}
 {% load i18n %}
+{% load carehq_tags %}
 
 {% block title %}{% trans "CarehQ Home" %}{% endblock %}
 {% block extrahead %}
+    <script>
+        $(function() {
+            $("#tbl_issues").tablesorter({ sortList: [[0,0]], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Home <small>Recent Activity</small></h1>
 {% endblock %}
 {% block content %}
-    <h2>Home</h2>
-    <div class="span-24">
-    <h3>Recent Issues</h3>
-    <div class="span-14">
-        <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a>
-    </div>
-    <div class="span-5">
-        {{ issue.last_edit_by.actordoc.get_name }}
-    </div>
-    <div class="span-5 last">
-        {{ issue.last_edit_date|date }}
-    </div>
-    {% for issue in issues %}
-        <div class="span-24 last">
-            <div class="span-14">
-                <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a>
-            </div>
-            <div class="span-5">
-                {{ issue.last_edit_by.actordoc.get_name }}
-            </div>
-            <div class="span-5 last">
-                {{ issue.last_edit_date|date }}
-            </div>
-        </div>
-    {% endfor %}
-    </div>
+
+    {% include "carehqapp/issues/recent_issue_activity.html" %}
+
 {% endblock %}

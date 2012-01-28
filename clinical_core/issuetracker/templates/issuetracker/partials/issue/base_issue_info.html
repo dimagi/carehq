@@ -1,34 +1,34 @@
 {% load i18n %}
-<div class="span-24">  <!-- issue info block -->
-    <div class="span-24">
+<div class="span16">  <!-- issue info block -->
+    <div class="span16">
         <hr>
-        <div class="span-24 last">
+        <div class="span16 last">
         </div>
-        <div class="span-24 last"><span style="font-size:2.0em;"><a href="{% url issue_home %}">Issues</a> / {{ issue.description }}</span></div>
-        <div class="span-24 last ui-widget-content ui-corner-all">
-            <div class="span-24 last ui-widget-header ui-corner-all">
-                <div class="span-9"><a
+        <div class="span16 last"><span style="font-size:2.0em;"><a href="{% url issue_home %}">Issues</a> / {{ issue.description }}</span></div>
+        <div class="span16 last ui-widget-content ui-corner-all">
+            <div class="span16 last ui-widget-header ui-corner-all">
+                <div class="span-one-third"><a
                         href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a></div>
-                <div class="span-9 last"> {{ issue.opened_date|timesince }}  </div>
+                <div class="span-one-third last"> {{ issue.opened_date|timesince }}  </div>
             </div>
-            <div class="prepend-1">
+            <div class="offset1">
                 {{ issue.body }}
             </div>
         </div>
     </div>
 
-    <div class="span-24">
+    <div class="span16">
         <h4>Issue Info</h4>
-        <div class="span-8">
+        <div class="span-one-third">
             Category: {{ issue.category }}<br>
             Opened Date: {{ issue.opened_date|date }}<br>
             Opened By: <a href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a>
         </div>
-        <div class="span-8">
+        <div class="span-one-third">
             Patient: <a href="{{ issue.patient.get_absolute_url }}">{{ issue.patient }}</a><br>
             Status: {{ issue.get_status_display }}
         </div>
-        <div class="span-8 last">
+        <div class="span-one-third last">
             {% if issue.assigned_to %}
                 <strong>{% trans "Assigned" %}</strong>
                 to <a href="{% url view_actor issue.assigned_to.id %}">{{ issue.assigned_to.actordoc.get_name }}</a>
@@ -38,7 +38,7 @@
             {% endif %}
 
             {% if issue.is_resolved and not issue.is_closed %}
-                <div class="span-5">
+                <div class="span3">
                     <strong>{% trans "Resolved" %}</strong> by <a
                         href="{% url view_actor issue.resolved_by.id %}">{{ issue.resolved_by.actordoc.get_name }}</a>
                     <small>{{ issue.resolved_date|date }}</small>
@@ -46,7 +46,7 @@
             {% endif %}
 
             {% if issue.is_closed %}
-                <div class="span-5 notice">
+                <div class="span3 notice">
                     <strong>{% trans "Closed" %}</strong> by <a
                         href="{% url view_actor issue.closed_by.id %}">{{ issue.closed_by.actordoc.get_name }}</a>
                     <small>{{ issue.closed_date|date }}</small>

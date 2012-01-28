@@ -13,15 +13,15 @@ urlpatterns = patterns ('issuetracker.views',
 
 
     #debug views for issue managemen{{issue.get_absolute_urlt
-    url(r'^issues/reference', 'debug_reference'), #reference view to see all the different ways to view issues
+    url(r'^issuetracker/reference', 'debug_reference'), #reference view to see all the different ways to view issues
 
-    url(r'^issues/users/$', 'all_users'), #choose all users in system
+    url(r'^issuetracker/users/$', 'all_users'), #choose all users in system
     url(r'^issues/roles/$', 'all_roles'), #choose all roles in system
-    url(r'^issues/patients/$', 'all_patients'), #choose all patients in system
+    url(r'^issuetracker/patients/$', 'all_patients'), #choose all patients in system
 
-    url(r'^issues/actors/(?P<actor_id>[0-9a-zA-Z]{32})/', 'actor_issues'), #Cases per user by role
-    url(r'^issues/roles/(?P<role_id>[0-9a-f]{32})/', 'role_issues'), #issues for a user-role in system
-    url(r'^issues/patients/(?P<patient_id>[0-9a-f]{32})/', 'patient_issues'), #issues for a user-role in system
+    url(r'^issuetracker/actors/(?P<actor_id>[0-9a-zA-Z]{32})/', 'actor_issues'), #Cases per user by role
+    url(r'^issuetracker/roles/(?P<role_id>[0-9a-f]{32})/', 'role_issues'), #issues for a user-role in system
+    url(r'^issuetracker/patients/(?P<patient_id>[0-9a-f]{32})/', 'patient_issues'), #issues for a user-role in system
 
 
 
