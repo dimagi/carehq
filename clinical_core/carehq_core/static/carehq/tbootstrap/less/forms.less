@@ -75,22 +75,22 @@ label select {
 }
 
 // Mini reset for unique input types
-input[type=image],
-input[type=checkbox],
-input[type=radio] {
+input[type="image"],
+input[type="checkbox"],
+input[type="radio"] {
   width: auto;
   height: auto;
   padding: 0;
   margin: 3px 0;
   *margin-top: 0; /* IE7 */
   line-height: normal;
-  border: none;
+  border: 0;
   cursor: pointer;
-  .border-radius(0);
+  border-radius: 0 e("\0/"); // Nuke border-radius for IE9 only
 }
 
 // Reset the file input to browser defaults
-input[type=file] {
+input[type="file"] {
   padding: initial;
   line-height: initial;
   border: initial;
@@ -100,16 +100,16 @@ input[type=file] {
 }
 
 // Help out input buttons
-input[type=button],
-input[type=reset],
-input[type=submit] {
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
   width: auto;
   height: auto;
 }
 
 // Set the height of select and file controls to match text inputs
 select,
-input[type=file] {
+input[type="file"] {
   height: 28px; /* In IE7, the height of the select element cannot be changed by height, only font-size */
   *margin-top: 4px; /* For IE7, add top margin to align select with labels */
   line-height: 28px;
@@ -128,7 +128,7 @@ select[size] {
 }
 
 // Remove shadow from image inputs
-input[type=image] {
+input[type="image"] {
   .box-shadow(none);
 }
 
@@ -138,7 +138,7 @@ textarea {
 }
 
 // Hidden inputs
-input[type=hidden] {
+input[type="hidden"] {
   display: none;
 }
 
@@ -152,8 +152,8 @@ input[type=hidden] {
 .checkbox {
   padding-left: 18px;
 }
-.radio input[type=radio],
-.checkbox input[type=checkbox] {
+.radio input[type="radio"],
+.checkbox input[type="checkbox"] {
   float: left;
   margin-left: -18px;
 }
@@ -169,10 +169,16 @@ input[type=hidden] {
 .checkbox.inline {
   display: inline-block;
   margin-bottom: 0;
+  vertical-align: middle;
 }
 .radio.inline + .radio.inline,
 .checkbox.inline + .checkbox.inline {
   margin-left: 10px; // space out consecutive inline controls
+}
+// But don't forget to remove their padding on first-child
+.controls > .radio.inline:first-child,
+.controls > .checkbox.inline:first-child {
+  padding-top: 5px; // has to be padding because margin collaspes
 }
 
 
@@ -192,12 +198,13 @@ textarea:focus {
   @shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   .box-shadow(@shadow);
   outline: 0;
+  outline: thin dotted \9; /* IE6-8 */
 }
-input[type=file]:focus,
-input[type=checkbox]:focus,
+input[type="file"]:focus,
+input[type="checkbox"]:focus,
 select:focus {
   .box-shadow(none); // override for file inputs
-  outline: 1px dotted #666; // Selet elements don't get box-shadow styles, so instead we do outline
+  .tab-focus();
 }
 
 
@@ -376,6 +383,7 @@ select:focus:required:invalid {
 
 .help-inline {
   display: inline-block;
+  .ie7-inline-block();
   margin-bottom: 9px;
   vertical-align: middle;
   padding-left: 5px;
@@ -394,6 +402,10 @@ select:focus:required:invalid {
   input,
   .uneditable-input {
     .border-radius(0 3px 3px 0);
+    &:focus {
+      position: relative;
+      z-index: 2;
+    }
   }
   .uneditable-input {
     border-left-color: #ccc;
@@ -439,6 +451,15 @@ select:focus:required:invalid {
     margin-left: -1px;
     .border-radius(0 3px 3px 0);
   }
+  input:first-child {
+    // In IE7, having a hasLayout container (from clearfix's zoom:1) can make the first input
+    // inherit the sum of its ancestors' margins.
+    *margin-left: -160px;
+
+    &+.add-on {
+      *margin-left: -21px;
+    }
+  }
 }
 
 
@@ -474,8 +495,19 @@ select:focus:required:invalid {
   }
 }
 .form-search label,
-.form-inline label {
+.form-inline label,
+.form-search .input-append,
+.form-inline .input-append,
+.form-search .input-prepend,
+.form-inline .input-prepend {
   display: inline-block;
+}
+// Make the prepend and append add-on vertical-align: middle;
+.form-search .input-append .add-on,
+.form-inline .input-prepend .add-on,
+.form-search .input-append .add-on,
+.form-inline .input-prepend .add-on {
+  vertical-align: middle;
 }
 
 // Margin to space out fieldsets
@@ -495,6 +527,7 @@ select:focus:required:invalid {
   // Increase spacing between groups
   .control-group {
     margin-bottom: @baseLineHeight;
+    .clearfix();
   }
   // Float the labels left
   .control-group > label {
