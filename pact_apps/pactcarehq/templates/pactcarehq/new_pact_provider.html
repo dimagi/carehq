@@ -36,7 +36,7 @@
 
 {% endblock %}
     <div class="container">
-        <div class="span16">
+        <div class="span12">
             <h3>PACT Provider Management</h3>
             {% if provider_actors %}
                 <table id="providers-table" class="tablesorter">
@@ -70,7 +70,7 @@
                 No Providers Enrolled
             {% endif %}
         </div>
-        <div id="newprovider_dlg" title="Create New Provider" class="span16">
+        <div id="newprovider_dlg" title="Create New Provider" class="span12">
         <h4>Or add new provider</h4>
             <form id="newprovider_form" action="" method="POST" class="uniForm">
                 {% csrf_token %}

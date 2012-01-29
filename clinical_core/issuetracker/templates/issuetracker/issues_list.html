@@ -32,14 +32,14 @@
 {% endblock extrahead %}
 {% block content %}
 <h2>All Issues</h2>
-<div class="ui-tabs span16">
-    <div class="span16">
+<div class="ui-tabs span12">
+    <div class="span12">
         <a href="{{ request.path }}?issuefilter=opened_by">Opened by</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=assigned_to">Assigned to</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=last_edit_by">Last edit by</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=resolved_by">Resolved by</a> &nbsp; |
         <a href="{{ request.path }}?issuefilter=closed_by">Closed by</a> &nbsp; |
-            <div class="span16 last">
+            <div class="span12 last">
                 <h3>{{ actor }} Issues</h3>
                 <table id="issues_table">
                     <thead>

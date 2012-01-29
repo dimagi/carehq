@@ -303,7 +303,7 @@
         </div>
 
         <div id="patient-careteam-tab">
-            <div class="span13">
+            <div class="span12">
                 <h3>CareTeam</h3>
                 {% for role, actors in careteam_dict.items %}
 {#                    <h4>{{ role.display }}(s)</h4>#}
@@ -379,7 +379,7 @@
             Raw Case stuff
         </div>
         <div id="patient-history-tab">
-            <div class="span13">
+            <div class="span12">
             {% with narratives=history_logs.change_narratives %}
                 {% if narratives %}
                 <h3>Patient Progress Changes</h3>
@@ -401,14 +401,14 @@
                     No major changes
                 {% endif %}
             {% endwith %}
-            </div> {# span13 div #}
+            </div> {# span12 div #}
         &nbsp;
         </div> {# tab div #}
         <div id="patient-log-tab">
-            <div class="span13">
+            <div class="span12">
             &nbsp;
             {% for rev in all_changes.filtered_changes %}
-                <div class="span13">
+                <div class="span12">
                     {% if rev.changed_fields.0 or rev.changed_fields.1 or rev.changed_fields.2 %}
                     {% if rev.changed_fields.0 %}
                     Changed: {{ rev.changed_fields.0|join:", " }} <br>

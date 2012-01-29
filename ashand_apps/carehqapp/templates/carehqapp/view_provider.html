@@ -13,13 +13,13 @@
 
 {% if selected_is_provider %}
 	{% with selected_provider as provider %}
-	<div class="span16">
+	<div class="span12">
 		{% include "carehqapp/partials/user_profile_provider.html" %}
 	</div>
 	{%endwith%}
 <hr>	
 	{% if common_careteams %}
-	<div class="span16">
+	<div class="span12">
 		<h3>{% trans "Shared Patients" %} ({{common_careteams|length}})</h3>
 		{% for careteam in common_careteams %}
 			{% include "carehqapp/partials/inline_careteam.html" %}
@@ -30,7 +30,7 @@
 
 
 {%comment %}
-<div class="span13">
+<div class="span12">
 <h2>Cases</h2>
 {#{% include "issuetracker/partials/issues_ul.html" %}#}
 {% include "carehqapp/partials/patient_issues_table.html" %}

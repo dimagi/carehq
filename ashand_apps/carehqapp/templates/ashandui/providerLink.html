@@ -41,7 +41,7 @@ Link patient to provider.
 
         
     </div>
-    <div id="#careteam" class="offset1 span16 last">
+    <div id="#careteam" class="offset1 span12 last">
         <h3>Current Care Team:</h3>
         {% for d in careTeam %}
             <div class="carebox span-one-third">
@@ -50,7 +50,7 @@ Link patient to provider.
         {% endfor %}
     </div>
     <hr />
-    <div id="#addprovider" class="span16 last">
+    <div id="#addprovider" class="span12 last">
     <h3>Add Provider:</h3>
     <form action="/linkProvider/{{ patient.id }}" method="post">
         {% csrf_token %}

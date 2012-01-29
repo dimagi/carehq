@@ -2,15 +2,15 @@
 
 {% load carehq_tags %}
 {% if issues %}
-    <table class="bordered-table zebra-striped" id="tbl_issues">
+    <table class="table table-bordered table-striped" id="tbl_issues">
         <thead>
         <tr>
             {% if request.current_actor.is_provider %}
-                <th>Patient</th>
+                <th class="span2">Patient</th>
             {% endif %}
-            <th class="span8">Description</th>
-            <th class="span3">Last Edit Date</th>
-            <th class="span2">Activity</th>
+            <th class="span6">Description</th>
+            <th class="span2">Last Edit Date</th>
+            <th>Activity</th>
             <th>Last Edit By</th>
         </tr>
         </thead>

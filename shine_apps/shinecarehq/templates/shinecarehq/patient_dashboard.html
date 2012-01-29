@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{STATIC_URL}}shinecarehq/shinecarehq.css" type="text/css">
 {% endblock %}
 <div class="container">
-    <div class="span16">
+    <div class="span12">
         <h2>Bacteremia Dashboard :: {{ show_string }}</h2>
 
         <div class="span4">
@@ -54,8 +54,8 @@
         </div>
     </div>
 <hr>
-    <div class="span16 offset15"><small>Total: {{ show_list|length }} rows</small></div>
-    <table id="patient-table" class="tablesorter span16 last">
+    <div class="span12 offset15"><small>Total: {{ show_list|length }} rows</small></div>
+    <table id="patient-table" class="tablesorter span12 last">
     <thead>
         <tr>
             <th>{% trans "Surname" %}</th>
@@ -119,6 +119,6 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="span16 offset15"><small>Total: {{ show_list|length }} rows</small></div>
+    <div class="span12 offset15"><small>Total: {{ show_list|length }} rows</small></div>
 </div>
 {% endblock content %}

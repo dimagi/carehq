@@ -3,7 +3,7 @@
 {% block content %}
 <h2>Submissions by Patient</h2>
 {%  for patient, submit_arr in patient_list %}
-    <div class="span16">
+    <div class="span12">
         <div class="span4">
             <strong>{{ patient.couchdoc.pact_id}} {{ patient.couchdoc.first_name}} {{  patient.couchdoc.last_name }} {{ submit_arr|length }}</strong>
         </div>
@@ -39,7 +39,7 @@
     {% endfor %}
     </table>
     {% else %}
-        <div class="notice span16">No Submissions</div>
+        <div class="notice span12">No Submissions</div>
     {% endif %} {#if there are any submits at all #}
 {% endfor %}
 {% endblock %}

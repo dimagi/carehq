@@ -5,7 +5,7 @@ This file is remarkably similar to partials/inline_careteam
 the idea is that the careteam_menu should exist on top when within the context of a patient's issues and care issues
 {%endcomment%}
 
-<div class="span13"> <!-- careteam header -->
+<div class="span12"> <!-- careteam header -->
 	<div class="span2">
 		<h4><a href="{% url view-careteam current_careteam.id %}">{{current_careteam.patient.user.first_name}} {{current_careteam.patient.user.last_name}}</a></h4>
 	</div>
@@ -21,8 +21,8 @@ the idea is that the careteam_menu should exist on top when within the context o
 	</div>
 </div> <!-- end careteam header -->
 	
-<div class="span13 hidden" id="careteam_block_{{current_careteam.id}}_menu">
-	<div class="span13">
+<div class="span12 hidden" id="careteam_block_{{current_careteam.id}}_menu">
+	<div class="span12">
 		<dl>				
 			<dt>{%trans "DOB:"%}</dt>
 				<dd>{{current_careteam.patient.dob|date}}</dd>

@@ -7,11 +7,11 @@
 {% endblock extrahead %}
 {% block content %}
 <h2>Casetracker application reference views</h2>
-<div class="ui-tabs span16">
+<div class="ui-tabs span12">
 <a href="{% url casetracker.views.debug_reference %}">Refernce Dashboard</a> &nbsp; | &nbsp;
 </div>
 
-<div class="span16">
+<div class="span12">
     <h2>{{ role }}'s Cases ({{ casefilter }})</h2>
     <a href="{{ request.path }}?casefilter=opened_by">Opened by</a> &nbsp; |
     <a href="{{ request.path }}?casefilter=assigned_to">Assigned to</a> &nbsp; |

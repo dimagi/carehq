@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block title %}{% trans "Care Plan Templates" %} {% endblock %}
 {% block content %}
-    <div class="span16">
+    <div class="span12">
         <h2><a href="{% url all_template_careplans %}">Templates</a></h2>
 
         <h2>Plan Name: {{ careplan.title }}</h2>
@@ -15,7 +15,7 @@
             <dd>{{ careplan.created_date|date }}</dd>
         </dl>
     </div>
-    <div class="span16">
+    <div class="span12">
         <div class="span8">
             <h2>Care Plan Items</h2>
             <ol>

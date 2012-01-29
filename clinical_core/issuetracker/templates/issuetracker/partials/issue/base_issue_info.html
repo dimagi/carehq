@@ -1,12 +1,10 @@
 {% load i18n %}
-<div class="span16">  <!-- issue info block -->
-    <div class="span16">
-        <hr>
-        <div class="span16 last">
+<div class="span12">  <!-- issue info block -->
+    <div class="span12">
+        <div class="span12 last">
         </div>
-        <div class="span16 last"><span style="font-size:2.0em;"><a href="{% url issue_home %}">Issues</a> / {{ issue.description }}</span></div>
-        <div class="span16 last ui-widget-content ui-corner-all">
-            <div class="span16 last ui-widget-header ui-corner-all">
+        <div class="span12 last ui-widget-content ui-corner-all">
+            <div class="span12 last ui-widget-header ui-corner-all">
                 <div class="span-one-third"><a
                         href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a></div>
                 <div class="span-one-third last"> {{ issue.opened_date|timesince }}  </div>
@@ -17,7 +15,7 @@
         </div>
     </div>
 
-    <div class="span16">
+    <div class="span12">
         <h4>Issue Info</h4>
         <div class="span-one-third">
             Category: {{ issue.category }}<br>
@@ -29,6 +27,10 @@
             Status: {{ issue.get_status_display }}
         </div>
         <div class="span-one-third last">
+            {% if issue.opened_by == request.current_actor %}
+                <a href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
+            {% endif %}
+
             {% if issue.assigned_to %}
                 <strong>{% trans "Assigned" %}</strong>
                 to <a href="{% url view_actor issue.assigned_to.id %}">{{ issue.assigned_to.actordoc.get_name }}</a>

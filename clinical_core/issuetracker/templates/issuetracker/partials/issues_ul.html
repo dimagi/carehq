@@ -2,7 +2,7 @@
 {% for issue in issues %}
 {% if request.is_patient %}
 
-    <div class="span16" style="margin: 8px;">
+    <div class="span12" style="margin: 8px;">
     <div class="span=24 last">
         <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
     </div>
@@ -23,7 +23,7 @@
         <div class="span=10 last">
             {{ issue.opened_date|date }} {{ issue.opened_date|time }}
         </div>
-        <div class="span16">
+        <div class="span12">
             <span style="font-size:125%">
         <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
                 </span>

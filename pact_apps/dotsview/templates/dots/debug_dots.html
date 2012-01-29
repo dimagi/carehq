@@ -66,8 +66,8 @@
 
 
 {% block content %}
-<div class="container span16">
-    <div class="span16">
+<div class="container span12">
+    <div class="span12">
     <div class="span-two-thirds">
             <h4>DOT Adherence Data for
                 <select id="patients">
@@ -109,14 +109,14 @@
     <div class="span1">
         <h3><strong>Date</strong></h3>
     </div>
-    <div class="span15 last">
+    <div class="span12 last">
         <h3><strong>Data (Calendar Data, Case Output, Raw Submits)</strong></h3>
     </div>
         {%  for date, cal_entries, case_data, raw_obs in debug_data %}
             <div class="span1">
                <strong>{{ date|date:"m-d-Y" }}</strong>
             </div>
-            <div class="span15 last">
+            <div class="span12 last">
             <hr>
                 <div class="span-one-third">
                 {# calendar data #}

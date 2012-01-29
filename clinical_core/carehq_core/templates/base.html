@@ -15,7 +15,7 @@
         <![endif]-->
 
 
-        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-ui-1.8.16.custom.min.js"></script>
         <link rel="stylesheet/less" href="{{ STATIC_URL }}carehq/tbootstrap/less/bootstrap.less">
         <script src="{{ STATIC_URL }}carehq/js/less-1.2.1.min.js"></script>
@@ -29,7 +29,7 @@
     {% block stylesheets %}
         <!-- stylesheets -->
         {% include "uni_form/includes.html" %}
-{#        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/carehq.css" type="text/css">#}
+        <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/carehq.css" type="text/css">
         <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-1.8.16.custom.css" type="text/css">
         {#            <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-aristo.css" type="text/css">#}
         {#			<link rel="stylesheet" href="{{STATIC_URL}}carehq/css/flickr-menu-style.css" type="text/css">#}
@@ -40,28 +40,14 @@
     {% block extrahead %}{% endblock %}
     <style type="text/css">
         body {
-            padding-top: 60px;
+            padding-top: 48px;
         }
     </style>
 </head>
 <body>
 {% block tophat %}
-    <div id="tophat">
-        {% block searchbar %}
-            {% comment %}
-			<div id="searchbar">
-			<form method="POST" action="{{request.path}}?activity=issue-event-comment" >
-				<textarea id="id_comment" rows="1" cols="36" name="comment"></textarea>
-				<input type="hidden" name="next" value="{{ request.path }}" />
-				</form>
-			</div>
-			{% endcomment %}
-        {% endblock searchbar %}
-    </div>
-{% endblock tophat %}
-
-<div class="topbar" data-dropdown="dropdown">
-    <div class="topbar-inner">
+<div class="navbar navbar-fixed">
+    <div class="navbar-inner">
         <div class="container">
             {% block branding %}
                 <a class="brand" href="/">
@@ -78,16 +64,17 @@
             </ul>
             {% block top_useridentity %}
                 {% if user.is_authenticated %}
-                    <ul class="nav secondary-nav">
+                    <ul class="nav pull-right">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {% if request.user.first_name and request.user.last_name %}
                                     {{ request.user.first_name }} {{ request.user.last_name }}
                                     {% else %}
                                     {{ request.user.username }}
                                     {% endif %}
+                                <b class="caret"></b>
                                 </a>
-                            <ul class="dropdown-menu">
+                                <ul class="dropdown-menu">
                                 {% if user.is_superuser %}
                                     <li>
                                     <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
@@ -96,9 +83,9 @@
                                 <li><a href="#">Secondary link</a></li>
                                 <li><a href="#">Something else here</a></li>
                                 <li class="divider"></li>
-                            <li>
-                                <a href="/accounts/logout/">{% trans "Log out" %} </a>
-                            </li>
+                                <li>
+                                    <a href="/accounts/logout/">{% trans "Log out" %} </a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -121,6 +108,10 @@
         </div>
     </div>
 </div>
+{% endblock tophat %}
+
+
+
 <div class="container">
         {% block page_crumbs %}
             <ul class="breadcrumb">

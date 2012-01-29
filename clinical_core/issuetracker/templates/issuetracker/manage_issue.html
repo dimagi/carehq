@@ -1,82 +1,88 @@
 {% extends base_template %}
 {% load i18n %}
-{% block title %}{% trans "View Issue" %}{% endblock %}
+{% block title %}{% trans "CareHQ :: Issue" %}{% endblock %}
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
     <link rel="stylesheet" href="{{STATIC_URL}}carehqapp/css/ashand-forms.css" type="text/css">
     {{ form.media }}
 
     <script>
-        $(function() {
-            $( "#id_due_date" ).datepicker( {
-                        changeMonth: true,
-                        minDate: "-0"
+        $(function () {
+            $("#id_due_date").datepicker({
+                        changeMonth:true,
+                        minDate:"-0"
                     }
             );
         });
     </script>
 {% endblock extrahead %}
 
+{% block page_crumbs %}
+                <ul class="breadcrumb">
+                <li><a href="/">Home</a> <span class="divider">/</span></li>
+                <li><a href="{% url issue_home %}">Issues</a> <span class="divider">/</span></li>
+                <li class="active">{{ issue.description }}</li>
+            </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+        <h2>{{ issue.description }}</h2>
+{% endblock %}
 {% block content %}
-    <script type="text/javascript">
-        $('#result').load('ajax/test.html');
-    </script>
-
-
-    <div class="span16">
-        <div class="span16"> {# the basic issue info block is span 24 #}
+    <div class="span12">
+        <div class="span12"> {# the basic issue info block is span 24 #}
             {% block issue_info %}
                 {% include "issuetracker/partials/issue/base_issue_info.html" %}
             {% endblock %}
 
-            <div class="span16 prepend-top">
-                <hr>
+            <div class="span12 prepend-top">
                 {% block newsfeed-area %}
-                    <div class="span16">
-                            {% for event in issue.issue_events.all %}
-                                <div class="span16 {% cycle 'odd' 'even' %}">
-                                    <strong>{{event.get_activity_display }}</strong> by <a href="{% url view_actor event.created_by.id %}">{{event.created_by.actordoc.get_name }}</a> - <small> {{ event.created_date|timesince }}</small>
-                                    <div>{{event.notes}}</div>
+                    <div class="row">
+                        {% for event in issue.issue_events.all %}
+                            <div class="span12">
+                                <h3 class="commit-group-heading"> {{ event.created_by.actordoc.get_name }}</h3>
+                                <div class="row commit-group">
+                                    {{ event.get_activity_display }}
+                                        <a href="{% url view_actor event.created_by.id %}">{{ event.created_by.actordoc.get_name }}</a>
+                                {{ event.created_date|timesince }}
+                                    {{ event.notes }}
                                 </div>
-                            {% endfor %}
+                            </div>
+                        {% endfor %}
                     </div>
                     <script type="text/javascript">
                         $("#issuehistory").load("{%url issue-newsfeed issue.id %}");
                     </script>
 
-                    <div class="span16">
-                            {% block issue_actions %}
-                                <div class="tabs ui-tabs ui-widget ui-widget-content ui-corner-all">
-                                    <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-                                        {#		{% for activity in case.status.transitional_actions %}#}
-                                        {#			<li>#}
-                                        {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
-                                        {#			</li>			#}
-                                        {#		{% endfor %}#}
-                                        <li class="ui-state-default ui-corner-top  {% if activity == "event-comment" %}ui-state-active ui-tabs-selected{% endif %}"><a
-                                                href="{% url manage-issue issue.id %}?activity=event-comment">Update</a>
+                    <div class="span12">
+                        {% block issue_actions %}
+                                <ul class="tabs">
+                                    {#		{% for activity in case.status.transitional_actions %}#}
+                                    {#			<li>#}
+                                    {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
+                                    {#			</li>			#}
+                                    {#		{% endfor %}#}
+                                    <li class="{% if activity == "event-comment" %}active{% endif %}">
+                                        <a href="{% url manage-issue issue.id %}?activity=event-comment">Update</a>
+                                    </li>
+                                    <li class="{% if activity == "event-edit" %}active{% endif %}">
+                                        <a href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
+                                    <li class="{% if activity == "event-assign" %}active{% endif %}">
+                                        <a href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
+                                    </li>
+                                    {% if not issue.resolved_date %}
+                                        <li class="{% if activity == "event-resolve" %}active{% endif %}">
+                                            <a href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
                                         </li>
-                                        <li class="ui-state-default ui-corner-top {% if activity == "event-edit" %}ui-state-active ui-tabs-selected{% endif %}"><a
-                                                href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
-                                        <li class="ui-state-default ui-corner-top {% if activity == "event-assign" %}ui-state-active ui-tabs-selected{% endif %}"><a
-                                                href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
-                                        </li>
-                                        {% if not issue.resolved_date %}
-                                            <li class="ui-state-default ui-corner-top {% if activity == "event-resolve" %}ui-state-active ui-tabs-selected{% endif %}"><a
-                                                    href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
+                                    {% else %}
+                                        {% if not issue.closed_date %}
+                                            <li class="{% if activity == "event-close" %}active{% endif %}">
+                                                <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
                                             </li>
-                                        {% else %}
-                                            {% if not issue.closed_date %}
-                                                <li class="ui-state-default ui-corner-top {% if activity == "event-close" %}ui-state-active ui-tabs-selected{% endif %}">
-                                                    <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
-                                                </li>
-                                            {% endif %}
                                         {% endif %}
-                                    </ul>
-                                    {% include "issuetracker/manage/inline_issue_edit.html" %}
-
-                                </div>
-                            {% endblock issue_actions %}
+                                    {% endif %}
+                                </ul>
+                                {% include "issuetracker/manage/inline_issue_edit.html" %}
+                        {% endblock issue_actions %}
                     </div>
                 {% endblock newsfeed-area %}
             </div>
