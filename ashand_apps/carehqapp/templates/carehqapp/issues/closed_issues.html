@@ -2,7 +2,7 @@
 
 {% load carehq_tags %}
 {% if issues %}
-    <table class="bordered-table zebra-striped" id="tbl_issues">
+        <table class="table table-bordered table-striped" id="tbl_issues">
         <thead>
         <tr>
             {% if request.current_actor.is_provider %}
@@ -10,14 +10,18 @@
             {% endif %}
             <th class="span8">Description</th>
             <th class="span2">Closed By</th>
-            <th class="span3">Closed Date</th>
+            <th class="span2">Closed Date</th>
         </tr>
         </thead>
         <tbody>
         {% for issue in issues %}
             <tr>
                 {% if request.current_actor.is_provider %}
-                    <td>{{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}</td>
+                    <td>
+                        <a href="{{ issue.patient.get_absolute_url }}">
+                        {{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}
+                        </a>
+                    </td>
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
                 <td> {{ issue.closed_by.actordoc.get_name }} </td>

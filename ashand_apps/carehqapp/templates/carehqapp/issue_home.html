@@ -31,9 +31,9 @@
 {% endblock page_crumbs %}
 {% block page_header %}
     {% if active_tab == "filter" %}
-        <h2>Issues / {{ filter_title|title }}</h2>
+        <h2>Issues / {{ filter_title|title }} <small>{{ issues|length }}</small></h2>
     {% else %}
-        <h2>Issues / {{ active_tab|title }}</h2>
+        <h2>Issues / {{ active_tab|title }} <small>{{ issues|length }}</small></h2>
     {% endif %}
 {% endblock %}
 {% block content %}

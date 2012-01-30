@@ -3,19 +3,19 @@
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/profile_tab_ctrl.js"></script>
     <script>
-        $(function() {
-                 $('.editctrl').each(function() {
-                    $(this).hide();
-                });
+        $(function () {
+            $('.editctrl').each(function () {
+                $(this).hide();
+            });
         });
         function toggle_edit() {
             if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
-                $('.editctrl').each(function() {
+                $('.editctrl').each(function () {
                     $(this).toggle('drop', {}, 300);
                 });
                 $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
             } else {
-                $('.editctrl').each(function() {
+                $('.editctrl').each(function () {
                     $(this).toggle('drop', {}, 300);
                 });
                 $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
@@ -24,65 +24,68 @@
     </script>
 {% endblock extrahead %}
 {% block content %}
-<div class="container">
-	<div class="span12">
+    <div class="row">
         <div class="span12"> <!-- patient hat -->
-        {% block patient_hat %}
-            <div class="span8">
-                {% block patient_name_display %}
-                <span class="ptpage_fn">Patient / {{patient_doc.first_name}} {{patient_doc.last_name}}</span>
-                {% endblock patient_name_display %}
-            </div>
-            <div class="span8 last right">
-            {% block hat_actions %}
-                <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:toggle_edit()">
-                <span class="ui-icon ui-icon-gear"></span>
-                <span class="edit_btn_txt">Edit Patient</span>
-                </a>
-            {% endblock hat_actions %}
-            </div>
-            <hr>
-        {% endblock %}
-        </div> <!-- end patient hat -->
-        <div class="span3"> <!-- patient badge -->
-        <dl>
-        {% block patient_badge %}
-            <dt>{% trans "Age" %}</dt>
-                <dd>{{patient_doc.age_string}}</dd>
-            <dt>{% trans "Sex" %}</dt>
-                <dd>{{patient_doc.gender|title }}</dd>
-        {% endblock patient_badge %}
-        </dl>
-        </div> <!-- end patient badge -->
-        <div class="span12 last">
-            {% block patient-content-tabs %}
-            <div id="ptabs" class="tabs">
-                <ul>
-                {% block patient-tab-controller %}
-                    <li><a href="#patient-info-tab" name="info">{% trans "Info" %}</a></li>
-                    <li><a href="#messages-tab">{% trans "Messages" %}</a></li>
-                    <li><a href="#case-tab">{% trans "Case" %}</a></li>
-                    <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
-                {% endblock patient-tab-controller %}
-                </ul>
-                {% block patient-tab-container %}
-                <div id="patient-info-tab"  class="ui-tabs-hide">
-                    Notes: {{ patient_doc.notes }}<br>
-                    Last Modified: {{ patient_doc.date_modified|timesince }} ago
+            {% block patient_hat %}
+                <div class="span6">
+                    {% block patient_name_display %}
+                        <span class="ptpage_fn">Patient / {{ patient_doc.first_name }} {{ patient_doc.last_name }}</span>
+                    {% endblock patient_name_display %}
                 </div>
-                <div id="messages-tab" class="ui-tabs-hide">
-                    Message info goes here!
+                <div class="span6">
+                    {% block hat_actions %}
+                        <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                           href="javascript:toggle_edit()">
+                            <span class="ui-icon ui-icon-gear"></span>
+                            <span class="edit_btn_txt">Edit Patient</span>
+                        </a>
+                    {% endblock hat_actions %}
                 </div>
-                <div id="case-tab" class="ui-tabs-hide">
-                    Case info goes here
-                </div>
-                <div id="submissions-tab" class="ui-tabs-hide">
-                    Submissions go here
-                </div>
-                {% endblock patient-tab-container %}
-            </div>  <!-- "patient-content-tabs" -->
-            {% endblock patient-content-tabs %}
+            {% endblock %}
         </div>
+    </div> <!-- end patient hat -->
+    <div class="row">
+            <div class="span2"> <!-- patient badge -->
+
+                <img class="thumbnail" style="margin-right:8px; margin-bottom:8px;" src="{{ STATIC_URL }}carehqapp/img/noun/noun_user_75.png" height="75">
+                <dl>
+                    {% block patient_badge %}
+                        <dt>{% trans "Age" %}</dt>
+                        <dd>{{ patient_doc.age_string }}</dd>
+                        <dt>{% trans "Sex" %}</dt>
+                        <dd>{{ patient_doc.gender|title }}</dd>
+                    {% endblock patient_badge %}
+                </dl>
+            </div>
+            <!-- end patient badge -->
+            <div class="span10">
+                {% block patient-content-tabs %}
+                    <div id="ptabs" class="tabs">
+                        <ul>
+                            {% block patient-tab-controller %}
+                                <li><a href="#patient-info-tab" name="info">{% trans "Info" %}</a></li>
+                                <li><a href="#messages-tab">{% trans "Messages" %}</a></li>
+                                <li><a href="#case-tab">{% trans "Case" %}</a></li>
+                                <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
+                            {% endblock patient-tab-controller %}
+                        </ul>
+                        {% block patient-tab-container %}
+                            <div id="patient-info-tab" class="ui-tabs-hide">
+                                Notes: {{ patient_doc.notes }}<br>
+                                Last Modified: {{ patient_doc.date_modified|timesince }} ago
+                            </div>
+                            <div id="messages-tab" class="ui-tabs-hide">
+                                Message info goes here!
+                            </div>
+                            <div id="case-tab" class="ui-tabs-hide">
+                                Case info goes here
+                            </div>
+                            <div id="submissions-tab" class="ui-tabs-hide">
+                                Submissions go here
+                            </div>
+                        {% endblock patient-tab-container %}
+                    </div>  <!-- "patient-content-tabs" -->
+                {% endblock patient-content-tabs %}
+            </div>
     </div>
-</div>
 {% endblock content %}

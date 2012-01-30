@@ -24,6 +24,7 @@
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timeago.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.ba-bbq.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-dropdown.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-tab.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
     {% endblock javascripts %}
     {% block stylesheets %}
@@ -46,7 +47,7 @@
 </head>
 <body>
 {% block tophat %}
-<div class="navbar navbar-fixed">
+<div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
             {% block branding %}
@@ -75,6 +76,8 @@
                                 <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="{% url account_landing %}">My account</a></li>
+                                    <li class="divider"></li>
                                 {% if user.is_superuser %}
                                     <li>
                                     <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}

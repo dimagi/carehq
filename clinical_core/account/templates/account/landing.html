@@ -1,7 +1,16 @@
 {% extends base_template %}
 {% load i18n %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active"><a href="{{ request.path }}">Account</a></li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h2>Your Account</h2>
+{% endblock %}
 {% block content %}
-    <h2>Hello, {{ user.first_name }} {{ user.last_name }}</h2>
+    <h3>Hello, {{ user.first_name }} {{ user.last_name }}</h3>
 
     {% if request.actors|length > 1 %}
     You have {{ request.actors|length }} actor profiles linked to your account.<br>

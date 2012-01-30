@@ -125,27 +125,39 @@
         });
     </script>
 {% endblock extrahead %}
-        {% block hat_actions %}
-            {{ block.super }}
-            <div style="float:right;">
-            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url new_carehq_patient_issue patient_doc.get_id %}">
-                <span class="ui-icon ui-icon-circle-plus"></span>
-                New Issue
-            </a>
-            </div>
-    {% endblock %}
 
 
-{% if is_me == True %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url my_patients %}">My Patients</a> <span class="divider">/</span></li>
+        <li class="active">{{ patient_doc.first_name }} {{ patient_doc.last_name }}</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <div class="pull-left">
+    <h2>
+        {{ patient_doc.first_name}} {{ patient_doc.last_name }}
+        {% if is_me == True %} <small> (this is you)</small>{% endif %}
+    </h2>
+    </div>
+    <div class="pull-right">
+        <a class="btn" href="#">Edit Patient</a>
+        <a class="btn" href="#">Foo</a>
+        <a class="btn" href="#">Bar</a>
+    </div>
+    &nbsp;
+{% endblock %}
     {% block patient_name_display %}
-    <span class="ptpage_fn">Patient / {{patient_doc.first_name}} {{patient_doc.last_name}}</span> (this is you)
     {% endblock patient_name_display %}
-{% endif %}
+    {% block hat_actions %}
+    {% endblock hat_actions %}
 
     {% block patient_badge %}
         {{ block.super }}
         <dt>{% trans "MRN" %}</dt>
             <dd>{{ patient_doc.mrn }}</dd>
+        <a href="">Edit Info</a>
     {% endblock patient_badge %}
 
     {% block patient-tab-controller %}

@@ -37,10 +37,11 @@ class ActorModelChoiceField(ModelChoiceField):
 
 
 class IssueCommentForm(forms.Form):
-    comment = forms.CharField(required=True,
-                           error_messages = {'required': 'You must enter a comment'},
-                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),
-                          )
+    comment = forms.CharField(required=True, label="Update message",
+        error_messages = {'required': 'You must enter a comment'},
+        widget = widgets.Textarea(attrs={'class':'input-xlarge span12', 'rows':4,})
+    )
+
     
 
 class IssueResolveCloseForm(forms.Form):
@@ -48,9 +49,9 @@ class IssueResolveCloseForm(forms.Form):
     #state = forms.CharField(required=True)
     state=forms.ChoiceField(choices=STATUS_CHOICES)
     comment = forms.CharField(required=True,
-                            label="Note",
-                           error_messages = {'required': 'You must enter a comment'},
-                           widget = widgets.Textarea(attrs={'cols':80,'rows':5}),
+                            label="Reason",
+                            error_messages = {'required': 'You must enter a comment'},
+                            widget = widgets.Textarea(attrs={'class':'input-xlarge span12', 'rows':4})
                           )
 
     def __init__(self, issue=None, activity=None, *args, **kwargs):
@@ -59,10 +60,10 @@ class IssueResolveCloseForm(forms.Form):
 
         if event_class == issue_constants.ISSUE_EVENT_RESOLVE:
             state_class = issue_constants.ISSUE_STATE_RESOLVED
-            self.fields['comment'].help_text='Please enter an explanation for this resolving (required)'
+            self.fields['comment'].label='Reason for resolving (required)'
             self.fields['state'].choices=STATUS_RESOLVE_CHOICES
         if event_class == issue_constants.ISSUE_EVENT_CLOSE:
-            self.fields['comment'].help_text='Please enter an explanation for this closure (required)'
+            self.fields['comment'].label='Reason for closing (required)'
             state_class = issue_constants.ISSUE_STATE_CLOSED
             self.fields['state'].choices=STATUS_CLOSE_CHOICES
 
@@ -100,7 +101,10 @@ class IssueModelForm(ModelForm):
         
     description = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
     body = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':8}))
-    comment = forms.CharField(required=False, label="Reason", widget = widgets.Textarea(attrs={'cols':80, 'rows':4}))    
+    comment = forms.CharField(required=False, label="Reason",
+#        widget = widgets.Textarea(attrs={'cols':80, 'rows':4})
+        widget = widgets.Textarea(attrs={'class':'input-xlarge span12', 'rows':4})
+    )
     
     class Meta:
         model = Issue

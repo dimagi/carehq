@@ -1,8 +1,8 @@
 {#<h2> {{edit_headline}}</h2>#}
+<fieldset>
 <form action="" method="POST">
-<table>
-{{ form.as_table }}
-</table>
-<input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
-<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+{{ form.as_p }}
+<input type="submit" value="Submit"/>
+<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'"/>
 </form>
+</fieldset>

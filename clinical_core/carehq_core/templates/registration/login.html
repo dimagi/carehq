@@ -2,6 +2,9 @@
 {% load i18n %}
 {% block title %}{% trans "Welcome to CareHQ" %}{% endblock %}
 
+{% block top_useridentity %}
+{% endblock %}
+
 {% block page_crumbs %}
 {% endblock page_crumbs %}
 {% block page_header %}
@@ -14,13 +17,13 @@
 {% else %}
 <div class="span12">
 <div class="row">
-    <div class="span2">
-        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_care_staff.svg" type="image/svg+xml" height="75" width="75"></object>
-        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_home.svg" type="image/svg+xml" height="75" width="75"></object>
-        <object data="{{ STATIC_URL }}carehqapp/img/noun/noun_family_med.svg" type="image/svg+xml" height="75" width="75"></object>
+    <div class="span2 pull-left">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_care_staff_75.png">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_home_75.png">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_family_med_75.png">
     </div>
-    <div class="span12">
-    <h4>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about.</h4>
+    <div class="span10">
+    <h3>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about.</h3>
 {#    <script type="text/javascript">#}
 {#            (function($) {#}
 {#                $(document).ready(function(){#}
@@ -30,23 +33,24 @@
 {#    </script>#}
 
 {#    {% if form.errors %}#}
+
         <div class="row">
-            <div class="span8 offset4">
-                <h4>Please sign in</h4>
+        <hr>
+            <div class="span4 offset2 well">
                 <fieldset>
+                <legend>Please sign in</legend>
                 <form method="post" action=".">{% csrf_token %}
-                    <table>
-                        <tr><td>{{ form.username.label_tag }}</td><td>{{ form.username }}</td></tr>
-                        <tr><td>{{ form.password.label_tag }}</td><td>{{ form.password }}</td></tr>
-                    </table>
-                    {% if form.errors %}
-                        <p>
-                        <span class="label important">Your username and password didn't match. Please try again.</span>
-                        </p>
-                    {% endif %}
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
                     <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
                     <input type="hidden" name="next" value="{{ next }}" />
                 </form>
+
+                    {% if form.errors %}
+                        <div class="alert alert-error">Your username and password didn't match. Please try again.</div>
+                    {% endif %}
                 </fieldset>
             </div>
         </div>

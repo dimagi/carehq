@@ -18,7 +18,11 @@
         {% for issue in issues %}
             <tr>
                 {% if request.current_actor.is_provider %}
-                    <td>{{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}</td>
+                    <td>
+                        <a href="{{ issue.patient.get_absolute_url }}">
+                        {{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}
+                        </a>
+                    </td>
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
                 <td> {% get_timeago issue.last_event.created_date %} </td>

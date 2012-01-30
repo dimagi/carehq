@@ -2,6 +2,13 @@
     font-size:2em;
 }
 
+.issue-body {
+    font-size:1.5em;
+}
+
+.issue-event-notes {
+    font-size:1.25em;
+}
 .careteam_name {
     font-size:1.25em;
 }
@@ -10,9 +17,30 @@
     font-size:.75em;
 }
 
-h3.commit-group-heading {
-    margin: 15px 0 0 0;
-    padding: 5px 8px;
+.errorlist {
+    list-style-type: none;
+}
+
+ul.errorlist {
+    /*From twitter bootstrap's alert/errors*/
+
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 18px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    /*background-color: #FCF8E3;*/
+    border: 1px solid #FBEED5;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border-image: initial;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+    color: #B94A48;
+}
+
+.commit-group-heading {
+    /*margin: 15px 0 0 0;*/
+    padding: 7px 14px;
     font-size: 13px;
     color: #3A505B;
     text-shadow: 0 1px rgba(255, 255, 255, 1.0);
@@ -28,6 +56,7 @@ h3.commit-group-heading {
 }
 
 .commit-group {
+    padding: 7px 14px;
     list-style-type: none;
     margin: 0 0 15px 0;
     background: #F7FBFC;

@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% load carehq_tags %}
 {% load i18n %}
 {% block title %}{% trans "CareHQ :: Issue" %}{% endblock %}
 {% block extrahead %}
@@ -13,91 +14,120 @@
                         minDate:"-0"
                     }
             );
+            $("abbr.timeago").timeago();
         });
     </script>
 {% endblock extrahead %}
 
 {% block page_crumbs %}
-                <ul class="breadcrumb">
-                <li><a href="/">Home</a> <span class="divider">/</span></li>
-                <li><a href="{% url issue_home %}">Issues</a> <span class="divider">/</span></li>
-                <li class="active">{{ issue.description }}</li>
-            </ul>
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url issue_home %}">Issues</a> <span class="divider">/</span></li>
+        <li class="active">Show Issue</li>
+    </ul>
 {% endblock page_crumbs %}
 {% block page_header %}
-        <h2>{{ issue.description }}</h2>
+    <h2>{{ issue.description }}</h2>
 {% endblock %}
 {% block content %}
-    <div class="span12">
-        <div class="span12"> {# the basic issue info block is span 24 #}
-            {% block issue_info %}
-                {% include "issuetracker/partials/issue/base_issue_info.html" %}
-            {% endblock %}
-
-            <div class="span12 prepend-top">
-                {% block newsfeed-area %}
-                    <div class="row">
-                        {% for event in issue.issue_events.all %}
-                            <div class="span12">
-                                <h3 class="commit-group-heading"> {{ event.created_by.actordoc.get_name }}</h3>
-                                <div class="row commit-group">
-                                    {{ event.get_activity_display }}
-                                        <a href="{% url view_actor event.created_by.id %}">{{ event.created_by.actordoc.get_name }}</a>
-                                {{ event.created_date|timesince }}
-                                    {{ event.notes }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <script type="text/javascript">
-                        $("#issuehistory").load("{%url issue-newsfeed issue.id %}");
-                    </script>
-
-                    <div class="span12">
-                        {% block issue_actions %}
-                                <ul class="tabs">
-                                    {#		{% for activity in case.status.transitional_actions %}#}
-                                    {#			<li>#}
-                                    {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
-                                    {#			</li>			#}
-                                    {#		{% endfor %}#}
-                                    <li class="{% if activity == "event-comment" %}active{% endif %}">
-                                        <a href="{% url manage-issue issue.id %}?activity=event-comment">Update</a>
-                                    </li>
-                                    <li class="{% if activity == "event-edit" %}active{% endif %}">
-                                        <a href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
-                                    <li class="{% if activity == "event-assign" %}active{% endif %}">
-                                        <a href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
-                                    </li>
-                                    {% if not issue.resolved_date %}
-                                        <li class="{% if activity == "event-resolve" %}active{% endif %}">
-                                            <a href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
-                                        </li>
-                                    {% else %}
-                                        {% if not issue.closed_date %}
-                                            <li class="{% if activity == "event-close" %}active{% endif %}">
-                                                <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
-                                            </li>
-                                        {% endif %}
-                                    {% endif %}
-                                </ul>
-                                {% include "issuetracker/manage/inline_issue_edit.html" %}
-                        {% endblock issue_actions %}
-                    </div>
-                {% endblock newsfeed-area %}
-            </div>
-        </div>
-        <!-- end issue body and info container -->
-        <div class="span4 last"> <!-- specialized category block -->
-            <div class="span4">
-                {% block issuelink_area %}
-                {% endblock issuelink_area %}
+    <div class="row"> {# the basic issue info block is span 24 #}
+        {% block issue_info %}
+            {#                {% include "issuetracker/partials/issue/base_issue_info.html" %}#}
+            <div class="span8 issue-body">
+                {{ issue.body }}
+                <br>
+                {% if issue.opened_by == request.current_actor %}
+                <a href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
+            {% endif %}
             </div>
             <div class="span4">
-                {% block issue_metadata %}
-                {% endblock %}
+                <h3 class="commit-group-heading">Issue Info</h3>
+
+                <div class="row commit-group">
+                    <table>
+                        <tr>
+                            <td><strong>Patient</strong></td>
+
+                            <td><a href="{{ issue.patient.get_absolute_url }}">{{ issue.patient }}</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td>{{ issue.get_status_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Category</strong></td>
+                            <td>{{ issue.category }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Opened</strong></td>
+                            <td>{{ issue.opened_date|date:"M j, Y P" }}<br>
+                            by <a href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Assigned to</strong></td>
+                            <td><a href="{% url view_actor issue.assigned_to.id %}">{{ issue.assigned_to.actordoc.get_name}}</a></td>
+                        </tr>
+
+                    </table>
+                </div>
             </div>
+        {% endblock issue_info %}
+    </div> <!-- End issue info -->
+
+    {% block newsfeed-area %}
+        <div class="row">
+        {% for event in issue.issue_events.all %}
+            <div class="span12">
+                <div class="commit-group-heading">
+                    <strong><a href="{% url view_actor event.created_by.id %}">{{ event.created_by.actordoc.get_name }}</a></strong>
+                    {% get_timeago event.created_date %}
+                </div>
+                        <div class="commit-group">
+                            <img class="thumbnail pull-left" style="margin-right:8px; margin-bottom:8px;" src="{{ STATIC_URL }}carehqapp/img/noun/noun_user_50.png" height="50">
+                                <strong>{{ event.get_activity_display }}</strong><br>
+                                <p class="issue-event-notes">
+                                {{ event.notes }}
+                                </p>
+                            &nbsp;
+                        </div>
+                &nbsp;
+            </div>
+        {% endfor %}
         </div>
-        <!-- end case link block -->
+    {% endblock newsfeed-area %}
+    <div class="row">
+            <div class="span12">
+                {% block issue_actions %}
+                    <ul class="nav pills">
+                        {#		{% for activity in case.status.transitional_actions %}#}
+                        {#			<li>#}
+                        {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
+                        {#			</li>			#}
+                        {#		{% endfor %}#}
+                        <li class="{% if activity == "event-comment" %}active{% endif %}">
+                            <a href="{% url manage-issue issue.id %}?activity=event-comment">Update</a>
+                        </li>
+                        <li class="{% if activity == "event-assign" %}active{% endif %}">
+                            <a href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
+                        </li>
+                        {% if not issue.resolved_date %}
+                            <li class="{% if activity == "event-resolve" %}active{% endif %}">
+                                <a href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
+                            </li>
+                        {% else %}
+                            {% if not issue.closed_date %}
+                                <li class="{% if activity == "event-close" %}active{% endif %}">
+                                    <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                    {% include "issuetracker/manage/inline_issue_edit.html" %}
+                {% endblock issue_actions %}
+            </div>
     </div>
+    <!-- end issue body and info container -->
+    <!-- end case link block -->
 {% endblock content %}
