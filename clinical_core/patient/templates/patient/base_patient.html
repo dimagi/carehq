@@ -60,13 +60,13 @@
             <!-- end patient badge -->
             <div class="span10">
                 {% block patient-content-tabs %}
-                    <div id="ptabs" class="tabs">
+                    <div id="ptabs" class="bbqtabs">
                         <ul>
                             {% block patient-tab-controller %}
-                                <li><a href="#patient-info-tab" name="info">{% trans "Info" %}</a></li>
-                                <li><a href="#messages-tab">{% trans "Messages" %}</a></li>
-                                <li><a href="#case-tab">{% trans "Case" %}</a></li>
-                                <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
+                                <li><a href="#patient-info-tab" name="info" data-toggle="tab">{% trans "Info" %}</a></li>
+                                <li><a href="#messages-tab" data-toggle="tab">{% trans "Messages" %}</a></li>
+                                <li><a href="#case-tab" data-toggle="tab">{% trans "Case" %}</a></li>
+                                <li><a href="#submissions-tab" data-toggle="tab">{% trans "Submissions" %}</a></li>
                             {% endblock patient-tab-controller %}
                         </ul>
                         {% block patient-tab-container %}
@@ -84,7 +84,7 @@
                                 Submissions go here
                             </div>
                         {% endblock patient-tab-container %}
-                    </div>  <!-- "patient-content-tabs" -->
+                    </div> <!-- End ptabs -->
                 {% endblock patient-content-tabs %}
             </div>
     </div>

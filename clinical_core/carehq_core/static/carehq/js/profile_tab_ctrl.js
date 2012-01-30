@@ -1,7 +1,7 @@
 //A shared
 $(function() {
     // The "tab widgets" to handle.
-    var tabs = $('.tabs'),
+    var tabs = $('.bbqtabs'),
 
         // This selector will be reused when selecting actual tab widget A elements.
             tab_a_selector = 'ul.ui-tabs-nav a';
@@ -17,7 +17,7 @@ $(function() {
         var state = {},
 
             // Get the id of this tab widget.
-                id = $(this).closest('.tabs').attr('id'),
+                id = $(this).closest('.bbqtabs').attr('id'),
 
             // Get the index of this tab.
                 idx = $(this).parent().prevAll().length;
@@ -43,14 +43,17 @@ $(function() {
             // string value to a number.
 //                    var idx = $.bbq.getState(this.id, true) || 0;
             var hash = $.bbq.getState(this.id, true) || 0;//"actor-info-tab";
-            // alert(hash); //todo, push a state here
+
 
             // Select the appropriate tab for this tab widget by triggering the custom
             // event specified in the .tabs() init above (you could keep track of what
             // tab each widget is on using .data, and only select a tab if it has
             // changed).
 //                    $(this).find(tab_a_selector).eq(idx).triggerHandler('change');
-            $(this).find('a[hash=#'+ hash + ']').triggerHandler('change');
+
+            console.log(hash);
+            console.log($(this).find('a[href=#'+ hash + ']'));
+            $(this).find('a[href=#'+ hash + ']').triggerHandler('change');
         });
     });
 
