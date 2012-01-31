@@ -27,9 +27,7 @@ def _do_post(request, callback=None, magic_property='xml_submission_file'):
             if key != magic_property:
                 attachments[magic_property] = item
     elif request.META['CONTENT_TYPE'] == 'application/x-www-form-urlencoded':
-        print "getting instance via POST"
         instance = request.POST[magic_property]
-        print instance
         for key, item in request.POST.items():
             if key != magic_property:
                 attachments[magic_property] = item
