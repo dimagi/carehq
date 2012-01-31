@@ -22,7 +22,7 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^network/mycareteam/$', 'network_views.my_careteam', name='my_careteam'),
 
 
-        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/newissue$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
+        url(r'^issue/patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/new$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
 
 
         url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
