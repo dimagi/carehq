@@ -158,7 +158,7 @@ INSTALLED_APPS = (
     'hutch',
     'clinical_shared',
     'careplan',
-    'deploy_tools',
+    #'deploy_tools',
     #end clinical_core
 
     #########################
