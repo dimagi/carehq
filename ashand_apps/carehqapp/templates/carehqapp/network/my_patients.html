@@ -1,13 +1,64 @@
 {% extends "carehqapp/network/network_base.html" %}
 {% load i18n %}
-{% block title %}{% trans "My Patients" %} {% endblock %}
-{% block network_title %}
-    My Patients
-{% endblock network_title %}
-{% block network_content %}
+{% load carehq_tags %}
+{% block extrahead %}
 
-{% for prr in patient_relations %}
-    {% include "carehqapp/network/patient_prr_listitem.html" %}
-{% endfor %}
+    <script>
+            $(document).ready(
+                function () {
+                    $("#tbl_network").tablesorter({ sortList:[ [0, 0] ], });
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block title %}{% trans "My Patients" %} {% endblock %}
+
+{% block network_crumb %}
+    <li>My Patients</li>
+{% endblock network_crumb %}
+{% block network_title %}
+    <h2>My Patients</h2>
+{% endblock network_title %}
+{% block network_navigation %}
+    <li class="nav-header">
+        Care Networks
+    </li>
+    <li>
+        <a href="{% url my_network %}">All</a>
+    </li>
+    <li class="active">
+        <a href="{% url my_patients %}">My Patients</a>
+    </li>
+{% endblock network_navigation %}
+{% block network_content %}
+    <table id="tbl_network" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>My Role</th>
+            <th>Open Issues</th>
+            <th>Last Activity</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for prr in patient_relations %}
+            <tr>
+                <td>
+                    <a href="{{ prr.content.get_absolute_url }}">{{ prr.content.couchdoc.first_name }} {{ prr.content.couchdoc.last_name }}</a>
+                </td>
+                <td>
+                    {{ prr.role.display }}
+                </td>
+                <td>
+                    {{ prr.content.open_issues|length}}
+                </td>
+                <td>
+                    {% get_timeago prr.content.last_activity.created_date %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock network_content %}
 

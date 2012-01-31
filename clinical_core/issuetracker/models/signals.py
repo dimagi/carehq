@@ -1,13 +1,33 @@
+from functools import partial
 from django.db.models.signals import post_save, pre_save, post_init
 from django.db.models import Q
+from issuetracker.issue_constants import ISSUE_STATE_OPEN, ISSUE_STATE_CLOSED
 from issuetracker.models import Issue, IssueEvent
 import logging
 from issuetracker import issue_constants
+from patient.models import Patient
 
 def cache_values(sender, instance):
     instance.cache_values = instance.values
 
+def _get_open_issues(patient):
+    return patient.issues.all().filter(status=ISSUE_STATE_OPEN)
 
+def _get_closed_issues(patient):
+    return patient.issues.all().filter(status=ISSUE_STATE_CLOSED)
+
+def _get_last_activity(patient):
+    qset = IssueEvent.objects.select_related('issue','patient').filter(issue__patient=patient).order_by('-created_date')
+    if qset.count() > 0:
+        return qset[0]
+    else:
+        return None
+
+
+def patient_issues_props(sender, instance, **kwargs):
+    setattr(instance, 'open_issues', partial(_get_open_issues, instance))
+    setattr(instance, 'last_activity', partial(_get_last_activity, instance))
+post_init.connect(patient_issues_props, Patient)
 
 def issue_saved(sender, instance, created, **kwargs):
     """

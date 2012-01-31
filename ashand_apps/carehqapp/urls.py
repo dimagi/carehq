@@ -13,8 +13,8 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'),
 
 
-        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient.html'), name='patient_url'),
-        url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient.html'), name='patient_home'),
+        url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', CarehqPatientSingleView.as_view(template_name='carehqapp/patient/carehq_patient_base.html'), name='patient_url'),
+        url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient_base.html'), name='patient_home'),
 
 
         url(r'^network/$', 'network_views.my_network', name='my_network'),

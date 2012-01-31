@@ -5,6 +5,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelForm, ModelChoiceField
+from uni_form.helpers import FormHelper, Layout, Fieldset, Row
 from carehq_core import carehq_api
 from issuetracker.issue_constants import STATUS_CHOICES, STATUS_RESOLVE_CHOICES, STATUS_CLOSE_CHOICES, PRIORITY_CHOICES
 from issuetracker.models import Issue
@@ -78,9 +79,9 @@ class IssueResolveCloseForm(forms.Form):
 
 
 class NewIssueForm(ModelForm):
-    description = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':1}))
-    body = forms.CharField(widget = widgets.Textarea(attrs={'cols':80, 'rows':8}))
-    priority = forms.CharField(widget=widgets.RadioSelect(choices=PRIORITY_CHOICES))
+    description = forms.CharField(label="Subject", widget = widgets.Textarea(attrs={'rows':1, 'class':'span6'}))
+    body = forms.CharField(label="Message", widget = widgets.Textarea(attrs={'rows':8, 'class':'span6'}))
+    priority = forms.CharField(widget=widgets.RadioSelect(choices=PRIORITY_CHOICES, attrs={"style":"list-style-type:none;"}))
     #category = forms.ModelChoiceField(queryset = IssueCategory.objects.all(), widget=widgets.RadioSelect())
 
     def __init__(self, patient, creator_actor, *args, **kwargs):
@@ -92,6 +93,25 @@ class NewIssueForm(ModelForm):
     class Meta:
         model=Issue
         exclude = ('id','patient','status','last_edit_date','last_edit_by','closed_date','closed_by','parent_issue','resolved_by','resolved_date', 'opened_date', 'opened_by','assigned_date')
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_style="inline"
+        # create the layout object
+        layout = Layout(
+                    Row('description',css_class="row"),
+                    Row('body',css_class="row"),
+                    Row('category', css_class="row"),
+                    Row('priority', css_class="row"),
+                    Row('assigned_to', css_class="row"),
+                    Row('due_date', css_class="row"),
+            )
+
+
+        helper.add_layout(layout)
+        return helper
+
 
 class IssueModelForm(ModelForm):
     """

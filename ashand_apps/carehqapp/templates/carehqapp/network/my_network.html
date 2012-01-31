@@ -1,19 +1,88 @@
 {% extends "carehqapp/network/network_base.html" %}
 {% load i18n %}
 {% block title %}{% trans "Care Network" %} {% endblock %}
-{% block network_title %}
-    All
-{% endblock network_title %}
-{% block network_content %}
-{% if request.current_actor.is_patient %}
-    {% for prr in patient_careteam %}
-        {% with prr.actor.actordoc as actor %}
-            {% include "actorpermission/actorlist_provider.html" %}
-        {% endwith %}
-    {% endfor %}
-{% endif %}
+{% block extrahead %}
 
-{% for prr in all_relations %}
-    {{ prr.content }}<br>
-{% endfor %}
+    <script>
+        $(document).ready(
+                function () {
+                    $("#tbl_network").tablesorter({ sortList:[ [0, 0] ], });
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block network_crumb %}
+    <li>My Care Network</li>
+{% endblock network_crumb %}
+{% block network_title %}
+    <h2>My Care Network</h2>
+{% endblock network_title %}
+{% block network_navigation %}
+    <li class="nav-header">
+        Care Networks
+    </li>
+    <li class="active">
+        <a href="{% url my_network %}">All</a>
+    </li>
+    {% if request.current_actor.is_provider or request.current_actor.is_caregiver %}
+    <li>
+        <a href="{% url my_patients %}">My Patients</a>
+    </li>
+    {% endif %}
+    {% if request.current_actor.is_patient %}
+    <li>
+        <a href="{% url my_careteam %}">My Care Team</a>
+    </li>
+    {% endif %}
+{% endblock network_navigation %}
+{% block network_content %}
+
+    <table id="tbl_network" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Relationship</th>
+            <th>Info</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if request.current_actor.is_patient %}
+            {% for prr in patient_relations %}
+                <tr>
+                    <td>
+                        <a href="{% url view_actor prr.actor.id %}">{{ prr.actor.actordoc.first_name }} {{ prr.actor.actordoc.last_name }}</a>
+                    </td>
+                    <td>
+                        {{ prr.role.display }}
+                    </td>
+                    <td>{{ prr.actor.actordoc.get_class_display }}</td>
+                </tr>
+            {% endfor %}
+
+
+        {% else %}
+            {% for prr in patient_relations %}
+                <tr>
+                    <td>
+                        <a href="{{ prr.content.get_absolute_url }}">{{ prr.content.couchdoc.first_name }} {{ prr.content.couchdoc.last_name }}</a>
+                    </td>
+                    <td>
+                        My Patient
+                    </td>
+                    <td>
+                        as {{ prr.role.display }}
+                    </td>
+                </tr>
+            {% endfor %}
+
+            {% for connection in connections %}
+                <tr>
+                    <td><a href="{% url view_actor connection.actor.id %}">{{ connection.actor.actordoc.first_name }} {{ connection.actor.actordoc.last_name }}</a></td>
+                    <td>{{ connection.role.display }}</td>
+                    <td>For patient {{ connection.content.couchdoc.first_name }} {{ connection.content.couchdoc.last_name }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
 {% endblock network_content %}

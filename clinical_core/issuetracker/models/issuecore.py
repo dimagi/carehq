@@ -106,7 +106,7 @@ class Issue(models.Model):
     status = models.CharField(max_length=160, choices=issue_constants.STATUS_CHOICES)
     priority = models.IntegerField(choices=issue_constants.PRIORITY_CHOICES)
 
-    patient = models.ForeignKey(Patient, blank=True, null=True)
+    patient = models.ForeignKey(Patient, blank=True, null=True, related_name='issues')
 
     body = models.TextField(blank=True, null=True)
 

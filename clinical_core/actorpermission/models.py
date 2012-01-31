@@ -175,7 +175,7 @@ class CaregiverActor(BaseActorDocument):
     relation = StringProperty(choices=RELATIONSHIP_CHOICES)
 
     def get_class_display(self):
-        return "Caregiver"
+        return self.relation
 
     class Meta:
         app_label = 'actorpermission'
@@ -217,7 +217,7 @@ class ProviderActor(BaseActorDocument):
     affiliation = StringProperty()
 
     def get_class_display(self):
-        return "Provider"
+        return "%s, %s %s %s" % (self.provider_title, self.facility_name, self.facility_address, self.phone_number)
     class Meta:
         app_label = 'actorpermission'
 

@@ -11,9 +11,16 @@ def my_network(request, template="carehqapp/network/my_network.html"):
     if request.current_actor.is_patient:
         #get careteam info
         pt_careteam = carehq_api.get_careteam(request.current_actor.actordoc.get_couch_patient())
-        context['patient_careteam'] = pt_careteam
-    all_prrs = carehq_api.get_permissions(request.current_actor.actordoc)
-    context['all_relations'] = all_prrs
+        context['patient_relations'] = pt_careteam
+    else:
+        all_prrs = carehq_api.get_permissions(request.current_actor.actordoc)
+        #direct relations
+        context['patient_relations'] = all_prrs
+
+        #indirect relations (shared patients)
+        patient_ids = all_prrs.values_list('content_id', flat=True)
+        connections = PrincipalRoleRelation.objects.filter(content_id__in=patient_ids).exclude(actor=request.current_actor)
+        context['connections'] = connections
     return render_to_response(template, context_instance=context)
 
 

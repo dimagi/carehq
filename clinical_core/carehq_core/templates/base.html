@@ -24,7 +24,7 @@
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timeago.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.ba-bbq.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-dropdown.js"></script>
-{#        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-tab.js"></script>#}
+        {#        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-tab.js"></script>#}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
     {% endblock javascripts %}
     {% block stylesheets %}
@@ -47,96 +47,105 @@
 </head>
 <body>
 {% block tophat %}
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            {% block branding %}
-                <a class="brand" href="/">
-                    {#                        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">#}
-                    <h2>CareHQ</h2>
-                </a>
-            {% endblock branding %}
-            <ul class="nav">
-                {% block navigation_menu %}
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                {% endblock navigation_menu %}
-            </ul>
-            {% block top_useridentity %}
-                {% if user.is_authenticated %}
-                    <ul class="nav pull-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                {% if request.user.first_name and request.user.last_name %}
-                                    {{ request.user.first_name }} {{ request.user.last_name }}
-                                    {% else %}
-                                    {{ request.user.username }}
-                                    {% endif %}
-                                <b class="caret"></b>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url account_landing %}">My account</a></li>
-                                    <li class="divider"></li>
-                                {% if user.is_superuser %}
-                                    <li>
-                                    <a href="/admin">Django Admin</a> {#| <a href="{% url new_provider%}">New Provider</a>#}
-                                    </li>
-                                {% endif %}
-                                <li><a href="#">Secondary link</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="/accounts/logout/">{% trans "Log out" %} </a>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    {% block branding %}
+                        <a class="brand" href="/">
+                            {#                        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">#}
+                            <h2>CareHQ</h2>
+                        </a>
+                    {% endblock branding %}
+                    <ul class="nav">
+                        {% block navigation_menu %}
+                            <li class="active"><a href="#">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                            <li><a href="#contact">Help</a></li>
+                        {% endblock navigation_menu %}
+                    </ul>
+                    {% block top_useridentity %}
+                        {% if user.is_authenticated %}
+                            <ul class="nav pull-right">
+                                <li> <a href="#">Help</a> </li>
+                                <li class="divider-vertical"></li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        {% if request.user.first_name and request.user.last_name %}
+                                            {{ request.user.first_name }} {{ request.user.last_name }}
+                                        {% else %}
+                                            {{ request.user.username }}
+                                        {% endif %}
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{% url account_landing %}">My account</a></li>
+                                        <li class="divider"></li>
+                                        {% if user.is_superuser %}
+                                            <li>
+                                                <a href="/admin">Django Admin</a>
+                                                {#| <a href="{% url new_provider%}">New Provider</a>#}
+                                            </li>
+                                        {% endif %}
+                                        <li><a href="#">Secondary link</a></li>
+                                        <li><a href="#">Something else here</a></li>
+                                        <li class="divider"></li>
+                                        <li>
+                                            <a href="/accounts/logout/">{% trans "Log out" %} </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
-                        </li>
-                    </ul>
-                {% else %}
-                <p class="pull-right">
-                    <form method="post" action="." class="pull-right">
-                    {% csrf_token %}
-                        <input id="id_username" name="username" class="input-medium" type="text" placeholder="username">
-{#                        <input id="id_username" type="text" name="username" maxlength="30">#}
+                        {% else %}
+                            <p class="pull-right">
+                            <form method="post" action="." class="pull-right">
+                                {% csrf_token %}
+                                <input id="id_username" name="username" class="input-medium" type="text"
+                                       placeholder="username">
+                                {#                        <input id="id_username" type="text" name="username" maxlength="30">#}
 
-                        <input id="id_password" name="password" class="input-medium" type="password" placeholder="password">
-{#                        <input type="password" name="password" id="id_password">#}
+                                <input id="id_password" name="password" class="input-medium" type="password"
+                                       placeholder="password">
+                                {#                        <input type="password" name="password" id="id_password">#}
 
-                        <input type="hidden" name="next" value="{{ next }}" />
-                        <button class="btn" value="Login" type="submit">Sign in</button>
-                    </form>
-                </p>
-                {% endif %}
-            {% endblock top_useridentity %}
+                                <input type="hidden" name="next" value="{{ next }}"/>
+                                <button class="btn" value="Login" type="submit">Sign in</button>
+                            </form>
+                            </p>
+                        {% endif %}
+                    {% endblock top_useridentity %}
+            </div>
         </div>
     </div>
-</div>
 {% endblock tophat %}
 
 
 
 <div class="container">
-        {% block page_crumbs %}
-            <ul class="breadcrumb">
-                <li><a href="#">Home</a> <span class="divider">/</span></li>
-                <li><a href="#">Middle page</a> <span class="divider">/</span></li>
-                <li><a href="#">Another one</a> <span class="divider">/</span></li>
-                <li class="active">You are here</li>
-            </ul>
-        {% endblock page_crumbs %}
+    {% block page_crumbs %}
+        <ul class="breadcrumb">
+            <li><a href="#">Home</a> <span class="divider">/</span></li>
+            <li><a href="#">Middle page</a> <span class="divider">/</span></li>
+            <li><a href="#">Another one</a> <span class="divider">/</span></li>
+            <li class="active">You are here</li>
+        </ul>
+    {% endblock page_crumbs %}
     <div class="page-header">
         {% block page_header %}
-            <h1>Title goes here <small>Plus some more</small></h1>
+            <h1>Title goes here
+                <small>Plus some more</small>
+            </h1>
         {% endblock %}
     </div>
     {% block content %}
     {% endblock %}
 
     {% block footer %}
-            <footer>
-                <p>&copy; {% now "Y" %} <a href="http://www.dimagi.com">Dimagi, Inc.</a></p>
-            </footer>
-        {% endblock footer %}
-    </div>
+        <footer>
+            <p>&copy; {% now "Y" %} <a href="http://www.dimagi.com">Dimagi, Inc.</a></p>
+        </footer>
+    {% endblock footer %}
+</div>
 </body>
 </html>

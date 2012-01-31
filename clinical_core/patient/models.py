@@ -394,7 +394,7 @@ class CarehqPatient(BasePatient):
         return True
 
     def get_absolute_url(self):
-        url= reverse('patient_url', kwargs={'patient_guid': self._id})
+        url= reverse('patient_url', kwargs={'patient_guid': self._id, 'view_mode': ''})
         return url
 
     def __getattr__(self, key):

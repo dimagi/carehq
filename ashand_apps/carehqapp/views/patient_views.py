@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
+from issuetracker.issue_constants import ISSUE_STATE_CLOSED
 from issuetracker.models.issuecore import Issue
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
@@ -12,11 +13,8 @@ from patient.views import PatientSingleView
 from permissions.models import Actor, PrincipalRoleRelation
 from datetime import datetime, timedelta
 
-
-
-
 class CarehqPatientSingleView(PatientSingleView):
-    #template carehqapp/carehq_patient.html
+    #template carehqapp/carehq_patient_base.html
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
@@ -34,6 +32,7 @@ class CarehqPatientSingleView(PatientSingleView):
 
         is_me=False
         patient_guid = self.kwargs.get('patient_guid', None)
+
         if patient_guid is None:
             #verify that this is the patient itself.
             if request.current_actor.is_patient:
@@ -43,10 +42,38 @@ class CarehqPatientSingleView(PatientSingleView):
             else:
                 raise Http404
 
+        #global info
+        view_mode = self.kwargs.get('view_mode', '')
+        if view_mode == '':
+            view_mode = 'info'
         context = super(CarehqPatientSingleView, self).get_context_data(**kwargs)
+        context['view_mode'] = view_mode
         context['is_me'] = is_me
         pdoc = context['patient_doc']
         dj_patient = context['patient_django']
+
+        if view_mode == 'issues':
+            context['filter'] = request.GET.get('filter', 'recent')
+            issues = Issue.objects.filter(patient=dj_patient)
+            if context['filter']== 'closed':
+                issues = issues.filter(status=ISSUE_STATE_CLOSED)
+            elif context['filter'] == 'recent':
+                issues = issues.order_by('-last_edit_date')
+            elif context['filter'] == 'open':
+                issues = issues.exclude(status=ISSUE_STATE_CLOSED)
+
+            context['issues'] = issues
+            self.template_name = "carehqapp/patient/carehq_patient_issues.html"
+        if view_mode == 'info':
+            self.template_name = "carehqapp/patient/carehq_patient_info.html"
+
+        if view_mode == 'careteam':
+            context['patient_careteam'] = carehq_api.get_careteam(pdoc)
+            self.template_name = "carehqapp/patient/carehq_patient_careteam.html"
+
+        if view_mode == 'careplan':
+            self.template_name = "carehqapp/patient/carehq_patient_careplan.html"
+
         context['patient_list_url'] = reverse('my_patients')
         context['schedule_show'] = schedule_show
         context['schedule_edit'] = schedule_edit
@@ -55,12 +82,8 @@ class CarehqPatientSingleView(PatientSingleView):
         context['patient_edit'] = patient_edit
 
         context['issue_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
-        context['issues'] = Issue.objects.filter(patient=dj_patient)
 
 
-        role_actor_dict = carehq_api.get_careteam_dict(pdoc)
-        #context['careteam_dict'] = role_actor_dict
-        context['careteam_prrs'] = carehq_api.get_careteam(pdoc)
 
         if address_edit and not new_address:
             if len(pdoc.address) > 0:
@@ -77,10 +100,6 @@ class CarehqPatientSingleView(PatientSingleView):
             context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
         if show_all_schedule != None:
             context['past_schedules'] = pdoc.past_schedules
-
-
-
-
         return context
         #return render_to_response(template_name, context_instance=context)
 

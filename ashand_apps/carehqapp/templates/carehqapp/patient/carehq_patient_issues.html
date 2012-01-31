@@ -1,0 +1,65 @@
+{% extends "carehqapp/patient/carehq_patient_base.html" %}
+{% load carehq_tags %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}{% block patient-tab-container %}
+    <div class="row">
+        <div class="span2">
+            <div class="well">
+                <ul class="nav list">
+                    <li class="nav-header">Issue Filter</li>
+                    <li {% if filter == "recent" %}class="active"{% endif %}>
+                        <a href="{{ request.path }}?filter=recent">Recent</a></li>
+                    <li {% if filter == "open" %}class="active"{% endif %}>
+                        <a href="{{ request.path }}?filter=open">Open</a></li>
+                    <li {% if filter == "all" %}class="active"{% endif %}>
+                        <a href="{{ request.path }}?filter=all">All</a></li>
+                    <li {% if filter == "closed" %}class="active"{% endif %}>
+                        <a href="{{ request.path }}?filter=closed">Closed</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="span10">
+            {% if issues %}
+                <table class="table table-bordered table-striped table-condensed" id="tbl_issues">
+                    <thead>
+                    <tr>
+                        <th class="span5">Description</th>
+                        <th class="span1">Status</th>
+                        <th class="span1">Opened By</th>
+                        <th class="span1">Assigned To</th>
+                        <th class="span1">Last Event</th>
+                        <th class="span1">Last Date</th>
+                        <th class="span2">Last By</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for issue in issues %}
+                        <tr>
+                            <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
+                            <td> {{ issue.get_status_display }} </td>
+                            <td> {{ issue.opened_by.actordoc.get_name }} </td>
+                            <td> {{ issue.assigned_to.actordoc.get_name }} </td>
+                            <td> {{ issue.last_event.get_activity_display }} </td>
+                            <td> {% get_timeago issue.last_event.created_date %} </td>
+                            <td> {{ issue.last_event.created_by.actordoc.get_name }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+                No Issues
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

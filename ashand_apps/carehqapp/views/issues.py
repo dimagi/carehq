@@ -40,7 +40,7 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
     context = RequestContext(request)
     patient_doc = CarehqPatient.get(patient_guid)
     if request.method == "POST":
-        form = NewIssueForm(patient_doc, request.current_actor, data=request.POST)
+        form = NewIssueForm(patient_doc.django_patient, request.current_actor, data=request.POST)
         if form.is_valid():
             newissue = form.save(commit=False)
             newissue.last_edit_by = request.current_actor
@@ -53,6 +53,7 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
             return HttpResponseRedirect(patient_doc.get_absolute_url())
     else:
         context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor)
+        context['patient_doc'] = patient_doc
     return render_to_response(template_name, context_instance=context)
 
 @login_required

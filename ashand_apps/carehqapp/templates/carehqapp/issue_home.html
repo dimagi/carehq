@@ -14,9 +14,7 @@
                 function () {
                     //placeholder for autorefresh, but turning off for now
                     //var autoRefresh = setInterval(refreshNotification, 30000);
-                    $("#tbl_issues").tablesorter({ sortList:[
-                        [0, 0]
-                    ], });
+                    $("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
                     $("abbr.timeago").timeago();
                 }
         );
@@ -31,9 +29,9 @@
 {% endblock page_crumbs %}
 {% block page_header %}
     {% if active_tab == "filter" %}
-        <h2>Issues / {{ filter_title|title }} <small>{{ issues|length }}</small></h2>
+        <h2>Issues / {{ filter_title|title }} <small>({{ issues|length }})</small></h2>
     {% else %}
-        <h2>Issues / {{ active_tab|title }} <small>{{ issues|length }}</small></h2>
+        <h2>Issues / {{ active_tab|title }} <small>({{ issues|length }})</small></h2>
     {% endif %}
 {% endblock %}
 {% block content %}
