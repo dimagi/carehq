@@ -47,10 +47,10 @@
                     <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
                     <input type="hidden" name="next" value="{{ next }}" />
                 </form>
-
                     {% if form.errors %}
                         <div class="alert alert-error">Your username and password didn't match. Please try again.</div>
                     {% endif %}
+                    <a href="{% url auth_password_reset %}">Forgot password</a>
                 </fieldset>
             </div>
         </div>

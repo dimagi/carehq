@@ -37,3 +37,4 @@ django-smartagent
 pytz
 unidecode
 python-keyczar
+hg+http://bitbucket.org/ubernostrum/django-registration/

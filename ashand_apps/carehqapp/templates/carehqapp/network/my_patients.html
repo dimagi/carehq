@@ -54,7 +54,7 @@
                     {{ prr.content.open_issues|length}}
                 </td>
                 <td>
-                    {% get_timeago prr.content.last_activity.created_date %}
+                    {{ prr.content.last_activity.created_date }}
                 </td>
             </tr>
         {% endfor %}

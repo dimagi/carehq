@@ -1,0 +1,1 @@
+ASHand account activation: {{ activation_key }} / {{site}}

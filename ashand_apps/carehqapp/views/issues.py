@@ -1,14 +1,18 @@
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
 from django.contrib.auth.decorators import login_required
+from carehq_core import carehq_api
+from clinical_shared.decorators import actor_required
 from dimagi.utils.make_time import make_time
 from issuetracker.forms import NewIssueForm
 from issuetracker.issue_constants import ISSUE_STATE_OPEN, ISSUE_EVENT_OPEN, ISSUE_STATE_CLOSED
 from issuetracker.models.issuecore import Issue, IssueCategory
 from lib.crumbs import crumbs
 from patient.models import CarehqPatient
+from issuetracker.views import manage_issue as do_manage_issue
 
 def my_issues_patient(request, template_name = "carehqapp/my_issues_patient.html"):
     context = RequestContext(request)
@@ -36,6 +40,19 @@ def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.
 
 
 @login_required
+@actor_required
+def manage_issue(request, issue_id):
+    try:
+        issue = Issue.objects.get(id=issue_id)
+    except Issue.DoesNotExist:
+        raise Http404
+
+    if not carehq_api.has_permission_issue(request.current_actor.actordoc,issue):
+        raise PermissionDenied
+    return do_manage_issue(request, issue_id)
+
+@login_required
+@actor_required
 def new_issue_patient(request, patient_guid, template_name="carehqapp/activities/issue/new_issue.html"):
     context = RequestContext(request)
     patient_doc = CarehqPatient.get(patient_guid)
@@ -58,6 +75,7 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
     return render_to_response(template_name, context_instance=context)
 
 @login_required
+@actor_required
 def issue_filter(request, issue_filter, template_name="carehqapp/issue_home.html"):
 #    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)
@@ -88,6 +106,7 @@ def issue_filter(request, issue_filter, template_name="carehqapp/issue_home.html
 
 
 @login_required
+@actor_required
 def issue_home(request, template_name="carehqapp/issue_home.html"):
 #    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)

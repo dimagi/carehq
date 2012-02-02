@@ -7,6 +7,23 @@ import permissions
 from permissions.models import Role, PrincipalRoleRelation
 
 
+def has_permission(actor_doc, patient_doc):
+    permissions_qset = get_permissions(actor_doc)
+    if permissions_qset.filter(content_id=patient_doc.django_uuid).count() > 0:
+        return True
+    else:
+        return False
+
+def has_permission_issue(actor_doc, issue):
+    patient = issue.patient
+    permissions_qset = get_permissions(actor_doc)
+    if permissions_qset.filter(content_id=patient.id).count() > 0:
+        return True
+    else:
+        return False
+
+
+
 def add_to_careteam(patient_doc, actor_doc, role):
     """
     For a given django patient and django actor, assign the given role
@@ -38,7 +55,6 @@ def add_chw(chw_actor):
 def add_provider(actor_doc):
     role_class = Role.objects.get(name=carehq_constants.role_provider)
     return permissions.utils.add_role(actor_doc.django_actor, role_class)
-
 
 
 def set_patient_primary_chw(patient_doc, actor_doc):

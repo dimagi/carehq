@@ -1,10 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_api
+from clinical_shared.decorators import actor_required
 from patient.models import Patient
 from permissions.models import PrincipalRoleRelation
 
+@login_required
+@actor_required
 def my_network(request, template="carehqapp/network/my_network.html"):
     context = RequestContext(request)
     #get actor info
@@ -24,6 +28,8 @@ def my_network(request, template="carehqapp/network/my_network.html"):
     return render_to_response(template, context_instance=context)
 
 
+@login_required
+@actor_required
 def my_patients(request, template="carehqapp/network/my_patients.html"):
     context = RequestContext(request)
 
@@ -34,6 +40,8 @@ def my_patients(request, template="carehqapp/network/my_patients.html"):
     return render_to_response(template, context_instance=context)
 
 
+@login_required
+@actor_required
 def my_careteam(request, template="carehqapp/network/my_careteam.html"):
     context = RequestContext(request)
     if request.current_actor.is_patient:

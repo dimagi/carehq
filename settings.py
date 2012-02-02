@@ -171,6 +171,7 @@ INSTALLED_APPS = (
     'uni_form',
     'smartagent',
     'south',
+    'registration',
     #end third party apps
 
     ###########################
@@ -207,7 +208,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
-LOGGEDOUT_TEMPLATE='registration/logged_out.html'
+LOGGEDOUT_TEMPLATE='registration/logout.html'
 LOGIN_REDIRECT_URL = '/'
 BASE_TEMPLATE = 'base.html'
 
@@ -231,6 +232,9 @@ CARROT_BACKEND = "django"
 
 # carehq config
 CAREHQ_CREATE_PATIENT_VIEW_NAME = "create_patient"
+
+
+ACCOUNT_ACTIVATION_DAYS=7
 
 import os
 

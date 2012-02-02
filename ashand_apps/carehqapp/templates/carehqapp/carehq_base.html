@@ -16,6 +16,7 @@
                     <a href="{% url patient_home %}">My Care</a>
                 </li>
             {% endif %}
+            {% if request.current_actor %}
             <li>
                 <a href="{% url issue_home %}">Issues</a>
             </li>
@@ -32,6 +33,7 @@
                     {% endif %}
                 </ul>
             </li>
+            {% endif %}
 
         {% endblock %}
     {% endif %} {# end autenticated if#}

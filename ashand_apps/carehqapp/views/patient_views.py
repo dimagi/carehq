@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.safestring import mark_safe
@@ -139,6 +140,9 @@ class CarehqPatientSingleView(PatientSingleView):
         """
         request = self.request
 
+        if request.current_actor is None:
+            return HttpResponseRedirect(reverse('no_actor_profile'))
+
         schedule_show = request.GET.get("schedule", "active")
         schedule_edit = request.GET.get("edit_schedule", False)
         address_edit = request.GET.get("edit_address", False)
@@ -160,11 +164,16 @@ class CarehqPatientSingleView(PatientSingleView):
             else:
                 raise Http404
 
+
         #global info
         view_mode = self.kwargs.get('view_mode', '')
         if view_mode == '':
             view_mode = 'info'
         context = super(CarehqPatientSingleView, self).get_context_data(**kwargs)
+
+        if not carehq_api.has_permission(request.current_actor.actordoc, context['patient_doc']):
+            raise PermissionDenied
+
         context['view_mode'] = view_mode
         context['is_me'] = is_me
         pdoc = context['patient_doc']

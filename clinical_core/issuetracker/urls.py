@@ -7,8 +7,8 @@ from permissions.models import Actor
 
 urlpatterns = patterns ('issuetracker.views',
     url(r'^filter/(?P<filter_id>[0-9a-f]{32})$', 'view_filter', name="view-filter"),
-    url(r'^issue/(?P<issue_id>[0-9a-f]{32})$', 'manage_issue', name="manage-issue"),
-    url(r'^issue/(?P<issue_id>[0-9a-f]{32})/feed$', 'issue_newsfeed', name='issue-newsfeed'),
+    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})$', 'manage_issue', name="manage-issue"),
+    #url(r'^issue/(?P<issue_id>[0-9a-f]{32})/feed$', 'issue_newsfeed', name='issue-newsfeed'),
     url(r'^issues/all$', 'all_issues'),
 
 
