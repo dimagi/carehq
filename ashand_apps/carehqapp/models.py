@@ -4,6 +4,7 @@ from couchforms.models import XFormInstance
 from lxml import etree
 from issuetracker.models.issuecore import ExternalIssueData, IssueCategory
 from patient.models import BasePatient
+import settings
 
 class UsabilitySurvey(Document):
     pass
