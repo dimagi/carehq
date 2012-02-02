@@ -8,6 +8,9 @@ from permissions.models import Role, PrincipalRoleRelation
 
 
 def has_permission(actor_doc, patient_doc):
+    if isinstance(actor_doc, PatientActor):
+        if actor_doc.get_couch_patient()._id == patient_doc._id:
+            return True
     permissions_qset = get_permissions(actor_doc)
     if permissions_qset.filter(content_id=patient_doc.django_uuid).count() > 0:
         return True
@@ -17,6 +20,11 @@ def has_permission(actor_doc, patient_doc):
 def has_permission_issue(actor_doc, issue):
     patient = issue.patient
     permissions_qset = get_permissions(actor_doc)
+    if isinstance(actor_doc, PatientActor):
+        django_patient = actor_doc.get_django_patient()
+        if issue.patient == django_patient:
+            return True
+
     if permissions_qset.filter(content_id=patient.id).count() > 0:
         return True
     else:

@@ -22,7 +22,8 @@ class CCDSubmission(XFormInstance):
         pass
 
     def get_patient_guid(self):
-        return self.form['recordTarget']['patientRole']['id'][1]['@extension']
+        #return self.form['recordTarget']['patientRole']['id'][1]['@extension']
+        return settings.HACK_PATIENT_GUID
 
     def ccd_table_data(self):
         return CCDSubmission.find_ccd_table_data(self)
@@ -55,8 +56,8 @@ class CCDSubmission(XFormInstance):
         #patient_doc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_doc_id))
 
         #hack for testing
-        patient_doc_id= 'd9041f5a3f2a45dba9eba636ce2f0aa8'
-        patient = Patient.objects.get(id='d9041f5a3f2a45dba9eba636ce2f0aa8')
+
+        patient = Patient.objects.get(id=self.get_patient_guid())
         return patient.couchdoc
 
 
