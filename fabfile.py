@@ -116,12 +116,17 @@ def pip_update():
         with enter_virtualenv():
             run('pip install -r requirements.txt', shell=True)
 
+def collectstatic():
+    with cd(env.code_root):
+        with enter_virtualenv():
+            sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
+
+
 def syncdb():
     with cd(env.code_root):
         with enter_virtualenv():
             sudo('python manage.py syncdb --noinput', user=env.sudo_user)
             sudo('python manage.py migrate --noinput', user=env.sudo_user)
-            sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
 
 def update():
     """
