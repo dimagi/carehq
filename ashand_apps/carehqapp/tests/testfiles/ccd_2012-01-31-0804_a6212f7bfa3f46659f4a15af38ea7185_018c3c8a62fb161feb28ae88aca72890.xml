@@ -1,0 +1,585 @@
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="urn:hl7-org:v3 CCD.xsd">
+<typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"></typeId>
+<templateId root="2.16.840.1.113883.10.20.1"></templateId>
+<id root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+<code code="34133-9" codeSystem="2.16.840.1.113883.6.1" displayName="Summarization of episode note"></code>
+<title>Intel-GE Care Innovations™ - Continuity of Care Document</title>
+<effectiveTime value="20120131010401-0600"></effectiveTime>
+<confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"></confidentialityCode>
+<languageCode code="en-US"></languageCode>
+<recordTarget>
+    <patientRole>
+        <id extension="74D7AF9D-56F5-4BA2-BC9D-B4D17020BE28" root="InternalUserID"></id>
+        <id extension="Test000001" root="ExternalUserID"></id>
+        <addr>
+            <streetAddressLine>Pegasus</streetAddressLine>
+            <city>CIC</city>
+            <state>AL</state>
+            <postalCode></postalCode>
+            <country>USA</country>
+        </addr>
+        <telecom value="tel:6175803100"></telecom>
+        <patient>
+            <name>
+                <given>Lee</given>
+                <family>Adama</family>
+                <suffix></suffix>
+            </name>
+            <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"></administrativeGenderCode>
+            <birthTime value="19700402000000"></birthTime>
+        </patient>
+        <providerOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </providerOrganization>
+    </patientRole>
+</recordTarget>
+<author>
+    <time value="20120120120500"></time>
+    <assignedAuthor>
+        <id extension="IntelHGS" root="00000000-0000-0000-0000-000000000000"></id>
+        <assignedAuthoringDevice>
+            <softwareName>Intel-GE Care Innovations™ Guide</softwareName>
+        </assignedAuthoringDevice>
+        <representedOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </representedOrganization>
+    </assignedAuthor>
+</author>
+<custodian>
+    <assignedCustodian>
+        <representedCustodianOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </representedCustodianOrganization>
+    </assignedCustodian>
+</custodian>
+<informationRecipient>
+    <intendedRecipient>
+        <id root="2.16.840.1.113883.3.524"></id>
+        <informationRecipient>
+            <name>Dimagi</name>
+        </informationRecipient>
+    </intendedRecipient>
+</informationRecipient>
+<participant typeCode="REF">
+    <associatedEntity classCode="ASSIGNED">
+        <id extension="dmyung" root="D3E44B62-31F2-48B5-B52E-502007807936"></id>
+        <addr>
+            <streetAddressLine>529 Main Street</streetAddressLine>
+            <city>Charlestown</city>
+            <state>MA</state>
+            <postalCode>02129</postalCode>
+        </addr>
+        <telecom value="tel:6175803103"></telecom>
+        <associatedPerson>
+            <name>
+                <given>Dan</given>
+                <family>Myung</family>
+            </name>
+        </associatedPerson>
+        <scopingOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </scopingOrganization>
+    </associatedEntity>
+</participant>
+<documentationOf>
+    <serviceEvent classCode="PCPR">
+        <id root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+        <effectiveTime>
+            <low value="20120120120500"></low>
+            <high value="20120120154318"></high>
+        </effectiveTime>
+    </serviceEvent>
+</documentationOf>
+<component>
+<structuredBody>
+<component>
+    <section>
+        <templateId root="2.16.840.1.113883.10.20.1.3"></templateId>
+        <code code="46240-8" codeSystem="2.16.840.1.113883.6.1"></code>
+        <title>Encounters</title>
+        <text>
+            <table border="1" width="100%">
+                <thead>
+                <tr>
+                    <th align="center" colspan="2">Session ID: A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5</th>
+                </tr>
+                <tr>
+                    <th align="left">Reminder Text:</th>
+                    <th align="left">Time for your dialy check in</th>
+                </tr>
+                <tr>
+                    <th align="left">Encounter</th>
+                    <th align="left">Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Intel-GE Care Innovations™ Guide Session</td>
+                    <td>01/23/2012 15:32:44</td>
+                </tr>
+                </tbody>
+            </table>
+        </text>
+        <entry typeCode="DRIV">
+            <encounter classCode="ENC" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.21"></templateId>
+                <id root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+                <code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session">
+                    <originalText>Time for your dialy check in</originalText>
+                </code>
+                <effectiveTime value="20120120120500"></effectiveTime>
+            </encounter>
+        </entry>
+    </section>
+</component>
+<component>
+<section>
+<templateId root="2.16.840.1.113883.10.20.1.5"></templateId>
+<code code="47420-5" codeSystem="2.16.840.1.113883.6.1"></code>
+<title>Functional Status</title>
+<text>
+    <table border="1" width="100%">
+        <tbody align="left">
+        <tr>
+            <th align="center" colspan="3">Session ID: A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5</th>
+        </tr>
+        <tr>
+            <th align="center" colspan="3">Session Date/Time: 01/23/2012 15:32:44</th>
+        </tr>
+        <tr>
+            <th align="left" colspan="3">Protocol Description: ASHand Disclaimer</th>
+        </tr>
+        <tr>
+            <th>Sl.</th>
+            <th>Assessment/Protocol Performed</th>
+            <th>Answer/Comments</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Note: This survey is for testing purposes only. If this is a real medical issue contact your doctor
+                immediately.
+            </td>
+            <td>OK</td>
+        </tr>
+        <tr>
+            <th align="left" colspan="3">Protocol Description: Diarrhea Protocol</th>
+        </tr>
+        <tr>
+            <th>Sl.</th>
+            <th>Assessment/Protocol Performed</th>
+            <th>Answer/Comments</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Have you had diarrhea in the past 24 hours?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>How many times did you have diarrhea?</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Was this diarrhea preceded by constipation?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Were you able to make it to the bathroom?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Did you see any blood in your stool?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>What was the consistency of the diarrhea?</td>
+            <td>Black</td>
+        </tr>
+        <tr>
+            <th align="left" colspan="3">Protocol Description: Vomiting Protocol</th>
+        </tr>
+        <tr>
+            <th>Sl.</th>
+            <th>Assessment/Protocol Performed</th>
+            <th>Answer/Comments</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Have you vomited in the past 24 hours?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>How many times have you vomited?</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>What was the color?</td>
+            <td>Other</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Have you eaten any greasy foods in the past 24 hours?</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Are you able to eat now?</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Are you able to drink now?</td>
+            <td>Yes</td>
+        </tr>
+        </tbody>
+    </table>
+</text>
+<entry typeCode="DRIV">
+<encounter classCode="ENC" moodCode="EVN">
+<id root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+<code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session"></code>
+<statusCode code="completed"></statusCode>
+<entryRelationship typeCode="REFR">
+    <observation classCode="OBS" moodCode="EVN">
+        <code code="48766-0" codeSystem="2.16.840.1.113883.6.1" displayName="Information source"></code>
+        <text>Time for your dialy check in</text>
+        <statusCode code="completed"></statusCode>
+        <value xsi:type="ST">Intel-GE Care Innovations™ Guide</value>
+    </observation>
+</entryRelationship>
+<entryRelationship typeCode="COMP">
+    <organizer classCode="CLUSTER" moodCode="EVN">
+        <templateId root="2.16.840.1.113883.10.20.1.32"></templateId>
+        <id extension="41b94698-41f5-4fdf-baec-6f8ff0d4c9a1" root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+        <code nullFlavor="OTH">
+            <originalText>ASHand Disclaimer</originalText>
+        </code>
+        <statusCode code="completed"></statusCode>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="92958716-f71a-452c-ac67-75690e11262c" root="41b94698-41f5-4fdf-baec-6f8ff0d4c9a1"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Note: This survey is for testing purposes only. If this is a real medical issue
+                        contact your doctor immediately.
+                    </originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="OK" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+    </organizer>
+</entryRelationship>
+<entryRelationship typeCode="COMP">
+    <organizer classCode="CLUSTER" moodCode="EVN">
+        <templateId root="2.16.840.1.113883.10.20.1.32"></templateId>
+        <id extension="8f840236-9fc4-4db2-85dc-0144a8bff91b" root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+        <code nullFlavor="OTH">
+            <originalText>Diarrhea Protocol</originalText>
+        </code>
+        <statusCode code="completed"></statusCode>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="623d6edd-5208-45a2-9601-3960063059ab" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Have you had diarrhea in the past 24 hours?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="c9b6b7ac-a7b3-4899-b91d-8a383e1237ed" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>How many times did you have diarrhea?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="1" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="7ec3c14e-4df3-4be3-ae11-ee38a3f7a353" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Was this diarrhea preceded by constipation?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="46c7745e-5127-4b27-b020-9607d39eb9e0" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Were you able to make it to the bathroom?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="13f6655d-0bd5-45f2-9d91-416b70158336" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Did you see any blood in your stool?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="f1da1ec3-d734-4715-b2c8-1894e2ec9399" root="8f840236-9fc4-4db2-85dc-0144a8bff91b"></id>
+                <code nullFlavor="OTH">
+                    <originalText>What was the consistency of the diarrhea?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Black" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+    </organizer>
+</entryRelationship>
+<entryRelationship typeCode="COMP">
+    <organizer classCode="CLUSTER" moodCode="EVN">
+        <templateId root="2.16.840.1.113883.10.20.1.32"></templateId>
+        <id extension="59a3591e-8205-4077-9713-4085c4f714ec" root="A22B75FF-AF3E-44B6-8219-31A4BC1EEFC5"></id>
+        <code nullFlavor="OTH">
+            <originalText>Vomiting Protocol</originalText>
+        </code>
+        <statusCode code="completed"></statusCode>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="d39d0773-4cfb-446e-b686-e64def2ea133" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Have you vomited in the past 24 hours?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="99b8b303-14bd-4e2f-82ea-494347ed0786" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>How many times have you vomited?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="1" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="3d4eddf7-5dbb-4048-b5a6-9f2c2b066eec" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>What was the color?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Other" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="a79380f9-2ab9-4ed7-b85d-7b4403fdedb4" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Have you eaten any greasy foods in the past 24 hours?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="No" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="d566d416-ef88-4592-8544-5caa532b62c6" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Are you able to eat now?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+        <component>
+            <observation classCode="OBS" moodCode="EVN">
+                <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                <id extension="7d28fdfc-94e7-45b3-90fb-d1c08591a602" root="59a3591e-8205-4077-9713-4085c4f714ec"></id>
+                <code nullFlavor="OTH">
+                    <originalText>Are you able to drink now?</originalText>
+                </code>
+                <statusCode code="completed"></statusCode>
+                <effectiveTime xsi:type="IVL_TS">
+                    <center value="20120123153244"></center>
+                </effectiveTime>
+                <value displayName="Yes" nullFlavor="OTH" xsi:type="CD"></value>
+                <participant typeCode="RCV">
+                    <time value="20120123153244"></time>
+                    <participantRole>
+                        <playingEntity>
+                            <name>Intel-GE Care Innovations™ Guide</name>
+                        </playingEntity>
+                    </participantRole>
+                </participant>
+            </observation>
+        </component>
+    </organizer>
+</entryRelationship>
+</encounter>
+</entry>
+</section>
+</component>
+</structuredBody>
+</component>
+</ClinicalDocument>

@@ -1,0 +1,229 @@
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="urn:hl7-org:v3 CCD.xsd">
+<typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"></typeId>
+<templateId root="2.16.840.1.113883.10.20.1"></templateId>
+<id extension="38" root="1D8D97F5-23B0-4CD0-B700-9DF327F56BA1"></id>
+<code code="34133-9" codeSystem="2.16.840.1.113883.6.1" displayName="Summarization of episode note"></code>
+<title>Intel-GE Care Innovations™ - Continuity of Care Document</title>
+<effectiveTime value="20120131010409-0600"></effectiveTime>
+<confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"></confidentialityCode>
+<languageCode code="en-US"></languageCode>
+<recordTarget>
+    <patientRole>
+        <id extension="74D7AF9D-56F5-4BA2-BC9D-B4D17020BE28" root="InternalUserID"></id>
+        <id extension="Test000001" root="ExternalUserID"></id>
+        <addr>
+            <streetAddressLine>Pegasus</streetAddressLine>
+            <city>CIC</city>
+            <state>AL</state>
+            <postalCode></postalCode>
+            <country>USA</country>
+        </addr>
+        <telecom value="tel:6175803100"></telecom>
+        <patient>
+            <name>
+                <given>Lee</given>
+                <family>Adama</family>
+                <suffix></suffix>
+            </name>
+            <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"></administrativeGenderCode>
+            <birthTime value="19700402000000"></birthTime>
+        </patient>
+        <providerOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </providerOrganization>
+    </patientRole>
+</recordTarget>
+<author>
+    <time value="20120126134631"></time>
+    <assignedAuthor>
+        <id extension="IntelHGS" root="00000000-0000-0000-0000-000000000000"></id>
+        <assignedAuthoringDevice>
+            <softwareName>Intel-GE Care Innovations™ Guide</softwareName>
+        </assignedAuthoringDevice>
+        <representedOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </representedOrganization>
+    </assignedAuthor>
+</author>
+<custodian>
+    <assignedCustodian>
+        <representedCustodianOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </representedCustodianOrganization>
+    </assignedCustodian>
+</custodian>
+<informationRecipient>
+    <intendedRecipient>
+        <id root="2.16.840.1.113883.3.524"></id>
+        <informationRecipient>
+            <name>Dimagi</name>
+        </informationRecipient>
+    </intendedRecipient>
+</informationRecipient>
+<participant typeCode="REF">
+    <associatedEntity classCode="ASSIGNED">
+        <id extension="dmyung" root="D3E44B62-31F2-48B5-B52E-502007807936"></id>
+        <addr>
+            <streetAddressLine>529 Main Street</streetAddressLine>
+            <city>Charlestown</city>
+            <state>MA</state>
+            <postalCode>02129</postalCode>
+        </addr>
+        <telecom value="tel:6175803103"></telecom>
+        <associatedPerson>
+            <name>
+                <given>Dan</given>
+                <family>Myung</family>
+            </name>
+        </associatedPerson>
+        <scopingOrganization>
+            <id root="2.16.840.1.113883.3.524"></id>
+            <name>Dimagi</name>
+        </scopingOrganization>
+    </associatedEntity>
+</participant>
+<documentationOf>
+    <serviceEvent classCode="PCPR">
+        <id extension="38" root="1D8D97F5-23B0-4CD0-B700-9DF327F56BA1"></id>
+        <effectiveTime>
+            <low value="20120126134631"></low>
+            <high value="20120126134631"></high>
+        </effectiveTime>
+    </serviceEvent>
+</documentationOf>
+<component>
+    <structuredBody>
+        <component>
+            <section>
+                <templateId root="2.16.840.1.113883.10.20.1.3"></templateId>
+                <code code="46240-8" codeSystem="2.16.840.1.113883.6.1"></code>
+                <title>Encounters</title>
+                <text>
+                    <table border="1" width="100%">
+                        <thead>
+                        <tr>
+                            <th align="center" colspan="2">Session ID: 1D8D97F5-23B0-4CD0-B700-9DF327F56BA1,38</th>
+                        </tr>
+                        <tr>
+                            <th align="left">Reminder Text:</th>
+                            <th align="left">Time for your weekly sensory checkin</th>
+                        </tr>
+                        <tr>
+                            <th align="left">Encounter</th>
+                            <th align="left">Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Intel-GE Care Innovations™ Guide Session</td>
+                            <td>01/26/2012 18:47:04</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </text>
+                <entry typeCode="DRIV">
+                    <encounter classCode="ENC" moodCode="EVN">
+                        <templateId root="2.16.840.1.113883.10.20.1.21"></templateId>
+                        <id extension="38" root="1D8D97F5-23B0-4CD0-B700-9DF327F56BA1"></id>
+                        <code code="133891005" codeSystem="2.16.840.1.113883.6.96" displayName="Care Planning Session">
+                            <originalText>Time for your weekly sensory checkin</originalText>
+                        </code>
+                        <effectiveTime value="20120126134631"></effectiveTime>
+                    </encounter>
+                </entry>
+            </section>
+        </component>
+        <component>
+            <section>
+                <templateId root="2.16.840.1.113883.10.20.1.5"></templateId>
+                <code code="47420-5" codeSystem="2.16.840.1.113883.6.1"></code>
+                <title>Functional Status</title>
+                <text>
+                    <table border="1" width="100%">
+                        <tbody align="left">
+                        <tr>
+                            <th align="center" colspan="3">Session ID: 1D8D97F5-23B0-4CD0-B700-9DF327F56BA1,38</th>
+                        </tr>
+                        <tr>
+                            <th align="center" colspan="3">Session Date/Time: 01/26/2012 18:47:04</th>
+                        </tr>
+                        <tr>
+                            <th align="left" colspan="3">Protocol Description: ASHand Disclaimer</th>
+                        </tr>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Assessment/Protocol Performed</th>
+                            <th>Answer/Comments</th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Note: This survey is for testing purposes only. If this is a real medical issue contact
+                                your doctor immediately.
+                            </td>
+                            <td>OK</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </text>
+                <entry typeCode="DRIV">
+                    <encounter classCode="ENC" moodCode="EVN">
+                        <id extension="38" root="1D8D97F5-23B0-4CD0-B700-9DF327F56BA1"></id>
+                        <code code="133891005" codeSystem="2.16.840.1.113883.6.96"
+                              displayName="Care Planning Session"></code>
+                        <statusCode code="completed"></statusCode>
+                        <entryRelationship typeCode="REFR">
+                            <observation classCode="OBS" moodCode="EVN">
+                                <code code="48766-0" codeSystem="2.16.840.1.113883.6.1"
+                                      displayName="Information source"></code>
+                                <text>Time for your weekly sensory checkin</text>
+                                <statusCode code="completed"></statusCode>
+                                <value xsi:type="ST">Intel-GE Care Innovations™ Guide</value>
+                            </observation>
+                        </entryRelationship>
+                        <entryRelationship typeCode="COMP">
+                            <organizer classCode="CLUSTER" moodCode="EVN">
+                                <templateId root="2.16.840.1.113883.10.20.1.32"></templateId>
+                                <id extension="41b94698-41f5-4fdf-baec-6f8ff0d4c9a1"
+                                    root="1D8D97F5-23B0-4CD0-B700-9DF327F56BA1"></id>
+                                <code nullFlavor="OTH">
+                                    <originalText>ASHand Disclaimer</originalText>
+                                </code>
+                                <statusCode code="completed"></statusCode>
+                                <component>
+                                    <observation classCode="OBS" moodCode="EVN">
+                                        <templateId root="2.16.840.1.113883.10.20.1.31"></templateId>
+                                        <id extension="92958716-f71a-452c-ac67-75690e11262c"
+                                            root="41b94698-41f5-4fdf-baec-6f8ff0d4c9a1"></id>
+                                        <code nullFlavor="OTH">
+                                            <originalText>Note: This survey is for testing purposes only. If this is a
+                                                real medical issue contact your doctor immediately.
+                                            </originalText>
+                                        </code>
+                                        <statusCode code="completed"></statusCode>
+                                        <effectiveTime xsi:type="IVL_TS">
+                                            <center value="20120126184704"></center>
+                                        </effectiveTime>
+                                        <value displayName="OK" nullFlavor="OTH" xsi:type="CD"></value>
+                                        <participant typeCode="RCV">
+                                            <time value="20120126184704"></time>
+                                            <participantRole>
+                                                <playingEntity>
+                                                    <name>Intel-GE Care Innovations™ Guide</name>
+                                                </playingEntity>
+                                            </participantRole>
+                                        </participant>
+                                    </observation>
+                                </component>
+                            </organizer>
+                        </entryRelationship>
+                    </encounter>
+                </entry>
+            </section>
+        </component>
+    </structuredBody>
+</component>
+</ClinicalDocument>

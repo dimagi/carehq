@@ -2,6 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from datetime import datetime
 from django.db.models.query_utils import Q
+from dimagi.utils.make_time import make_time
 from patient.models import Patient
 from permissions.models import PrincipalRoleRelation
 
@@ -117,7 +118,7 @@ class IssueManager(models.Manager):
         newissue.body = body
 
         #auto defined information
-        newissue.opened_date = datetime.utcnow()
+        newissue.opened_date = make_time()
         newissue.opened_by = creator_actor
         newissue.last_edit_date = newissue.opened_date #this causes some issues with the basic queries, so we will set it to be the same as opened date
         newissue.last_edit_by = newissue.opened_by

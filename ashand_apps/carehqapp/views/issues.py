@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from dimagi.utils.make_time import make_time
 from issuetracker.forms import NewIssueForm
 from issuetracker.issue_constants import ISSUE_STATE_OPEN, ISSUE_EVENT_OPEN, ISSUE_STATE_CLOSED
-from issuetracker.models.issuecore import Issue
+from issuetracker.models.issuecore import Issue, IssueCategory
 from lib.crumbs import crumbs
 from patient.models import CarehqPatient
 
@@ -39,8 +39,9 @@ def issues_patient(request, patient_id, template_name='carehqapp/issues_patient.
 def new_issue_patient(request, patient_guid, template_name="carehqapp/activities/issue/new_issue.html"):
     context = RequestContext(request)
     patient_doc = CarehqPatient.get(patient_guid)
+    cat_qset = IssueCategory.objects.filter(namespace='ashand').order_by('group')
     if request.method == "POST":
-        form = NewIssueForm(patient_doc.django_patient, request.current_actor, data=request.POST)
+        form = NewIssueForm(patient_doc.django_patient, request.current_actor, categories_qset=cat_qset, data=request.POST)
         if form.is_valid():
             newissue = form.save(commit=False)
             newissue.last_edit_by = request.current_actor
@@ -52,7 +53,7 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
             newissue.save(request.current_actor, activity=ISSUE_EVENT_OPEN)
             return HttpResponseRedirect(patient_doc.get_absolute_url())
     else:
-        context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor)
+        context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor, categories_qset= cat_qset)
         context['patient_doc'] = patient_doc
     return render_to_response(template_name, context_instance=context)
 
@@ -61,35 +62,42 @@ def issue_filter(request, issue_filter, template_name="carehqapp/issue_home.html
 #    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)
     active_tab = 'open'
+
+    if request.current_actor.is_patient:
+        patient = request.current_actor.actordoc.get_django_patient()
+        issues = Issue.objects.filter(patient=patient)
+    else:
+        issues = Issue.objects.care_issues(request.current_actor)
+
     if issue_filter == 'open':
         active_tab = 'open'
-        issues = Issue.objects.care_issues(request.current_actor).filter(status=ISSUE_STATE_OPEN)
+        issues = issues.filter(status=ISSUE_STATE_OPEN)
     elif issue_filter == 'all':
         active_tab = 'all'
-        issues = Issue.objects.care_issues(request.current_actor)
     elif issue_filter == 'closed':
         active_tab = 'closed'
-        issues = Issue.objects.care_issues(request.current_actor).filter(status=ISSUE_STATE_CLOSED)
+        issues = issues.filter(status=ISSUE_STATE_CLOSED)
     elif issue_filter == 'filter':
         active_tab = 'filter'
         filter_title = 'Assigned to me'
         context['filter_title'] = filter_title
-        issues = Issue.objects.filter(assigned_to=request.current_actor)
-
+        issues = issues.filter(assigned_to=request.current_actor)
     context['active_tab'] = active_tab
-
     context['issues'] = issues
     return render_to_response(template_name, context_instance=context)
 
 
-@crumbs("Issue List", "issue_home", "my_profile")
 @login_required
 def issue_home(request, template_name="carehqapp/issue_home.html"):
 #    request.breadcrumbs("Issue List", reverse(issue_home))
     context = RequestContext(request)
     user = request.user
-    issues = Issue.objects.care_issues(request.current_actor)
-    context['issues'] = issues
+    if request.current_actor.is_patient:
+        patient = request.current_actor.actordoc.get_django_patient()
+        issues = Issue.objects.filter(patient=patient)
+    else:
+        issues = Issue.objects.care_issues(request.current_actor)
+    context['issues'] = issues.filter(status=ISSUE_STATE_OPEN)
     context['active_tab'] = 'open'
     return render_to_response(template_name, context_instance=context)
 #

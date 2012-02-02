@@ -21,6 +21,14 @@
     list-style-type: none;
 }
 
+.sat, .sun, .noday {
+    background: #BEBEC5;
+}
+.future {
+    background: #f5f5f5;
+}
+
+
 ul.errorlist {
     /*From twitter bootstrap's alert/errors*/
 

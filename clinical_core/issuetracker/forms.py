@@ -20,9 +20,26 @@ class CareteamActorIterator(forms.models.ModelChoiceIterator):
     def __iter__(self):
         for category, actors in self.careteam_dict.items():
             yield (category.display, [(x.id, x.actordoc.get_name()) for x in actors])
-        #yield ('food', [(1L, u'burger'), (2L, u'pizza')])
-        #yield ('drinks', [(3L, u'coke'), (4L, u'pepsi')])
+            #yield ('drinks', [(3L, u'coke'), (4L, u'pepsi')])
         pass
+
+class CategoryIterator(forms.models.ModelChoiceIterator):
+    def __init__(self, qset, *args, **kwargs):
+        super(forms.models.ModelChoiceIterator, self).__init__(*args, **kwargs)
+        self.categories_qset = qset.order_by('group')
+    def __iter__(self):
+        curr_group = None
+        arr = []
+        for cat in self.categories_qset:
+            if curr_group is None:
+                curr_group = cat.group
+            if curr_group == cat.group:
+                arr.append((cat.id, cat.display))
+            else:
+                yield (curr_group, arr)
+                curr_group = cat.group
+                arr = [(cat.id, cat.display)]
+        yield (curr_group, arr)
 
 
 class ActorModelChoiceField(ModelChoiceField):
@@ -84,11 +101,17 @@ class NewIssueForm(ModelForm):
     priority = forms.CharField(widget=widgets.RadioSelect(choices=PRIORITY_CHOICES, attrs={"style":"list-style-type:none;"}))
     #category = forms.ModelChoiceField(queryset = IssueCategory.objects.all(), widget=widgets.RadioSelect())
 
-    def __init__(self, patient, creator_actor, *args, **kwargs):
+    def __init__(self, patient, creator_actor, categories_qset=None, *args, **kwargs):
         super(NewIssueForm, self).__init__(*args, **kwargs)
         self.patient = patient
         self.creator_actor=creator_actor
         self.fields['assigned_to'].choices = CareteamActorIterator(carehq_api.get_careteam_dict(patient.couchdoc))
+
+        if categories_qset is not None:
+            qset = categories_qset
+        else:
+            qset = IssueCategory.objects.all()
+        self.fields['category'].choices = CategoryIterator(qset)
 
     class Meta:
         model=Issue

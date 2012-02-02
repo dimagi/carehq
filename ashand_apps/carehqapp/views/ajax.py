@@ -109,7 +109,7 @@ def ajax_post_actor_form(request, doc_id, form_name):
 
 
 @login_required
-def ajax_patient_form_get(request, template='carehqapp/partials/ajax_patient_form.html'):
+def ajax_patient_form_get(request, template='carehqapp/partials/ajax_patient_ext_form.html'):
     patient_guid = request.GET.get('doc_id', None)
     form_name = request.GET.get('form_name', None)
     edit_id = request.GET.get('edit_id', None)
@@ -132,7 +132,7 @@ def ajax_patient_form_get(request, template='carehqapp/partials/ajax_patient_for
         elif form_name == 'ptedit':
             title = "Edit Patient Info"
             form = CarehqPatientForm('edit', instance=pdoc)
-            template='carehqapp/partials/ajax_pactpatient_uni_form.html'
+            template='carehqapp/partials/ajax_carehqpatient_form.html'
     else:
         #this really is only just for phones and addresses
         if form_name == 'address':

@@ -3,26 +3,34 @@
 {% block patient-tab-container %}
     <div id="patient-info-display">
         <div class="commit-group-heading">
-            <h4>Demographic Information</h4>
+            <h4>Basic Information <small class="pull-right"><a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">Edit</a></small></h4>
         </div>
         <div class="commit-group">
+            <div id="patienteditform"></div>
             <table>
                 <tr>
-                    <th class="span3">Language</th>
-                    <td>English/Spanish</td>
+                    <th class="span3">Enrolled Date</th>
+                    <td>{{ patient_doc.enrolled_date|date }}</td>
+
+                    <th class="span3">HCMS Registered Date</th>
+                    <td>{{ patient_doc.hcms_registered_date|date }}</td>
+
+                    <th class="span3">Installed Date</th>
+                    <td>{{ patient_doc.install_date|date }}</td>
                 </tr>
+                <tr>
+                    <th class="span3">Device Checkin time</th>
+                    <td>{{ patient_doc.checkin_time|time }}</td>
+
+                    <th class="span3">Contact Time Window</th>
+                    <td>{{ patient_doc.availabe_start|time }} - {{ patient_doc.available_end|time }}</td>
+                </tr>
+
                 <tr>
                     <th>Additional Notes</th>
                     <td>{{ patient_doc.notes }}</td>
                 </tr>
             </table>
-            <div class="editctrl" style="float:right;">
-                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                   href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
-                    <span class="ui-icon ui-icon-wrench"></span>
-                    Edit Info
-                </a>
-            </div>
         </div>
     </div>
 

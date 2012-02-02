@@ -1,6 +1,6 @@
 from django.contrib import admin
 from issuetracker.models import IssueEvent, Issue, Filter, GridPreference,GridColumn,GridOrder,GridSort
-from issuetracker.models.issuecore import IssueCategory
+from issuetracker.models.issuecore import IssueCategory, ExternalIssueData
 
 
 class EventActivityAdmin(admin.ModelAdmin):
@@ -82,6 +82,10 @@ class GridOrderAdmin(admin.ModelAdmin):
     list_filter = ['preference']
 admin.site.register(GridOrder, GridOrderAdmin)
 
+
+class ExternalIssueDataAdmin(admin.ModelAdmin):
+    list_display=('issue', 'doc_id')
+admin.site.register(ExternalIssueData, ExternalIssueDataAdmin)
 
 admin.site.register(IssueEvent, IssueEventAdmin)
 admin.site.register(Issue, IssueAdmin)

@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
+from dimagi.utils.make_time import make_time
 from issuetracker.models import Issue, IssueEvent
 from issuetracker import issue_constants
 from issuetracker.feeds.issueevents import get_sorted_issueevent_dictionary
@@ -128,7 +129,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
                     edit_comment = form.cleaned_data["comment"]
                     #next, we need to see the mode and flip the fields depending on who does what.
                     if activity == issue_constants.ISSUE_EVENT_ASSIGN:
-                        issue.assigned_date = datetime.utcnow()
+                        issue.assigned_date = make_time()
                         issue.assigned_by = request.current_actor
                         edit_comment += " (Issue assigned to %s by %s)" % (issue.assigned_to.actordoc.get_name(), request.current_actor.actordoc.get_name())
                         

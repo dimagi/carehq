@@ -5,7 +5,7 @@ def run():
     dupes = {}
     docs = XFormInstance.view('couchforms/by_xmlns', key='urn:hl7-org:v3', include_docs=True, reduce=False).all()
     for doc in docs:
-        attachment = doc.fetch_attachment('form.xml')
+        attachment = doc.fetch_attachment('form.xml').encode('utf-8')
         checksum = hashlib.md5(attachment).hexdigest()
 
 

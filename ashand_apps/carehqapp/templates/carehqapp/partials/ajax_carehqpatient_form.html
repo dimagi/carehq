@@ -1,0 +1,34 @@
+{% load uni_form_tags %}
+<div style="padding: 8px;margin-bottom:8px;">
+    <div class="commit-group-heading">
+        <h4>{{ title }}</h4>
+    </div>
+    <div class="commit-group">
+        <form id="id_{{ form_name }}" action="{% url ajax_post_patient_form patient_guid form_name %}" method="POST">
+            {% csrf_token %}
+            <table id="tbl_{{ form_name }}">
+                {#    {% uni_form form form.helper %} doesn't seem to want to honor that table id there. #}
+                {{ form.as_p }}
+            </table>
+            <input type="submit" value="Save" class="btn"/>
+            <input type="button" name="cancel" value="Cancel"
+                   onclick="$(this).parent().parent().parent().hide('blind',{},300);$(this).parent().parent().parent().html('');"
+                   class="btn"/>
+        </form>
+        <script type="text/javascript">
+            $(function () {
+                $("#id_birthdate").datepicker({ changeMonth:true, changeYear:true, maxdate:"+0" } );
+                $("#id_start_date").datepicker({ changeMonth:true, changeYear:true, } );
+                $("#id_enrolled_date").datepicker({ changeMonth:true, changeYear:true, } );
+
+                $("#id_hcms_registered_date").datepicker({ changeMonth:true, changeYear:true, } );
+                $("#id_install_date").datepicker({ changeMonth:true, changeYear:true, } );
+
+                $("#id_available_start").timePicker();
+                $("#id_available_end").timePicker();
+                $("#id_checkin_time").timePicker();
+            });
+
+        </script>
+    </div>
+</div>

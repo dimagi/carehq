@@ -25,7 +25,8 @@
                     </td>
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
-                <td> {% get_timeago issue.last_event.created_date %} </td>
+{#                <td> {% get_timeago issue.last_event.created_date %} </td>#}
+                <td> {{ issue.last_event.created_date|date }} </td>
                 <td> {{ issue.last_event.get_activity_display }} </td>
                 <td> {{ issue.last_event.created_by.actordoc.get_name }} </td>
             </tr>

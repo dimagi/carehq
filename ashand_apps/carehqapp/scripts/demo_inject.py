@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import bootstrap1_random_issue_inject
+from dimagi.utils.make_time import make_time
 from issuetracker.models import Issue
 from django.contrib.auth.models import User
 from .demo import DEMO_CARETEAMS, DEMO_CASES
@@ -43,7 +44,7 @@ def inject_issue_data(patient, event_arr):
     if creator == None:
         print "no creator, wtf"
     newcase.opened_by = creator    
-    newcase.opened_date = datetime.utcnow() - startdelta
+    newcase.opened_date = make_time() - startdelta
     newcase.last_edit_by = creator
     newcase.last_edit_date = newcase.opened_date
     newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=issue_constants.ISSUE_STATE_OPEN)[0]

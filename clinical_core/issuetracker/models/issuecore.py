@@ -305,12 +305,12 @@ class Issue(models.Model):
         #ordering = ['-opened_date']
 
 
-class ExternalCaseData(models.Model):
+class ExternalIssueData(models.Model):
     """
     External documents attached to a issue (3rd party data, monitoring device data).  Presumably this data will be stored in couchdb.
     """
     id = models.CharField(_('Issue Unique id'), max_length=32, unique=True, default=make_uuid, primary_key=True) #primary_key override
-    issue_id = models.ForeignKey(Issue, related_name="external_data")
+    issue = models.ForeignKey(Issue, related_name="external_data")
     doc_id = models.CharField(_('External Document id'), max_length=32, unique=True, default=make_uuid, db_index=True)
 
     class Meta:

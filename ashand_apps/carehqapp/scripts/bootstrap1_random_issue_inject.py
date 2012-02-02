@@ -3,6 +3,7 @@ import pdb
 from django.contrib.contenttypes.models import ContentType
 import os
 from carehq_core import carehq_api, carehq_constants
+from dimagi.utils.make_time import make_time
 from issuetracker import issue_constants as caseconstants
 from issuetracker.models import Issue
 import csv
@@ -70,7 +71,7 @@ def run():
                               )
 
         startdelta = timedelta(hours=random.randint(0,200)) #sometime in the past 3
-        fixed_time = datetime.utcnow() - startdelta
+        fixed_time = make_time() - startdelta
         newcase.opened_date = fixed_time
         newcase.assigned_to = random.choice(actors)
         newcase.save(actor, activity=caseconstants.ISSUE_EVENT_CHOICES[2][0])

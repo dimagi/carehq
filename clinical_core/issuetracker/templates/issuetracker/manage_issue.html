@@ -34,7 +34,11 @@
         {% block issue_info %}
             {#                {% include "issuetracker/partials/issue/base_issue_info.html" %}#}
             <div class="span8 issue-body">
-                {{ issue.body }}
+            {% if issue.category.display == "Threshold Violation" %}
+                {{ issue.body|safe }}
+            {% else %}
+                {{ issue.body}}
+            {% endif %}
                 <br>
                 {% if issue.opened_by == request.current_actor %}
                 <a href="{% url manage-issue issue.id %}?activity=event-edit">Edit</a></li>
@@ -56,7 +60,7 @@
                         </tr>
                         <tr>
                             <td><strong>Category</strong></td>
-                            <td>{{ issue.category }}</td>
+                            <td>{{ issue.category.group }} / {{ issue.category.display }}</td>
                         </tr>
                         <tr>
                             <td><strong>Opened</strong></td>
@@ -100,7 +104,7 @@
     <div class="row">
             <div class="span12">
                 {% block issue_actions %}
-                    <ul class="nav pills">
+                    <ul class="nav nav-pills">
                         {#		{% for activity in case.status.transitional_actions %}#}
                         {#			<li>#}
                         {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
@@ -112,17 +116,17 @@
                         <li class="{% if activity == "event-assign" %}active{% endif %}">
                             <a href="{% url manage-issue issue.id %}?activity=event-assign">Assign</a>
                         </li>
-                        {% if not issue.resolved_date %}
-                            <li class="{% if activity == "event-resolve" %}active{% endif %}">
-                                <a href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>
-                            </li>
-                        {% else %}
+{#                        {% if not issue.resolved_date %}#}
+{#                            <li class="{% if activity == "event-resolve" %}active{% endif %}">#}
+{#                                <a href="{% url manage-issue issue.id %}?activity=event-resolve">Resolve</a>#}
+{#                            </li>#}
+{#                        {% else %}#}
                             {% if not issue.closed_date %}
                                 <li class="{% if activity == "event-close" %}active{% endif %}">
                                     <a href="{% url manage-issue issue.id %}?activity=event-close">Close</a>
                                 </li>
                             {% endif %}
-                        {% endif %}
+{#                        {% endif %}#}
                     </ul>
                     {% include "issuetracker/manage/inline_issue_edit.html" %}
                 {% endblock issue_actions %}

@@ -3,7 +3,9 @@ from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.utils.safestring import mark_safe
 from carehq_core import carehq_api
+from couchforms.models import XFormInstance
 from issuetracker.issue_constants import ISSUE_STATE_CLOSED
 from issuetracker.models.issuecore import Issue
 from patient.forms.address_form import SimpleAddressForm
@@ -12,6 +14,122 @@ from patient.models import Patient
 from patient.views import PatientSingleView
 from permissions.models import Actor, PrincipalRoleRelation
 from datetime import datetime, timedelta
+
+
+from calendar import HTMLCalendar, month_name
+from datetime import date
+from itertools import groupby
+
+from django.utils.html import conditional_escape as esc
+
+class SubmissionCalendar(HTMLCalendar):
+    #source: http://journal.uggedal.com/creating-a-flexible-monthly-calendar-in-django/
+    cssclasses = ["mon span2", "tue span2", "wed span2", "thu span2", "fri span2", "sat span1", "sun span1"]
+    def __init__(self, submissions):
+        super(SubmissionCalendar, self).__init__()
+        self.submissions = self.group_by_day(submissions)
+
+    def formatmonthname(self, theyear, themonth, withyear=True):
+        """
+        Return a month name as a table row.
+        """
+        #make sure to roll over year?
+        nextyear=theyear
+        prevyear=theyear
+        if themonth + 1 > 12:
+            nextmonth=1
+            nextyear=theyear+1
+        else:
+            nextmonth=themonth+1
+        if themonth-1 == 0:
+            prevmonth = 12
+            prevyear=theyear-1
+        else:
+            prevmonth=themonth-1
+
+        if withyear:
+            s = '%s %s' % (month_name[themonth], theyear)
+        else:
+            s = '%s' % month_name[themonth]
+        ret = []
+        a = ret.append
+        a('<tr>')
+        a('<th colspan="7" class="month" style="text-align:center;">')
+        a('<ul class="pager">')
+        a('<li class="previous"><a href="?month=%d&year=%d">Previous</a></li>' % (prevmonth, prevyear))
+        a('<li class="disabled">')
+        a(s)
+        a('</li>')
+        a('<li class="next"><a href="?month=%d&year=%d">Next</a></li>' % (nextmonth, nextyear))
+        a('</ul>')
+        a('</th>')
+        a('</tr>')
+        return ''.join(ret)
+        #return '<tr><th colspan="7" class="month">%s</th></tr>' % s
+
+
+    def formatday(self, day, weekday):
+        if day != 0:
+            cssclass = self.cssclasses[weekday]
+            if date.today() == date(self.year, self.month, day):
+                cssclass += ' today'
+            if date.today() < date(self.year, self.month, day):
+                future=True
+            else:
+                future=False
+
+            if day in self.submissions:
+                cssclass += ' filled'
+                body = ['<br>']
+                day_submissions = self.submissions[day]
+                body.append('<a href="#" class="btn btn-success">')
+                body.append("Received")
+                if len(day_submissions) > 1:
+                    body.append(" (%d)" % len(day_submissions))
+                body.append('</a>')
+                body.append('<br>')
+                return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
+
+            if weekday < 5 and not future:
+                missing_link = '<br><a href="#" class="btn btn-warning">Missing</a><br>'
+                return self.day_cell(cssclass, "%d %s" % (day, missing_link))
+            elif weekday < 5 and future:
+                return self.day_cell('future', "%d" % day)
+            else:
+                return self.day_cell(cssclass, day)
+        return self.day_cell('noday', '&nbsp;')
+
+    def formatmonth(self, theyear, themonth, withyear=True):
+        """
+        Return a formatted month as a table.
+        """
+        self.year, self.month = theyear, themonth
+        #return super(SubmissionCalendar, self).formatmonth(year, month)
+        #rather than do super, do some custom css trickery
+        v = []
+        a = v.append
+        a('<table border="0" cellpadding="0" cellspacing="0" class="table table-bordered">')
+        a('\n')
+        a(self.formatmonthname(theyear, themonth, withyear=withyear))
+        a('\n')
+        a(self.formatweekheader())
+        a('\n')
+        for week in self.monthdays2calendar(theyear, themonth):
+            a(self.formatweek(week))
+            a('\n')
+        a('</table>')
+        a('\n')
+        return ''.join(v)
+
+    def group_by_day(self, submissions):
+        field = lambda submission: datetime.strptime(submission.form['author']['time']['@value'][0:8], '%Y%m%d').day
+        return dict(
+            [(day, list(items)) for day, items in groupby(submissions, field)]
+        )
+
+    def day_cell(self, cssclass, body):
+        return '<td class="%s">%s</td>' % (cssclass, body)
+
 
 class CarehqPatientSingleView(PatientSingleView):
     #template carehqapp/carehq_patient_base.html
@@ -74,32 +192,19 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'careplan':
             self.template_name = "carehqapp/patient/carehq_patient_careplan.html"
 
-        context['patient_list_url'] = reverse('my_patients')
-        context['schedule_show'] = schedule_show
-        context['schedule_edit'] = schedule_edit
-        context['phone_edit'] = phone_edit
-        context['address_edit'] = address_edit
-        context['patient_edit'] = patient_edit
+        if view_mode == 'submissions':
+            viewmonth = int(request.GET.get('month', date.today().month))
+            viewyear = int(request.GET.get('year', date.today().year))
+            sk = ['Test000001', viewyear, viewmonth, 0]
+            ek = ['Test000001', viewyear, viewmonth, 31]
 
-        context['issue_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
+            submissions = XFormInstance.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
+#            submissions = []
+            cal = SubmissionCalendar(submissions).formatmonth(viewyear, viewmonth)
+            context['calendar'] = mark_safe(cal)
+            self.template_name = "carehqapp/patient/carehq_patient_submissions.html"
 
 
-
-        if address_edit and not new_address:
-            if len(pdoc.address) > 0:
-                #if there's an existing address out there, then use it, else, make a new one
-                context['address_form'] = SimpleAddressForm(instance=pdoc.get_address(address_edit_id))
-            else:
-                context['address_form'] = SimpleAddressForm()
-        if new_address:
-            context['address_form'] = SimpleAddressForm()
-            context['address_edit'] = True
-        if phone_edit:
-            context['phone_form'] = PhoneForm()
-        if patient_edit:
-            context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
-        if show_all_schedule != None:
-            context['past_schedules'] = pdoc.past_schedules
         return context
         #return render_to_response(template_name, context_instance=context)
 

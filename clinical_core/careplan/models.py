@@ -177,10 +177,10 @@ class CarePlanInstance(BaseCarePlan):
         
         if creator_user:
             new_plan.created_by = creator_user
-            new_plan.created_date = datetime.utcnow()
+            new_plan.created_date = make_time()
             
             new_plan.modified_by = creator_user
-            new_plan.modified_date= datetime.utcnow()        
+            new_plan.modified_date= make_time()
         
         if save_data:
             new_plan.save()

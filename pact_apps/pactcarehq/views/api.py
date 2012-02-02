@@ -204,7 +204,7 @@ def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_fo
         elif form_name == 'ptedit':
             title = "Edit Patient Info"
             form = PactPatientForm('edit', instance=pdoc)
-            template='pactcarehq/partials/ajax_pactpatient_uni_form.html'
+            template='pactcarehq/partials/ajax_carehqpatient_form.html'
     else:
         #this really is only just for phones and addresses
         if form_name == 'address':
