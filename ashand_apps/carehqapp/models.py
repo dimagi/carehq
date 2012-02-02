@@ -58,7 +58,7 @@ class CCDSubmission(XFormInstance):
 
         #hack for testing
 
-        patient = Patient.objects.get(id=self.get_patient_guid())
+        patient = Patient.objects.get(doc_id=self.get_patient_guid())
         return patient.couchdoc
 
 
