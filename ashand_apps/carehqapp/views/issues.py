@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
@@ -56,10 +57,20 @@ def manage_issue(request, issue_id):
 def new_issue_patient(request, patient_guid, template_name="carehqapp/activities/issue/new_issue.html"):
     context = RequestContext(request)
     patient_doc = CarehqPatient.get(patient_guid)
-    cat_qset = IssueCategory.objects.filter(namespace='ashand').order_by('group')
+    category_id = request.GET.get('categoryid', None)
+    due_date_str = request.GET.get('missing_date', None)
+    due_date = None
+    if due_date_str is not None:
+        due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+    context['patient_doc'] = patient_doc
+    if category_id is not None:
+        cat_qset = IssueCategory.objects.filter(namespace='ashand', id=category_id)
+    else:
+        cat_qset = IssueCategory.objects.filter(namespace='ashand').order_by('group')
     if request.method == "POST":
         form = NewIssueForm(patient_doc.django_patient, request.current_actor, categories_qset=cat_qset, data=request.POST)
         if form.is_valid():
+
             newissue = form.save(commit=False)
             newissue.last_edit_by = request.current_actor
             newissue.last_edit_date = make_time()
@@ -67,11 +78,14 @@ def new_issue_patient(request, patient_guid, template_name="carehqapp/activities
             newissue.opened_by=request.current_actor
             newissue.opened_date = make_time()
             newissue.status = ISSUE_STATE_OPEN
+            if category_id is not None and due_date is not None:
+                newissue.due_date=due_date
             newissue.save(request.current_actor, activity=ISSUE_EVENT_OPEN)
             return HttpResponseRedirect(patient_doc.get_absolute_url())
     else:
         context['form'] = NewIssueForm(patient_doc.django_patient, request.current_actor, categories_qset= cat_qset)
-        context['patient_doc'] = patient_doc
+        if category_id is not None:
+            del context['form'].fields['due_date']
     return render_to_response(template_name, context_instance=context)
 
 @login_required

@@ -31,8 +31,7 @@
                 <td> {{ issue.opened_by.actordoc.get_name }} </td>
                 <td> {{ issue.assigned_to.actordoc.get_name }} </td>
                 <td> {{ issue.last_event.get_activity_display }} </td>
-                <td> {{ issue.last_event.created_date|date }} </td>
-{#                <td> {% get_timeago issue.last_event.created_date %} </td>#}
+                <td> {{ issue.last_event.created_date|date:"M j, Y P"}} </td>
             </tr>
         {% endfor %}
         </tbody>

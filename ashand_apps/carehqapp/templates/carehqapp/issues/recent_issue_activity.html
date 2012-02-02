@@ -5,7 +5,7 @@
     <table class="table table-bordered table-striped" id="tbl_issues">
         <thead>
         <tr>
-            {% if request.current_actor.is_provider %}
+            {% if request.current_actor.is_provider or request.current_actor.is_caregiver %}
                 <th class="span2">Patient</th>
             {% endif %}
             <th class="span6">Description</th>
@@ -17,7 +17,7 @@
         <tbody>
         {% for issue in issues %}
             <tr>
-                {% if request.current_actor.is_provider %}
+                {% if request.current_actor.is_provider  or request.current_actor.is_caregiver %}
                     <td>
                         <a href="{{ issue.patient.get_absolute_url }}">
                         {{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}
@@ -26,7 +26,7 @@
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
 {#                <td> {% get_timeago issue.last_event.created_date %} </td>#}
-                <td> {{ issue.last_event.created_date|date }} </td>
+                <td> {{ issue.last_event.created_date|date:"M j, Y P" }} </td>
                 <td> {{ issue.last_event.get_activity_display }} </td>
                 <td> {{ issue.last_event.created_by.actordoc.get_name }} </td>
             </tr>

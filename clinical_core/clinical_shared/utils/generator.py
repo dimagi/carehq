@@ -295,19 +295,3 @@ def generate_patient_and_careteam(tenant, team_dictionary=None):
         print "Generated %d caregivers" % (len(caregivers))
     return (patient_doc, caregivers, providers)
 
-
-
-def create_issue(self, description, actor, priority, status=None, body=None):
-    """Create a case for testing purposes
-    """
-    if body == None:
-        body = "mock body %s" % (uuid.uuid4().hex),
-    newcase = Issue.objects.new_issue(Category.objects.all()[0],
-                          actor,
-                          description,
-                          body,
-                          Priority.objects.all()[0],
-                          status=Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0],
-                          activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
-                          )
-    return newcase

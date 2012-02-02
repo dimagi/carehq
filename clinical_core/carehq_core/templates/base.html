@@ -11,7 +11,7 @@
         <!-- javascripts (global, app, page) -->
         <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
         <!--[if lt IE 9]>
-          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+          <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
 
 
@@ -81,8 +81,8 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li><a href="{% url account_landing %}">My account</a></li>
-                                        <li class="divider"></li>
                                         {% if user.is_superuser %}
+                                            <li class="divider"></li>
                                             <li>
                                                 <a href="/admin">Django Admin</a>
                                                 {#| <a href="{% url new_provider%}">New Provider</a>#}

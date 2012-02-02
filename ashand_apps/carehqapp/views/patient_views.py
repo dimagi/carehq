@@ -6,8 +6,9 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.safestring import mark_safe
 from carehq_core import carehq_api
+from carehqapp.models import CCDSubmission, get_missing_category
 from couchforms.models import XFormInstance
-from issuetracker.issue_constants import ISSUE_STATE_CLOSED
+from issuetracker.issue_constants import ISSUE_STATE_CLOSED, ISSUE_STATE_OPEN
 from issuetracker.models.issuecore import Issue
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
@@ -26,9 +27,10 @@ from django.utils.html import conditional_escape as esc
 class SubmissionCalendar(HTMLCalendar):
     #source: http://journal.uggedal.com/creating-a-flexible-monthly-calendar-in-django/
     cssclasses = ["mon span2", "tue span2", "wed span2", "thu span2", "fri span2", "sat span1", "sun span1"]
-    def __init__(self, submissions):
+    def __init__(self, submissions, django_patient):
         super(SubmissionCalendar, self).__init__()
         self.submissions = self.group_by_day(submissions)
+        self.django_patient = django_patient
 
     def formatmonthname(self, theyear, themonth, withyear=True):
         """
@@ -72,9 +74,10 @@ class SubmissionCalendar(HTMLCalendar):
     def formatday(self, day, weekday):
         if day != 0:
             cssclass = self.cssclasses[weekday]
-            if date.today() == date(self.year, self.month, day):
+            this_day = date(self.year, self.month, day)
+            if date.today() == this_day:
                 cssclass += ' today'
-            if date.today() < date(self.year, self.month, day):
+            if date.today() < this_day:
                 future=True
             else:
                 future=False
@@ -82,17 +85,45 @@ class SubmissionCalendar(HTMLCalendar):
             if day in self.submissions:
                 cssclass += ' filled'
                 body = ['<br>']
+
+                #received
                 day_submissions = self.submissions[day]
-                body.append('<a href="#" class="btn btn-success">')
-                body.append("Received")
-                if len(day_submissions) > 1:
-                    body.append(" (%d)" % len(day_submissions))
-                body.append('</a>')
+                threshold_resolved=True
+                treshold_body = []
+                for submit in day_submissions:
+                    if submit.is_threshold:
+                        #ok, it's a threshold violation, let's check if the issue is closed
+                        issues = submit.get_issues()
+                        for issue in issues:
+                            if issue.is_closed:
+                                pass
+                            else:
+                                threshold_resolved=False
+                                treshold_body.append('<a href="%s">Threshold</a><br>' % (reverse('manage-issue', kwargs={"issue_id": issue.id})))
+                if threshold_resolved:
+                    body.append('<span class="label label-success">Received</span><br>')
+                else:
+                    body.append('<span class="label label-important">Received</span><br>')
+                    body.append(''.join(treshold_body))
                 body.append('<br>')
                 return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
 
             if weekday < 5 and not future:
-                missing_link = '<br><a href="#" class="btn btn-warning">Missing</a><br>'
+                issue_check = Issue.objects.filter(patient=self.django_patient, due_date=datetime(this_day.year, this_day.month, this_day.day), category=get_missing_category())
+                missing_link = ''
+                if issue_check.count() == 0:
+                    missing_link = '<br><span class="label label-warning">Missing</span><br>'
+                    missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
+                else:
+                    missing_resolved=True
+                    still_open = issue_check.filter(status=ISSUE_STATE_OPEN)
+                    if still_open.count() == 0:
+                        missing_link = '<br><span class="label label-info">Missing - Resolved</span>'
+                    else:
+                        missing_link = '<br><span class="label label-warning">Missing - Unresolved</span><br>'
+                        for i in still_open:
+                            missing_link += '<a href="%s">View Issue</a><br>' % (reverse('manage-issue', kwargs={"issue_id": i.id}))
+
                 return self.day_cell(cssclass, "%d %s" % (day, missing_link))
             elif weekday < 5 and future:
                 return self.day_cell('future', "%d" % day)
@@ -207,9 +238,9 @@ class CarehqPatientSingleView(PatientSingleView):
             sk = ['Test000001', viewyear, viewmonth, 0]
             ek = ['Test000001', viewyear, viewmonth, 31]
 
-            submissions = XFormInstance.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
+            submissions = CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
 #            submissions = []
-            cal = SubmissionCalendar(submissions).formatmonth(viewyear, viewmonth)
+            cal = SubmissionCalendar(submissions, dj_patient).formatmonth(viewyear, viewmonth)
             context['calendar'] = mark_safe(cal)
             self.template_name = "carehqapp/patient/carehq_patient_submissions.html"
 

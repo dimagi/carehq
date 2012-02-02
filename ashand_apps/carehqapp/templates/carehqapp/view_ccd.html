@@ -14,14 +14,12 @@
 {% block page_crumbs %}
 {% endblock page_crumbs %}
 {% block page_header %}
-    <h1>Home <small>Recent Activity</small></h1>
+    <h1>CCD Submission<small></small></h1>
 {% endblock %}
 {% block content %}
-    <h3>Recent Issues</h3>
-    {% include "carehqapp/issues/recent_issue_activity.html" %}
-    <hr>
-    {% if submissions %}
-        <h3>Recent Patient Sessions</h3>
-        {% include "carehqapp/ccd/ccd_list.html" %}
-    {% endif %}
+    <strong>Patient:</strong>
+        <a href="{{ submit.get_patient_doc.get_absolute_url }}">
+            {{ submit.get_patient_doc.last_name }}, {{ submit.get_patient_doc.first_name }}</a><br>
+    <strong>Session Time:</strong> {{ submit.get_session_time|date }} <br>
+    {{ submit.ccd_table_data|safe }}
 {% endblock %}

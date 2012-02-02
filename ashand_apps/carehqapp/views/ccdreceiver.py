@@ -1,10 +1,17 @@
 import logging
 import pdb
 import uuid
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from carehq_core import carehq_api
+from carehqapp.models import CCDSubmission
+from clinical_shared.decorators import actor_required
 from couchforms.util import post_xform_to_couch
 from couchforms.views import post as couchforms_post
 from receiver.util import spoof_submission
@@ -59,18 +66,29 @@ def receive_ccd(request):
         response_text = """<Response><Code>SUCCESS</Code><Message>Thank you, doc submitted id:%s</Message></Response>""" % doc['_id']
         return HttpResponse(response_text, content_type='text/xml')
     return _do_post(request, post_callback, magic_property='patientsessiondata')
-#    response_text = """<Response><Code>SUCCESS</Code><Message>doc submitted id:%s</Message></Response>""" % doc['_id']
 
-    #Temporary method for submission until receiver logic is updated to handle patientsessiondata POST key
-#    payload = None
-#    if request.POST.has_key('patientsessiondata'):
-#        payload = request.POST['patientsessiondata']
-#    else:
-#        if request.FILES.has_key('patientsessiondata'):
-#            payload = request.FILES['patientsessiondata'].read()
-#    if payload is None:
-#        logging.error("Error receiving data, patientsession data key not in FILES or POST %s" % str(request.META))
-#    resp = spoof_submission(reverse('receiver.views.post'), payload, hqsubmission=False)
-#    response_text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Response><Code>SUCCESS</Code><Message>Thank you %s</Message></Response>" % uuid.uuid4().hex
-#    return HttpResponse(response_text, content_type='text/xml') #default this assumes is a 200 response code.
+
+
+@login_required
+@actor_required
+def submissions_list(request, patient_guid, template_name="carehqapp/ccd_submissions.html"):
+    context = RequestContext(request)
+    #hack till we get it all stitched up
+    patient_guid='Test000001'
+    sk=[patient_guid, 0000]
+    ek = [patient_guid, 3000]
+    context['submissions']=CCDSubmission.view('carehqapp/ccd_submissions_by_patient', startkey=sk, endkey=ek, include_docs=True).all()
+    return render_to_response(template_name, context_instance=context)
+
+@login_required
+@actor_required
+def view_ccd(request, doc_id, template_name='carehqapp/view_ccd.html'):
+    context = RequestContext(request)
+    submit = CCDSubmission.get(doc_id)
+    patient_doc=submit.get_patient_doc()
+    context['submit']=submit
+
+    if not carehq_api.has_permission(request.current_actor.actordoc, patient_doc):
+        raise PermissionDenied
+    return render_to_response(template_name, context_instance=context)
 

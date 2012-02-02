@@ -114,15 +114,3 @@ def add_long_issue():
     for c in long_cases:
         load_interaction(ct, c)
 
-def create_issue(patient, actor_creator, description, body, priority=None):
-        newcase = Issue.objects.new_issue(Category.objects.all()[0],
-                              actor_creator,
-                              description,
-                              body,
-                              priority,
-                              Priority.objects.all()[0],
-                              patient=patient,
-                              status=Status.objects.all().filter(state_class=issue_constants.ISSUE_STATE_OPEN)[0],
-                              activity=ActivityClass.objects.filter(event_class=issue_constants.ISSUE_EVENT_OPEN)[0]
-                              )
-        return newcase

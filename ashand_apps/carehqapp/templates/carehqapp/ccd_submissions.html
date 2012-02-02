@@ -17,11 +17,5 @@
     <h1>Home <small>Recent Activity</small></h1>
 {% endblock %}
 {% block content %}
-    <h3>Recent Issues</h3>
     {% include "carehqapp/issues/recent_issue_activity.html" %}
-    <hr>
-    {% if submissions %}
-        <h3>Recent Patient Sessions</h3>
-        {% include "carehqapp/ccd/ccd_list.html" %}
-    {% endif %}
 {% endblock %}

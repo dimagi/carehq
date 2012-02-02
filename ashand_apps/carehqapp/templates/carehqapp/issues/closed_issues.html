@@ -25,7 +25,7 @@
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
                 <td> {{ issue.closed_by.actordoc.get_name }} </td>
-                <td> {% get_timeago issue.closed_date %} </td>
+                <td> {{ issue.closed_date|date:"M j, Y P" }} </td>
             </tr>
         {% endfor %}
         </tbody>

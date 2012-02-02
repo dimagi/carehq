@@ -33,10 +33,11 @@
     <div class="row"> {# the basic issue info block is span 24 #}
         {% block issue_info %}
             {#                {% include "issuetracker/partials/issue/base_issue_info.html" %}#}
-            <div class="span8 issue-body">
             {% if issue.category.display == "Threshold Violation" %}
+            <div class="span8">
                 {{ issue.body|safe }}
             {% else %}
+            <div class="span8 issue-body">
                 {{ issue.body}}
             {% endif %}
                 <br>

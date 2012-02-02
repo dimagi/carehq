@@ -1,30 +1,39 @@
 # -*- coding: utf-8 -*-
-import traceback
+from carehq_core import carehq_api
+from carehq_core.carehq_constants import role_primary_provider, role_provider
+from carehqapp.models import CCDSubmission, get_threshold_category
 from couchforms.signals import xform_saved
-import logging
 import random
-import simplejson
-from clinical_core.issuetracker.models.issuecore import IssueCategory, Issue
+from clinical_core.issuetracker.models.issuecore import  Issue
 from clinical_core.patient.models import Patient
-from issuetracker import issue_constants as caseconstants
+from issuetracker import issue_constants
 from issuetracker.models.issuecore import ExternalIssueData
-from permissions.models import Actor
-from lxml import etree
-
-def get_ccd_table_data(xform):
-    attachment = xform.fetch_attachment('form.xml', stream=True)
-    tree = etree.parse(attachment)
-    r = tree.getroot()
-    p = r.xpath('//hl7:component/hl7:structuredBody/hl7:component/hl7:section/hl7:text/hl7:table', namespaces={'hl7':'urn:hl7-org:v3'})
-    table_fragment = etree.tostring(p[1])
-    return table_fragment
+from permissions.models import Actor, Role
 
 
 def get_system_actor():
     return Actor.objects.get(name='System')
 
-def get_threshold_category():
-    return IssueCategory.objects.get(id='040052ea2029408baf4583a78651635e')
+def get_primary_provider_role():
+    return Role.objects.get(name=role_primary_provider)
+
+def get_provider_role():
+    return Role.objects.get(name=role_provider)
+
+def get_assigning_actor(patient):
+    careteam_dict = carehq_api.get_careteam_dict(patient.couchdoc)
+    primary_role = get_primary_provider_role()
+    provider_role = get_provider_role()
+    if careteam_dict.has_key(primary_role):
+        if len(careteam_dict[primary_role]) > 0:
+            return careteam_dict[primary_role][0]
+
+
+    if careteam_dict.has_key(provider_role):
+        if len(careteam_dict[provider_role]) > 0:
+            return careteam_dict[provider_role][0]
+    return None
+
 
 def process_ccd_submission(sender, xform, **kwargs):
     try:
@@ -51,12 +60,19 @@ def process_ccd_submission(sender, xform, **kwargs):
                 get_threshold_category(),
                 system_actor,
                 "\tDiarrhea threshold violation",
-                get_ccd_table_data(xform),
-                random.choice(caseconstants.PRIORITY_CHOICES)[0],
+                CCDSubmission.find_ccd_table_data(xform),
+                random.choice(issue_constants.PRIORITY_CHOICES)[0],
                 patient=patient,
-                status=caseconstants.STATUS_CHOICES[0][0],
-                activity=caseconstants.ISSUE_EVENT_CHOICES[0][0],
+                status=issue_constants.STATUS_CHOICES[0][0],
+                activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
             )
+
+            #now assign it.
+            assign_actor = get_assigning_actor(patient)
+            if assign_actor is not None:
+                new_issue.assign_issue(assign_actor, actor_by=system_actor, commit=True)
+
+
             issue_ccd_link = ExternalIssueData()
             issue_ccd_link.issue = new_issue
             issue_ccd_link.doc_id = xform._id
@@ -77,12 +93,17 @@ def process_ccd_submission(sender, xform, **kwargs):
                 get_threshold_category(),
                 system_actor,
                 "GI threshold violation",
-                get_ccd_table_data(xform),
-                random.choice(caseconstants.PRIORITY_CHOICES)[0],
+                CCDSubmission.find_ccd_table_data(xform),
+                random.choice(issue_constants.PRIORITY_CHOICES)[0],
                 patient=patient,
-                status=caseconstants.STATUS_CHOICES[0][0],
-                activity=caseconstants.ISSUE_EVENT_CHOICES[0][0],
+                status=issue_constants.STATUS_CHOICES[0][0],
+                activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
             )
+            #now assign it.
+            assign_actor = get_assigning_actor(patient)
+            if assign_actor is not None:
+                new_issue.assign_issue(assign_actor, actor_by=system_actor, commit=True)
+
             issue_ccd_link = ExternalIssueData()
             issue_ccd_link.issue = new_issue
             issue_ccd_link.doc_id = xform._id

@@ -1,16 +1,11 @@
 #from provider.models import Provider
 import logging
-import pdb
 from django.contrib.auth.models import AnonymousUser
 from django.utils.hashcompat import sha_constructor
-from carehqapp import constants
-from patient.models import Patient
 
 #http://www.djangosnippets.org/snippets/1661/
 #from django.contrib.sessions.middleware import SessionMiddleware 
-from django.core.exceptions import ObjectDoesNotExist
-from permissions.models import Actor, PrincipalRoleRelation, Role
-from django.contrib.auth.middleware import AuthenticationMiddleware
+from permissions.models import Actor
 import settings
 
 CACHED_CURRENT_ACTOR = "_cached_current_actor"

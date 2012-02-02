@@ -6,12 +6,14 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^$', 'dashboard.home_news', name='home'),
         url(r'^user/noprofile$', 'account.no_actor', name='no_actor_profile'),
 
-        url(r'^issue/(?P<issue_id>[0-9a-f]{32})$', 'issues.manage_issue', name="manage-issue"),
+        url(r'^issue/(?P<issue_id>[0-9a-z]{32})$', 'issues.manage_issue', name="manage-issue"),
         url(r'^issues/$', 'issues.issue_home', name='issue_home'),
         url(r'^issues/(?P<issue_filter>.*)/$', 'issues.issue_filter', name='issue_filter'),
         #url(r'^careplan/edit/(?P<user_id>.*)$', 'careplan.edit_careplan', name='edit_careplan'),
         #url(r'^careplan/(?P<user_id>.*)$', 'careplan.careplan', name='careplan'),
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'), #receive care innovation ccd
+
+        url(r'^data/ccd/(?P<doc_id>[0-9a-z]{32})$', 'ccdreceiver.view_ccd', name="view_ccd"),
 
 
         url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', CarehqPatientSingleView.as_view(template_name='carehqapp/patient/carehq_patient_base.html'), name='patient_url'),
