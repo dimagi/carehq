@@ -8,13 +8,13 @@
 	<th>{% pretty_column col %}</th>
 {% endfor %}
 </tr>
-{% for case in cases %}
+{% for issue in issues %}
 <tr>
 	{% if show_patient %}
 	<td></td>
 	{% endif %}
 	{% for col in columns %}
-		<td><a href="{% url manage-case case.id %}">{% case_column_plain case col %}</a></td>
+		<td><a href="{% url manage-issue issue.id %}">{% issue_column_plain issue col %}</a></td>
 	{% endfor %}
 {%endfor %}
 </table>

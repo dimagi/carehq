@@ -6,7 +6,7 @@ from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from hutch.couchdb_doc_storage import CouchDBAttachmentFile, CouchDBDocStorage
 from hutch.models import AuxMedia, AttachmentImage
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 from couchdbkit.schema.properties import StringProperty, StringListProperty
 import settings
 from shineforms.lab_utils import merge_labs

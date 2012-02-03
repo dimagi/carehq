@@ -1,0 +1,25 @@
+{% load patient_tags %}
+<table>
+<tr>
+	<th>Patient</th>
+	<th>Description</th>
+	<th>Opened</th>
+	<th>Last Edit Date</th>
+	<th>Last Edit By</th>
+	<th>Assigned To</th>	
+
+</tr>
+
+<ul>
+{% for issue in issues %}
+<tr>
+	<td>{% patient_for_issue issue %} </td>
+	<td>{{issue.description}}</td>
+	<td>{{issue.opened_date|date}}</td>
+	<td>{{issue.opened_by}}</td>
+	<td>{{issue.last_edit_date}}</td>
+	<td>{{issue.last_edit_by}}</td>
+	<td>{{issue.assigned_to}}</td>
+</tr>
+{% endfor %}
+</table>

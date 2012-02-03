@@ -10,20 +10,20 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
-    (r'^accounts/login/$', 'django.contrib.auth.views.login',
-         {"template_name": settings.LOGIN_TEMPLATE}),
-    (r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login',
-        ),
+    (r'^accounts/', include('registration.backends.default.urls')),
+    #(r'^accounts/login/$', 'django.contrib.auth.views.login', {"template_name": settings.LOGIN_TEMPLATE}),
+    #(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', ),
 
 
     (r'^admin/', include(admin.site.urls)),
     (r'^couchforms/', include('couchforms.urls')),
+    (r'^carehq_core/', include('carehq_core.urls')),
     (r'^couchlog/', include('couchlog.urls')),
     (r'^djangocouch', include('djangocouch.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'', include('account.urls')),
     (r'', include('auditcare.urls')),
-    #(r'', include('casetracker.urls')), #TODO
+    #(r'', include('issuetracker.urls')), #TODO
     (r'', include('clinical_core.carehqadmin.urls')),
     (r'', include('downloader.urls')),
     (r'', include('keymaster.urls')),

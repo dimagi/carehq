@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
@@ -8,8 +9,8 @@ from django.conf import settings
 #from auditcare.forms import SignaledAuthenticationForm
 
 
-@crumbs("My Profile", "my_profile", "home")
-def my_profile(request, template_name = "carehqapp/my_profile.html"):
-#   request.breadcrumbs("Profile", reverse(my_profile))
-    context = RequestContext(request)
+@login_required
+def no_actor(request, template_name="carehqapp/no_actor.html"):
+    context=RequestContext(request)
     return render_to_response(template_name, context_instance=context)
+

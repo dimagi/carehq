@@ -1,0 +1,17 @@
+{{object.description}}
+{{object.opened_by.get_full_name}}
+{{object.body}}
+{{object.assigned_to.get_full_name}}
+{{object.assigned_date|date}}
+
+{% if object.is_resolved and not object.is_closed%}
+{{object.resolved_by.get_full_name}} {{object.resolved_date|date}}
+{% endif %}
+
+{% if object.is_closed %}
+{{object.closed_by.get_full_name}} {{object.closed_date|date}}           
+{% endif %}
+
+{% for case_event in object.issue_events.all %}
+{{case_event.notes}}
+{% endfor %}

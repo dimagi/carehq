@@ -140,8 +140,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="span-24">
-        <div class="span-17">
+    <div class="span12">
+        <div class="span-two-thirds">
             <h4>DOT Adherence Data for
                 <select id="patients">
                     <option value="dots" {% if not patient %} selected="selected" {% endif %}>
@@ -176,11 +176,11 @@
             Visit Date Range</a>
             | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
         </div>
-        <div class="span-7 last">
+        <div class="span-one-third last">
 	<span style="font-size:75%">
 		<fieldset>
             <legend>Legend</legend>
-            <div class="span-3">
+            <div class="span2">
                 <strong>Obs. Method</strong><br>
                 <img src="{{ STATIC_URL }}dotsview/icons/plus.png">&nbsp;Direct<br>
                 <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">&nbsp;Pillbox<br>
@@ -188,7 +188,7 @@
                 <img src="{{ STATIC_URL }}dotsview/icons/warning.png">&nbsp;Conflict<br>
                 <img src="{{ STATIC_URL }}dotsview/icons/info.png">&nbsp;Notes<br>
             </div>
-            <div class="span-3 last">
+            <div class="span2 last">
                 <strong>Pillbox</strong><br>
                 <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">&nbsp; Empty<br>
                 <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
@@ -311,7 +311,7 @@
             {% endfor %} {#week in weeks #}
         </table>
     {% endif %}
-    <div class="container span-24">
+    <div class="container span12">
         {% if sorted_visits %}
             <h4>Visits in this report</h4>
             <table>
@@ -323,8 +323,8 @@
                     <th>Visit Kept</th>
                     <th>Scheduled</th>
                     <th>Contact</th>
-                    <th class="span-6">Observed ART</th>
-                    <th class="span-6">Observed Non ART</th>
+                    <th class="span4">Observed ART</th>
+                    <th class="span4">Observed Non ART</th>
                 </tr>
                 </thead>
                 <tbody>

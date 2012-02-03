@@ -3,9 +3,9 @@ from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 
-from casetracker.models import  CaseEvent
+from issuetracker.models import  IssueEvent
 from datetime import datetime
-from casetracker.models.casecore import Case
+from issuetracker.models.issuecore import Issue
 from patient.models import Patient
 from permissions.models import Actor
 
@@ -32,7 +32,7 @@ register = template.Library()
 #
 #"next_action": "Next Action",
 #"next_action_date":"Due Date",
-#"last_case_event": "Last Event",
+#"last_issue_event": "Last Event",
 #"last_event_date": "Event Date",
 #"last_event_by": "Last Event By",
 #}
@@ -55,7 +55,7 @@ register = template.Library()
 #"resolved_date":"pretty_time",
 #"closed_date":"pretty_time",
 #
-#"last_case_event": "html",
+#"last_issue_event": "html",
 #"last_event_date": "pretty_time",
 #"last_event_by": "html",
 #}
@@ -89,7 +89,7 @@ register = template.Library()
 def render_filter_heading(heading_object):
     #return "Some heading: %s" % heading_object.get_absolute_url()
 
-    if isinstance(heading_object, Case):
+    if isinstance(heading_object, Issue):
         return "<h3>Category: %s</h3>" % heading_object.display
     elif isinstance(heading_object,Patient):
         return "<h3>%s</h3>" % heading_object.full_name
@@ -102,11 +102,11 @@ def render_filter_heading(heading_object):
 
  
 @register.simple_tag
-def case_column_plain(case, column):
+def issue_column_plain(case, column):
     #print column
-    return render_case_column(case, column, plain_text=False)    
+    return render_issues_column(case, column, plain_text=False)
     
-def render_case_column(case, gridorder, plain_text=True):    
+def render_issues_column(case, gridorder, plain_text=True):
     column = gridorder.column.name
     try:
         if column == 'patient':
@@ -132,13 +132,13 @@ def render_case_column(case, gridorder, plain_text=True):
 
         elif isinstance(data, Patient):
             datastring = data.full_name
-        elif isinstance(data, Case):
+        elif isinstance(data, Issue):
             datastring = data.doc_type
         elif isinstance(data, Actor):
             #print "is a freaking user: "  + str(data)
             #datastring = '<a href="%s">%s</a>' % (reverse('carehqapp.views.users.single', kwargs={'user_id': data.id}), data.get_full_name())
             datastring = data.title
-        elif isinstance(data, CaseEvent):
+        elif isinstance(data, IssueEvent):
             return data.activity.get_event_class_display()
 #        elif isinstance(data, Status):
 #            return data.get_state_class_display()
@@ -151,7 +151,7 @@ def render_case_column(case, gridorder, plain_text=True):
                 else:
                     datastring = unicode(data)                    
                 if not plain_text:
-                    tmp = '<a href="%s">%s</a>' % (reverse('manage-case', kwargs={'case_id':case.id}), datastring)
+                    tmp = '<a href="%s">%s</a>' % (reverse('manage-case', kwargs={'issue_id':case.id}), datastring)
                     datastring = tmp
         else:
             datastring = unicode(data)        

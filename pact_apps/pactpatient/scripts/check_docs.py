@@ -1,6 +1,6 @@
 from casexml.apps.case.models import CommCareCase
 from pactpatient.models.pactmodels import PactPatient
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 
 def run():
     django_pts = Patient.objects.all()

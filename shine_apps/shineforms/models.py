@@ -1,4 +1,4 @@
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 from casexml.apps.phone.models import User
 from casexml.apps.case.models import CommCareCase
 from casexml.apps.phone.caselogic import case_previously_synced

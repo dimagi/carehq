@@ -1,0 +1,65 @@
+[
+  {
+    "pk": "bddb8723084041238fdda8b37a1c0e35",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "Alerts",
+      "namespace": "ashand",
+      "display": "Missed Daily Check In"
+    }
+  },
+  {
+    "pk": "040052ea2029408baf4583a78651635e",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "Alerts",
+      "namespace": "ashand",
+      "display": "Threshold Violation"
+    }
+  },
+  {
+    "pk": "f31adb7466834438bcc1ac6535f8caed",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "General",
+      "namespace": "ashand",
+      "display": "Question"
+    }
+  },
+  {
+    "pk": "bfeb57114c904148be07e48e358c6318",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "QA/QI",
+      "namespace": "pact",
+      "display": "CHW Data Submissions"
+    }
+  },
+  {
+    "pk": "251ba8d68c774fa7bbcfa85c076c2c2d",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "QA/QI",
+      "namespace": "pact",
+      "display": "DOT Data Entry"
+    }
+  },
+  {
+    "pk": "88b34b1eb94942cd9f0d7ee14663e947",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "Supervision",
+      "namespace": "pact",
+      "display": "Patient Supervision Event"
+    }
+  },
+  {
+    "pk": "60b6cf5f6a624c2c8c400d2b86987f86",
+    "model": "issuetracker.issuecategory",
+    "fields": {
+      "group": "Supervision",
+      "namespace": "pact",
+      "display": "Scheduled Training"
+    }
+  }
+]

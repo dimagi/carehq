@@ -1,7 +1,7 @@
 {% block extrahead %}
 {{block.super}}
 {%endblock extrahead %}
-<div class="span-5 box">
+<div class="span3 box">
 <strong>For: {{careteam.patient.user.first_name}} {{careteam.patient.user.last_name}}</strong><br>
 <a href="{% url view-careteam careteam.id %}">Care History</a><br>
 {#<a href="{%url carehqapp.views.users.single careteam.patient.user.id %}">View Profile</a><br>#}

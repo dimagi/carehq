@@ -1,0 +1,22 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        $(function() {
+            $("#tbl_issues").tablesorter({ sortList: [[0,0]], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Account Incomplete</h1>
+{% endblock %}
+{% block content %}
+    <h3>Your account is almost ready for use!</h3>
+    <p>Please contact the system administrator to complete the final step for your account activation.</p>
+{% endblock %}

@@ -15,47 +15,47 @@
     <link rel="stylesheet" href="{{STATIC_URL}}shinecarehq/shinecarehq.css" type="text/css">
 {% endblock %}
 <div class="container">
-    <div class="span-24">
+    <div class="span12">
         <h2>Bacteremia Dashboard :: {{ show_string }}</h2>
 
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=all">All Patients</a></h3>
             <h3>{{ patients|length }}</h3>
         </div>
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=active">Active</a></h3>
             <h3>{{ active|length }}</h3>
         </div>
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=inactive">Inactive</a></h3>
             <h3>{{ inactive|length }}</h3>
         </div>
-         <div class="span-6 last">
+         <div class="span4 last">
              <h3><a href="{{ request.path }}?show=enrolled_today">Enrolled Today</a></h3>
             <h3>{{ enrolled_today|length }}</h3>
         </div>
         <hr>
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=positive">Positive</a></h3>
             <h3>{{ positive|length }}</h3>
         </div>
 
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=negative">Negative</a></h3>
             <h3>{{ negative|length }}</h3>
         </div>
-        <div class="span-6">
+        <div class="span4">
             <h3><a href="{{ request.path }}?show=contaminated">Contaminated</a></h3>
             <h3>{{ contaminated|length }}</h3>
         </div>
-         <div class="span-6 last">
+         <div class="span4 last">
              <h3><a href="{{ request.path }}?show=needing_fup">Needing Follow Up</a></h3>
             <h3>{{ only_enrolled|length }}</h3>
         </div>
     </div>
 <hr>
-    <div class="span-24 prepend-22"><small>Total: {{ show_list|length }} rows</small></div>
-    <table id="patient-table" class="tablesorter span-24 last">
+    <div class="span12 offset15"><small>Total: {{ show_list|length }} rows</small></div>
+    <table id="patient-table" class="tablesorter span12 last">
     <thead>
         <tr>
             <th>{% trans "Surname" %}</th>
@@ -119,6 +119,6 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="span-24 prepend-22"><small>Total: {{ show_list|length }} rows</small></div>
+    <div class="span12 offset15"><small>Total: {{ show_list|length }} rows</small></div>
 </div>
 {% endblock content %}

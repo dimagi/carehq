@@ -15,6 +15,8 @@ def _join(*args):
     return '/'.join(args)
 
 
+################################################################
+# PACT bootstrap
 def _setup_pact_production():
     env.virtualenv_root = '/home/carehq/.virtualenvs/carehq' #todo: change pact user to carehq
     env.src_root       = _join(env.root, 'src')
@@ -31,6 +33,11 @@ def pact_production():
     env.user = prompt("Username: ", default=env.user)
     _setup_pact_production()
 
+#END PACT
+
+#################################
+#MEPI Setup
+
 def _setup_mepi_production():
     env.virtualenv_root = '/home/carehq/.virtualenvs/carehq'
     env.src_root       = _join(env.root, 'src')
@@ -46,22 +53,36 @@ def mepi_production():
     env.user = prompt("Username: ", default=env.user)
     _setup_mepi_production()
 
-def _setup_shine_staging():
-    env.virtualenv_root = '/home/dimagivm/.virtualenvs/carehq_shine'
-    env.root = '/home/dimagivm/'
+def _setup_mepi_production():
+    env.virtualenv_root = '/home/carehq/.virtualenvs/carehq'
     env.src_root       = _join(env.root, 'src')
     env.code_root       = _join(env.root, 'src/carehq')
     env.project_root    = _join(env.root, 'src/carehq')
+#END MEPI
 
-def shine_staging():
-    """Staging environment within local network
-    """
-    env.code_branch = 'shine'
-    env.sudo_user = 'dimagivm'
-    env.hosts = ['192.168.7.224']
-    env.environment = 'shine_staging'
-    env.user = prompt("Username: ", default='dimagivm')
-    _setup_shine_staging()
+
+################################
+#ASHAnd setup
+def ashand_production():
+    """ use ashand environment on remote host for MEPI"""
+    env.code_branch = 'ashand-dev'
+    env.sudo_user = 'ashand'
+    env.hosts = ['192.168.100.108']
+    env.environment = 'ashand_production'
+    env.user = prompt("Username: ", default=env.user)
+    _setup_ashand_production()
+
+def _setup_ashand_production():
+    env.virtualenv_root = '/home/ashand/www/production/python_env'
+    ashand_root = '/home/ashand/www/production'
+
+    env.src_root       = _join(ashand_root, 'code_root')
+    env.code_root       = _join(ashand_root, 'code_root/carehq')
+    env.project_root    = _join(ashand_root, 'code_root/carehq')
+
+#END ASHAND
+
+
 
 def enter_virtualenv():
     """
@@ -95,18 +116,23 @@ def pip_update():
         with enter_virtualenv():
             run('pip install -r requirements.txt', shell=True)
 
+def collectstatic():
+    with cd(env.code_root):
+        with enter_virtualenv():
+            sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
+
+
 def syncdb():
     with cd(env.code_root):
         with enter_virtualenv():
             sudo('python manage.py syncdb --noinput', user=env.sudo_user)
-            #sudo('python manage.py migrate --noinput', user=env.sudo_user)
-            sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
+            sudo('python manage.py migrate --noinput', user=env.sudo_user)
 
 def update():
     """
     Update codebase and submodules (git pull)
     """
-    require('root', provided_by=('staging', 'pact_production', 'mepi_production'))
+    require('root', provided_by=('staging', 'pact_production', 'mepi_production', 'ashand_production'))
     with cd(env.code_root):
         sudo('git checkout %(code_branch)s' % env, user=env.sudo_user)
         sudo('git pull', user=env.sudo_user)
@@ -115,7 +141,7 @@ def update():
 
 def deploy_all():
     """ deploy code to remote host by checking out the latest via git """
-    require('root', provided_by=('staging', 'pact_production','mepi_production'))
+    require('root', provided_by=('staging', 'pact_production','mepi_production', 'ashand_production'))
     if env.environment == 'pact_production':
         if not console.confirm('Are you sure you want to deploy pact_production?', default=False):
             utils.abort('Production deployment aborted.')
@@ -124,6 +150,13 @@ def deploy_all():
         get_code()
     update_code()
     restart_all()
+
+
+def ashand_restart_supervisord():
+    require('root', provided_by=('ashand_production'))
+    with settings(sudo_user="root"):
+        sudo('supervisorctl restart -production:-production-server', user=env.sudo_user, shell=False)
+
 
 def restart_django():
     require('root', provided_by=('staging', 'pact_production', 'mepi_production'))

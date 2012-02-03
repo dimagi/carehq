@@ -152,7 +152,7 @@ class PactPatientForm(DocumentForm):
 
 
     class Meta:
-        document = PactPatient
+        document = PactPatient.wrap
 
 
 #

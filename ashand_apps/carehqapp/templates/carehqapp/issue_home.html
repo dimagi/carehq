@@ -1,0 +1,99 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+{% block title %}{% trans "CareHQ :: Issues" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        var refreshNotification =
+                function () {
+                    location.reload();
+                    fadeIn("slow");
+                };
+
+        $(document).ready(
+                function () {
+                    //placeholder for autorefresh, but turning off for now
+                    //var autoRefresh = setInterval(refreshNotification, 30000);
+                    $("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("abbr.timeago").timeago();
+                }
+        );
+    </script>
+
+{% endblock %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active"><a href="{{ request.path }}">Issues</a></li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    {% if active_tab == "filter" %}
+        <h2>Issues / {{ filter_title|title }} <small>({{ issues|length }})</small></h2>
+    {% else %}
+        <h2>Issues / {{ active_tab|title }} <small>({{ issues|length }})</small></h2>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <ul class="nav nav-tabs">
+        {#		{% for activity in case.status.transitional_actions %}#}
+        {#			<li>#}
+        {#				<a href="{% url manage-case case.id %}?activity={{activity.slug}}">{{activity.active_tense.title}}</a>#}
+        {#			</li>			#}
+        {#		{% endfor %}#}
+
+        <li class="{% if active_tab == "open" %}active{% endif %}">
+            <a href="{% url issue_filter "open" %}">Open</a>
+        </li>
+
+        <li class="{% if active_tab == "closed" %}active{% endif %}">
+            <a href="{% url issue_filter "closed" %}">Closed</a>
+        </li>
+
+        <li class="{% if active_tab == "all" %}active{% endif %}">
+            <a href="{% url issue_filter "all" %}">All</a>
+        </li>
+
+        {#                <li class="{% if active_tab == "filter" %}ui-state-active ui-tabs-selected{% endif %}">#}
+        {#                    <a href="{% url issue_filter "filter" %}">Filter ::{{ filter_title }}</a>#}
+        {#                </li>#}
+
+        {##}
+        {#                <li class="dropdown" data-dropdown="dropdown">#}
+        {#                    <a href="#" class="dropdown-toggle">Dropdown</a>#}
+        {#                    <ul class="dropdown-menu">#}
+        {#                        <li><a href="#">Secondary link</a></li>#}
+        {#                        <li><a href="#">Something else here</a></li>#}
+        {#                        <li class="divider"></li>#}
+        {#                        <li><a href="#">Another link</a></li>#}
+        {#                    </ul>#}
+        {#                </li>#}
+
+        <li class="dropdown {% if active_tab == "filter" %}ui-state-active ui-tabs-selected{% endif %}"
+            data-dropdown="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown"
+               href="#">Filter
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Assigned to me</a></li>
+                <li><a href="#">Opened by me</a></li>
+                <li><a href="#">By Patient</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Alerts</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <br>
+    {% if active_tab == "open" %}
+        {% include "carehqapp/issues/recent_issue_activity.html" %}
+    {% endif %}
+    {% if active_tab == "closed" %}
+        {% include "carehqapp/issues/closed_issues.html" %}
+    {% endif %}
+    {% if active_tab == "all" %}
+        {% include "carehqapp/issues/all_issues.html" %}
+    {% endif %}
+
+{% endblock %}

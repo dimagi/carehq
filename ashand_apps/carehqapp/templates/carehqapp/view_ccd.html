@@ -1,0 +1,25 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        $(function() {
+            $("#tbl_issues").tablesorter({ sortList: [[0,0]], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>CCD Submission<small></small></h1>
+{% endblock %}
+{% block content %}
+    <strong>Patient:</strong>
+        <a href="{{ submit.get_patient_doc.get_absolute_url }}">
+            {{ submit.get_patient_doc.last_name }}, {{ submit.get_patient_doc.first_name }}</a><br>
+    <strong>Session Time:</strong> {{ submit.get_session_time|date }} <br>
+    {{ submit.ccd_table_data|safe }}
+{% endblock %}

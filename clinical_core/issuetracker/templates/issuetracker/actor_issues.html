@@ -1,0 +1,46 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "issuetracker Reference" %}{% endblock title %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+{% endblock extrahead %}
+{% block content %}
+    <h2>issuetracker application reference views</h2>
+    <div class="ui-tabs span12">
+        <a href="{% url issuetracker.views.debug_reference %}">Reference Dashboard</a> &nbsp; | &nbsp;
+    </div>
+
+    <div class="span12">
+        <h2>{{ actor.user.username }}'s issues</h2>
+        <a href="{{ request.path }}?issuefilter=opened_by">Opened by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=assigned_to">Assigned to</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=last_edit_by">Last edit by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=resolved_by">Resolved by</a> &nbsp; |
+        <a href="{{ request.path }}?issuefilter=closed_by">Closed by</a> &nbsp; |
+        <ul>
+            <div class="span12 last">
+                <h3>{{ actor }} Issues</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Last Edit Date</th>
+                        <th>Last Activity</th>
+                        <th>Last Edit By</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% for issue in issues %}
+                            <td> {{ issue.description }} </td>
+                            <td> {{ issue.last_edit_date|date }} </td>
+                            <td> {{ issue.last_activity }} </td>
+                            <td> {{ issue.last_edit_by.actordoc.get_name }} </td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ul>
+    </div>
+{% endblock content %}

@@ -2,11 +2,11 @@ from speechd.client import Priority
 from django.test import TestCase
 from django.contrib.auth.models import User
 import random
-from casetracker import constants
+from issuetracker import issue_constants
 import uuid
 from django.core.management import  call_command
-from casetracker.models.casecore import Case
-from patient.models.patientmodels import Patient
+from issuetracker.models.issuecore import Issue
+from patient.models import Patient
 from permissions.models import Actor
 
 MAX_MULTI_PATIENTS = 10
@@ -27,7 +27,7 @@ class CasePermissionsTest(TestCase):
         #print "Doctors:"  + str(Doctor.objects.all().count())
         call_command('load_categories')
         User.objects.all().delete()
-        Case.objects.all().delete()
+        Issue.objects.all().delete()
         Actor.objects.all().delete()
         Actor.objects.all().delete()
         Patient.objects.all().delete()
@@ -40,13 +40,13 @@ class CasePermissionsTest(TestCase):
         if description == None:
             description = "mock body %s" % (uuid.uuid4().hex),
 
-        newcase = Case.objects.new_case(Category.objects.all()[0],
+        newcase = Issue.objects.new_issue(Category.objects.all()[0],
                               actor,
                               description,
                               'some body',
                               priority,
-                              status=Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0],
-                              activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
+                              status=Status.objects.all().filter(state_class=issue_constants.ISSUE_STATE_OPEN)[0],
+                              activity=ActivityClass.objects.filter(event_class=issue_constants.ISSUE_EVENT_OPEN)[0]
                               )
         return newcase
 
@@ -68,20 +68,20 @@ class CasePermissionsTest(TestCase):
             else:
                 case.last_edit_by = actor_editor2
             case.description = "edited, foolio: " + str(uuid.uuid4().hex)
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.ISSUE_EVENT_EDIT)[0]
             case.save(activity=activity)
 
-        self.assertEqual(total_cases, Case.objects.get_authored(actor_creator).count())
-        self.assertEqual(0, Case.objects.get_authored(actor_creator, patient=pt2).count())
+        self.assertEqual(total_cases, Issue.objects.get_authored(actor_creator).count())
+        self.assertEqual(0, Issue.objects.get_authored(actor_creator, patient=pt2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor1).count())
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor1).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor1, patient=pt1).count())
-        self.assertEqual(0, Case.objects.get_edited(actor_editor1, patient=pt2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor1, patient=pt1).count())
+        self.assertEqual(0, Issue.objects.get_edited(actor_editor1, patient=pt2).count())
 
-        self.assertEqual(total_cases/2, Case.objects.get_edited(actor_editor2, patient=pt1).count())
-        self.assertEqual(0, Case.objects.get_edited(actor_editor2, patient=pt2).count())
+        self.assertEqual(total_cases/2, Issue.objects.get_edited(actor_editor2, patient=pt1).count())
+        self.assertEqual(0, Issue.objects.get_edited(actor_editor2, patient=pt2).count())
 
 
     def testDisparateCases(self):
@@ -102,7 +102,7 @@ class CasePermissionsTest(TestCase):
             actor = prov1[0]
             case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt1
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.ISSUE_EVENT_EDIT)[0]
             case.save(activity=activity)
             case1.append(case)
 
@@ -110,18 +110,18 @@ class CasePermissionsTest(TestCase):
             actor = prov2[0]
             case = self._create_case(actor, uuid.uuid4().hex)
             case.patient = pt2
-            activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_EDIT)[0]
+            activity=ActivityClass.objects.filter(event_class=issue_constants.ISSUE_EVENT_EDIT)[0]
             case.save(activity=activity)
             case2.append(case)
 
 
         print "verifying case creation 1:"
-        self.assertEqual(num_case1, Case.objects.all().filter(patient=pt1).count())
+        self.assertEqual(num_case1, Issue.objects.all().filter(patient=pt1).count())
         self.assertEqual(num_case1, pt1.cases.count())
 
 
         print "verifying case creation 2"
-        self.assertEqual(num_case2, Case.objects.all().filter(patient=pt2).count())
+        self.assertEqual(num_case2, Issue.objects.all().filter(patient=pt2).count())
         self.assertEqual(num_case2, pt2.cases.count())
 
 

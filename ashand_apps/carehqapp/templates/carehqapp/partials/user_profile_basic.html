@@ -1,10 +1,10 @@
 {% load i18n %}
-<div class="span-24 last">
+<div class="span12 last">
 	<fieldset>
-	<div class="span-2 border">
+	<div class="span1 border">
 	   <!-- <img src="{{STATIC_URL}}carehqapp/img/noprofile_photo.png"> -->
 	</div>
-	<div class="span-18 prepend-1">
+	<div class="span12 offset1">
 	<h2>{{user.first_name}} {{user.last_name}}</h2>
 	<table>
 	<tr>
@@ -12,9 +12,9 @@
 		<td><strong>{% trans "Member Since" %}</strong></td><td>{{user.date_joined|date }}</td>
 	</table>
 	</div>
-	<div class="span-2 last">
+	<div class="span1 last">
 	{% ifequal request.user user %}
-		<p class="span-2 quiet">(this is you)</p>
+		<p class="span1 quiet">(this is you)</p>
 	{% else %}
 	   &nbsp;
 	{% endifequal %}	

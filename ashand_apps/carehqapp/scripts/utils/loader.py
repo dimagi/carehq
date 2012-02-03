@@ -1,8 +1,8 @@
 import random
 
 from datetime import datetime, timedelta
-from casetracker.models import Category, Case, Priority, Status, ActivityClass, CaseEvent
-from casetracker import constants
+from issuetracker.models import Category, Issue, Priority, Status, ActivityClass, IssueEvent
+from issuetracker import issue_constants
 from ashandapp.models import CareTeam
 from patient.models import Patient
 from django.contrib.auth.models import User 
@@ -26,7 +26,7 @@ def load_interaction(careteam, interaction_arr):
     if body.count("%s") == 1:
         body = body % careteam.patient.user.first_name
     
-    newcase = Case()
+    newcase = Issue()
     newcase.description = title
     newcase.body = body
     newcase.category = Category.objects.get(slug=category_txt)
@@ -47,7 +47,7 @@ def load_interaction(careteam, interaction_arr):
     newcase.opened_date = datetime.utcnow() - startdelta
     newcase.last_edit_by = creator
     newcase.last_edit_date = newcase.opened_date
-    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=constants.CASE_STATE_OPEN)[0]
+    newcase.status = Status.objects.all().filter(category=newcase.category).filter(state_class=issue_constants.ISSUE_STATE_OPEN)[0]
 
     newcase.assigned_to = careteam.providers.all()[random.randint(0,careteam.providers.all().count()-1)].user
     newcase.assigned_date = newcase.opened_date 
@@ -76,13 +76,13 @@ def load_interaction(careteam, interaction_arr):
         if responder == None:
             print "wtf: " + str(subarr)
         
-        evt = CaseEvent()
+        evt = IssueEvent()
         evt.case = newcase
         if resp.count("%s") == 1:
             resp = resp % careteam.patient.user.first_name
         evt.notes = resp
         evt.activity = ActivityClass.objects.filter(category=newcase.category)\
-            .filter(event_class=constants.CASE_EVENT_COMMENT)[0]
+            .filter(event_class=issue_constants.ISSUE_EVENT_COMMENT)[0]
         evt.created_by = responder
         startdelta = startdelta - timedelta(minutes=random.randint(4,480))
         evt.created_date = datetime.utcnow() - startdelta
@@ -105,7 +105,7 @@ def assign_interactions(careteam, num_encounters):
         load_interaction(careteam, interaction)
 
 
-def add_long_cases():
+def add_long_issue():
     """
     Specific hack to add a long case to Pat Patient's caseload
     """
@@ -114,15 +114,3 @@ def add_long_cases():
     for c in long_cases:
         load_interaction(ct, c)
 
-def create_case(patient, actor_creator, description, body, priority=None):
-        newcase = Case.objects.new_case(Category.objects.all()[0],
-                              actor_creator,
-                              description,
-                              body,
-                              priority,
-                              Priority.objects.all()[0],
-                              patient=patient,
-                              status=Status.objects.all().filter(state_class=constants.CASE_STATE_OPEN)[0],
-                              activity=ActivityClass.objects.filter(event_class=constants.CASE_EVENT_OPEN)[0]
-                              )
-        return newcase

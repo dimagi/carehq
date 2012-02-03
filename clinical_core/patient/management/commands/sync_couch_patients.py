@@ -1,5 +1,5 @@
 from patient.models import Patient
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 
 def run():
     """Help script to regenerate a django patient model when couch has replicated the patient docs"""

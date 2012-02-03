@@ -1,7 +1,7 @@
 import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
-from actorpermission.models.actortypes import BaseActorDocument
+from actorpermission.models import BaseActorDocument
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
 from dimagi.utils.couch.database import get_db
@@ -11,7 +11,7 @@ from pactpatient.updater import update_patient_casexml
 from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
-from patient.models.patientmodels import  BasePatient, CPhone
+from patient.models import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
 from receiver.util import spoof_submission
@@ -26,7 +26,7 @@ from django.template.context import RequestContext
 from django.views.decorators.http import require_POST
 import logging
 from pactpatient.models.pactmodels import PactPatient, CDotWeeklySchedule
-from patient.models.patientmodels import  Patient
+from patient.models import  Patient
 
 @login_required
 @require_POST
@@ -39,11 +39,11 @@ def remove_phone(request):
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
         pdoc = PactPatient.get(patient_guid)
         phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
-        new_phones = pdoc.active_phones()
+        new_phones = pdoc.casexml_phones()
         new_phones[phone_id] = {'number':'', 'description': ''}
 
         print "Remove phone: %s" % new_phones
-        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.active_addresses)
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.casexml_addresses)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -118,11 +118,11 @@ def remove_address(request):
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
         pdoc = PactPatient.get(patient_guid)
         address_id = int(urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore'))
-        new_addrs = pdoc.active_addresses
+        new_addrs = pdoc.casexml_addresses
         new_addrs[address_id] = {'address': '', 'description': ''}
 #        new_addrs.pop(address_id)
 
-        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), new_addrs)
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), new_addrs)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -204,15 +204,15 @@ def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_fo
         elif form_name == 'ptedit':
             title = "Edit Patient Info"
             form = PactPatientForm('edit', instance=pdoc)
-            template='pactcarehq/partials/ajax_pactpatient_uni_form.html'
+            template='pactcarehq/partials/ajax_carehqpatient_form.html'
     else:
         #this really is only just for phones and addresses
         if form_name == 'address':
-            addr = pdoc.active_addresses[int(edit_id)]
+            addr = pdoc.casexml_addresses[int(edit_id)]
             form = SimpleAddressForm(initial=addr)
             title = "Change Address"
         elif form_name == 'phone':
-            p = pdoc.active_phones()[int(edit_id)]
+            p = pdoc.casexml_phones()[int(edit_id)]
             form = PhoneForm(initial=p)
             title = "New Phone"
 
@@ -276,13 +276,13 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 is_new_addr=False
 
-            active_addresses = pdoc.active_addresses
+            active_addresses = pdoc.casexml_addresses
             if is_new_addr:
                 active_addresses.append(addr_dict)
             else:
                 active_addresses[int(address_edit_id)-1] = addr_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 
             resp.status_code = 204
@@ -303,13 +303,13 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 is_new_phone = False
 
-            active_phones = pdoc.active_phones()
+            active_phones = pdoc.casexml_phones()
             if is_new_phone:
                 active_phones.append(phone_dict)
             else:
                 active_phones[int(phone_edit_id)-1] = phone_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.casexml_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
             resp.status_code = 204
             return resp

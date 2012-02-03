@@ -1,0 +1,36 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "Activation Complete" %}{% endblock %}
+
+{% block top_useridentity %}
+{% endblock %}
+
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Activation Complete!<small></small></h1>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <p>You're already logged in!</p>
+    {% else %}
+        <div class="span12">
+        <div class="row">
+        <div class="span2 pull-left">
+        </div>
+        <div class="span10">
+            <div class="row">
+                <hr>
+                <div class="span4 offset2 well">
+                    <h4>Your activation is completed, an additional validation step will be necessary to create a user account on the system.</h4>
+                </div>
+            </div>
+            {#        {% endif %}#}
+        </div>
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}
+

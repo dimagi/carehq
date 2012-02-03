@@ -2,7 +2,7 @@ import random
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase
-from actorpermission.models.actortypes import CHWActor, ProviderActor, CaregiverActor
+from actorpermission.models import CHWActor, ProviderActor, CaregiverActor
 from clinical_shared.middleware.identity import CareHQIdentityMiddleware
 from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from clinical_shared.utils import generator

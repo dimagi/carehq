@@ -1,4 +1,5 @@
 decorator
+lxml
 xlwt
 pycrypto
 pyasn1
@@ -33,3 +34,7 @@ gevent
 johnny-cache
 PIL
 django-smartagent
+pytz
+unidecode
+python-keyczar
+hg+http://bitbucket.org/ubernostrum/django-registration/

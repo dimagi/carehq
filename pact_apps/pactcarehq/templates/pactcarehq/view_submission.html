@@ -35,12 +35,12 @@
 
 
 {% block content %}
-    <div class="span-14">
-        <div class="span-14 last">
-            <div class="span-10">
+    <div class="span9">
+        <div class="span9 last">
+            <div class="span7">
                 <h2>View {{ form_type }} Submission</h2>
             </div>
-            <div class="span-4 last">
+            <div class="span3 last">
                 {% if form_type == "Bloodwork" %}
                     <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
                        href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
@@ -74,12 +74,12 @@
         <div>{% render_form_data xform %}</div>
 
     </div>
-    <div class="span-10 last">
+    <div class="span7 last">
         <h3>Supplemental Memos</h3>
         {% if comments %}
             {% for comment in comments %}
                 {{ comment.0.comment }} <br>
-                <div class="prepend-1">
+                <div class="offset1">
                     <small>by {{ comment.0.created_by }}
                         on {{ comment.0.created|date }} {{ comment.0.created|time }}</small>
                 </div>

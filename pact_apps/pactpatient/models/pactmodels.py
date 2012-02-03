@@ -660,7 +660,7 @@ class PactPatient(BasePatient):
         self.address.append(new_address)
         self.save()
 
-    def active_phones(self):
+    def casexml_phones(self):
         """
         Get casexml phones
         """
@@ -688,7 +688,7 @@ class PactPatient(BasePatient):
 
 
     @property
-    def active_addresses(self):
+    def casexml_addresses(self):
         """
         Get casexml address info
         """
@@ -716,7 +716,7 @@ class PactPatient(BasePatient):
     def get_ghetto_phone_xml(self):
         ret = ''
         counter = 1
-        aphones = self.active_phones()
+        aphones = self.casexml_phones()
         for num, phone in enumerate(aphones, start=1):
             if phone['number'] == '':
                 continue
@@ -762,7 +762,7 @@ class PactPatient(BasePatient):
     def get_ghetto_address_xml(self):
         ret = ''
         counter = 1
-        addresses = self.active_addresses
+        addresses = self.casexml_addresses
         for addr_dict in addresses:
             #addconcat = "%s %s, %s 0%s" % (addr.street, addr.city, addr.state, addr.postal_code)
             ret += "<address%d>%s</address%d>" % (addr_dict['address_id'],addr_dict['address'], addr_dict['address_id'])

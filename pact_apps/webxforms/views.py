@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template.context import RequestContext
 from couchforms.util import post_xform_to_couch
 from pactpatient.models import PactPatient
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from receiver.util import spoof_submission
 from touchforms.formplayer.models import XForm
 from touchforms.formplayer.views import enter_form, play_remote, get_remote_instance

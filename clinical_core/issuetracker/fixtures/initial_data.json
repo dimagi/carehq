@@ -1,0 +1,17 @@
+[
+    {
+        "pk": "5855bb5fef0b4e52ad1645b5f08c2786",
+        "model": "permissions.actor",
+        "fields": {
+            "groups": [],
+            "modified_date": "2012-01-28 04:38:40",
+            "name": "Me",
+            "expire_date": null,
+            "is_active": true,
+            "user": null,
+            "suspended": false,
+            "created_date": "2012-01-28 04:38:40",
+            "doc_id": null
+        }
+    }
+]

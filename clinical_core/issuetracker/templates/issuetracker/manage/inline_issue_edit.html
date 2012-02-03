@@ -1,0 +1,8 @@
+{#<h2> {{edit_headline}}</h2>#}
+<fieldset>
+<form action="" method="POST">
+{{ form.as_p }}
+<input type="submit" value="Submit"/>
+<input type="button" name="cancel" value="Cancel"  onclick="window.location = '{{request.path}}'"/>
+</form>
+</fieldset>

@@ -1,0 +1,40 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "Issuetracker Reference" %}{% endblock title %}
+{% block extrahead %}
+
+{% endblock extrahead %}
+{% block content %}
+    <h2>Issuetracker application reference views</h2>
+    <div class="ui-tabs span12">
+        <a href="{% url issuetracker.views.debug_reference %}">Reference Dashboard</a> &nbsp; | &nbsp;
+    </div>
+
+    <div class="span12">
+        <h2>{{ patient }}'s Issues</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Description</th>
+                <th>Last Edit Date</th>
+                <th>Last Activity</th>
+                <th>Last Edit By</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for issue in issues %}
+                <tr>
+                    <td>
+                        <a href="{% url manage-issue issue.id %}">View Issue</a>
+                    </td>
+                    <td> {{ issue.description }} </td>
+                    <td> {{ issue.last_edit_date|date }} </td>
+                    <td> {{ issue.last_activity }} </td>
+                    <td> {{ issue.last_edit_by.actordoc.get_name }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock content %}

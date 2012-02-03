@@ -41,20 +41,20 @@
 {% endblock %}
     <div class="container">
         <h2>Add Provider for patient {{ patient.get_id }}</h2>
-        <div class="span-24">
+        <div class="span12">
             {% if all_providers %}
                 <h3>Choose from existing providers</h3>
 {#                <button id="newprovider_dlg_opener">Create New</button>#}
-                <table id="provider-table" class="tablesorter span-24 last">
+                <table id="provider-table" class="tablesorter span12 last">
                     <thead>
                     <tr>
-                    <th class="span-3"></th>
-                    <th class="span-4">First Name</th>
-                    <th class="span-4">Last Name</th>
-                    <th class="span-4">Job Title</th>
-                    <th class="span-4">Email</th>
-                    <th class="span-3">Phone</th>
-                    <th class="span-6">Facility</th>
+                    <th class="span2"></th>
+                    <th class="span3">First Name</th>
+                    <th class="span3">Last Name</th>
+                    <th class="span3">Job Title</th>
+                    <th class="span3">Email</th>
+                    <th class="span2">Phone</th>
+                    <th class="span4">Facility</th>
                     </tr>
                     </thead>
 
@@ -77,7 +77,7 @@
                 </table>
             {% endif %}
         </div>
-        <div id="newprovider_dlg" title="Create New Provider" class="span-24">
+        <div id="newprovider_dlg" title="Create New Provider" class="span12">
         <h4>Create new provider</h4>
             <form id="newprovider_form" action="" method="POST" class="uniForm">
                 {% csrf_token %}

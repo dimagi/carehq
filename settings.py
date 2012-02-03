@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     #'auditcare.middleware.AuditMiddleware',
-    #'casetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
+    #'issuetracker.middleware.threadlocals.ThreadLocals', #this is to do the reflexive filter queries
     'clinical_core.clinical_shared.middleware.identity.CareHQIdentityMiddleware',
     #'tracking.middleware.VisitorTrackingMiddleware',
     #'breadcrumbs.middleware.BreadcrumbsMiddleware',
@@ -132,9 +132,9 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
 
     # Core clinical apps #####################
-    'tenant',
-    'clinical_core.actorpermission',
     'permissions',
+    'tenant',
+    'actorpermission',
     'couchforms',
     'couchexport',
     'soil', 
@@ -151,12 +151,14 @@ INSTALLED_APPS = (
     'account',
     'carehqadmin',
     'carehq_core',
-    'casetracker',
+    'clinical_core.issuetracker',
     'keymaster',
     'webxforms',
     'djangocouch',
     'hutch',
     'clinical_shared',
+    'careplan',
+    #'deploy_tools',
     #end clinical_core
 
     #########################
@@ -169,6 +171,7 @@ INSTALLED_APPS = (
     'uni_form',
     'smartagent',
     'south',
+    'registration',
     #end third party apps
 
     ###########################
@@ -186,7 +189,7 @@ INSTALLED_APPS = (
 #DEV_APPS=['couchlog', 'couchforms','couchexport','patient','auditcare', 'casexml.apps.case', 'casexml.apps.phone', 'touchforms.formsplayer',]
 
 #to be overrided by localsettings if need be.  These are the BARE MINIMUM
-COUCHDB_APPS = ['patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case', 'casexml.apps.phone']
+COUCHDB_APPS = ['careplan', 'patient', 'couchforms', 'couchexport','couchlog','auditcare','casexml.apps.case', 'casexml.apps.phone']
 
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -205,14 +208,14 @@ DEBUG_TOOLBAR_CONFIG = {
 
 USE_DJANGO_STATIC_SERVER=True
 LOGIN_TEMPLATE='registration/login.html'
-LOGGEDOUT_TEMPLATE='registration/logged_out.html'
+LOGGEDOUT_TEMPLATE='registration/logout.html'
 LOGIN_REDIRECT_URL = '/'
 BASE_TEMPLATE = 'base.html'
 
 AUDITABLE_MODELS = [
                     'django.contrib.auth.models.User',
-                    #'casetracker.models.Case',
-                    #'casetracker.models.CaseEvent',
+                    #'issuetracker.models.Issue',
+                    #'issuetracker.models.IssueEvent',
                     'patient.models.Patient',
                     #'patient.models.PatientIdentifier',
                     ]
@@ -229,6 +232,9 @@ CARROT_BACKEND = "django"
 
 # carehq config
 CAREHQ_CREATE_PATIENT_VIEW_NAME = "create_patient"
+
+
+ACCOUNT_ACTIVATION_DAYS=7
 
 import os
 
@@ -279,7 +285,6 @@ def get_server_url(server_root, username, password):
 
 COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
 COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
-
 
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]

@@ -73,7 +73,7 @@ DEBUG_TOOLBAR_PANELS = (
 
 
 LOGIN_TEMPLATE='pactregistration/login.html'
-LOGGEDOUT_TEMPLATE='pactregistration/logged_out.html'
+LOGGEDOUT_TEMPLATE='pactregistration/logout.html'
 
 DATABASES = {
     'default': {

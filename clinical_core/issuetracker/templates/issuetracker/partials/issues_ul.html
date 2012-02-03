@@ -1,0 +1,35 @@
+<ul>
+{% for issue in issues %}
+{% if request.is_patient %}
+
+    <div class="span12" style="margin: 8px;">
+    <div class="span=24 last">
+        <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
+    </div>
+    <div class="span7 offset1">
+        Opened by {{ issue.opened_by.get_name }}
+       {{ issue.opened_date|date }}
+    </div>
+    <div class="span-one-third last">
+        Last Activity {{ issue.last_edit_date|date }} {{ issue.last_edit_date|time }}
+{#        by {{ case.last_edit_by.get_name }}#}
+    </div>
+    </div>
+    {% else %}
+    <li>
+        <div class="span=10">
+        <span style="font-size:110%">Patient: {{ issue.patient }}</span>
+        </div>
+        <div class="span=10 last">
+            {{ issue.opened_date|date }} {{ issue.opened_date|time }}
+        </div>
+        <div class="span12">
+            <span style="font-size:125%">
+        <a href="{%url issuetracker.views.manage_issue issue.id %}">{{issue.description}}</a>
+                </span>
+        </div>
+        <strong>Opened By</strong> {{issue.opened_by.get_name}} <strong>Edited by:</strong> {{issue.last_edit_by.get_name}} <strong>Status:</strong> {{issue.status}} <strong>Priority:</strong> {{issue.priority}}</a></li>
+    <hr>
+{% endif %}
+{%endfor%}
+</ul>

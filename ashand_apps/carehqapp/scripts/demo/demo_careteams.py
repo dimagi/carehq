@@ -148,4 +148,13 @@ DEMO_CARETEAMS = [
             ["Christine", "Chapel", "Nurse", "USS Enterprise"],
         ],
         },
+        {
+        'patient': ["Wesley", "", "Crusher", "m"],
+        'caregivers': [["Beverly", "Crusher"],
+        ],
+        'providers': [
+            ["Christine", "Chapel", "Nurse", "USS Enterprise"],
+            ["Julian", "Bashir", "Oncologist", "Deep Space 9"],
+        ],
+        },
 ]

@@ -45,19 +45,19 @@
     <div id="casetabs-imaging">
         {% for action, thumbs in image_actions.items %}
 
-            <div class="span-24">
-                <div class="span-8">
+            <div class="span12">
+                <div class="span-one-third">
                     <strong>Date Performed:</strong> {{ action.date }}<br>
                     <strong>Result: </strong> {{ action.result|title }}<br>
 
                 </div>
-                <div class="span-14 last">
+                <div class="span9 last">
                     {% for im in thumbs %}
                         {% if im %}
-                         <div class="span-11">
+                         <div class="span7">
                             <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" id="img_{{ im.key }}"><br>
                         </div>
-                        <div class="span-3 last">
+                        <div class="span2 last">
                             <strong>Simple Enhancements</strong><br>
                             <input type="button" onclick="edge_detection('img_{{ im.key }}');" value="Edge detection"><br>
                             <input type="button" onclick="edge_detection2('img_{{ im.key }}');" value="Edge detection 2"><br>

@@ -1,0 +1,121 @@
+{% extends "patient/base_patient.html" %}
+{% load i18n %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timePicker.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery.timePicker.css" type="text/css">
+    {#    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/profile_tab_ctrl.js"></script>#}
+    <script>
+        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
+            var payload = {
+                'csrfmiddlewaretoken':getCookie("csrftoken"),
+                'patient_guid':patient_guid,
+            };
+
+            var remove_url = '';
+            if (phone_addr == "phone") {
+                attr_name = 'phone_id';
+                remove_url = "{% url remove_phone %}";
+                payload['phone_id'] = item_idx;
+            } else if (phone_addr == "address") {
+                attr_name = 'address_id';
+                var remove_url = "{% url remove_address %}";
+                payload['address_id'] = item_idx;
+            }
+            console.log(payload);
+            console.log(remove_url);
+            send_xhr = $.ajax({
+                "type":"POST",
+                "url":remove_url,
+                "data":payload,
+                "success":function (data) {
+                    location.reload();
+                }, //end success
+                "error":function (data) {
+                    alert("error");
+                    console.log(data);
+                    $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+
+        $(function () {
+
+            $('#ptabs').tabs();
+            $('.editctrl').each(function () {
+                $(this).hide();
+            });
+        });
+        function toggle_edit() {
+            if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
+                $('.editctrl').each(function () {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
+            } else {
+                $('.editctrl').each(function () {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
+            }
+        }
+    </script>
+{% endblock extrahead %}
+{% block hat_actions %}
+    <a class="btn" href="{% url new_carehq_patient_issue patient_doc.get_id %}"><i class="icon-plus"></i> New Issue</a>
+{% endblock hat_actions %}
+
+{% block patient-tab-controller %}
+    <li {% if view_mode == "info" %}class="active"{% endif %}>
+        <a href="{% url patient_url patient_doc.get_id 'info' %}" data-toggle="tab">{% trans "Info" %}</a></li>
+    <li {% if view_mode == "issues" %}class="active"{% endif %}>
+        <a href="{% url patient_url patient_doc.get_id 'issues' %}" data-toggle="tab">{% trans "Issues" %}</a></li>
+    <li {% if view_mode == "submissions" %}class="active"{% endif %}>
+        <a href="{% url patient_url patient_doc.get_id 'submissions' %}" data-toggle="tab">{% trans "Submissions" %}</a></li>
+    <li {% if view_mode == "careteam" %}class="active"{% endif %}>
+        <a href="{% url patient_url patient_doc.get_id 'careteam' %}" data-toggle="tab">{% trans "Care Team" %}</a></li>
+    <li {% if view_mode == "careplan" %}class="active"{% endif %}>
+        <a href="{% url patient_url patient_doc.get_id 'careplan' %}" data-toggle="tab">{% trans "Care Plan" %}</a></li>
+{% endblock patient-tab-controller %}
+{% block patient-tab-container %}
+   <div id="patient-info-tab" class="ui-tabs-hide">
+        <div id="patienteditform" class="modal"></div>
+        <!-- end patient info display-->
+    </div>
+
+
+    <div id="patient-careteam-tab">
+        <div class="span12">
+            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+               href="javascript:alert('todo')">
+                {#                       href="{% url pt_add_provider patient_doc.get_id %}">#}
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                Add Provider </a>
+
+            {% for prr in careteam_prrs %}
+                {% include "carehqapp/network/careteam_listitem.html" %}
+            {% endfor %}
+            {% comment %}
+                {% for role, actors in careteam_dict.items %}
+                    <div class="span-two-thirds last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
+                    {% for actor in actors %}
+                        <div class="span-two-thirds last" style="border: 1px solid black;padding: 8px;margin: 4px;">
+                            <div class="span7 careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span4 last">{{ actor.actordoc.get_display|title }}</div>
+                            &nbsp;
+                        </div>
+                        &nbsp;
+                    {% endfor %}
+                {% endfor %}
+                {% endcomment %}
+
+
+        </div>
+        &nbsp;
+    </div>
+    <div id="patient-careplan-tab">
+        Careplan goes here
+    </div>
+{% endblock patient-tab-container %}

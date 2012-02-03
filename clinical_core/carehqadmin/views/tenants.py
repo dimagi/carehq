@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehq_core import carehq_constants
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import ObjectPermission, Role, Permission, PrincipalRoleRelation
 from tenant.models import Tenant, TenantActor
 

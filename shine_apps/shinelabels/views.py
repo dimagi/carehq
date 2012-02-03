@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 from shinelabels.label_form import PrintLabelForm
 from shinelabels.models import ZebraPrinter, LabelQueue
 from shinelabels.signals import generate_case_barcode

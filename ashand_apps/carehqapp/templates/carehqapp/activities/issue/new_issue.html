@@ -1,28 +1,51 @@
-{% extends "base.html" %}
+{% extends base_template %}
+{% load uni_form_tags %}
 {% load i18n %}
 {% block title %}{% trans "New Issue" %}{% endblock %}
 {% block extrahead %}
-<link rel="stylesheet" type="text/css" href="/media/admin/css/base.css"/>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/global.css"/>
-<link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css"/>
-{%endblock %}
+    <script>
+        $(function () {
+            $("#id_due_date").datepicker({
+                        changeMonth:true,
+                        mindate:"+0",
+
+                    }
+            );
+        });
+    </script>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url my_patients %}">Patients</a> <span class="divider">/</span></li>
+        <li><a href="{% url patient_url patient_doc.get_id "" %}">{{ patient_doc.last_name }}, {{ patient_doc.first_name }}</a> <span class="divider">/</span></li>
+        <li class="active">New Issue</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h2>New Issue</h2>
+{% endblock %}
+
 
 {% block content %}
-<div class="span-18 prepend-top">
-<h1>Raise an issue</h1>
-<form action="" method="POST">
-{% include "carehqapp/partials/inline_form.html" %}
-<div class="error">
-<strong>Note</strong>:  If this issue is an emergency or life threatening 
-condition that needs immediate response, call 911 or visit to Emergency Room.  
-This system is meant for long term communication and care management, not real-time critical alerts.	
-</div>
-<input type="submit" value="Submit" />
-</form>
-</div>
-<div class="span-6 last">		
-	{% include "carehqapp/partials/patient_careteam_info_6.html" %}
-</div>
+    <div class="row">
+        <div class="span12">
+            <form action="" method="POST" class="well form-horizontal">
+                {#{% include "carehqapp/partials/inline_form.html" %}#}
+                {% csrf_token %}
+{#                {% uni_form form form.helper %}#}
+                {{ form.as_p }}
+                &nbsp;
+                <div class="alert alert-error alert-block">
+                    <strong>Note</strong>: If this issue is an emergency or life threatening
+                    condition that needs immediate response, call 911 or visit to Emergency Room.
+                    This system is meant for long term communication and care management, not real-time critical alerts.
+                </div>
+                <input type="submit" value="Submit"/>
+            </form>
+        </div>
+    </div>
 {% endblock %}
 
 

@@ -2,8 +2,6 @@ from django import forms
 from django.forms.util import ValidationError
 from django.forms import widgets
 
-from casetracker import constants
-
 class ProgressNoteComment(forms.Form):
     """
     Form to provide for simple editing/commentnig on an inbound progrssnote for PACT

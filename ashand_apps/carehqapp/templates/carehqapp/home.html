@@ -1,9 +1,27 @@
-{% extends "carehqapp/carehq_base.html" %}
+{% extends base_template %}
 {% load i18n %}
+{% load carehq_tags %}
 
-{% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
 {% block extrahead %}
+    <script>
+        $(function() {
+            $("#tbl_issues").tablesorter({ sortList: [[0,0]], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Home <small>Recent Activity</small></h1>
 {% endblock %}
 {% block content %}
-
+    <h3>Recent Issues</h3>
+    {% include "carehqapp/issues/recent_issue_activity.html" %}
+    <hr>
+    {% if submissions %}
+        <h3>Recent Patient Sessions</h3>
+        {% include "carehqapp/ccd/ccd_list.html" %}
+    {% endif %}
 {% endblock %}

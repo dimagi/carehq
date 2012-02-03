@@ -1,0 +1,46 @@
+{% extends base_template %}
+{% load i18n %}
+{% load issue_tags %}
+{% block title %}{% trans "Casetracker Reference" %}{% endblock title %}
+{% block extrahead %}
+
+{% endblock extrahead %}
+{% block content %}
+<h2>Casetracker application reference views</h2>
+<div class="ui-tabs span12">
+<a href="{% url casetracker.views.debug_reference %}">Refernce Dashboard</a> &nbsp; | &nbsp;
+</div>
+
+<div class="span12">
+    <h2>{{ role }}'s Cases ({{ casefilter }})</h2>
+    <a href="{{ request.path }}?casefilter=opened_by">Opened by</a> &nbsp; |
+    <a href="{{ request.path }}?casefilter=assigned_to">Assigned to</a> &nbsp; |
+    <a href="{{ request.path }}?casefilter=last_edit_by">Last edit by</a> &nbsp; |
+    <a href="{{ request.path }}?casefilter=resolved_by">Resolved by</a> &nbsp; |
+    <a href="{{ request.path }}?casefilter=closed_by">Closed by</a> &nbsp; |
+    <table>
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                {% for col in columns %}
+                <th><a href="{{request.path}}?groupBy={{col}}">{{col|title}}</a></th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for case in cases %}
+            <tr>
+                <td>
+                    <a href="{% url manage-case case.id %}">View Case</a>
+                </td>
+                {% for col in columns %}
+                <td>
+                    {% issue_column case col %}
+                </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

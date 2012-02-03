@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Plan Templates" %} {% endblock %}
+{% block content %}    
+<div class="span12 last">
+<ul>
+{% for plan_item in plan_items %}
+    {% include "careplan/partials/single_item_view.html" %}
+{%endfor%}
+</ul>    
+</div>
+{% endblock %}

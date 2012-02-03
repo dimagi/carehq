@@ -1,0 +1,36 @@
+{# Simple table for recent activities.  Adds patient column for providers #}
+
+{% load carehq_tags %}
+{% if issues %}
+        <table class="table table-bordered table-striped" id="tbl_issues">
+        <thead>
+        <tr>
+            {% if request.current_actor.is_provider %}
+                <th>Patient</th>
+            {% endif %}
+            <th class="span8">Description</th>
+            <th class="span2">Closed By</th>
+            <th class="span2">Closed Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for issue in issues %}
+            <tr>
+                {% if request.current_actor.is_provider %}
+                    <td>
+                        <a href="{{ issue.patient.get_absolute_url }}">
+                        {{ issue.patient.couchdoc.last_name }}, {{ issue.patient.couchdoc.first_name }}
+                        </a>
+                    </td>
+                {% endif %}
+                <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
+                <td> {{ issue.closed_by.actordoc.get_name }} </td>
+                <td> {{ issue.closed_date|date:"M j, Y P" }} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% else %}
+    No Issues
+{% endif %}

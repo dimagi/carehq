@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "New Care Plan Template Item" %} {% endblock %}
+{% block content %}
+    <div class="span12 last">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+            <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
+            </form>
+    </div>
+{% endblock %}

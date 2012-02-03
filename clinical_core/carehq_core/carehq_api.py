@@ -1,9 +1,35 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.query_utils import Q
-from actorpermission.models.actortypes import ProviderActor, CHWActor
+from actorpermission.models import ProviderActor, CHWActor, PatientActor
 from carehq_core import carehq_constants
+from patient.models import PatientActorLink, Patient
 import permissions
 from permissions.models import Role, PrincipalRoleRelation
+
+
+def has_permission(actor_doc, patient_doc):
+    if isinstance(actor_doc, PatientActor):
+        if actor_doc.get_couch_patient()._id == patient_doc._id:
+            return True
+    permissions_qset = get_permissions(actor_doc)
+    if permissions_qset.filter(content_id=patient_doc.django_uuid).count() > 0:
+        return True
+    else:
+        return False
+
+def has_permission_issue(actor_doc, issue):
+    patient = issue.patient
+    permissions_qset = get_permissions(actor_doc)
+    if isinstance(actor_doc, PatientActor):
+        django_patient = actor_doc.get_django_patient()
+        if issue.patient == django_patient:
+            return True
+
+    if permissions_qset.filter(content_id=patient.id).count() > 0:
+        return True
+    else:
+        return False
+
 
 
 def add_to_careteam(patient_doc, actor_doc, role):
@@ -39,7 +65,6 @@ def add_provider(actor_doc):
     return permissions.utils.add_role(actor_doc.django_actor, role_class)
 
 
-
 def set_patient_primary_chw(patient_doc, actor_doc):
     """
     Add an actor as an exteranl provider for the given patient.
@@ -59,6 +84,9 @@ def add_external_provider_to_patient(patient_doc, actor_doc):
 
 
 def get_permissions(actor_doc, direct=False):
+    """
+    Get all principal role relations for the given actor document
+    """
     djactor = actor_doc.django_actor
     if direct:
         direct_permissions = PrincipalRoleRelation.objects.filter(actor=djactor).exclude(content_id=None)
@@ -80,6 +108,19 @@ def get_permissions_dict(actor_doc, direct=False):
         ret[p.role] = arr
     return ret
 
+def create_patient_actor(tenant, patient_doc, user=None):
+    """
+    Complete creation of a brand new patient from a completed Patient document, along with actor document.
+    """
+    #assume patient document is already saved
+    pt_actor = PatientActor()
+    pt_actor.patient_doc_id = patient_doc._id
+    pt_actor.first_name = patient_doc.first_name
+    pt_actor.last_name = patient_doc.last_name
+    pt_actor.save(tenant, user)
+
+    PatientActorLink.objects.get_or_create(patient=patient_doc.django_patient, actor=pt_actor.django_actor)
+    permissions.utils.add_role(pt_actor.django_actor, Role.objects.get(name=carehq_constants.role_patient))
 
 def get_patient_providers(patient_doc):
     all_prrs = get_careteam(patient_doc)
@@ -124,6 +165,13 @@ def get_careteam_dict(patient_doc, omit_patient=True):
         role_actor_dict[pr.role] = actors
     return role_actor_dict
 
+def get_patients_for_actor(actor_doc):
+    """
+    Return a list of PRRs for the patients in which this actor is caring for
+    """
+    ctype = ContentType.objects.get_for_model(Patient)
+    proles = PrincipalRoleRelation.objects.filter(content_type=ctype, actor=actor_doc.django_actor).order_by('role', 'content_type')
+    return proles
 
 def get_chw(chw_doc_id):
     """

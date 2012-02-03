@@ -1,0 +1,36 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "Care Network" %} {% endblock %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url my_network %}">Care Network</a> <span class="divider">/</span></li>
+        {% block network_crumb %}
+
+        {% endblock %}
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    {% block network_title %}
+        <h2>Title goes here <small>Plus some more</small></h2>
+        {% endblock network_title %}
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="row">
+        <div class="span3">
+            <div class="well">
+                <ul class="nav nav-pills nav-stacked">
+                {% block network_navigation %}
+                {% endblock %}
+                </ul>
+            </div>
+        </div>
+        <div class="span9">
+        {% block network_content %}
+        {% endblock network_content %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Care Plan Templates" %} {% endblock %}
+{% block content %}    
+<h2>Care Plan Templates</h2>
+<a href="{% url new_template_careplan %}">New Template CarePlan</a>
+    <hr>
+<ul>
+{% for plan in template_careplans %}
+    <li><a href="{{plan.get_absolute_url}}">{{plan.title}}</a></li>    
+{% endfor %}
+</ul>
+
+{% endblock %}
+
+

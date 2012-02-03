@@ -8,12 +8,12 @@ from clinical_shared.middleware.identity import CareHQIdentityMiddleware
 from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import raddress
-from patient.models.patientmodels import Patient
+from patient.models import Patient
 from permissions.models import Actor, Role, PrincipalRoleRelation
 from permissions.tests import RequestFactory
 from tenant.models import Tenant
 from django.contrib.sessions.backends.file import SessionStore
-from actorpermission.models.actortypes import CHWActor, ProviderActor, CaregiverActor
+from actorpermission.models import CHWActor, ProviderActor, CaregiverActor
 from carehq_core import carehq_api
 
 class migratePactInPlaceTests(CareHQClinicalTestCase):

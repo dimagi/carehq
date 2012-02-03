@@ -56,14 +56,14 @@
 
     }
 </script>
-<div class="span-22">
+<div class="span12">
     <form method="post" action="" id="dot_addendum_form">
         {{ formset.management_form }}
         {% csrf_token %}
-        <div class="span-11">
+        <div class="span7">
             <h3>ART</h3>
             {% for form in art_forms %}
-                <div class="span-11 last">
+                <div class="span7 last">
                     <h4>{{ form.get_dose_display }}</h4>
                     {% if not is_reconciled %}
                         <table>
@@ -114,10 +114,10 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="span-11 last">
+        <div class="span7 last">
             <h3>Non-ART</h3>
             {% for form in nonart_forms %}
-                <div class="span-11 last">
+                <div class="span7 last">
                     <h4>{{ form.get_dose_display }}</h4>
                     {% if not is_reconciled %}
                         <table>

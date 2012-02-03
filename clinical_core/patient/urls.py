@@ -1,7 +1,7 @@
 #URLS for your patient management should be managed by the app that subclasses the patient model.
 
 from django.conf.urls.defaults import *
-from patient.models.patientmodels import BasePatient
+from patient.models import BasePatient
 from patient.views import PatientListView
 
 urlpatterns = patterns('',

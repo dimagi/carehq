@@ -1,0 +1,6 @@
+Thank you for registering with ASHand, to complete your account activation, please note the information below:
+
+Your activation key is: {{activation_key}}
+This key will expire in {{ expiration_days }} days.
+
+{{site}}

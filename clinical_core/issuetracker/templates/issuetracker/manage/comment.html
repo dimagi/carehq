@@ -1,0 +1,15 @@
+<form method="POST" action="{{request.path}}?activity=event-comment" id="comment_form_{{ case.get_id }}">
+{% load i18n %}
+<h4>{% trans "Update" %}</h4>
+<table>
+    <tr>
+        {% trans "Comment" %}
+    </tr>
+<tr>
+    <td><textarea id="id_comment" rows="4" cols="80" name="comment"></textarea>
+	<input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all fg-button-icon-left"/></td>
+
+</tr>
+</table>
+<input type="hidden" name="next" value="{{ request.path }}" />
+</form>

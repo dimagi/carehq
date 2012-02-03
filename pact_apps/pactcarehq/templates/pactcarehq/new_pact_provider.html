@@ -36,18 +36,18 @@
 
 {% endblock %}
     <div class="container">
-        <div class="span-24">
+        <div class="span12">
             <h3>PACT Provider Management</h3>
             {% if provider_actors %}
                 <table id="providers-table" class="tablesorter">
                     <thead>
                     <tr>
-                    <th class="span-4">First Name</th>
-                    <th class="span-4">Last Name</th>
-                    <th class="span-4">Job Title</th>
-                    <th class="span-4">Email</th>
-                    <th class="span-3">Phone Number</th>
-                    <th class="span-8">Facility</th>
+                    <th class="span3">First Name</th>
+                    <th class="span3">Last Name</th>
+                    <th class="span3">Job Title</th>
+                    <th class="span3">Email</th>
+                    <th class="span2">Phone Number</th>
+                    <th class="span-one-third">Facility</th>
                     <th></th>
                     </thead>
 
@@ -70,7 +70,7 @@
                 No Providers Enrolled
             {% endif %}
         </div>
-        <div id="newprovider_dlg" title="Create New Provider" class="span-24">
+        <div id="newprovider_dlg" title="Create New Provider" class="span12">
         <h4>Or add new provider</h4>
             <form id="newprovider_form" action="" method="POST" class="uniForm">
                 {% csrf_token %}

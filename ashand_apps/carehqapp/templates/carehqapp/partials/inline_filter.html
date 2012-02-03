@@ -1,6 +1,6 @@
 {% load filter_tags %}
 
-<table class="span-24">
+<table class="span12">
 <tr>
 <th>Patient</th>
 {% for col in filter.gridpreference.display_columns.all %}
@@ -11,11 +11,11 @@
 </th>
 {%endfor %}
 </tr>
-{% for case in filter.get_filter_queryset %}
+{% for issue in filter.get_filter_queryset %}
 	<tr>
-	<td><a href="{% url view-careteam case.careteam_set.get.id %}">{{case.careteam_set.get.patient.user.last_name}}, {{case.careteam_set.get.patient.user.first_name}}</a></td>
+	<td><a href="{% url view-careteam issue.careteam_set.get.id %}">{{issue.careteam_set.get.patient.user.last_name}}, {{issue.careteam_set.get.patient.user.first_name}}</a></td>
 	{% for col in gridpreference.display_columns.all %}
-		<td><a href="{% url manage-case case.id %}">{% case_column_plain case col.name %}</a></td>
+		<td><a href="{% url manage-issue issue.id %}">{% issue_column_plain issue col.name %}</a></td>
 	{%endfor %}
 	</tr>
 {% endfor %}

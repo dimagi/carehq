@@ -1,87 +1,44 @@
-from django.db.models.query_utils import Q
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render_to_response
 from django.template.context import  RequestContext
-from carehqapp import constants
-from casetracker.models.casecore import Case
+from carehqapp.models import CCDSubmission
+from clinical_shared.decorators import actor_required
+from issuetracker.models.issuecore import Issue
 from clinical_core.feed.models import FeedEvent
-from lib.crumbs import crumbs
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from permissions.models import Role, PrincipalRoleRelation, Actor
-
-@crumbs("Dashboard", "dashboard", "home")
-@login_required
-def dashboard_view(request, template_name = "carehqapp/dashboard.html"):
-    context = RequestContext(request)
-    user = request.user
-    context['user'] = user
-    events = FeedEvent.objects.filter(subject__user=user).order_by('created')[:5]
-    context['events'] = events
-    return render_to_response(template_name, context_instance=context)
-
+from patient.models import Patient
+from permissions.models import PrincipalRoleRelation
 
 @login_required
-def ghetto_dashboard(request, template_name='carehqapp/ghetto_dashboard.html'):
+@actor_required
+def home_news(request, template_name='carehqapp/home.html'):
     context = RequestContext(request)
-    user_actors = Actor.objects.filter(user=request.user)
-    proles = PrincipalRoleRelation.objects.filter(actor__in=user_actors)
-    #hack hack
-    patient_role = Role.objects.get(name=constants.role_patient)
-    provider_role = Role.objects.get(name=constants.role_provider)
-    caregiver_role = Role.objects.get(name=constants.role_caregiver)
-    primary_provider_role = Role.objects.get(name=constants.role_primary_provider)
-    context['title'] = "My Cases"
+    context['title'] = "News Feed"
+    if request.current_actor.is_patient:
+        patient = request.current_actor.actordoc.get_django_patient()
+        context['issues'] = Issue.objects.filter(patient=patient)
+        #hack till we get it all stitched up
+        patient_guid='Test000001'
+        sk=[patient_guid, 0000]
+        ek = [patient_guid, 3000]
+        context['submissions']=CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
+    else:
+        context['issues'] = Issue.objects.care_issues(request.current_actor)
+        flat_permissions = PrincipalRoleRelation.objects.filter(actor=request.current_actor)
+        ptype = ContentType.objects.get_for_model(Patient)
+        patient_prrs = flat_permissions.filter(content_type=ptype)
+        patient_ids = set(patient_prrs.values_list('content_id', flat=True))
+        patient_doc_ids = Patient.objects.all().filter(id__in=patient_ids).values_list('doc_id', flat=True)
+        #hack till  we get it all stitched up
+        patient_doc_ids = list(patient_doc_ids)
+        patient_doc_ids.append("Test000001")
 
-
-    if request.is_patient:
-        patient = proles.filter(role=patient_role)[0].content
-        cases = Case.objects.all().filter(patient=patient).select_related()
-        context['cases'] = cases
-
-    elif request.is_caregiver or request.is_provider or request.is_primary:
-        #get all patients under my care and get their cases
-        qprov = Q(role=provider_role)
-        qcg = Q(role=caregiver_role)
-        qprim = Q(role=primary_provider_role)
-        patient_ids= proles.filter(qprov|qcg|qprim).values_list('content_id', flat=True)
-        cases = Case.objects.all().filter(patient__id__in=patient_ids).select_related()
-
-        prov_cg_actors = proles.filter(qprov|qcg|qprim).values_list('actor', flat=True)
-        qmine = Q(opened_by__in=prov_cg_actors)
-        qassigned = Q(assigned_to__in=prov_cg_actors)
-
-        context['cases']=cases.filter(qmine|qassigned)
-    return render_to_response(template_name, context_instance=context)
-
-
-@login_required
-def ghetto_news_feed(request, template_name='carehqapp/ghetto_dashboard.html'):
-    context = RequestContext(request)
-    user_actors = Actor.objects.filter(user=request.user)
-    proles = PrincipalRoleRelation.objects.filter(actor__in=user_actors)
-    #hack hack
-    patient_role = Role.objects.get(name=constants.role_patient)
-    provider_role = Role.objects.get(name=constants.role_provider)
-    caregiver_role = Role.objects.get(name=constants.role_caregiver)
-    primary_provider_role = Role.objects.get(name=constants.role_primary_provider)
-    context['title'] = "News Feed (all patients)"
-
-
-    if request.is_patient:
-        patient = proles.filter(role=patient_role)[0].content
-        cases = Case.objects.all().filter(patient=patient).select_related()
-        context['cases'] = cases
-
-    elif request.is_caregiver or request.is_provider or request.is_primary:
-        #get all patients under my care and get their cases
-        qprov = Q(role=provider_role)
-        qcg = Q(role=caregiver_role)
-        qprim = Q(role=primary_provider_role)
-        patient_ids= proles.filter(qprov|qcg|qprim).values_list('content_id', flat=True)
-        cases = Case.objects.all().filter(patient__id__in=patient_ids).select_related()
-
-
-
-        context['cases']=cases
+        all_submissions = []
+        for patient_guid in patient_doc_ids:
+            sk=[patient_guid, 0000]
+            ek = [patient_guid, 3000]
+            submissions =CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
+            all_submissions.extend(submissions)
+        context['submissions'] = all_submissions
     return render_to_response(template_name, context_instance=context)
 

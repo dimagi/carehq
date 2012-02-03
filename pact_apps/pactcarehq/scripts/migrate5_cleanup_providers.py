@@ -1,4 +1,4 @@
-from actorpermission.models.actortypes import BaseActorDocument, ProviderActor
+from actorpermission.models import BaseActorDocument, ProviderActor
 from permissions.models import Actor
 from nameparser import HumanName
 from tenant.models import Tenant

@@ -4,18 +4,18 @@
 {% block extrahead %}
 {% endblock extrahead %}
 {% block content %}				
-	<div class="span-6 box">		
-		<div class="span-2">
+	<div class="span4 box">
+		<div class="span1">
 			<img src="{{STATIC_URL}}ashandapp/img/noprofile_photo.png">
 		</div>
-		<div class="span-4 last">		
+		<div class="span3 last">
 			<h3>				
 				<a href="{%url ashandapp.views.users.single careteam.patient.user.id %}">
 				{{careteam.patient.user.get_full_name}}</a>
 			</h3>
 		</div>
 		
-		<div class="span-6 last">
+		<div class="span4 last">
 		<table>				    
 						<tr>
 					        <td><strong>Age</strong></td>
@@ -38,7 +38,7 @@
 		</table>			
 		</div>
 	</div>	
-<div  class="span-17 last">			
+<div  class="span-two-thirds last">
 	<div id="menu">
 	    <ul> 
 	        <li>
@@ -59,14 +59,14 @@
 	    </ul> 
 	</div>
 
-	<div class="span-17 last">
+	<div class="span-two-thirds last">
 	{% block active_careteam_tab %}
 	 
 	{% endblock active_careteam_tab %}
 	</div>
 <div>
 {% comment %}
-    <div id="tabs-info" class="span-24">
+    <div id="tabs-info" class="span12">
     	{%with current_careteam as careteam %}			
 		
     {% endcomment %}
