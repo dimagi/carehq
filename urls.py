@@ -28,6 +28,7 @@ urlpatterns += patterns('',
     (r'', include('downloader.urls')),
     (r'', include('keymaster.urls')),
     (r'^phone/', include('casexml.apps.phone.urls')),
+    (r'^mobile/', include('carehq_mobile.urls')),
     (r'^receiver/', include('receiver.urls')),
     (r'^webxforms/', include('webxforms.urls')),
 
