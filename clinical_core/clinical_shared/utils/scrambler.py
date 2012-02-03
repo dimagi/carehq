@@ -1,5 +1,5 @@
+from clinical_shared.utils import streets
 from patient.models.patientmodels import CAddress, CPhone
-from patient.utils import names, streets
 import random
 
 
@@ -16,10 +16,13 @@ def make_phone():
     return rone() + rzero() + rzero() + "-" + rone() + rzero() + rzero() +"-" + rzero() + rzero() + rzero() +rzero()
 
 def raddress():
-    return random.choice(streets.STREET_DESCRIPTORS) + " " + random.choice(streets.STREET_NAMES) + " " + random.choice(streets.STREET_SUFFIX)
+    return random.choice(streets.STREET_DESCRIPTORS) + " " + random.choice(streets.STREET_NAMES) + " " + random.choice(
+        streets.STREET_SUFFIX)
 
 
 def make_random_caddress():
+    """deprecated address schemadocument generator
+    """
     addr = CAddress()
     addr.description = random.choice(ADDR_DESCRIPTIONS)
     addr.street = "%d %s" % (random.randint(1,5000), raddress())
@@ -29,6 +32,9 @@ def make_random_caddress():
     return addr
 
 def make_random_cphone():
+    """
+    Deprecated phone schemadocument generator
+    """
     phone = CPhone()
     phone.description = random.choice(PHONE_DESCRIPTIONS)
     phone.number = make_phone()

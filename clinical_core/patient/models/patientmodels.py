@@ -1,3 +1,4 @@
+import pdb
 import uuid
 from couchdbkit.ext.django.schema import Document
 from couchdbkit.schema.properties import StringProperty, BooleanProperty, DateTimeProperty, DateProperty, StringListProperty
@@ -47,6 +48,14 @@ class Patient(models.Model):
     id = models.CharField(_('Unique Patient uuid PK'), max_length=32, unique=True,  primary_key=True, editable=False)
     doc_id = models.CharField(help_text="CouchDB Document _id", max_length=32, unique=True, editable=False, db_index=True, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True) #note it's note unique, possibly that they could be multi enrolled, so multiple notions of patient should exist - should be removed in favor of the actor FK
+
+
+    def get_absolute_url(self):
+        if self.couchdoc is not None:
+            return self.couchdoc.get_absolute_url()
+        else:
+            return '#'
+
 
 
     class Meta:

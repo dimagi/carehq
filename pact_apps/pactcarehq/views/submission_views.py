@@ -1,10 +1,13 @@
 from datetime import datetime
+import simplejson
+import urllib
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import logging
@@ -12,6 +15,7 @@ import isodate
 from couchforms.models import XFormInstance
 from couchforms.util import post_xform_to_couch
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
+from permissions.models import Actor
 from .util import form_xmlns_to_names, ms_from_timedelta
 from pactcarehq.views.patient_views import _get_submissions_for_patient
 from pactpatient.models.pactmodels import PactPatient
@@ -114,7 +118,6 @@ def all_submits_by_patient(request, template_name="pactcarehq/submits_by_patient
 
 
 
-patient_case_id_cache = {}
 def _get_submissions_for_user(username):
     """For a given username, return an array of submissions with an element [doc_id, date, patient_name, formtype]"""
     xform_submissions = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
@@ -128,10 +131,11 @@ def _get_submissions_for_user(username):
 
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
-        if not patient_case_id_cache.has_key(case_id):
+        if cache.get("case.%s" % case_id, None) is None:
             patient = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
-            patient_case_id_cache[case_id]= patient
-        patient = patient_case_id_cache[case_id]
+            cache.set("case.%s" % case_id, simplejson.dumps(patient.to_json()))
+        else:
+            patient = PactPatient.wrap(simplejson.loads(cache.get("case.%s" % case_id)))
 
         if patient == None:
             patient_name = "Unknown"
@@ -172,7 +176,11 @@ def _get_submissions_for_user(username):
         if isinstance(started, unicode):
             started = isodate.parse_datetime("%sT%s" % (started.split(' ')[0], started.split(' ')[1]))
 
+
         ended = xform.get_form['Meta']['TimeEnd']
+        if ended == '':
+            #hack, touchforms doesn't seem to set a TimeEnd
+            ended = xform.received_on
         if isinstance(ended, unicode):
             ended = isodate.parse_datetime("%sT%s" % (ended.split(' ')[0], ended.split(' ')[1]))
 
@@ -208,6 +216,33 @@ def my_submits(request, template_name="pactcarehq/submits_by_chw.html"):
     context['submit_dict'] = submit_dict
     return render_to_response(template_name, context_instance=context)
 
+@login_required
+@require_POST
+def rm_dot_submission(request):
+    """
+    Remove a DOT submission
+    """
+    resp = HttpResponse()
+    try:
+        doc_id = request.POST.get('doc_id', None)
+        if doc_id is not None:
+            doc_to_delete = XFormInstance.get(doc_id)
+            if doc_to_delete.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+                case_id = doc_to_delete.form['case']['case_id']
+                pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
+                doc_to_delete.delete()
+                if len(pts) == 1:
+                    patient_doc = pts[0]
+                    return HttpResponse(status=202,content=reverse('view_pactpatient', kwargs={'patient_guid': patient_doc._id}))
+            else:
+                logging.error("Error, attempt to delete non DOT form.  User: %s, doc_id %s" % (request.user.username, doc_id))
+                return HttpResponse(status=405, content="Improper attempt to delete document")
+        return HttpResponseRedirect(reverse('pact_providers'))
+    except Exception, e:
+        logging.error("Error getting args:" + str(e))
+        #return HttpResponse("Error: %s" % (e))
+    return resp
+
 
 @login_required
 def show_submission(request, doc_id, template_name="pactcarehq/view_submission.html"):
@@ -239,7 +274,7 @@ def show_submission(request, doc_id, template_name="pactcarehq/view_submission.h
                 ccomment.created_by = request.user.username
                 ccomment.created = datetime.utcnow()
                 ccomment.save()
-                return HttpResponseRedirect(reverse('show_progress_note', kwargs= {'doc_id': doc_id}))
+                return HttpResponseRedirect(reverse('show_submission', kwargs= {'doc_id': doc_id}))
     else:
         #it's a GET, get the default form
         if request.GET.has_key('comment'):

@@ -1,14 +1,13 @@
+from speechd.client import Priority
 from django.test import TestCase
 from django.contrib.auth.models import User
-from clinical_core.actors.models import Actor, Actor, PatientActorLink
-from clinical_core.patient.models import Patient
-from clinical_core.clinical_shared.utils import generator
 import random
 from casetracker import constants
-
-from casetracker.models import Case, Priority, Status, ActivityClass
 import uuid
 from django.core.management import  call_command
+from casetracker.models.casecore import Case
+from patient.models.patientmodels import Patient
+from permissions.models import Actor
 
 MAX_MULTI_PATIENTS = 10
 
@@ -31,7 +30,6 @@ class CasePermissionsTest(TestCase):
         Case.objects.all().delete()
         Actor.objects.all().delete()
         Actor.objects.all().delete()
-        PatientActorLink.objects.all().delete()
         Patient.objects.all().delete()
         #print "Doctors:"  + str(Doctor.objects.all().count())
 

@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from clinical_shared.utils.scrambler import raddress, ADDR_DESCRIPTIONS, PHONE_DESCRIPTIONS, make_phone, rone, rzero
 from pactpatient.enums import PACT_RACE_CHOICES
 from pactpatient.updater import update_patient_casexml
 from patient.models import CPhone, CAddress
@@ -10,26 +11,6 @@ import streets
 import names
 import random
 
-
-ADDR_DESCRIPTIONS = ['Home Address', 'Work', 'Friend', 'Mother', 'Parent', "Son's house", "Daugter's", "Friend's house"]
-PHONE_DESCRIPTIONS = ['Home', 'Office Phone', 'Cell', 'mobile', "Mom's phone", "Next door neighbor", 'Parent', "Son's phone", "Daugter's", "Friend's house"]
-
-def rzero():
-    return str(random.randint(0,9))
-
-
-def rone():
-    return str(random.randint(1,9))
-
-def make_ssn():
-    return "Fake-" + rzero() + rzero() + rzero() + "-" + rzero() + rzero() +"-" + rzero() + rzero() + rzero() +rzero()
-
-def make_phone():
-    #return rone() + rzero() + rzero() + "-" + rone() + rzero() + rzero() +"-" + rzero() + rzero() + rzero() +rzero()
-    return "555-" + rone() + rzero() + rzero() +"-" + rzero() + rzero() + rzero() +rzero()
-
-def raddress():
-    return random.choice(streets.descriptors) + " " + random.choice(streets.streetname) + " " + random.choice(streets.suffix)
 
 
 def make_random_caddress():
@@ -116,6 +97,6 @@ def run():
         c.save()
         print "saved"
 
-        xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], c, new_phone, new_addr)
+        xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], c.case_id, c.pact_id, new_phone, new_addr)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 

@@ -1,0 +1,28 @@
+{% extends base_template %}
+{% load i18n %}
+{% block content %}
+    <h2>CareHQ :: Manage Tenant {{ tenant.name }}</h2>
+    <h3>Users</h3>
+    {% for user in tenant_users %}
+        <h4>{{ user.username }}</h4>
+        <table>
+            <thead>
+            <tr>
+                <th> Actor Name </th>
+                <th>foo</th>
+            </tr>
+            </thead>
+
+            {% for actor in user.actors.all %}
+            <tr>
+                <td>
+                    {{ actor }}
+                </td>
+                <td>
+                    bar
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endfor %}
+{% endblock content %}

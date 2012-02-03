@@ -36,7 +36,7 @@
                 {% if user.is_superuser %}
                     <a href="{% url carehqadmin.views.landing %}">System Admin</a>
                 {% endif %}
-                <a href="{% url pactcarehq.views.chw_list %}">CHW List</a>
+                <a href="{% url chw_actor_list %}">CHW List</a>
                 <a href="{% url pactpatient_list %}">Patient List</a>
                 {% if user.is_superuser %}
                     <a href="{% url pactcarehq.views.export_landing %}">Data Exports</a>

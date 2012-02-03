@@ -1,15 +1,21 @@
+import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
+from actorpermission.models.actortypes import BaseActorDocument
+from carehq_core import carehq_constants
+from carehqadmin.forms.actor_form import get_actor_form
+from dimagi.utils.couch.database import get_db
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
-from pactconfig import constants
-from pactpatient.forms.address_form import SimpleAddressForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
+from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
+from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from patient.models.patientmodels import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
 from receiver.util import spoof_submission
+from tenant.models import Tenant
 from .util import DAYS_OF_WEEK
 from datetime import datetime, time
 from django.contrib.auth.decorators import login_required
@@ -33,10 +39,11 @@ def remove_phone(request):
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
         pdoc = PactPatient.get(patient_guid)
         phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
-        new_phones = pdoc.active_phones
+        new_phones = pdoc.active_phones()
         new_phones[phone_id] = {'number':'', 'description': ''}
 
-        xml_body = update_patient_casexml(request.user, pdoc, new_phones, pdoc.active_addresses)
+        print "Remove phone: %s" % new_phones
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.active_addresses)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -54,7 +61,7 @@ def do_add_provider_to_patient(request):
         pdoc = PactPatient.get(patient_guid)
         provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
         provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
-        role_class = Role.objects.get(name=constants.role_external_provider)
+        role_class = Role.objects.get(name=carehq_constants.role_external_provider)
         putils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         #return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
         resp.write("Success")
@@ -74,7 +81,7 @@ def rm_provider_from_patient(request):
         pdoc = PactPatient.get(patient_guid)
         provider_actor_uuid = urllib.unquote(request.POST['actor_uuid']).encode('ascii', 'ignore')
         provider_actor_django = Actor.objects.get(id=provider_actor_uuid)
-        role_class = Role.objects.get(name=constants.role_external_provider)
+        role_class = Role.objects.get(name=carehq_constants.role_external_provider)
         #permissions.utils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         ctype = ContentType.objects.get_for_model(pdoc.django_patient)
         PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype, content_id=pdoc.django_uuid).delete()
@@ -115,7 +122,7 @@ def remove_address(request):
         new_addrs[address_id] = {'address': '', 'description': ''}
 #        new_addrs.pop(address_id)
 
-        xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, new_addrs)
+        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), new_addrs)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
     except Exception, e:
@@ -125,8 +132,54 @@ def remove_address(request):
 
 
 @login_required
-def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
-    patient_guid = request.GET.get('patient_guid', None)
+def ajax_get_actor_form(request, template='pactcarehq/partials/ajax_actor_form.html'):
+    doc_id = request.GET.get('doc_id', None)
+    form_name = request.GET.get('form_name', None)
+    actor_doc = BaseActorDocument.get_typed_from_id(doc_id)
+    context = RequestContext(request)
+    context['doc_id'] = doc_id
+    context['form_name'] = form_name
+    title = ""
+    tenant = Tenant.objects.get(name='PACT')
+    if form_name == 'chweditprofile':
+        form_class = get_actor_form(actor_doc.__class__)
+        form = form_class(tenant, instance=actor_doc)
+        title = "Edit CHW"
+    context['form'] = form
+    context['title'] = title
+    return render_to_response(template, context_instance=context)
+
+@login_required
+@require_POST
+def ajax_post_actor_form(request, doc_id, form_name):
+    context=RequestContext(request)
+    resp = HttpResponse()
+    actor_doc = BaseActorDocument.get_typed_from_id(doc_id)
+    tenant = Tenant.objects.get(name='PACT')
+
+    if form_name == 'chweditprofile':
+        title = "Edit Profile"
+        form_class=get_actor_form(actor_doc.__class__)
+        form = form_class(tenant, data=request.POST, instance=actor_doc)
+    context['title'] = title
+    context['doc_id'] = doc_id
+    context['form_name'] = form_name
+
+    if form.is_valid():
+        get_chw_pt_permissions(from_cache=False)
+        instance = form.save(commit=False)
+        instance.save(tenant)
+        resp.status_code=204
+        return resp
+    else:
+        context['form']=form
+    resp.write(context['form'].as_table())
+    return resp
+
+
+@login_required
+def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_form.html'):
+    patient_guid = request.GET.get('doc_id', None)
     form_name = request.GET.get('form_name', None)
     edit_id = request.GET.get('edit_id', None)
     pdoc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
@@ -159,7 +212,7 @@ def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
             form = SimpleAddressForm(initial=addr)
             title = "Change Address"
         elif form_name == 'phone':
-            p = pdoc.active_phones[int(edit_id)]
+            p = pdoc.active_phones()[int(edit_id)]
             form = PhoneForm(initial=p)
             title = "New Phone"
 
@@ -168,9 +221,12 @@ def ajax_get_form(request, template='pactcarehq/partials/ajax_form.html'):
     context['title'] = title
     return render_to_response(template, context_instance=context)
 
+
+
+
 @login_required
 @require_POST
-def ajax_post_form(request, patient_guid, form_name):
+def ajax_post_patient_form(request, patient_guid, form_name):
     context=RequestContext(request)
     resp = HttpResponse()
     pdoc = PactPatient.get(patient_guid)
@@ -226,7 +282,7 @@ def ajax_post_form(request, patient_guid, form_name):
             else:
                 active_addresses[int(address_edit_id)-1] = addr_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc, pdoc.active_phones, active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.active_phones(), active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
 
             resp.status_code = 204
@@ -247,13 +303,13 @@ def ajax_post_form(request, patient_guid, form_name):
             else:
                 is_new_phone = False
 
-            active_phones = pdoc.active_phones
+            active_phones = pdoc.active_phones()
             if is_new_phone:
                 active_phones.append(phone_dict)
             else:
                 active_phones[int(phone_edit_id)-1] = phone_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc, active_phones, pdoc.active_addresses)
+            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.active_addresses)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
             resp.status_code = 204
             return resp
@@ -262,8 +318,10 @@ def ajax_post_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
+            old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
             resp.status_code=204
+            recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
             return resp
         else:
             context['form']=form

@@ -108,7 +108,7 @@ def run():
                 prop_keys = case._dynamic_properties.keys()
                 addr_keys = filter(filter_addr_phone, prop_keys)
                 addr_keys.sort()
-                merged_phones = pt.couchdoc.active_phones
+                merged_phones = pt.couchdoc.active_phones()
 
                 merged_addrs = pt.couchdoc.active_addresses
             else:
@@ -165,7 +165,7 @@ def run():
                     merged_addrs.append({"address": "%s %s, %s %s" % (addr.street, addr.city, addr.state, addr.postal_code), 'description': addr.description})
                     #print "\t\t\tFinished append: %s %s, %s %s" % (addr.street, addr.city, addr.state, addr.postal_code)
 
-            xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], pt.couchdoc, merged_phones, merged_addrs)
+            xml_body = update_patient_casexml(User.objects.all().filter(username='admin')[0], pt.couchdoc.case_id, pt.couchdoc.pact_id, merged_phones, merged_addrs)
             spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
             #todo: deprecate addrs and phones!
 

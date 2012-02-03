@@ -26,6 +26,8 @@ def get_caselist(request):
     patient_block = ""
     patients = PactPatient.view("patient/search", include_docs=True)
     for pt in patients:
+        if pt.arm == "Discharged":
+            continue
         patient_block += pt.ghetto_xml()
     resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
     #logging.error(resp_text)
@@ -62,30 +64,44 @@ def get_ghetto_registration_block(user):
 
 @httpdigest()
 def xml_download(request):
-    username = request.user.username
+#    username = request.user.username
+#
+#    if username == "ctsims":
+#        username = 'cs783'
+#    offset =0
+#    limit_count=100
+#    temp_xml = tempfile.TemporaryFile()
+#    temp_xml.write("<restoredata>\n")
+#    total_count = 0
+#    db = get_db()
+#    xforms = XFormInstance.view("pactcarehq/all_submits", key=username).all()
+#    for form in xforms:
+#        try:
+#            xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+#            temp_xml.write(xml_str)
+#            temp_xml.write("\n")
+#            total_count += 1
+#        except ResourceNotFound:
+#            logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
+#    temp_xml.write("</restoredata>")
+#    length = temp_xml.tell()
+#    temp_xml.seek(0)
+#    wrapper = FileWrapper(temp_xml)
+#    response = HttpResponse(wrapper, mimetype='text/xml')
+#    response['Content-Length'] = length
+#    return response
+    regblock= get_ghetto_registration_block(request.user)
+    patient_block = ""
+    patients = PactPatient.view("patient/search", include_docs=True)
+    for pt in patients:
+        if pt.arm == "Discharged":
+            continue
+        patient_block += pt.ghetto_xml()
+    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
 
-    if username == "ctsims":
-        username = 'cs783'
-    offset =0
-    limit_count=100
-    temp_xml = tempfile.TemporaryFile()
-    temp_xml.write("<restoredata>\n")
-    total_count = 0
-    db = get_db()
-    xforms = XFormInstance.view("pactcarehq/all_submits", key=username).all()
-    for form in xforms:
-        try:
-            xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
-            temp_xml.write(xml_str)
-            temp_xml.write("\n")
-            total_count += 1
-        except ResourceNotFound:
-            logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
-    temp_xml.write("</restoredata>")
-    length = temp_xml.tell()
-    temp_xml.seek(0)
-    wrapper = FileWrapper(temp_xml)
-    response = HttpResponse(wrapper, mimetype='text/xml')
-    response['Content-Length'] = length
-    return response
+    response = HttpResponse()
+    context=RequestContext(request)
+    context['casexml'] = resp_text
+    print len(resp_text)
+    return render_to_response('pactcarehq/debug_casexml.html', context_instance=context)
 

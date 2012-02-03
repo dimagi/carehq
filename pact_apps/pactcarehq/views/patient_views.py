@@ -1,14 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import pdb
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import isodate
-from auditcare.models.couchmodels import ModelActionAudit
+from auditcare import inspect
+from carehq_core import carehq_api
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
-from patient import careteam_api
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from .util import form_xmlns_to_names
@@ -25,12 +26,6 @@ def getpatient(pact_id):
         pt = PactPatient.view('pactcarehq/patient_pact_ids', key=str(pact_id), include_docs=True).first()
         patient_pactid_cache[pact_id] = pt
         return pt
-
-
-
-
-
-
 
 class PactPatientSingleView(PatientSingleView):
     def get_context_data(self, **kwargs):
@@ -66,7 +61,8 @@ class PactPatientSingleView(PatientSingleView):
         last_bw = pdoc.check_last_bloodwork
         context['last_bloodwork'] = last_bw
 
-        role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
+        #role_actor_dict = careteam_api.get_careteam(pdoc)
+        role_actor_dict = carehq_api.get_careteam_dict(pdoc)
         context['careteam_dict'] = role_actor_dict
 
         if last_bw == None:
@@ -100,9 +96,10 @@ class PactPatientSingleView(PatientSingleView):
 
 
 
-        audit_log_docs = ModelActionAudit.view('auditcare/model_actions', key = ['model_types', 'PactPatient', pdoc._id], include_docs=True).all()
-        audit_log_docs = sorted(audit_log_docs, key=lambda x: x.revision_id, reverse=True)
-        audit_log_info = []
+
+#        audit_log_docs = ModelActionAudit.view('auditcare/model_actions', key = ['model_types', 'PactPatient', pdoc._id], include_docs=True).all()
+#        audit_log_docs = sorted(audit_log_docs, key=lambda x: x.revision_id, reverse=True)
+#        audit_log_info = []
 #        for x, l in enumerate(audit_log_docs):
 #            if x == len(audit_log_docs)-1:
 #                delta = None
@@ -113,10 +110,11 @@ class PactPatientSingleView(PatientSingleView):
 #            audit_log_info.append((audit_log_docs[x], delta))
 
 
+        history_logs = inspect.history_for_doc(pdoc, filter_fields=['arm','art_regimen','non_art_regimen', 'primary_hp', 'mass_health_expiration', 'hiv_care_clinic'])
+        context['history_logs'] = history_logs #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
 
-        context['audit_log'] = audit_log_info
-
-
+        all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
+        context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
         return context
         #return render_to_response(template_name, context_instance=context)
 
@@ -220,6 +218,8 @@ def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.ht
     chws = sorted(chw_patient_dict.keys())
     #patients = sorted(patients, key=lambda x: x.couchdoc.last_name)
     context['chw_patients_arr'] = [(x, chw_patient_dict[x]) for x in chws]
+    context['end'] = datetime.utcnow()
+    context['start'] = datetime.utcnow() - timedelta(days=14)
     #context['chw_patients'] = chw_patient_dict
     return render_to_response(template_name, context_instance=context)
 

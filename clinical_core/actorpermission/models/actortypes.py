@@ -1,3 +1,5 @@
+import hashlib
+import pdb
 import simplejson
 import uuid
 from couchdbkit.ext.django.schema import Document
@@ -18,10 +20,18 @@ class BaseActorDocument(Document, TypedSubclassMixin):
     base_type = StringProperty(default="BaseActorDocument")
     name = StringProperty() #the actor name
 
+    last_name = StringProperty()
+    first_name = StringProperty()
+    title = StringProperty()
+
+    email = StringProperty()
+
     notes = StringProperty()
 
+    _subclass_dict = {}
+
     def get_name(self):
-        pass
+        return "%s %s" % (self.first_name, self.last_name)
 
     def get_display(self):
         pass
@@ -35,8 +45,10 @@ class BaseActorDocument(Document, TypedSubclassMixin):
         self.base_type = "DeletedBaseActorDocument"
         super(BaseActorDocument, self).save()
 
-    @property
-    def django_actor(self):
+    def get_hash(self):
+        return hashlib.sha1(simplejson.dumps(self.to_json())).hexdigest()
+
+    def __get_django_actor(self):
         if not hasattr(self, '_django_actor'):
             try:
                 dja = Actor.objects.get(id=self.actor_uuid)
@@ -44,27 +56,37 @@ class BaseActorDocument(Document, TypedSubclassMixin):
                 dja = None
             self._django_actor = dja
         return self._django_actor
+    def __set_django_actor(self, djactor):
+        self.actor_uuid = djactor.id
+        self._django_actor = djactor
+    django_actor = property(__get_django_actor, __set_django_actor )
 
-    def save(self, tenant, *args, **kwargs):
+    def get_actor_djangoname(self, tenant):
+        """
+        Helper function for generating the human/machine readable name for the django actor
+        """
+        return '%s.%s.%s_%s.%s' % (tenant.prefix, self.__class__.__name__, self.last_name, self.first_name, self.get_hash()[0:10])
+
+    def save(self, tenant, user=None, *args, **kwargs):
+            #this is a new instance
+        if self._id == None and self.new_document:
+            self._id = uuid.uuid4().hex
+
         if self.actor_uuid is None:
-        #this is a new instance
-        #first check global uniqueness
-        #            if not self.is_unique():
-        #                raise DuplicateIdentifierException()
-            django_actor = Actor()
-            actor_uuid = uuid.uuid4().hex
-            #doc_id = uuid.uuid4().hex
-            if self._id == None and self.new_document:
-                doc_id = uuid.uuid4().hex
-                self._id = doc_id
+            if self.django_actor is None:
+                django_actor = Actor()
+                actor_uuid = uuid.uuid4().hex
+
+                self.actor_uuid = actor_uuid
+                django_actor.id = actor_uuid
+                django_actor.doc_id=self._id
+
+                django_actor.name = self.get_actor_djangoname(tenant)
             else:
-                doc_id = self._id
+                django_actor = self.django_actor
 
-            self.actor_uuid = actor_uuid
-            django_actor.id = actor_uuid
-            django_actor.doc_id=doc_id
-
-            django_actor.name = '%s-%s-%s' % (tenant.prefix, self.__class__.__name__, self.name)
+            if user:
+                django_actor.user = user
 
             try:
                 django_actor.save()
@@ -77,7 +99,23 @@ class BaseActorDocument(Document, TypedSubclassMixin):
                 raise ex
         else:
             #it's not new
+
+            #sanity check to make sure actor doc_ids match refernces
+            check_django = self.django_actor
+
+            if check_django is not None and check_django.doc_id != self._id:
+                #these must point back to each other exactly.
+                raise Exception("Error, integrity check of actor failed - document ID in django table does not match instance's _id")
             super(BaseActorDocument, self).save(*args, **kwargs)
+
+        #Invalidate the cache entry of this instance
+        cache.delete('%s_actordoc' % self._id)
+        try:
+            couchjson = simplejson.dumps(self.to_json())
+            cache.set('%s_actordoc' % self._id, couchjson)
+        except Exception, ex:
+            logging.error("Error serializing actor document object for cache (%s): %s" % (self._id, ex))
+
 
     class Meta:
         app_label = 'actorpermission'
@@ -95,7 +133,7 @@ class DeviceDocument(Document):
 
 class CHWActor(BaseActorDocument):
     """
-    Basic profile information on a PACT CHW
+    Basic profile information on a CHW
     """
     phone_number = StringProperty()
     device_list = SchemaListProperty(DeviceDocument)
@@ -148,9 +186,8 @@ class ProviderActor(BaseActorDocument):
     Health Provider identification.
     A bulk of the actors in the system will likely be instances of this model.
     """
-    title = StringProperty()
+    provider_title = StringProperty()
     phone_number = StringProperty()
-    email = StringProperty()
 
     facility_name = StringProperty()
     facility_address = StringProperty()
@@ -160,7 +197,7 @@ class ProviderActor(BaseActorDocument):
         app_label = 'actorpermission'
 
     def get_name(self):
-        return "%s (%s)" % (self.name, self.title)
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.provider_title)
 
     def get_display(self):
         return "%s, %s" % (self.title, self.facility_name)

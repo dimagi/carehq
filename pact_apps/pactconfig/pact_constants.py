@@ -18,6 +18,7 @@ role_chw = '%sCHW' % (APP_PREFIX)
 role_primary_chw = '%sPrimaryCHW' % (APP_PREFIX)
 role_external_provider = '%sExternalProvider' % (APP_PREFIX)
 role_admin_tenant = '%sAdminTenant' % (APP_PREFIX) #global admin for the entire operation
+role_patient='%sPatient' % (APP_PREFIX)
 
 #role_chw_dot = '%sCHWDOT' % (APP_PREFIX)
 #role_chw_hp = '%sCHWHP' % (APP_PREFIX)

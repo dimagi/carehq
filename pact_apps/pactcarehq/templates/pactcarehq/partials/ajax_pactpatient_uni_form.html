@@ -1,7 +1,7 @@
 {% load uni_form_tags %}
 <div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
 <h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
-<form id="id_{{ form_name }}" action="{% url ajax_post_form patient_guid form_name %}" method="POST">
+<form id="id_{{ form_name }}" action="{% url ajax_post_patient_form patient_guid form_name %}" method="POST">
     {% csrf_token %}
     <table id="tbl_{{ form_name }}">
 {#    {% uni_form form form.helper %} doesn't seem to want to honor that table id there. #}

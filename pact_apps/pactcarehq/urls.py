@@ -1,14 +1,22 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.http import HttpResponse
+from pactcarehq.resources import UserSubmissionResource
 from pactcarehq.views import PactPatientSingleView
 from patient.views import PatientListView
 from pactpatient.models import PactPatient
 
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
+submission_resource = UserSubmissionResource()
 urlpatterns = patterns ('',
+    (r'^pact/api/', include(submission_resource.urls)),
+
     (r'^$', 'pactcarehq.views.my_patient_activity'),
     (r'^uptime$', 'pactcarehq.views.uptime'),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '%spactcarehq/img/favicon.png' % (settings.STATIC_URL)}),
+
+    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")), #from http://fredericiana.com/2010/06/09/three-ways-to-add-a-robots-txt-to-your-django-project/
+
 
 
 #    (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),
@@ -35,7 +43,10 @@ urlpatterns = patterns ('',
     (r'^submits/mine$', 'pactcarehq.views.my_submits'),
     (r'^submits/mine/restore$', 'pactcarehq.views.xml_download'),
 
-    (r'^submits/chw/all$', 'pactcarehq.views.chw_list'),
+    (r'^submits/chw/all$', 'pactcarehq.views.chw_list'), #to deprecate
+    url(r'^chws/all$', 'pactcarehq.views.chw_actor_list', name='chw_actor_list'),
+    url(r'^chws/(?P<chw_doc_id>[0-9a-zA-Z]{25,32})$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
+
     (r'^submits/chw/(?P<chw_username>.*)/submits$', 'pactcarehq.views.chw_submits'),
 
 
@@ -54,8 +65,12 @@ urlpatterns = patterns ('',
 
     #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
     url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
-    url(r'^ajax/getform/$', 'pactcarehq.views.ajax_get_form', name='ajax_get_form'),
-    url(r'^ajax/postform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_form', name='ajax_post_form'),
+
+    url(r'^ajax/getpatientform/$', 'pactcarehq.views.ajax_patient_form_get', name='ajax_patient_form_get'),
+    url(r'^ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_patient_form', name='ajax_post_patient_form'),
+
+    url(r'^ajax/getactorform/$', 'pactcarehq.views.ajax_get_actor_form', name='ajax_get_actor_form'),
+    url(r'^ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_actor_form', name='ajax_post_actor_form'),
 
 
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),
@@ -70,6 +85,8 @@ urlpatterns = patterns ('',
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
     url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
+    url(r'^submission/pact/rm$', 'pactcarehq.views.rm_dot_submission', name='rm_pact_submission'),
+
     url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),

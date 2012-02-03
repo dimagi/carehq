@@ -1,10 +1,10 @@
 from datetime import timedelta, datetime
 from django.contrib.contenttypes.models import ContentType
 import os
+from carehq_core import carehq_api
 from casetracker import constants as caseconstants
 from casetracker.models import Case
 import csv
-from patient import careteam_api
 from patient.models.patientmodels import Patient
 import random
 from permissions.models import Role, PrincipalRoleRelation
@@ -27,7 +27,7 @@ def run():
            continue
 
         pt = random.choice(patients)
-        careteam_dict = careteam_api.get_careteam(pt)
+        careteam_dict = carehq_api.get_careteam_dict(pt.couchdoc)
         actors = []
         for k, a in careteam_dict.items():
             actors+=a

@@ -33,7 +33,7 @@ interaction_url_map = {
 xmlns_url_map = {
     'http://dev.commcarehq.org/pact/progress_note': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_progress_note.xml',
     'http://dev.commcarehq.org/pact/dots_form': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_dot_session.xml',
-    'http://dev.commcarehq.org/pact/bw': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_bw_entry.xml',
+    'http://dev.commcarehq.org/pact/bloodwork': 'https://bitbucket.org/ctsims/commcare-pact/raw/tip/pact-app/pact_bw_entry.xml',
     }
 
 def _do_prep_form(request, case_id, xform_url, next_url, instance_data=None):

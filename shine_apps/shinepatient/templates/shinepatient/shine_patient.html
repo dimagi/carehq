@@ -39,24 +39,6 @@
             $("#pt_{{ patient_doc.get_id }}_case_table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
         });
     </script>
-    <script>
-        function getCookie(name) {
-            //basic get cookie, to facilitate getting the csrf token
-            var cookieValue = null;
-            if (document.cookie && document.cookie != '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    </script>
 
     <script>
         $(function() {
