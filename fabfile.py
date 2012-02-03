@@ -24,7 +24,7 @@ def _setup_pact_production():
 
 def pact_production():
     """ use pact_production environment on remote host for PACT"""
-    env.code_branch = 'develop'
+    env.code_branch = 'pact'
     env.sudo_user = 'pact'
     env.hosts = ['10.84.168.247']
     env.environment = 'pact_production'
