@@ -7,7 +7,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template.context import Context, Context
-from dimagi.utils.couch.database import get_db
 from dotsview.forms import AddendumForm
 
 from models import *
@@ -48,7 +47,7 @@ def delete_reconciliation(request):
     if request.method == "POST":
         try:
             doc_id = request.POST['doc_id']
-            db = get_db()
+            db = XFormInstance.get_db()
             #print "does doc exist"
             if db.doc_exist(doc_id):
                 #print "trying to get doc id"

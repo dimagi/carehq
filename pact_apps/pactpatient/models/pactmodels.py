@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from pytz import timezone
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
-from dimagi.utils.couch.database import get_db
 from pactpatient.enums import  PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
 from patient.models import BasePatient
 import logging
@@ -876,7 +875,7 @@ class PactPatient(BasePatient):
         datestring
         </last_bw>
         """
-        bloodwork = get_db().view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
+        bloodwork = XFormInstance.get_db().view('pactcarehq/patient_bloodwork', key=self.pact_id).all()
         if len(bloodwork) == 0:
             return ''
         bloodwork = sorted(bloodwork, key=lambda x: x['value']['test_date'])

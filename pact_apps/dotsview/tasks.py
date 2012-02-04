@@ -1,15 +1,12 @@
 #on demand task to queue up csv generation and send out email to admin
 import csv
-from datetime import datetime, timedelta
-import uuid
+from datetime import  timedelta
 from celery.decorators import task
-from django.http import HttpResponse
 import simplejson
-from dimagi.utils.couch.database import get_db
 from dotsview.models.couchmodels import CObservation
 from django.core.cache import cache
 from patient.models import Patient
-import tempfile, os, zipfile
+import tempfile, zipfile
 
 try:
     from cStringIO import StringIO

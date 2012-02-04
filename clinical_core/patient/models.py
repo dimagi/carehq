@@ -12,7 +12,6 @@ from datetime import datetime, time
 import simplejson
 import math
 from clinical_shared.mixins import TypedSubclassMixin
-from dimagi.utils.couch.database import get_db
 from permissions.models import Actor
 
 import settings
