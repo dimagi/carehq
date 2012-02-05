@@ -1,28 +1,20 @@
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from carehq_core import carehq_api
 from carehqapp.models import CCDSubmission, get_missing_category
-from couchforms.models import XFormInstance
 from issuetracker.issue_constants import ISSUE_STATE_CLOSED, ISSUE_STATE_OPEN
 from issuetracker.models.issuecore import Issue
-from patient.forms.address_form import SimpleAddressForm
-from patient.forms.phone_form import PhoneForm
-from patient.models import Patient
 from patient.views import PatientSingleView
-from permissions.models import Actor, PrincipalRoleRelation
-from datetime import datetime, timedelta
+from datetime import datetime
 
+from clinical_shared.decorators import actor_required
 
 from calendar import HTMLCalendar, month_name
 from datetime import date
 from itertools import groupby
-
-from django.utils.html import conditional_escape as esc
 
 class SubmissionCalendar(HTMLCalendar):
     #source: http://journal.uggedal.com/creating-a-flexible-monthly-calendar-in-django/
@@ -165,14 +157,17 @@ class SubmissionCalendar(HTMLCalendar):
 
 class CarehqPatientSingleView(PatientSingleView):
     #template carehqapp/carehq_patient_base.html
+
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
         """
         request = self.request
 
-        if request.current_actor is None:
-            return HttpResponseRedirect(reverse('no_actor_profile'))
+        #hack to check for actor since I can't seem to get the decorators to work
+        if not hasattr(request, 'current_actor') or request.current_actor is None:
+            raise PermissionDenied
+            #return HttpResponseRedirect(reverse('no_actor_profile'))
 
         schedule_show = request.GET.get("schedule", "active")
         schedule_edit = request.GET.get("edit_schedule", False)
