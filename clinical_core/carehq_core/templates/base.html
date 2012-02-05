@@ -96,21 +96,7 @@
                                 </li>
                             </ul>
                         {% else %}
-                            <p class="pull-right">
-                            <form method="post" action="." class="pull-right">
-                                {% csrf_token %}
-                                <input id="id_username" name="username" class="input-medium" type="text"
-                                       placeholder="username">
-                                {#                        <input id="id_username" type="text" name="username" maxlength="30">#}
 
-                                <input id="id_password" name="password" class="input-medium" type="password"
-                                       placeholder="password">
-                                {#                        <input type="password" name="password" id="id_password">#}
-
-                                <input type="hidden" name="next" value="{{ next }}"/>
-                                <button class="btn" value="Login" type="submit">Sign in</button>
-                            </form>
-                            </p>
                         {% endif %}
                     {% endblock top_useridentity %}
             </div>
