@@ -15,6 +15,16 @@
     <script type="text/javascript" src="http://www.datatables.net/download/build/jquery.dataTables.min.js"></script>
 {% endblock extrahead %}
 
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url my_network %}">Care Network</a> <span class="divider">/</span></li>
+        <li class="active">{{ actor_doc.first_name }} {{ actor_doc.last_name }}</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+{% endblock %}
+
 {% block actor_headline %}
     <span class="ptpage_fn">{{actor_doc.first_name}} {{actor_doc.last_name}}</span>
 {% endblock actor_headline %}

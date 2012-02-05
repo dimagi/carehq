@@ -11,10 +11,9 @@ from permissions.models import Actor
 
 
 @login_required
-def view_actor(request, actor_id, template_name="carehqapp/carehq_actor_profile.html"):
+def view_actor(request, actor_doc_id, template_name="carehqapp/carehq_actor_profile.html"):
     context = RequestContext(request)
-    #grr, this is django actor, not Actor doc_id
-    actor = Actor.objects.get(id=actor_id)
+    actor = Actor.objects.get(doc_id=actor_doc_id)
     context['actor_doc'] = actor.actordoc
     context['permissions_dict'] = carehq_api.get_permissions_dict(actor.actordoc)
     return render_to_response(template_name, context, context_instance=RequestContext(request))

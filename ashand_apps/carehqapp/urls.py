@@ -35,7 +35,7 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
         url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
 
-        url(r'^actors/(?P<actor_id>[0-9a-f]{32})?$', 'users.view_actor', name='view_actor'),
+        url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})?$', 'actors.view_actor', name='view_actor'),
 
         url(r'^carehq/ajax/getpatientform/$', 'ajax.ajax_patient_form_get', name='ajax_patient_form_get'),
         url(r'^carehq/ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_patient_form', name='ajax_post_patient_form'),
