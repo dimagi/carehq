@@ -37,112 +37,99 @@ public class Main {
         // TODO code application logic here
         SecurityService secSvc = new SecurityService();
         try {
+            System.out.println("Setting security certificates");
             System.setProperty("javax.net.ssl.trustStore", "jssecacerts");
             System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
             System.setProperty("javax.net.ssl.keyStore", "client.ks");
             System.setProperty("javax.net.ssl.keyStorePassword", "dimagi4life");
 
-            secSvc.Login("Admin", "!60RSr2QrX3!");
+            secSvc.Login("someusername", "somepassword");
+
             try {
                 System.out.println("Logged in: " + secSvc.isLoggedIn() + " Session: " + secSvc.getSessionToken());
             } catch (Exception ex) {
+                System.out.println("wtf, can't login");
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
 
 
             //System.out.println(secSvc.Ping(3));
             SessionService sessSvc = new SessionService(secSvc);
-            System.out.println("Got session");
-            Patient ptzero = sessSvc.GetPatient(SessionService.DimagiZeroID);
+            ArrayList<Patient> pts = sessSvc.GetAllPatients();
+            Iterator<Patient> pt_iterator = pts.iterator();
+            while (pt_iterator.hasNext()) {
+                Patient pt = pt_iterator.next();
+                System.out.println("Patient: " + pt.getInternalUserID());
+                String pt_id = pt.getInternalUserID();
 
-               /*
-            String addr = UUID.randomUUID().toString();
-            System.out.println("Original address: " + ptzero.getAddress1());
-            System.out.println("Set addr to: " + addr);
+                List<String> sessions = sessSvc.getSessionIDsForPatient(pt_id);
 
-            ptzero.setAddress1(addr);
-            ImportService isvc = new ImportService(secSvc);
-            isvc.UpdatePatient(ptzero);
+                System.out.println("Sessions for Zero: " + sessions.size());
 
-            System.out.println("Update complete");
-            secSvc.Logout();
-            System.out.println("Logging in again");
-            secSvc.Login("Admin", "!60RSr2QrX3!");
+                Iterator<String> it = sessions.iterator();
+                while (it.hasNext()) {
+                    String sess_id = it.next();
+                    PatientSession ptSess = sessSvc.getSinglePatientSession(sess_id);
+                    String beginTime = ptSess.getSubmittedTime().toString();
+                    System.out.println("\n***********************\nSession ID: " + sess_id + " Time: " + beginTime);
 
-            System.out.println("Reloading patient");
-            Patient ptzero_refresh = sessSvc.GetPatient(SessionService.DimagiZeroID);
-            System.out.println("Patient reloaded");
-            System.out.println("Reloaded Patient:");
-            System.out.println("1: " + ptzero_refresh.getAddress1());
-            System.out.println("2: " + addr);
-            */
+            
 
+                    List<Measurement> measurements = ptSess.getMeasurements().getMeasurement();
+                    List<Threshold> thresholds = ptSess.getPatientThresholds().getThreshold();
+                    List<ProtocolPerformed> protocols = ptSess.getProtocolsPerformed().getProtocolPerformed();
+                    String submit_time = ptSess.getSubmittedTime().toString();
 
-            List<String> sessions = sessSvc.getSessionIDsForPatient(SessionService.DimagiZeroID);
+                    //System.out.println("Session: " + sess_id + " Begin: " + beginTime + " - submitted: " + submit_time);
 
-            System.out.println("Sessions for Zero: " + sessions.size());
-
-            Iterator<String> it = sessions.iterator();
-            while (it.hasNext()) {
-                String sess_id = it.next();
-                PatientSession ptSess = sessSvc.getSinglePatientSession(sess_id);
-                String beginTime = ptSess.getSubmittedTime().toString();
-                System.out.println("\n***********************\nSession ID: " + sess_id + " Time: " + beginTime);
-                
-                
-                List<Measurement> measurements = ptSess.getMeasurements().getMeasurement();
-                List<Threshold> thresholds = ptSess.getPatientThresholds().getThreshold();
-                List<ProtocolPerformed> protocols = ptSess.getProtocolsPerformed().getProtocolPerformed();
-                String submit_time = ptSess.getSubmittedTime().toString();
-
-                //System.out.println("Session: " + sess_id + " Begin: " + beginTime + " - submitted: " + submit_time);
-
-                System.out.println("\t**** Protocols Run:");
-                Iterator<ProtocolPerformed> proto = protocols.iterator();
-                while (proto.hasNext()) {
-                    ProtocolPerformed protoperf = proto.next();
-                    System.out.println("\t\t" + protoperf.getDescription());
-                }
-
-                System.out.println("\t**** Thresholds:");
-                Iterator<Threshold> thrs = thresholds.iterator();
-                while (thrs.hasNext()) {
-                    Threshold threshold = thrs.next();
-                    //-1 == Lesser
-                    //1 = equal
-                    //1 = greater
-                    //if -1 the submited time os BEFORE the threshold was made
-                    //if 1 the submitted time was AFTER the threshold was made
-
-                    boolean doesApply = false;
-                    if (ptSess.getSubmittedTime().compare(threshold.getDateModified()) < 0) {
-                        doesApply = false;
-                    } else {
-                        doesApply=true;
+                    System.out.println("\t**** Protocols Run:");
+                    Iterator<ProtocolPerformed> proto = protocols.iterator();
+                    while (proto.hasNext()) {
+                        ProtocolPerformed protoperf = proto.next();
+                        System.out.println("\t\t" + protoperf.getDescription());
                     }
-                    System.out.println("\t\t" + threshold.getMeasurementFieldTypeName() + " High: " + threshold.getHigh() + threshold.getUnits() + " Low: " + threshold.getLow() + threshold.getUnits() + " Applies : " + doesApply + " Timestamp: " + threshold.getDateModified());
+
+                    System.out.println("\t**** Thresholds:");
+                    Iterator<Threshold> thrs = thresholds.iterator();
+                    while (thrs.hasNext()) {
+                        Threshold threshold = thrs.next();
+                        //-1 == Lesser
+                        //1 = equal
+                        //1 = greater
+                        //if -1 the submited time os BEFORE the threshold was made
+                        //if 1 the submitted time was AFTER the threshold was made
+
+                        boolean doesApply = false;
+                        if (ptSess.getSubmittedTime().compare(threshold.getDateModified()) < 0) {
+                            doesApply = false;
+                        } else {
+                            doesApply = true;
+                        }
+                        System.out.println("\t\t" + threshold.getMeasurementFieldTypeName() + " High: " + threshold.getHigh() + threshold.getUnits() + " Low: " + threshold.getLow() + threshold.getUnits() + " Applies : " + doesApply + " Timestamp: " + threshold.getDateModified());
+                    }
+
+                    System.out.println("\t**** Measurements:");
+                    Iterator<Measurement> mi = measurements.iterator();
+                    while (mi.hasNext()) {
+                        Measurement meas = mi.next();
+                        System.out.println("\n\t\t" + meas.getMeasurementFieldTypeName() + " Value: " + meas.getValue() + " " + meas.getUnits() + " Manual: " + meas.isIsManualEntry());
+                        System.out.println("\t\tThreshold: " + meas.getThresholdLow() + " - " + meas.getThresholdHigh() + " Violation: " + meas.isIsThresholdViolation());
+                    }
+
+                    String hl7str = sessSvc.getHl7Session(sess_id);
+
+                    try {
+                        // Create file
+                        FileWriter fstream = new FileWriter(sess_id + "_hl7.xml");
+                        BufferedWriter out = new BufferedWriter(fstream);
+                        out.write(hl7str);
+                        //                Close the output stream
+                        out.close();
+                    } catch (Exception e) {//Catch exception if any
+                        System.err.println("Error: " + e.getMessage());
+                    }
                 }
 
-                System.out.println("\t**** Measurements:");
-                Iterator<Measurement> mi = measurements.iterator();
-                while (mi.hasNext()) {
-                    Measurement meas = mi.next();
-                    System.out.println("\n\t\t" + meas.getMeasurementFieldTypeName() + " Value: " + meas.getValue() + " " + meas.getUnits() + " Manual: " + meas.isIsManualEntry());
-                    System.out.println("\t\tThreshold: " + meas.getThresholdLow() + " - " + meas.getThresholdHigh() + " Violation: " + meas.isIsThresholdViolation());
-                }
-
-//            String hl7str = sessSvc.getHl7Session(sess_id);
-//
-//            try{
-//                // Create file
-//                FileWriter fstream = new FileWriter(sess_id + "_hl7.xml");
-//                BufferedWriter out = new BufferedWriter(fstream);
-//                out.write(hl7str);
-//                //Close the output stream
-//                out.close();
-//            } catch (Exception e) {//Catch exception if any
-//                System.err.println("Error: " + e.getMessage());
-//            }
             }
 
 
@@ -191,4 +178,28 @@ public class Main {
         secSvc.Logout();
 
     }
+    //address change stuff
+    /*
+     *
+    Patient ptzero = sessSvc.GetPatient(SessionService.DimagiZeroID);
+    String addr = UUID.randomUUID().toString();
+    System.out.println("Original address: " + ptzero.getAddress1());
+    System.out.println("Set addr to: " + addr);
+
+    ptzero.setAddress1(addr);
+    ImportService isvc = new ImportService(secSvc);
+    isvc.UpdatePatient(ptzero);
+
+    System.out.println("Update complete");
+    secSvc.Logout();
+    System.out.println("Logging in again");
+    secSvc.Login("Admin", "!60RSr2QrX3!");
+
+    System.out.println("Reloading patient");
+    Patient ptzero_refresh = sessSvc.GetPatient(SessionService.DimagiZeroID);
+    System.out.println("Patient reloaded");
+    System.out.println("Reloaded Patient:");
+    System.out.println("1: " + ptzero_refresh.getAddress1());
+    System.out.println("2: " + addr);
+     */
 }
