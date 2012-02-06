@@ -134,7 +134,7 @@
   </wsdl:binding>
   <wsdl:service name="AuthenticateService">
     <wsdl:port name="BasicHttpBinding_IAuthenticate" binding="tns:BasicHttpBinding_IAuthenticate">
-      <soap:address location="https://prov0948.soaesrvs.com/Integration/Security.svc/SecurityService" />
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/Security.svc/SecurityService" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

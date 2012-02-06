@@ -91,7 +91,7 @@
   </wsdl:binding>
   <wsdl:service name="ImportDataService">
     <wsdl:port name="BasicHttpBinding_IImportData" binding="tns:BasicHttpBinding_IImportData">
-      <soap:address location="https://prov0948.soaesrvs.com/Integration/ImportData.svc/ImportDataService" />
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/ImportData.svc/ImportDataService" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

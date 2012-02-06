@@ -135,7 +135,7 @@
   </wsdl:binding>
   <wsdl:service name="UserLookupService">
     <wsdl:port name="BasicHttpBinding_IUserLookup" binding="tns:BasicHttpBinding_IUserLookup">
-      <soap:address location="https://prov0948.soaesrvs.com/Integration/UserLookup.svc/UserLookupService" />
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/UserLookup.svc/UserLookupService" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -535,7 +535,7 @@
   </wsdl:binding>
   <wsdl:service name="ExtractDataService">
     <wsdl:port name="BasicHttpBinding_IExtractData" binding="tns:BasicHttpBinding_IExtractData">
-      <soap:address location="https://prov0948.soaesrvs.com/Integration/Extract.svc/ExtractService" />
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/Extract.svc/ExtractService" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

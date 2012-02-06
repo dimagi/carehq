@@ -35,7 +35,9 @@ import org.datacontract.schemas._2004._07.intel_healthcare_integration.Threshold
  * @author dmyung
  */
 public class SessionService {
-    public static String DimagiZeroID = "F5942BFF-4692-4000-BCC2-A1465208E426";
+    //public static String DimagiZeroID = "F5942BFF-4692-4000-BCC2-A1465208E426";
+    public static String DimagiZeroID = "74D7AF9D-56F5-4BA2-BC9D-B4D17020BE28";
+
     
     private SecurityService _securitySvc;
 
