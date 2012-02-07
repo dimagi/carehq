@@ -6,28 +6,29 @@
     <script>
         function rm_dot(doc_id) {
             var answer = confirm("Are you sure you want to remove this DOT submission? This is an irreversible operation!");
-            if (answer)
-            //call the url
+            if (answer) {
+                //call the url
                 var remove_url = "{% url rm_pact_submission %}";
-            var payload = {
-                'csrfmiddlewaretoken':getCookie("csrftoken"),
-                'doc_id':doc_id,
-            };
+                var payload = {
+                    'csrfmiddlewaretoken':getCookie("csrftoken"),
+                    'doc_id':doc_id,
+                };
 
-            send_xhr = $.ajax({
-                "type":"POST",
-                "url":remove_url,
-                "data":payload,
-                "success": function(data, textStatus, jqXHR) {
-                    console.log(data);
-                    window.location=data;
+                send_xhr = $.ajax({
+                    "type":"POST",
+                    "url":remove_url,
+                    "data":payload,
+                    "success":function (data, textStatus, jqXHR) {
+                        console.log(data);
+                        window.location = data;
 
-                },
-                "error":function (data) {
-                    alert(data);
-                    $('body').replaceWith(data.responseText);
-                }
-            });
+                    },
+                    "error":function (data) {
+                        alert(data);
+                        $('body').replaceWith(data.responseText);
+                    }
+                });
+            }
         }
     </script>
 {% endblock extrahead %}
