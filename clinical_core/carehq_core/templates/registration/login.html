@@ -43,9 +43,10 @@
                         {{ form.username.label_tag }}
                         {{ form.username }}
                         {{ form.password.label_tag }}
-                        {{ form.password }}
-                    <input type="submit" value="Login" class="fg-button ui-state-default ui-corner-all ui-state-hover ui-state-active"/>
+                        {{ form.password }}<br>
+                    <input type="submit" value="Login" class="btn"/>
                     <input type="hidden" name="next" value="{{ next }}" />
+                    &nbsp; <input type="checkbox" name="remember_me" id="id_remember_me" /> <span class="helptext">Keep me logged in</span>
                 </form>
                     {% if form.errors %}
                         <div class="alert alert-error">Your username and password didn't match. Please try again.</div>
