@@ -100,6 +100,10 @@ def syncdb():
         with enter_virtualenv():
             sudo('python manage.py syncdb --noinput', user=env.sudo_user)
             #sudo('python manage.py migrate --noinput', user=env.sudo_user)
+
+def collectstatic():
+    with cd(env.code_root):
+        with enter_virtualenv():
             sudo('python manage.py collectstatic --noinput', user=env.sudo_user)
 
 def update():
