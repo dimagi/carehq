@@ -188,8 +188,10 @@ def schedule_coverage_tally_report_sms():
 
 
     today = make_time()
+
+
     sent_report = SubmissionTallyLog.view('pactcarehq/daily_tally_report_log', key=[today.year, today.month, today.day]).all()
-    if len(sent_report) == 0:
+    if len(sent_report) == 0 and today.hour == 13: #sanity check to make sure the hour today is correct
         users = sorted(filter(lambda x: x.username.count("_") == 0, User.objects.all().filter(is_active=True)), key=lambda x: x.username)
         total_interval = 1
         scheduled = []
