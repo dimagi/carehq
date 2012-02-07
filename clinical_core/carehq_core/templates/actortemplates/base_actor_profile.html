@@ -3,19 +3,19 @@
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/profile_tab_ctrl.js"></script>
     <script>
-        $(function() {
-            $('.editctrl').each(function() {
+        $(function () {
+            $('.editctrl').each(function () {
                 $(this).hide();
             });
         });
         function toggle_edit() {
             if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Profile") {
-                $('.editctrl').each(function() {
+                $('.editctrl').each(function () {
                     $(this).toggle('drop', {}, 300);
                 });
                 $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
             } else {
-                $('.editctrl').each(function() {
+                $('.editctrl').each(function () {
                     $(this).toggle('drop', {}, 300);
                 });
                 $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Profile");
@@ -24,68 +24,64 @@
 
     </script>
 {% endblock extrahead %}
+{% block page_header %}
+    <h3>{{ actor_doc.first_name }} {{ actor_doc.last_name }}</h3>
+{% endblock %}
 {% block content %}
-    <div class="container">
+    <div class="row">
         <div class="span12">
-            <div class="span12"> <!-- actor hat -->
-                {% block actor_hat %}
-                    <div class="span8">
-                        {% block actor_headline %}
-                        <span class="ptpage_fn">{{actor_doc.first_name}} {{actor_doc.last_name}}</span>
-                        {% endblock actor_headline %}
-                    </div>
-                    <div class="span8 last right">
-                        {% block hat_actions %}
-                            <a id="edit_tgl_btn" class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="javascript:toggle_edit()">
-                                <span class="ui-icon ui-icon-gear"></span>
-                                <span class="edit_btn_txt">Edit Profile</span>
-                            </a>
-                        {% endblock hat_actions %}
-                    </div>
-                    <hr>
-                {% endblock %}
-            </div> <!-- end actor_hat hat -->
-            <div class="span3"> <!-- actor badge -->
-                <dl>
-                    {% block actor_badge %}
-                        <dt>{% trans "Age" %}</dt>
-                        <dd>{{actor_doc.age_string}}</dd>
-                        <dt>{% trans "Sex" %}</dt>
-                        <dd>{{actor_doc.gender|title }}</dd>
-                    {% endblock actor_badge %}
-                </dl>
-            </div> <!-- end actor badge -->
-            <div class="span12 last">
-                {% block actor-content-tabs %}
-                    <div id="actor-tabs" class="tabs">
-                        <ul>
-                            {% block actor-tab-controller %}
-                                <li><a href="#actor-info-tab" name="info">{% trans "Info" %}</a></li>
-                                <li><a href="#permissions-tab">{% trans "Permissions" %}</a></li>
-                                <li><a href="#submissions-tab">{% trans "Submissions" %}</a></li>
-                            {% endblock actor-tab-controller %}
-                        </ul>
-                        {% block actor-tab-container %}
-                            <div id="actor-info-tab"  class="ui-tabs-hide">
-                                Notes: {{ actor_doc.notes }}<br>
-                                Last Modified: {{ actor_doc.date_modified|timesince }} ago
-                            </div>
-                            <div id="permissions-tab" class="ui-tabs-hide">
-                                Permission info goes here!
-                            </div>
-                            <div id="messages-tab" class="ui-tabs-hide">
-                                Message info goes here!
-                            </div>
-                            <div id="cases-tab" class="ui-tabs-hide">
-                                Case info goes here
-                            </div>
-                            <div id="submissions-tab" class="ui-tabs-hide">
-                                Submissions go here
-                            </div>
-                        {% endblock actor-tab-container %}
-                    </div>  <!-- "actor-content-tabs" -->
-                {% endblock actor-content-tabs %}
-            </div>
+            {% block actor_identity %}
+                <img class="thumbnail pull-left" style="margin-right:8px; margin-bottom:8px;"
+                     src="{{ STATIC_URL }}carehqapp/img/noun/noun_user_75.png" height="75">
+                <div class="span6">
+                    <table class="actor_details">
+                        <tr>
+                            <td class="span2">{% trans "Age" %}</td>
+                            <td class="span3"> foo{{ actor_doc.age_string }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans "Sex" %}</td>
+                            <td> bar{{ actor_doc.gender|title }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="span4">
+                    Affiliation info?
+                    <br>
+                    Whatup
+                </div>
+            {% endblock actor_identity %}
         </div>
+    </div>
+    <!-- end actor_identity  -->
+    <div class="row">
+        <div class="span12">
+            <ul class="nav nav-pills">
+                {% block actor-tab-controller %}
+                    <li><a href="#" name="info">{% trans "Info" %}</a></li>
+                    <li><a href="#">{% trans "Care Network" %}</a></li>
+                    <li><a href="#">{% trans "Issues" %}</a></li>
+                {% endblock actor-tab-controller %}
+            </ul>
+            {% block actor-tab-container %}
+                <div id="actor-info-tab" class="ui-tabs-hide">
+                    Notes: {{ actor_doc.notes }}<br>
+                    Last Modified: {{ actor_doc.date_modified|timesince }} ago
+                </div>
+                <div id="permissions-tab" class="ui-tabs-hide">
+                    Permission info goes here!
+                </div>
+                <div id="messages-tab" class="ui-tabs-hide">
+                    Message info goes here!
+                </div>
+                <div id="cases-tab" class="ui-tabs-hide">
+                    Case info goes here
+                </div>
+                <div id="submissions-tab" class="ui-tabs-hide">
+                    Submissions go here
+                </div>
+            {% endblock actor-tab-container %}
+        </div>
+        <!-- "actor-content-tabs" -->
     </div>
 {% endblock content %}
