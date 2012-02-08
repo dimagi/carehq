@@ -5,7 +5,7 @@
 package diemapp;
 
 import com.dimagi.carehq.device.intel.ServiceWrapper.AdherenceService;
-import com.dimagi.carehq.device.intel.ServiceWrapper.ImportService;
+import com.dimagi.carehq.device.intel.ServiceWrapper.PatientDataService;
 import com.dimagi.carehq.device.intel.ServiceWrapper.SecurityService;
 import com.dimagi.carehq.device.intel.ServiceWrapper.SessionService;
 import java.io.BufferedWriter;
@@ -176,13 +176,12 @@ public class Main {
 	}
 
 	public void Importer(SecurityService secSvc) {
-		/*
 		String addr = UUID.randomUUID().toString();
 		System.out.println("Original address: " + ptzero.getAddress1());
 		System.out.println("Set addr to: " + addr);
 		
 		ptzero.setAddress1(addr);
-		ImportService isvc = new ImportService(secSvc);
+		PatientDataService isvc = new PatientDataService(secSvc);
 		isvc.UpdatePatient(ptzero);
 		
 		System.out.println("Update complete");
@@ -196,7 +195,6 @@ public class Main {
 		System.out.println("Reloaded Patient:");
 		System.out.println("1: " + ptzero_refresh.getAddress1());
 		System.out.println("2: " + addr);
-		 */
 	}
 
 	public void CCDChecker(SecurityService secSvc) {
