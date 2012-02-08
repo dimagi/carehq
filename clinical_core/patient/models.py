@@ -376,13 +376,18 @@ class CarehqPatient(BasePatient):
     """
     A stub implementation of the Patient model
     """
+
+    study_id = StringProperty() # readable sequential string of patient enrollment number
+
     start_date = DateProperty(verbose_name='Date of trial start')
     device_id = StringProperty()
     checkin_time = TimeProperty(verbose_name='Preferred survey time')
 
     enrolled_date = DateProperty()
     hcms_registered_date = DateProperty()
+
     install_date = DateProperty()
+    sim_number = StringProperty() # sim card for 3g access for phone number - for refill purposes
 
 
     #time window in which avalaible

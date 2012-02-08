@@ -1,31 +1,44 @@
 {% extends base_template %}
 {% load i18n %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqadmin_landing %}">CareHQ Admin</a> <span class="divider">/</span></li>
+        <li class="active"><a href="{{ request.path }}">{{ tenant.name }} Admin</a></li>
+    </ul>
+{% endblock page_crumbs%}
+
+{% block page_header %}
+    <h1>CareHQ Admin :: {{ tenant.name }} Admin</h1>
+{% endblock page_header %}
+
 {% block content %}
-    <h2>CareHQ :: Manage Tenant {{ tenant.name }}</h2>
     <h3>Roles and Permissions</h3>
-    <table>
+    <table class="table table-bordered">
         <thead>
         <tr>
-            <th>
+            <th class="span2">
                 Role
             </th>
             {% for p in all_permissions %}
-            <th>
-               {{ p.name }}
-            </th>
+                <th class="span1">
+                   <small>{{ p.display_name }}</small>
+                </th>
             {% endfor %}
         </tr>
         </thead>
         {% for role, permissions in role_permission_matrix %}
         <tr>
-            <td>
+            <td class="span2">
                 {{ role.name }}
             </td>
             {% for has_perm in permissions %}
+                <td>
                     {% if has_perm %}
-                        <td bgcolor="GREEN">
+                        <span class="btn btn-success"><i class="icon-ok icon-white"></i></span>
                     {% else %}
-                        <td bgcolor="RED">
+                        <span class="btn btn-danger"><i class="icon-remove icon-white"></i></span>
                     {% endif %}
                 &nbsp;
                 </td>
@@ -35,9 +48,9 @@
     </table>
 
     <h3>Actor Roles and Permissions</h3>
-    <a href="{% url new_actor tenant.id %}?type=chw">Add CHW</a> &nbsp;
-    <a href="{% url new_actor tenant.id %}?type=provider">Add Provider</a> &nbsp;
-    <a href="{% url new_actor tenant.id %}?type=caregiver">Add Caregiver</a> &nbsp;
+    <a class="btn" href="{% url new_actor tenant.id %}?type=provider">Add Provider</a> &nbsp;
+    <a class="btn" href="{% url new_actor tenant.id %}?type=chw">Add CHW</a> &nbsp;
+    <a class="btn" href="{% url new_actor tenant.id %}?type=caregiver">Add Caregiver</a> &nbsp;
     {# this will tell you if this actor has any roles in which it is the principal of #}
     <h4>Actor Roles</h4>
     <div class="span9">

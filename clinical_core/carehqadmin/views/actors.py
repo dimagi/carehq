@@ -18,21 +18,26 @@ from django.core.urlresolvers import reverse
 def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
     provider_type = request.GET.get('type', None)
 
+    actor_type="Actor"
     if provider_type  is None:
         raise Http404
     elif provider_type == 'chw':
         doc_class = CHWActor
         role_class = Role.objects.get(name=carehq_constants.role_chw)
+        actor_type="CHW"
     elif provider_type == 'caregiver':
         doc_class = CaregiverActor
+        actor_type = 'Caregiver'
     elif provider_type == 'provider':
         doc_class = ProviderActor
         role_class = Role.objects.get(name=carehq_constants.role_external_provider)
+        actor_type = 'Provider'
 
     tenant = Tenant.objects.get(id=tenant_id)
     form_class = get_actor_form(doc_class)
     context = RequestContext(request)
     context['tenant'] = tenant
+    context['actor_type'] =actor_type
 
     if request.method == 'POST':
         form = form_class(tenant, data=request.POST)
@@ -41,10 +46,6 @@ def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):
             actor_instance.save(tenant)
             permissions.utils.add_role(actor_instance.django_actor, role_class)
             return HttpResponseRedirect(reverse('manage_tenant', kwargs= {'tenant_id': tenant_id}))
-
-
-
-
         else:
             pass
 

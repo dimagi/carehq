@@ -19,8 +19,8 @@ def manage_tenant(request, tenant_id, template="carehqadmin/tenants/manage_tenan
 
     operms = ObjectPermission.objects.select_related('content_type').filter(content_type=ctype, content_id=tenant_id)
 
-    all_roles = Role.objects.all().filter(name__startswith=carehq_constants.APP_NAMESPACE)
-    all_permissions = Permission.objects.all().select_related().filter(codename__startswith=carehq_constants.APP_NAMESPACE)
+    all_roles = Role.objects.all().filter(name__startswith=carehq_constants.APP_NAMESPACE).order_by('name')
+    all_permissions = Permission.objects.all().select_related().filter(codename__startswith=carehq_constants.APP_NAMESPACE).order_by('name')
 
     role_permission_matrix = []
     for role in all_roles:

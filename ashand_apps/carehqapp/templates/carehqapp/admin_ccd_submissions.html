@@ -1,0 +1,65 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        $(function () {
+            $("#tbl_submissions").tablesorter({ sortList:[
+                [0, 0]
+            ], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>CCD Submissions</h1>
+{% endblock %}
+{% block content %}
+    {% if submissions %}
+        <table class="table table-bordered table-striped" id="tbl_submissions">
+            <thead>
+            <tr>
+                <th class="span4">Patient</th>
+                <th class="span2">Session Type</th>
+                <th class="span2">Session Date</th>
+                <th class="span2">Status</th>
+                <th class="span2">Issue</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ccd in submissions %}
+                <tr>
+                    <td>
+                        {% if ccd.get_patient_doc %}
+                            <a href="{{ ccd.get_patient_doc.patient.get_absolute_url }}">
+                                {{ ccd.get_patient_doc.last_name }}, {{ ccd.get_patient_doc.first_name }}
+                            </a>
+                        {% else %}
+                            Unidentified
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url view_ccd ccd.get_id %}">View</a>
+                    <td> {{ ccd.get_session_time|date:"M j, Y P" }} </td>
+                    <td>
+                        {% if ccd.is_threshold %}
+                            <span class="btn btn-success"><i class="icon-ok icon-white"></i> OK</span>
+                        {% else %}
+                            <span class="btn btn-danger"><i class="icon-warning-sign icon-white"></i> Threshold</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ ccd.has_issue }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        No Issues
+    {% endif %}
+{% endblock %}

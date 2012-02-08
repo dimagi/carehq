@@ -28,20 +28,22 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^issue/patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/new$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
 
 
-        url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
-        url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),
-        url(r'^providerListQueryAjax/(?P<term>.*)$', 'ashandui.providerListQueryAjax', name='providerListQueryAjax'),
-        url(r'^providerSearch/?$', 'ashandui.providerSearch', name='providerSearch'),
-        url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
-        url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
+        url(r'^ashandadmin/ccds/$', 'ashand_admin.admin_ccd_submissions'),
+
+
+
+#        url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
+#        url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),
+#        url(r'^providerListQueryAjax/(?P<term>.*)$', 'ashandui.providerListQueryAjax', name='providerListQueryAjax'),
+#        url(r'^providerSearch/?$', 'ashandui.providerSearch', name='providerSearch'),
+#        url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
+#        url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
 
         url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'actors.view_actor', name='view_actor'),
-
         url(r'^carehq/ajax/getpatientform/$', 'ajax.ajax_patient_form_get', name='ajax_patient_form_get'),
         url(r'^carehq/ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_patient_form', name='ajax_post_patient_form'),
         url(r'^carehq/ajax/phone$', 'ajax.remove_phone', name='remove_phone'),
         url(r'^carehq/ajax/address$', 'ajax.remove_address', name='remove_address'),
-
         url(r'^carehq/ajax/getactorform/$', 'ajax.ajax_get_actor_form', name='ajax_get_actor_form'),
         url(r'^carehq/ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_actor_form', name='ajax_post_actor_form'),
 

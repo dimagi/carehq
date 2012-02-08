@@ -68,7 +68,7 @@
                     {% block top_useridentity %}
                         {% if request.user.is_authenticated %}
                             <ul class="nav pull-right">
-                                <li> <a href="#">Help</a> </li>
+                                <li><a href="#">Help</a></li>
                                 <li class="divider-vertical"></li>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -84,8 +84,10 @@
                                         {% if user.is_superuser %}
                                             <li class="divider"></li>
                                             <li>
+                                                <a href="{% url carehqadmin_landing %}">CareHQ Admin</a>
+                                            </li>
+                                            <li>
                                                 <a href="/admin">Django Admin</a>
-                                                {#| <a href="{% url new_provider%}">New Provider</a>#}
                                             </li>
                                         {% endif %}
                                         <li class="divider"></li>

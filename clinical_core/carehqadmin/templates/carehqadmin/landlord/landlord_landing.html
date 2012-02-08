@@ -1,0 +1,23 @@
+{% extends base_template %}
+{% load i18n %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqadmin_landing %}">CareHQ Admin</a> <span class="divider">/</span></li>
+        <li class="active"><a href="{{ request.path }}">Tenant Admin</a></li>
+    </ul>
+{% endblock page_crumbs%}
+
+{% block page_header %}
+    <h1>CareHQ Admin :: Tenant Admin</h1>
+{% endblock page_header %}
+{% block content %}
+    <h3>Current Tenants</h3>
+    <ul>
+    {% for t in tenants %}
+        <li>
+            <a href="{% url manage_tenant t.id %}">{{ t.name }}: {{ t.full_name }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock content %}

@@ -57,9 +57,16 @@ class CCDSubmission(XFormInstance):
         #patient_doc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_doc_id))
 
         #hack for testing
+        if hasattr(self, '_patient_doc'):
+            return self._patient_doc
 
-        patient = Patient.objects.get(doc_id=self.get_patient_guid())
-        return patient.couchdoc
+        try:
+            patient = Patient.objects.get(doc_id=self.get_patient_guid())
+            self._patient_doc = patient.couchdoc
+            return patient.couchdoc
+        except Patient.DoesNotExist:
+            self._patient_doc = None
+            return None
 
 
 from signals import *
