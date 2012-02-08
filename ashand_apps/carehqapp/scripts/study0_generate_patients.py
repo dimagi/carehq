@@ -17,9 +17,9 @@ def run():
     Note, johnny cache needs to be invalidated or else you're going to see weird behavior in your runserver.  The model changes done here
     are not picked up by memcached or the middleware when the server is running
     """
-    Patient.objects.all().delete()
-    Actor.objects.all().delete()
-    Issue.objects.all().delete()
+    #Patient.objects.all().delete()
+    #Actor.objects.all().delete()
+    #Issue.objects.all().delete()
 
     tenant = Tenant.objects.get(name='ASHand')
     caregiver_role = Role.objects.get(name=carehq_constants.role_caregiver)
@@ -53,4 +53,6 @@ def run():
         patient_doc.study_id = study_id
         patient_doc.sim_number = sim_phone
         patient_doc.save()
+
+        generator.get_or_create_actor(tenant, )
     pass

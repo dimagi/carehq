@@ -71,12 +71,11 @@ def receive_ccd(request):
 
 @login_required
 @actor_required
-def submissions_list(request, patient_guid, template_name="carehqapp/ccd_submissions.html"):
+def submissions_list(request, internal_id, template_name="carehqapp/ccd_submissions.html"):
     context = RequestContext(request)
     #hack till we get it all stitched up
-    patient_guid='Test000001'
-    sk=[patient_guid, 0000]
-    ek = [patient_guid, 3000]
+    sk=[internal_id, 0000]
+    ek = [internal_id, 3000]
     context['submissions']=CCDSubmission.view('carehqapp/ccd_submissions_by_patient', startkey=sk, endkey=ek, include_docs=True).all()
     return render_to_response(template_name, context_instance=context)
 

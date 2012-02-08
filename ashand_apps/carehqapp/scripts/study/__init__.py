@@ -1,5 +1,5 @@
 study_id_list = [
-        {'patient_guid': "07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9", 'external_id': "ASHAND001", "sim_phone": ""},
+        {'patient_guid': "c6f12e6c459c45b9b0e7272d1b23f932", 'external_id': "ASHAND001", "sim_phone": ""}, #07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9
         {'patient_guid': "157e9fae3800489b9dcb533cb1d48f66", 'external_id': "ASHAND002", "sim_phone": ""},
         {'patient_guid': "b09f1d2bf06b4aa289018183dd4b37f2", 'external_id': "ASHAND003", "sim_phone": "9784894178"},
         {'patient_guid': "ab68806f3b7849b4bd43b20a164f5bee", 'external_id': "ASHAND004", "sim_phone": "9784296546"},
