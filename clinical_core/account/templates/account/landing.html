@@ -35,7 +35,9 @@
 
     {% else %}
         {% with request.current_actor as actor %}
+            {% if actor %}
             {% include "account/actor_fragment.html" %}
+            {% endif %}
         {% endwith %}
 
     {% endif %}

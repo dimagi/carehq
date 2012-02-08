@@ -1,9 +1,10 @@
 from carehq_core import carehq_constants
-from carehqapp.scripts.study import study_id_map
+from carehqapp.scripts.study import study_id_list
+from clinical_shared.utils.generator import get_or_create_user
 from issuetracker.models.issuecore import Issue
 from clinical_shared.utils import generator
 from .demo.demo_careteams import DEMO_CARETEAMS
-from patient.models import Patient
+from patient.models import Patient, CarehqPatient
 from permissions.models import Role, Actor
 from tenant.models import Tenant
 
@@ -22,27 +23,34 @@ def run():
 
     tenant = Tenant.objects.get(name='ASHand')
     caregiver_role = Role.objects.get(name=carehq_constants.role_caregiver)
-    patient_role=Role.objects.get(name=carehq_constants.role_patient)
+    patient_role = Role.objects.get(name=carehq_constants.role_patient)
 
-    for pt_guid, study_id in study_id_map.items():
-#
-#            {
-#            'patient': ["George", "", "Costanza", "m"],
-#            'caregivers': [['Jerry', 'Seinfeld'], ],
-#            'providers': [
-#                ["Leonard", "McCoy", "Doctor", "USS Enterprise"],
-#            ],
-#            },
-        #generate patient
-        print "############ Generating Patient %s" % (team_dict['patient'])
-        patient, caregivers, providers = generator.generate_patient_and_careteam(tenant, team_dictionary=team_dict)
-        patient.mrn = str(generator.random_number())
-        patient.save()
+    for num, study_pt_dict in enumerate(study_id_list):
 
-        for cg in caregivers:
-            print "\tCaregiver %s (%s)" % (cg.name, cg.relation)
 
-        for prov in providers:
-            print "\tProvider %s (%s)" % (prov.name, prov.title)
+        print "############ Generating Patient %s" % study_pt_dict['external_id']
 
+        pt_doc_id = study_pt_dict['patient_guid']
+        first_name = "Ashand"
+        last_name = study_pt_dict['external_id']
+        study_id = study_pt_dict['external_id']
+        sim_phone = study_pt_dict['sim_phone']
+
+        try:
+            CarehqPatient.get_db().delete_doc(pt_doc_id)
+        except:
+            pass
+
+        ptuser = get_or_create_user(first_name=first_name, last_name=last_name)
+        patient_doc = generator.get_or_create_patient(tenant,
+            user=ptuser,
+            first_name=first_name,
+            middle_name='',
+            last_name=last_name,
+            gender='f',
+            id_override=pt_doc_id)
+
+        patient_doc.study_id = study_id
+        patient_doc.sim_number = sim_phone
+        patient_doc.save()
     pass

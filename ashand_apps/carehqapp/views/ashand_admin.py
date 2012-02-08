@@ -17,3 +17,11 @@ def admin_ccd_submissions(request, template_name="carehqapp/admin_ccd_submission
     context['submissions'] = submissions
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
+
+def admin_user_activity(request, template_name="carehqapp/admin_user_activity.html"):
+    context = RequestContext(request)
+    submissions = []
+    context['activities'] = submissions
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+

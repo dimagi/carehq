@@ -72,7 +72,7 @@ def generate_phones(num):
         ret.append(phone)
     return ret
 
-def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, last_name=None, gender=None):
+def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, last_name=None, gender=None, id_override=None):
     """
     Returns a patient document
     """
@@ -80,6 +80,8 @@ def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, 
         user = get_or_create_user(first_name=first_name, last_name=last_name)
 
     pt = CarehqPatient()
+    if id_override is not None:
+        pt._id = id_override
     pt.patient_id = str(random_number(length=10))
     pt.birthdate = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
 
