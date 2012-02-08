@@ -18,7 +18,7 @@ study_id_list = [
         {'patient_guid': "9a24ad012254493ba0c0ec2b1a0847b9", 'external_id': "ASHAND017", "sim_phone": "9783948304"},
         {'patient_guid': "156b3f30bfc449b081bc441b10a483b2", 'external_id': "ASHAND018", "sim_phone": "9783948025"},
         {'patient_guid': "e295928fc9374e968b66eed1f7ff5d90", 'external_id': "ASHAND019", "sim_phone": "9783948202"},
-        {'patient_guid': "c6f12e6c459c45b9b0e7272d1b23f932", 'external_id': "ASHAND020", "sim_phone": "9784894340"},
+        {'patient_guid': "6f5b8e546e8041a29df5c5977660c495", 'external_id': "ASHAND020", "sim_phone": "9784894340"},
         {'patient_guid': "24cba02037904c7895d3b87e75a69732", 'external_id': "ASHAND021", "sim_phone": "9784894331"},
         {'patient_guid': "30756e3ea67849e59f51b0b656710584", 'external_id': "ASHAND022", "sim_phone": "9784894329"},
         {'patient_guid': "f68d5f9b95654e88b2d6688c70d717b3", 'external_id': "ASHAND023", "sim_phone": ""},
