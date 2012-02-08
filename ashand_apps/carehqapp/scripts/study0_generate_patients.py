@@ -54,5 +54,4 @@ def run():
         patient_doc.sim_number = sim_phone
         patient_doc.save()
 
-        generator.get_or_create_actor(tenant, )
     pass
