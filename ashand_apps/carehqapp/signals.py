@@ -37,8 +37,8 @@ def get_assigning_actor(patient):
 
 def process_ccd_submission(sender, xform, **kwargs):
     try:
-        #patient = Patient.objects.get(doc_id=xform.form['recordTarget']['patientRole']['id'][1]['@extension'])
-        patient = Patient.objects.get(id='d9041f5a3f2a45dba9eba636ce2f0aa8')
+        patient = Patient.objects.get(doc_id=xform.form['recordTarget']['patientRole']['id'][0]['@extension'])
+        #patient = Patient.objects.get(id='d9041f5a3f2a45dba9eba636ce2f0aa8')
     except Patient.DoesNotExist:
         return
     except KeyError, ke:

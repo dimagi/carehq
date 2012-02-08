@@ -23,8 +23,8 @@ class CCDSubmission(XFormInstance):
         pass
 
     def get_patient_guid(self):
-        #return self.form['recordTarget']['patientRole']['id'][1]['@extension']
-        return settings.HACK_PATIENT_GUID
+        return self.form['recordTarget']['patientRole']['id'][0]['@extension']
+        #return settings.HACK_PATIENT_GUID
 
     def ccd_table_data(self):
         return CCDSubmission.find_ccd_table_data(self)

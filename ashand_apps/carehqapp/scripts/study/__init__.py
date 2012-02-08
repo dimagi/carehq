@@ -1,5 +1,5 @@
 study_id_list = [
-        {'patient_guid': "dcc44157c16c45ba9b212848eaec8fbf", 'external_id': "ASHAND001", "sim_phone": ""},
+        {'patient_guid': "07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9", 'external_id': "ASHAND001", "sim_phone": ""},
         {'patient_guid': "157e9fae3800489b9dcb533cb1d48f66", 'external_id': "ASHAND002", "sim_phone": ""},
         {'patient_guid': "b09f1d2bf06b4aa289018183dd4b37f2", 'external_id': "ASHAND003", "sim_phone": "9784894178"},
         {'patient_guid': "ab68806f3b7849b4bd43b20a164f5bee", 'external_id': "ASHAND004", "sim_phone": "9784296546"},
@@ -23,7 +23,7 @@ study_id_list = [
         {'patient_guid': "30756e3ea67849e59f51b0b656710584", 'external_id': "ASHAND022", "sim_phone": "9784894329"},
         {'patient_guid': "f68d5f9b95654e88b2d6688c70d717b3", 'external_id': "ASHAND023", "sim_phone": ""},
         {'patient_guid': "a97c41cd29c5486eab58262f3fad8800", 'external_id': "ASHAND024", "sim_phone": ""},
-        {'patient_guid': "2269122d211c472eb904ee2c4cf1ddf9", 'external_id': "TEST001", "sim_phone": ""},
-        {'patient_guid': "f21a992108fe4874ad5d0a8d38ef7847", 'external_id': "TEST002", "sim_phone": ""},
-        {'patient_guid': "36264411fa4643f4a2675742170b447c", 'external_id': "TEST003", "sim_phone": ""},
+        {'patient_guid': "2269122d211c472eb904ee2c4cf1ddf9", 'external_id': "TESTASHAND001", "sim_phone": ""},
+        {'patient_guid': "f21a992108fe4874ad5d0a8d38ef7847", 'external_id': "TESTASHAND002", "sim_phone": ""},
+        {'patient_guid': "36264411fa4643f4a2675742170b447c", 'external_id': "TESTASHAND003", "sim_phone": ""},
 ]
