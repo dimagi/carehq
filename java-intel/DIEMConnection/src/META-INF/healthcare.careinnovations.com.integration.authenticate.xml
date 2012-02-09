@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://healthcare.careinnovations.com/integration/authenticate" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="AuthenticateService" targetNamespace="http://healthcare.careinnovations.com/integration/authenticate" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp1="http://www.w3.org/ns/ws-policy" xmlns:tcp="http://java.sun.com/xml/ns/wsit/2006/09/policy/transport/client">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://healthcare.careinnovations.com/integration/authenticate/Imports">
+      <xsd:import schemaLocation="https://prov1804.soaesrvs.com/Integration/Security.svc?xsd=xsd0" namespace="http://healthcare.careinnovations.com/integration/authenticate" />
+      <xsd:import schemaLocation="https://prov1804.soaesrvs.com/Integration/Security.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IAuthenticate_Login_InputMessage">
+    <wsdl:part name="parameters" element="tns:Login" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_Login_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LoginResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_Logout_InputMessage">
+    <wsdl:part name="parameters" element="tns:Logout" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_Logout_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LogoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_ChangePassword_InputMessage">
+    <wsdl:part name="parameters" element="tns:ChangePassword" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_ChangePassword_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ChangePasswordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_About_InputMessage">
+    <wsdl:part name="parameters" element="tns:About" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_About_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AboutResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_Ping_InputMessage">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="IAuthenticate_Ping_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IAuthenticate">
+    <wsdl:operation name="Login">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Login" message="tns:IAuthenticate_Login_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/LoginResponse" message="tns:IAuthenticate_Login_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Logout" message="tns:IAuthenticate_Logout_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/LogoutResponse" message="tns:IAuthenticate_Logout_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ChangePassword">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/ChangePassword" message="tns:IAuthenticate_ChangePassword_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/ChangePasswordResponse" message="tns:IAuthenticate_ChangePassword_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="About">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/About" message="tns:IAuthenticate_About_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/AboutResponse" message="tns:IAuthenticate_About_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Ping" message="tns:IAuthenticate_Ping_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/PingResponse" message="tns:IAuthenticate_Ping_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IAuthenticate" type="tns:IAuthenticate">
+    <wsp1:PolicyReference URI="#BasicHttpBinding_IAuthenticatePolicy"/>
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Login">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Logout">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Logout" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ChangePassword">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/ChangePassword" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="About">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/About" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/authenticate/IAuthenticate/Ping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AuthenticateService">
+    <wsdl:port name="BasicHttpBinding_IAuthenticate" binding="tns:BasicHttpBinding_IAuthenticate">
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/Security.svc/SecurityService" />
+    </wsdl:port>
+  </wsdl:service>
+  <wsp1:Policy wsu:Id="BasicHttpBinding_IAuthenticatePolicy">
+    <wsp1:ExactlyOne>
+      <wsp1:All></wsp1:All>
+    </wsp1:ExactlyOne>
+  </wsp1:Policy>
+</wsdl:definitions>

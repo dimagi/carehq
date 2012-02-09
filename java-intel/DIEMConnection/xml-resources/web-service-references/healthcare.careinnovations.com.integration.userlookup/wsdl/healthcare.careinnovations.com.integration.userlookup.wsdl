@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://healthcare.careinnovations.com/integration/userlookup" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="UserLookupService" targetNamespace="http://healthcare.careinnovations.com/integration/userlookup" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpBinding_IUserLookup_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://healthcare.careinnovations.com/integration/userlookup/Imports">
+      <xsd:import schemaLocation="healthcare.careinnovations.com.integration.userlookup.xsd" namespace="http://healthcare.careinnovations.com/integration/userlookup" />
+      <xsd:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IUserLookup_GetClinicianByExternalID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianByExternalID" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetClinicianByExternalID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianByExternalIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetClinicianByInternalID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianByInternalID" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetClinicianByInternalID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianByInternalIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetPatientByExternalID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientByExternalID" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetPatientByExternalID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientByExternalIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetPatientByInternalID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientByInternalID" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_GetPatientByInternalID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientByInternalIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_Ping_InputMessage">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="IUserLookup_Ping_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IUserLookup">
+    <wsdl:operation name="GetClinicianByExternalID">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByExternalID" message="tns:IUserLookup_GetClinicianByExternalID_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByExternalIDResponse" message="tns:IUserLookup_GetClinicianByExternalID_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicianByInternalID">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByInternalID" message="tns:IUserLookup_GetClinicianByInternalID_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByInternalIDResponse" message="tns:IUserLookup_GetClinicianByInternalID_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientByExternalID">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByExternalID" message="tns:IUserLookup_GetPatientByExternalID_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByExternalIDResponse" message="tns:IUserLookup_GetPatientByExternalID_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientByInternalID">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByInternalID" message="tns:IUserLookup_GetPatientByInternalID_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByInternalIDResponse" message="tns:IUserLookup_GetPatientByInternalID_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/Ping" message="tns:IUserLookup_Ping_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/PingResponse" message="tns:IUserLookup_Ping_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IUserLookup" type="tns:IUserLookup">
+    <wsp:PolicyReference URI="#BasicHttpBinding_IUserLookup_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetClinicianByExternalID">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByExternalID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicianByInternalID">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetClinicianByInternalID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientByExternalID">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByExternalID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientByInternalID">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/GetPatientByInternalID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/userlookup/IUserLookup/Ping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="UserLookupService">
+    <wsdl:port name="BasicHttpBinding_IUserLookup" binding="tns:BasicHttpBinding_IUserLookup">
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/UserLookup.svc/UserLookupService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
