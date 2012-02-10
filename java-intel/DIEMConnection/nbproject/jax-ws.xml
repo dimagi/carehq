@@ -38,6 +38,9 @@
       <local-wsdl-file>healthcare.careinnovations.com.integration.authenticate.wsdl</local-wsdl-file>
       <package-name>com.careinnovations.healthcare.integration.authenticate</package-name>
       <catalog-file>catalog.xml</catalog-file>
+      <binding>
+        <file-name>simple-binding.xjb</file-name>
+      </binding>
       <wsimport-options>
         <wsimport-option>
           <wsimport-option-name>extension</wsimport-option-name>

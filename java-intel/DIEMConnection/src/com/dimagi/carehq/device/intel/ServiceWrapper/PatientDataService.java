@@ -53,12 +53,12 @@ public class PatientDataService {
 		Holder<ArrayOfImportResult> importResults = new Holder<ArrayOfImportResult>();
 		try {
 			callImportPatients(patientArr, this._securitySvc.getSessionToken(), importPatientsResult, importResults);
-
-
 		} catch (Exception ex) {
 			Logger.getLogger(PatientDataService.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		System.out.println("ImportPatientsResult: " + importPatientsResult.value);
+		finally {
+			System.out.println("ImportPatientsResult: " + importPatientsResult.value);
+		}
 
 		List<ImportResult> res = importResults.value.getImportResult();
 		Iterator<ImportResult> itr = res.iterator();

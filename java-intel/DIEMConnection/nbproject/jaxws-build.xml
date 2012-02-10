@@ -45,12 +45,18 @@
         <mkdir dir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate"/>
         <property name="wsdl-healthcare.careinnovations.com.integration.authenticate" location="xml-resources/web-service-references/healthcare.careinnovations.com.integration.authenticate/wsdl/healthcare.careinnovations.com.integration.authenticate.wsdl"/>
         <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate" destdir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate" wsdl="${wsdl-healthcare.careinnovations.com.integration.authenticate}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.authenticate.wsdl" xnocompile="true" xendorsed="true">
+            <binding dir="xml-resources/web-service-references/healthcare.careinnovations.com.integration.authenticate/bindings" includes="simple-binding.xjb"/>
             <depends file="${wsdl-healthcare.careinnovations.com.integration.authenticate}"/>
             <produces dir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate"/>
         </wsimport>
         <copy todir="${build.generated.sources.dir}/jax-ws">
             <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate">
                 <include name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${build.generated.dir}/jax-wsCache/healthcare.careinnovations.com.integration.authenticate">
+                <include name="**/*.xml"/>
             </fileset>
         </copy>
     </target>

@@ -6,14 +6,18 @@ package patientdatahelper;
 
 import com.dimagi.carehq.device.intel.ServiceWrapper.PatientDataService;
 import com.dimagi.carehq.device.intel.ServiceWrapper.SecurityService;
+import com.dimagi.carehq.device.intel.ServiceWrapper.SessionService;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -32,38 +36,80 @@ public class PatientDataHelper {
 	/**
 	 * @param args the command line arguments
 	 */
+
+	private SecurityService _secSvc;
+	
 	public static void main(String[] args) {
 		// TODO code application logic here
 		//patient_filename.json
 		
-		if (args.length == 0) {
-			System.err.print("Error, you must specify some arguments");
-			System.exit(0);
-		}
+		//if (args.length == 0) {
+		//System.err.print("Error, you must specify some arguments");
+		//System.exit(0);
+		//}
+		//
+		//String file_path = "";
+		//if (args.length == 1) {
+		//file_path = args[0];
+		//}
 		
-		String file_path = "";
-		if (args.length == 1) {
-			file_path = args[0];
-		}
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 		
+		String s;
+		try {
+			while ((s = in.readLine()) != null && s.length() != 0) {
+				sb.append(s);
+				// An empty line or Ctrl-Z terminates the program
+			}
+		} catch (java.io.IOException ex) {
+			
+		}
+				
 		SecurityService secSvc = new SecurityService();
 		try {
-			System.setProperty("javax.net.ssl.trustStore", "jssecacerts");
+			System.setProperty("javax.net.ssl.trustStore", "/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/PatientDataHelper/dist/jssecacerts");
 			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-			System.setProperty("javax.net.ssl.keyStore", "client.ks");
+			System.setProperty("javax.net.ssl.keyStore", "/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/PatientDataHelper/dist/client.ks");
 			System.setProperty("javax.net.ssl.keyStorePassword", "dimagi4life");
-			secSvc.Login("Admin", "!60RSr2QrX3!");
+			secSvc.Login("Admin", "bVFiUHbqRR_2");
 
 			try {
 				System.out.println("Logged in: " + secSvc.isLoggedIn() + " Session: " + secSvc.getSessionToken());
+
+				SessionService sessSvc = new SessionService(secSvc);
+				System.out.println("Got session");
+				Patient ptzero = sessSvc.GetPatient("07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9");
+				System.out.println("Got Patient: " + ptzero.getExternalUserID());
+				ptzero.setAddress1("585 Massachusetts Avenue");
+				ptzero.setAddress2("Suite 3");
+//				ptzero.setPhoneNumber("(617) 649-2214");
+
+				PatientDataService isvc = new PatientDataService(secSvc);
+				isvc.UpdatePatient(ptzero);
+				System.out.println("Updated patient zero");
+
+
+
+
+				PatientDataHelper helper = new PatientDataHelper(secSvc);
+				helper.ImportOrUpdateFromString(sb.toString());
 			} catch (Exception ex) {
 				Logger.getLogger(PatientDataHelper.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			System.out.println("Security Login Error: " + e.getMessage());
 			System.out.println("Security Login Stack: " + e.getStackTrace().toString());
+		} 
+		finally {
+			secSvc.Logout();
 		}
-		secSvc.Logout();
+
+	}
+
+	public PatientDataHelper(SecurityService secSvc) {
+		this._secSvc = secSvc;
 	}
 
 
@@ -90,8 +136,7 @@ public class PatientDataHelper {
 		return new String(buffer);
 	}
 
-	private ArrayList<Patient> loadPatientsFromJSON(String filepath) throws org.json.JSONException  {
-		String patients_json = this.loadPatientDataFile(filepath);
+	private ArrayList<Patient> loadPatientsFromJSON(String patients_json) throws org.json.JSONException  {
 		ArrayList<Patient> ret = new ArrayList<Patient>();
 		try {
 			JSONArray patients_array = new JSONArray(patients_json);
@@ -116,28 +161,47 @@ public class PatientDataHelper {
 		Patient ret = new Patient();
 		ret.setDataSource("Intel Health Guide System");
 		ret.setExternalUserID(ptJSON.getString("ExternalUserID"));
-		ret.setInternalUserID(ptJSON.getString("InternalUserID"));
+		System.out.println(ret.getExternalUserID());
+		//ret.setExternalUserID2(ptJSON.getString("DocID")); //doc ID
+		System.out.println(ret.getExternalUserID2());
+//		ret.setInternalUserID(ptJSON.getString("InternalUserID"));
+		ret.setInternalUserID(null);
 		ret.setFirstName(ptJSON.getString("FirstName"));
 		ret.setLastName(ptJSON.getString("LastName"));
+		ret.setMiddleInitial("");
+
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1976, 7, 4);
+		ret.setBirthDate(birthdate);
+		
 		ret.setGender(ptJSON.getString("Gender"));
 		ret.setTimeZone("Eastern Standard Time");
 		ret.setTimeZoneID((short)30);
 		ret.setStatusID((short)1);
-		ret.setAddress1(ptJSON.getString("Address1"));
-		ret.setCity(ptJSON.getString("City"));
-		ret.setState(ptJSON.getString("State"));
-		ret.setPostalCode(ptJSON.getString("PostalCode"));
+		ret.setAddress1("585 Massachusetts Avenue Suite 3");
+		ret.setAddress2("");
+		ret.setAddress3("");
+		ret.setCity("Cambridge");
+		ret.setState("MA");
+		ret.setPostalCode("02139");
 		ret.setCountry("USA");
-		ret.setPhoneNumber(ptJSON.getString("PhoneNumber"));
+		ret.setPhoneNumber("(617) 649-2214");
+		ret.setEmail1("");
+		ret.setEmail2("");
+		ret.setEmail3("");
+		
+		ret.setHcmsUserName("");
+		
 		ret.setPinEntryRequired(false);
+		ret.setPin("");
 		ret.setCultureID((short)1033);
-		System.out.println("Made patient from json: " + ret.getInternalUserID());
+		System.out.println("Made patient from json: " + ret.getExternalUserID());
 		return ret;
 	}
 	
-	public void ImportOrUpdateFromFile(SecurityService secSvc, String file_path) throws org.json.JSONException {
-		PatientDataService isvc = new PatientDataService(secSvc);
-		ArrayList<Patient> patients = this.loadPatientsFromJSON(file_path);
+	public void ImportOrUpdateFromString(String json_string) throws org.json.JSONException {
+		PatientDataService isvc = new PatientDataService(this._secSvc);
+		ArrayList<Patient> patients = this.loadPatientsFromJSON(json_string);
 		Iterator<Patient> pt_it = patients.iterator();
 		while (pt_it.hasNext()) {
 			Patient pt = pt_it.next();

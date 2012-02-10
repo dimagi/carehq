@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.AdherenceDetail;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.AdherenceSummary;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Measurement;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Patient;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientSession;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ProtocolPerformed;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Threshold;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.AdherenceDetail;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.AdherenceSummary;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Measurement;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Patient;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.PatientSession;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ProtocolPerformed;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Threshold;
 
 /**
  *
@@ -51,8 +51,7 @@ public class Main {
 			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
 			System.setProperty("javax.net.ssl.keyStore", "client.ks");
 			System.setProperty("javax.net.ssl.keyStorePassword", "dimagi4life");
-
-			secSvc.Login("Admin", "!60RSr2QrX3!");
+			secSvc.Login("Admin", "bVFiUHbqRR_2");
 			try {
 				System.out.println("Logged in: " + secSvc.isLoggedIn() + " Session: " + secSvc.getSessionToken());
 			} catch (Exception ex) {

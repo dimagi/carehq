@@ -42,6 +42,7 @@ public class SecurityService {
 
     public boolean Login(String username, String password) {
         _sessionToken = this.callLogin(username, password);
+		System.out.println(_sessionToken);
         if (_sessionToken.equals(NULL_SESSION)) {
             this._isLoggedIn = false;
         } else {
