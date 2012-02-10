@@ -5,9 +5,11 @@
 package com.dimagi.carehq.device.intel.ServiceWrapper;
 
 import com.careinnovations.healthcare.integration.importdata.ArrayOfImportResult;
+import com.careinnovations.healthcare.integration.importdata.ArrayOfInputValidationError;
 import com.careinnovations.healthcare.integration.importdata.IImportData;
 import com.careinnovations.healthcare.integration.importdata.ImportDataService;
 import com.careinnovations.healthcare.integration.importdata.ImportResult;
+import com.careinnovations.healthcare.integration.importdata.InputValidationError;
 import com.careinnovations.healthcare.integration.importdata.Result;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -54,10 +56,9 @@ public class PatientDataService {
 		try {
 			callImportPatients(patientArr, this._securitySvc.getSessionToken(), importPatientsResult, importResults);
 		} catch (Exception ex) {
-			Logger.getLogger(PatientDataService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		finally {
-			System.out.println("ImportPatientsResult: " + importPatientsResult.value);
+//			Logger.getLogger(PatientDataService.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("Exception updating the freaking patient: " + ex);
+			return false;
 		}
 
 		List<ImportResult> res = importResults.value.getImportResult();
@@ -66,6 +67,13 @@ public class PatientDataService {
 			ImportResult ires = itr.next();
 
 			System.out.println("\tImport: " + ires.getInternalIdentifier() + " Result: " + ires.getResult());
+			ArrayOfInputValidationError errors = ires.getErrors();
+			List<InputValidationError> errors_list = errors.getInputValidationError();
+			Iterator<InputValidationError> eres = errors_list.iterator();
+			while(eres.hasNext()) {
+				InputValidationError actual_error = eres.next();
+				System.out.println("\t\tError: " + actual_error.getPropertyName() + ": " + actual_error.getErrorMessage() + " :: " + actual_error.getPropertyValue());
+			}
 		}
 
 		System.out.println("ImportPatientsResult: " + importPatientsResult.value);

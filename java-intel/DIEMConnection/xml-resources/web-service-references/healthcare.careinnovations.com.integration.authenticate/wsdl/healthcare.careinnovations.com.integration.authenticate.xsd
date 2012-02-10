@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://healthcare.careinnovations.com/integration/authenticate" elementFormDefault="qualified" targetNamespace="http://healthcare.careinnovations.com/integration/authenticate" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:element name="Login">

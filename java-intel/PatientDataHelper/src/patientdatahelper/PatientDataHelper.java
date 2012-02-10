@@ -18,11 +18,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Patient;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +90,7 @@ public class PatientDataHelper {
 //				ptzero.setPhoneNumber("(617) 649-2214");
 
 				PatientDataService isvc = new PatientDataService(secSvc);
+				System.out.println("Update attempt patient zero");
 				isvc.UpdatePatient(ptzero);
 				System.out.println("Updated patient zero");
 
@@ -162,17 +167,22 @@ public class PatientDataHelper {
 		ret.setDataSource("Intel Health Guide System");
 		ret.setExternalUserID(ptJSON.getString("ExternalUserID"));
 		System.out.println(ret.getExternalUserID());
-		//ret.setExternalUserID2(ptJSON.getString("DocID")); //doc ID
+		ret.setExternalUserID2(ptJSON.getString("DocID")); //doc ID
 		System.out.println(ret.getExternalUserID2());
 //		ret.setInternalUserID(ptJSON.getString("InternalUserID"));
-		ret.setInternalUserID(null);
+		ret.setInternalUserID("");
 		ret.setFirstName(ptJSON.getString("FirstName"));
 		ret.setLastName(ptJSON.getString("LastName"));
 		ret.setMiddleInitial("");
 
-		Calendar birthdate = Calendar.getInstance();
-		birthdate.set(1976, 7, 4);
-		ret.setBirthDate(birthdate);
+//		birthdate.set(1976, 7, 4);
+		GregorianCalendar c = new GregorianCalendar(1976, 6, 4);
+		try {
+			XMLGregorianCalendar birthdate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+			ret.setBirthDate(birthdate);
+		} catch (DatatypeConfigurationException ex) {
+			Logger.getLogger(PatientDataHelper.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		
 		ret.setGender(ptJSON.getString("Gender"));
 		ret.setTimeZone("Eastern Standard Time");
@@ -193,7 +203,7 @@ public class PatientDataHelper {
 		ret.setHcmsUserName("");
 		
 		ret.setPinEntryRequired(false);
-		ret.setPin("");
+		ret.setPin("1234");
 		ret.setCultureID((short)1033);
 		System.out.println("Made patient from json: " + ret.getExternalUserID());
 		return ret;

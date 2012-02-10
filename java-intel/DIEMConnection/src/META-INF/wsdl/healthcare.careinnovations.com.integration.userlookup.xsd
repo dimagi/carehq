@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://healthcare.careinnovations.com/integration/userlookup" elementFormDefault="qualified" targetNamespace="http://healthcare.careinnovations.com/integration/userlookup" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
@@ -28,7 +28,7 @@
   <xs:element name="GetClinicianByInternalIDResponse">
     <xs:complexType>
       <xs:sequence>
-        ds:element xmlns:q4="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" minOccurs="0" name="GetClinicianByInternalIDResult" nillable="true" type="q4:Clinician" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" minOccurs="0" name="GetClinicianByInternalIDResult" nillable="true" type="q4:Clinician" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

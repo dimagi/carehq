@@ -29,9 +29,9 @@
     <xsd:schema targetNamespace="http://healthcare.careinnovations.com/integration/importdata/Imports">
       <xsd:import schemaLocation="healthcare.careinnovations.com.integration.importdata.xsd" namespace="http://healthcare.careinnovations.com/integration/importdata" />
       <xsd:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
       <xsd:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
       <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.ImportData.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" />
-      <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IImportData_UploadNotification_InputMessage">

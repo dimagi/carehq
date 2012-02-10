@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://healthcare.careinnovations.com/integration/importdata" elementFormDefault="qualified" targetNamespace="http://healthcare.careinnovations.com/integration/importdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:import schemaLocation="CareInnovations.Healthcare.Integration.ImportData.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" />
   <xs:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:element name="UploadNotification">
     <xs:complexType>
       <xs:sequence>

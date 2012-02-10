@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:import schemaLocation="healthcare.careinnovations.com.integration.importdata.xsd" namespace="http://healthcare.careinnovations.com/integration/importdata" />
   <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:complexType name="ArrayOfNotificationInfo">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="NotificationInfo" nillable="true" type="tns:NotificationInfo" />
