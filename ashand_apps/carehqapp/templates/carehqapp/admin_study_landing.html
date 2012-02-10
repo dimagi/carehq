@@ -1,0 +1,27 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        $(function () {
+            $("#tbl_submissions").tablesorter({ sortList:[
+                [0, 0]
+            ], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Study Dashboard</h1>
+{% endblock %}
+{% block content %}
+    <h3>Manage Users</h3>
+    <h3><a href="{% url carehqapp.views.ashand_admin.admin_patient_list %}">Manage Patients</a></h3>
+    <h3><a href="{% url carehqapp.views.ashand_admin.admin_ccd_submissions %}">CCD Submissions</a></h3>
+    <h3>User Activity</h3>
+    <h3>Issue Activity</h3>
+{% endblock %}

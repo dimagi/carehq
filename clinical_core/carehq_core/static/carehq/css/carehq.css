@@ -32,6 +32,14 @@
     line-height: 17px;
 }
 
+.info_heading {
+    text-align: right;
+}
+.info_item {
+    text-align: right;
+}
+
+
 ul.errorlist {
     /*From twitter bootstrap's alert/errors*/
 

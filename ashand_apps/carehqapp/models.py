@@ -5,6 +5,8 @@ from lxml import etree
 from issuetracker.models.issuecore import ExternalIssueData, IssueCategory
 from patient.models import BasePatient
 import settings
+import base64
+import uuid
 
 class UsabilitySurvey(Document):
     pass
@@ -24,7 +26,11 @@ class CCDSubmission(XFormInstance):
 
     def get_patient_guid(self):
         if len(self.form['recordTarget']['patientRole']['id']) > 2:
-            return self.form['recordTarget']['patientRole']['id'][2]['@extension']
+            b64_doc = self.form['recordTarget']['patientRole']['id'][2]['@extension']
+            bytes = base64.b64decode(b64_doc)
+            decoded_doc_id = uuid.UUID(bytes=bytes)
+            return decoded_doc_id
+            #return self.form['recordTarget']['patientRole']['id'][2]['@extension']
         else:
             return self.form['recordTarget']['patientRole']['id'][0]['@extension']
 

@@ -1,0 +1,37 @@
+<table class="table">
+    <tr>
+        <th class="span2">Enrolled Date</th>
+        <td class="span2">{{ patient_doc.enrolled_date|date }}</td>
+
+        <th class="span2">HCMS Registered Date</th>
+        <td class="span2">{{ patient_doc.hcms_registered_date|date }}</td>
+
+        <th class="span2">Installed Date</th>
+        <td class="span2">{{ patient_doc.install_date|date }}</td>
+    </tr>
+    <tr>
+        <th class="span2">Device Checkin time</th>
+        <td class="span2">{{ patient_doc.checkin_time|time }}</td>
+
+        <th class="span2">Contact Time Window</th>
+        <td class="span2">{{ patient_doc.availabe_start|time }} - {{ patient_doc.available_end|time }}</td>
+
+        <th class="span2">Pickup Date</th>
+        <td class="span2">bar</td>
+    </tr>
+    <tr>
+        <th class="span2">Study ID</th>
+        <td class="span2">{{ patient_doc.study_id}}</td>
+
+        <th class="span2">SIM Card</th>
+        <td class="span2">{{ patient_doc.sim_number}}</td>
+
+        <th class="span2"></th>
+        <td class="span2"></td>
+    </tr>
+
+    <tr>
+        <th class="span2">Additional Notes</th>
+        <td colspan=5>{{ patient_doc.notes }}</td>
+    </tr>
+</table>

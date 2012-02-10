@@ -1,9 +1,17 @@
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from carehqapp.models import CCDSubmission
+from patient.models import Patient
+
+def admin_study_landing(request, template_name="carehqapp/admin_study_landing.html"):
+    context = RequestContext(request)
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def admin_patient_list(request, template_name="carehqapp/admin_patient_list.html"):
-    pass
+    context = RequestContext(request)
+    patients = Patient.objects.all()
+    context['django_patients'] = patients
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 def admin_provider_list(request, template_name="carehqapp/admin_provider_list.html"):
     pass

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import base64
+import uuid
 from carehq_core import carehq_api
 from carehq_core.carehq_constants import role_primary_provider, role_provider
 from carehqapp.models import CCDSubmission, get_threshold_category
@@ -37,7 +39,10 @@ def get_assigning_actor(patient):
 
 def process_ccd_submission(sender, xform, **kwargs):
     try:
-        patient = Patient.objects.get(doc_id=xform.form['recordTarget']['patientRole']['id'][0]['@extension'])
+        b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
+        bytes = base64.b64decode(b64_doc)
+        decoded_doc_id = uuid.UUID(bytes=bytes)
+        patient = Patient.objects.get(doc_id=decode_doc_id)
         #patient = Patient.objects.get(id='d9041f5a3f2a45dba9eba636ce2f0aa8')
     except Patient.DoesNotExist:
         return

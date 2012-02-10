@@ -1,0 +1,32 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+
+{% block title %}{% trans "CareHQ Home" %}{% endblock %}
+{% block extrahead %}
+    <script>
+        $(function () {
+            $("#tbl_submissions").tablesorter({ sortList:[
+                [0, 0]
+            ], });
+            $("abbr.timeago").timeago();
+        });
+    </script>
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Admin Patient List</h1>
+{% endblock %}
+{% block content %}
+
+    {% for django_patient in django_patients %}
+        {% with django_patient.couchdoc as patient_doc %}
+            <h3>{{ patient_doc.first_name }} {{ patient_doc.last_name }}</h3>
+
+            <div id="patienteditform"></div>
+            {% include "carehqapp/patient/carehq_patient_info_panel.html" %}
+            <br><br>
+        {% endwith %}
+    {% endfor %}
+{% endblock %}

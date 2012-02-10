@@ -1,5 +1,7 @@
 # django imports
+import base64
 import simplejson
+import uuid
 from django.core.management.base import BaseCommand
 
 # permissions imports
@@ -40,10 +42,13 @@ class Command(BaseCommand):
         ret_arr = []
         for dj_patient in django_patients:
             couchdoc = dj_patient.couchdoc
+            if couchdoc._id == 'c6f12e6c459c45b9b0e7272d1b23f932' or couchdoc._id == '157e9fae3800489b9dcb533cb1d48f66':
+                continue
             pt_json = couchdoc.to_json()
 
             ret_json = {}
-            ret_json['InternalUserID'] = pt_json['_id']
+            doc_id = pt_json['_id']
+            ret_json['DocID'] = base64.b64encode(uuid.UUID(doc_id).bytes)
             ret_json['ExternalUserID'] = pt_json['study_id']
             ret_json['FirstName'] = pt_json['first_name']
             ret_json['LastName'] = pt_json['last_name']

@@ -1,0 +1,88 @@
+{% extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script>
+        function rm_provider(actor_uuid) {
+            var answer = confirm("Are you sure you want to remove this provider?  This is a permanent operation that cannot be undone.")
+            if (answer) {
+
+            }
+            else {
+                return;
+            }
+
+            var payload = {
+                        'csrfmiddlewaretoken': getCookie("csrftoken"),
+                        'actor_uuid': actor_uuid,
+            };
+
+            url = "{% url rm_ashand_actor %}";
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  url,
+                    "data":payload,
+                    "success": function(data) {
+                        location.reload();
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+    </script>
+
+{% endblock %}
+    <div class="container">
+        <div class="span12">
+            <h3>Patient Careteam Management</h3>
+            {% if actors %}
+                <table id="actors-table" class="table tablesorter">
+                    <thead>
+                    <tr>
+                    <th class="span2">First Name</th>
+                    <th class="span2">Last Name</th>
+                    <th class="span2">Title</th>
+                    <th class="span2">Email</th>
+                    <th class="span2">Phone Number</th>
+                    <th class="span2">Facility</th>
+                    <th></th>
+                    </thead>
+
+                    <tbody>
+                    {% for actor_doc in actors %}
+                        <tr>
+                            <td>{{ actor_doc.last_name }}</td>
+                            <td>{{ actor_doc.first_name }}</td>
+                            <td>{{ actor_doc.provider_title }}</td>
+                            <td>{{ actor_doc.email }}</td>
+                            <td>{{ actor_doc.phone_number }}</td>
+                            <td>{{ actor_doc.facility_name }}<br>
+                                {{ actor_doc.facility_address}}</td>
+                            <td><button onclick="rm_provider('{{ actor_doc.actor_uuid }}')">Remove</button></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                No Providers Enrolled
+            {% endif %}
+        </div>
+        <div id="newprovider_dlg" title="Create New Provider" class="span12">
+        <h4>Or add new provider</h4>
+            <form id="newprovider_form" action="" method="POST" class="uniForm">
+                {% csrf_token %}
+                <table>
+                    {% uni_form form form.helper %}
+                </table>
+
+                <div style="float:right;">
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}
