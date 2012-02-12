@@ -110,7 +110,10 @@ def pt_new_or_link_actor(request, patient_guid, template="carehqapp/admin_patien
                 new_user.save()
                 #new_user.set_password(None) #just use a random and do the password reset
             new_actor.save(ashand_tenant, user=new_user)
-            carehq_api.add_external_provider_to_patient(pt, new_actor)
+            if actor_type == "caregiver":
+                carehq_api.add_caregiver_to_patient(pt, new_actor)
+            elif actor_type == "provider":
+                carehq_api.add_provider_to_patient(pt, new_actor)
             #return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
             context['form'] = form_class()
             return render_to_response(template, context_instance=context)

@@ -113,6 +113,7 @@ def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.htm
     activity = request.GET.get('activity',issue_constants.ISSUE_EVENT_COMMENT)
     context['issue'] = theissue
     context['activity'] = activity
+    return_to = request.GET.get('return_to', reverse('manage-issue', kwargs= {'issue_id': issue_id}))
    
     ########################
     # Inline Form display

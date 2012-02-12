@@ -92,8 +92,12 @@ class SubmissionCalendar(HTMLCalendar):
                             else:
                                 threshold_resolved=False
                                 treshold_body.append('<a href="%s">Threshold</a><br>' % (reverse('manage-issue', kwargs={"issue_id": issue.id})))
+                    else:
+                        #it's not a threshold violation, get "OK" submits
+                        pass
                 if threshold_resolved:
                     body.append('<span class="label label-success">Received</span><br>')
+                    #link to resolved issues
                 else:
                     body.append('<span class="label label-important">Received</span><br>')
                     body.append(''.join(treshold_body))
