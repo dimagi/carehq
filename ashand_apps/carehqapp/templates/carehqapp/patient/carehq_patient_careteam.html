@@ -11,7 +11,7 @@
         {% for prr in patient_careteam %}
             <tr>
                 <td>
-                    <a href="{% url view_actor prr.actor.doc_id %}">{{ prr.actor.actordoc.first_name }} {{ prr.actor.actordoc.last_name }}</a>
+                    <a href="{% url view_actor prr.actor.doc_id '' %}">{{ prr.actor.actordoc.first_name }} {{ prr.actor.actordoc.last_name }}</a>
                 </td>
                 <td>
                     {{ prr.role.display }}

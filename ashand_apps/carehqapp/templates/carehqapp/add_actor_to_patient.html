@@ -1,0 +1,93 @@
+{% extends base_template %}
+{% load uni_form_tags %}
+{% block content %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $().ready(function(){
+            $("#provider-table").tablesorter({sortList: [[2,0]],widgets:['zebra']});
+        });
+    </script>
+    <script>
+        function link_provider_patient(patient_guid, prov_actor_id) {
+            var payload = {
+                        'csrfmiddlewaretoken': getCookie("csrftoken"),
+                        'patient_guid': patient_guid,
+                        'actor_uuid': prov_actor_id,
+            };
+
+            url = "{% url link_actor_to_patient %}";
+            send_xhr = $.ajax({
+                    "type": "POST",
+                    "url":  url,
+                    "data":payload,
+                    "success": function(data) {
+                        if (data == "Success") {
+                            alert ("Provider added to patient")
+                        } else {
+                            alert ("An error occurred in linking provider to the patient.")
+                        }
+                        $('body').replaceWith(data.responseText);
+                    }, //end success
+                    "error": function(data) {
+                        $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                    }
+                });
+        }
+    </script>
+{% endblock %}
+    <div class="container">
+        <h2>Add Provider for patient {{ patient.get_id }}</h2>
+        <div class="span12">
+            {% if all_providers %}
+                <h3>Choose from existing providers</h3>
+{#                <button id="newprovider_dlg_opener">Create New</button>#}
+                <table id="provider-table" class="tablesorter span12 last">
+                    <thead>
+                    <tr>
+                    <th class="span2"></th>
+                    <th class="span3">First Name</th>
+                    <th class="span3">Last Name</th>
+                    <th class="span3">Job Title</th>
+                    <th class="span3">Email</th>
+                    <th class="span2">Phone</th>
+                    <th class="span4">Facility</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for prov in all_providers %}
+                        <tr>
+                            <td><button onclick="link_provider_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}')">Add</button>&nbsp;
+                            <a href="#">Edit</a></td>
+                            <td>{{ prov.first_name }}</td>
+                            <td>{{ prov.last_name }}</td>
+                            <td>{{ prov.provider_title }}</td>
+                            <td>{{ prov.email }}</td>
+                            <td>{{ prov.phone_number }}</td>
+                            <td>{{ prov.facility_name }}<br>
+                                {{ prov.facility_address }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+        <div id="newprovider_dlg" title="Create New Provider" class="span12">
+        <h4>Create new provider</h4>
+            <form id="newprovider_form" action="" method="POST" class="uniForm">
+                {% csrf_token %}
+                <table>
+                    {% uni_form form form.helper %}
+                </table>
+                <div style="float:right;">
+                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
+                    <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

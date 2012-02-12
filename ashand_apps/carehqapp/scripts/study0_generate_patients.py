@@ -26,8 +26,6 @@ def run():
     patient_role = Role.objects.get(name=carehq_constants.role_patient)
 
     for num, study_pt_dict in enumerate(study_id_list):
-
-
         print "############ Generating Patient %s" % study_pt_dict['external_id']
 
         pt_doc_id = study_pt_dict['patient_guid']

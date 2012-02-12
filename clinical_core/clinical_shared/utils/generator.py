@@ -45,8 +45,12 @@ def generate_random_string(length=8, source=string.ascii_letters):
 def random_word(length=8):
     return generate_random_string(length=length, source=string.ascii_letters)
 
-def random_text(length=64):
-    return generate_random_string(length=length, source=string.ascii_letters + string.digits + string.whitespace + string.punctuation)
+def random_text(length=64, punctuation_whitespace=False):
+    if punctuation_whitespace:
+        return generate_random_string(length=length, source=string.ascii_letters + string.digits + string.whitespace + string.punctuation)
+    else:
+        return generate_random_string(length=length, source=string.ascii_letters + string.digits)
+
 
 def random_number(length=10):
     return generate_random_string(length=length, source=string.digits)

@@ -4,6 +4,8 @@
 
 {% block title %}{% trans "CareHQ Home" %}{% endblock %}
 {% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timePicker.min.js"></script>
     <script>
         $(function () {
             $("#tbl_submissions").tablesorter({ sortList:[
@@ -19,14 +21,24 @@
     <h1>Admin Patient List</h1>
 {% endblock %}
 {% block content %}
-
     {% for django_patient in django_patients %}
         {% with django_patient.couchdoc as patient_doc %}
-            <h3>{{ patient_doc.first_name }} {{ patient_doc.last_name }}</h3>
+            <div class="commit-group-heading">
+            <h3>{{ patient_doc.first_name }} {{ patient_doc.last_name }}
+                <small><a href="{% url pt_new_or_link_actor patient_doc.get_id %}?type=provider" class="btn">Add
+                    Provider</a> &nbsp;
+                    <a href="{% url pt_new_or_link_actor patient_doc.get_id %}?type=caregiver" class="btn">Add
+                        Caregiver</a>
+                        <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform_{{ patient_doc.get_id }}');">Edit</a>
+                    </small>
+            </h3>
+            </div>
 
-            <div id="patienteditform"></div>
+            <div class="commit-group">
+            <div id="patienteditform_{{ patient_doc.get_id }}"></div>
+            <br>
             {% include "carehqapp/patient/carehq_patient_info_panel.html" %}
-            <br><br>
+            </div>
         {% endwith %}
     {% endfor %}
 {% endblock %}

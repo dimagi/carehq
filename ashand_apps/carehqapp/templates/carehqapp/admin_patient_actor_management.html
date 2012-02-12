@@ -1,6 +1,5 @@
 {% extends base_template %}
 {% load uni_form_tags %}
-{% block content %}
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
     <script>
@@ -14,17 +13,45 @@
             }
 
             var payload = {
-                        'csrfmiddlewaretoken': getCookie("csrftoken"),
-                        'actor_uuid': actor_uuid,
+                'csrfmiddlewaretoken':getCookie("csrftoken"),
+                'actor_uuid':actor_uuid,
             };
 
             url = "{% url rm_ashand_actor %}";
+            send_xhr = $.ajax({
+                "type":"POST",
+                "url":url,
+                "data":payload,
+                "success":function (data) {
+                    location.reload();
+                }, //end success
+                "error":function (data) {
+                    $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+    </script>
+     <script>
+        function link_actor_patient(patient_guid, prov_actor_id, actor_type) {
+            var payload = {
+                        'csrfmiddlewaretoken': getCookie("csrftoken"),
+                        'patient_guid': patient_guid,
+                        'actor_uuid': prov_actor_id,
+            };
+
+            url = "{% url link_actor_to_patient %}";
             send_xhr = $.ajax({
                     "type": "POST",
                     "url":  url,
                     "data":payload,
                     "success": function(data) {
-                        location.reload();
+                        if (data == "Success") {
+                            alert ("Provider added to patient")
+                        } else {
+                            alert ("An error occurred in linking provider to the patient.")
+                        }
+                        $('body').replaceWith(data.responseText);
                     }, //end success
                     "error": function(data) {
                         $('body').replaceWith(data.responseText);
@@ -33,11 +60,19 @@
                 });
         }
     </script>
-
 {% endblock %}
+
+
+
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Manage {{ patient_doc.first_name }} {{ patient_doc.last_name }}'s {{ actor_type }}s</h1>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <div class="span12">
-            <h3>Patient Careteam Management</h3>
             {% if actors %}
                 <table id="actors-table" class="table tablesorter">
                     <thead>
@@ -60,29 +95,29 @@
                             <td>{{ actor_doc.email }}</td>
                             <td>{{ actor_doc.phone_number }}</td>
                             <td>{{ actor_doc.facility_name }}<br>
-                                {{ actor_doc.facility_address}}</td>
-                            <td><button onclick="rm_provider('{{ actor_doc.actor_uuid }}')">Remove</button></td>
+                                {{ actor_doc.facility_address }}</td>
+                            <td>
+                                <button onclick="rm_provider('{{ actor_doc.actor_uuid }}')">Remove</button>
+                                &nbsp;&nbsp;
+                                <button onclick="link_actor_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}', '{{ actor_type }}')">Link</button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                No Providers Enrolled
+                <h3>No Existing actors in system</h3>
             {% endif %}
         </div>
+        <hr>
         <div id="newprovider_dlg" title="Create New Provider" class="span12">
-        <h4>Or add new provider</h4>
-            <form id="newprovider_form" action="" method="POST" class="uniForm">
-                {% csrf_token %}
-                <table>
+            <div class="well">
+                <h4><i class="icon-plus"></i> Add new {{ actor_type }}</h4>
+                <form id="newprovider_form" action="" method="POST" class="uniForm">
+                    {% csrf_token %}
                     {% uni_form form form.helper %}
-                </table>
-
-                <div style="float:right;">
-                    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all"/>
-                    <input type="button" name="cancel" value="Cancel" class="fg-button ui-state-default ui-corner-all"/>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock content %}
