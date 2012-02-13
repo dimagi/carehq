@@ -19,7 +19,8 @@ def process_dots_submission(sender, xform, **kwargs):
                 xform.save()
 
                 #next, we recache the casedoc as well as the ota restore fragment of this patient.
-                pts= PactPatient.view('pactpatient/by_case_id', key='case_id', include_docs=True).all()
+                case_id = xform['form']['case']['case_id']
+                pts= PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
                 if len(pts) == 1:
                     pts[0]._cache_case(invalidate=True)
                     pts[0].get_ghetto_regimen_xml(invalidate=True)

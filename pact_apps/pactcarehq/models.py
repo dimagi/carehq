@@ -29,3 +29,6 @@ class SubmissionTallyLog(Document):
     report_date = DateProperty()
     created_time = DateTimeProperty()
     user_log = SchemaListProperty(UserTally)
+
+
+from signals import *
