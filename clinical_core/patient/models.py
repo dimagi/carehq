@@ -381,15 +381,15 @@ class CarehqPatient(BasePatient):
     study_id = StringProperty() # readable sequential string of patient enrollment number ExternalUserID for CI
 
     start_date = DateProperty(verbose_name='Date of trial start')
-    device_id = StringProperty()
+    device_id = StringProperty(verbose_name="Health Guide Activation Key")
     checkin_time = TimeProperty(verbose_name='Preferred survey time')
 
-    enrolled_date = DateProperty()
+    enrolled_date = DateProperty(verbose_name="Date in which this is edited")
     hcms_registered_date = DateProperty()
 
     install_date = DateProperty()
+    pickup_date = DateProperty()
     sim_number = StringProperty() # sim card for 3g access for phone number - for refill purposes
-
 
     #time window in which avalaible
     available_start = TimeProperty(verbose_name='Start time available for contact')
