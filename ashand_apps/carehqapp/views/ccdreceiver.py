@@ -87,7 +87,7 @@ def view_ccd(request, doc_id, template_name='carehqapp/view_ccd.html'):
     patient_doc=submit.get_patient_doc()
     context['submit']=submit
 
-    if not carehq_api.has_permission(request.current_actor.actordoc, patient_doc):
-        raise PermissionDenied
+    #if not carehq_api.has_permission(request.current_actor.actordoc, patient_doc):
+        #raise PermissionDenied
     return render_to_response(template_name, context_instance=context)
 

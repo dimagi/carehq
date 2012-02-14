@@ -378,7 +378,7 @@ class CarehqPatient(BasePatient):
     A stub implementation of the Patient model
     """
 
-    study_id = StringProperty() # readable sequential string of patient enrollment number
+    study_id = StringProperty() # readable sequential string of patient enrollment number ExternalUserID for CI
 
     start_date = DateProperty(verbose_name='Date of trial start')
     device_id = StringProperty()

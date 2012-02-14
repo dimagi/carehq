@@ -3,7 +3,7 @@ from datetime import datetime
 from couchforms.models import XFormInstance
 from lxml import etree
 from issuetracker.models.issuecore import ExternalIssueData, IssueCategory
-from patient.models import BasePatient
+from patient.models import BasePatient, CarehqPatient
 import settings
 import base64
 import uuid
@@ -24,15 +24,28 @@ class CCDSubmission(XFormInstance):
         #do nothing, this is just a wrapper
         pass
 
+    def _get_patient_guid_by_externalid(self):
+        external_id = self.form['recordTarget']['patientRole']['id'][1]['@extension']
+        patient_docs = CarehqPatient.view('carehqapp/patients_by_externalid', key=external_id).all()
+        if len(patient_docs) > 0:
+            return patient_docs[0]['id']
+        return None
+
+
     def get_patient_guid(self):
         if len(self.form['recordTarget']['patientRole']['id']) > 2:
-            b64_doc = self.form['recordTarget']['patientRole']['id'][2]['@extension']
-            bytes = base64.b64decode(b64_doc)
-            decoded_doc_id = uuid.UUID(bytes=bytes)
-            return decoded_doc_id
-            #return self.form['recordTarget']['patientRole']['id'][2]['@extension']
+            try:
+                b64_doc = self.form['recordTarget']['patientRole']['id'][2]['@extension']
+                bytes = base64.b64decode(b64_doc)
+                decoded_doc_id = uuid.UUID(bytes=bytes)
+                return decoded_doc_id
+                #return self.form['recordTarget']['patientRole']['id'][2]['@extension']
+            except:
+                return self._get_patient_guid_by_externalid()
         else:
-            return self.form['recordTarget']['patientRole']['id'][0]['@extension']
+            return self._get_patient_guid_by_externalid()
+
+
 
     def ccd_table_data(self):
         return CCDSubmission.find_ccd_table_data(self)
