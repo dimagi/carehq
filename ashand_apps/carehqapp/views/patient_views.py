@@ -201,7 +201,7 @@ class CarehqPatientSingleView(PatientSingleView):
             view_mode = 'info'
         context = super(CarehqPatientSingleView, self).get_context_data(**kwargs)
 
-        if not carehq_api.has_permission(request.current_actor.actordoc, context['patient_doc']):
+        if not carehq_api.has_permission(request.current_actor.actordoc, context['patient_doc']) and not request.user.is_superuser:
             raise PermissionDenied
 
         context['view_mode'] = view_mode
@@ -234,8 +234,8 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'submissions':
             viewmonth = int(request.GET.get('month', date.today().month))
             viewyear = int(request.GET.get('year', date.today().year))
-            sk = ['Test000001', viewyear, viewmonth, 0]
-            ek = ['Test000001', viewyear, viewmonth, 31]
+            sk = [pdoc.study_id, viewyear, viewmonth, 0]
+            ek = [pdoc.study_id, viewyear, viewmonth, 31]
 
             submissions = CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
 #            submissions = []

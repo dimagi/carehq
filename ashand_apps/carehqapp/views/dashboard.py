@@ -18,9 +18,9 @@ def home_news(request, template_name='carehqapp/home.html'):
         patient = request.current_actor.actordoc.get_django_patient()
         context['issues'] = Issue.objects.filter(patient=patient)
         #hack till we get it all stitched up
-        patient_guid='Test000001'
-        sk=[patient_guid, 0000]
-        ek = [patient_guid, 3000]
+        study_id=patient.couchdoc.study_id
+        sk=[study_id, 0000]
+        ek = [study_id, 3000]
         context['submissions']=CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
     else:
         context['issues'] = Issue.objects.care_issues(request.current_actor)
@@ -28,15 +28,13 @@ def home_news(request, template_name='carehqapp/home.html'):
         ptype = ContentType.objects.get_for_model(Patient)
         patient_prrs = flat_permissions.filter(content_type=ptype)
         patient_ids = set(patient_prrs.values_list('content_id', flat=True))
-        patient_doc_ids = Patient.objects.all().filter(id__in=patient_ids).values_list('doc_id', flat=True)
-        #hack till  we get it all stitched up
-        patient_doc_ids = list(patient_doc_ids)
-        patient_doc_ids.append("Test000001")
+        my_django_patients = Patient.objects.all().filter(id__in=patient_ids)
 
+        patient_study_ids = set([x.couchdoc.study_id for x in my_django_patients])
         all_submissions = []
-        for patient_guid in patient_doc_ids:
-            sk=[patient_guid, 0000]
-            ek = [patient_guid, 3000]
+        for study_id in patient_study_ids:
+            sk=[study_id, 0000]
+            ek = [study_id, 3000]
             submissions =CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
             all_submissions.extend(submissions)
         context['submissions'] = all_submissions

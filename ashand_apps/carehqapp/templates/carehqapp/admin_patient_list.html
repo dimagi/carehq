@@ -35,6 +35,8 @@
                     <a href="{% url pt_new_or_link_actor patient_doc.get_id %}?type=caregiver" class="btn">Add
                         Caregiver</a>
                         <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform_{{ patient_doc.get_id }}');">Edit</a>
+                    &nbsp;
+                        <a href="{{ patient_doc.get_absolute_url }}">Profile</a>
                     </small>
             </h3>
             </div>
