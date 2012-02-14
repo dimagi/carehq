@@ -2,7 +2,9 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from carehq_core import carehq_api
 from issuetracker.models.issuecore import Issue
+from celery.decorators import task
 
+@task
 def issue_update_notifications(issue_django_id):
     """
     For a given updated issue, notify people interested in the issue via email that the issue has been updated.
@@ -12,7 +14,7 @@ def issue_update_notifications(issue_django_id):
     except Issue.DoesNotExist:
         return
     
-    patient_doc = issue.patient.patient_doc
+    patient_doc = issue.patient.couchdoc
     careteam = carehq_api.get_careteam(patient_doc)
     for prr in careteam:
         actordoc = prr.actor.actordoc
@@ -22,15 +24,14 @@ def issue_update_notifications(issue_django_id):
             subject = '[ASHand] Issue update notification' #some date/indicator?
             lines = ["Hello %s," % (actordoc.first_name )]
 
-            issue_url = "https://ashand.dimagi.com%s" % reverse('manage-issue', kwargs= {'issue_id': issue_id}) #reverse adds the leading /
-            lines.append("An issue for someone you are caring for has just been updated.  To view it, please click this link %s\n" % issue_url)
+            issue_url = "https://ashand.dimagi.com%s" % reverse('manage-issue', kwargs= {'issue_id': issue.id}) #reverse adds the leading /
+            lines.append("An issue for someone you are caring for has just been updated.  To view it, please click this link:" \
+" %s\n" % issue_url)
 
             lines.append("""
 Because this issue contains sensitive personal information, we ask that you please log on to ashand.dimagi.com to view it.
 
-Should you have any questions or comments, please feel free to add them to the issue at ashand.dimagi.com. For security
-purposes, comments may only be added to your issues via the ashand website. Emailed replies to this notification
-message will not be received by ASHand staff.
+Should you have any questions or comments, please feel free to add them to the issue at ashand.dimagi.com. For security purposes, comments may only be added to your issues via the ashand website. Emailed replies to this notification message will not be received by ASHand staff.
 
 Thank you,
 ASHand System

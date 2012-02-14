@@ -11,6 +11,7 @@ from clinical_core.patient.models import Patient
 from issuetracker import issue_constants
 from issuetracker.models.issuecore import ExternalIssueData, IssueEvent, Issue
 from permissions.models import Actor, Role
+from tasks import issue_update_notifications
 
 
 def get_system_actor():
@@ -125,10 +126,7 @@ def process_ccd_submission(sender, xform, **kwargs):
 xform_saved.connect(process_ccd_submission)
 
 def issue_save_notification(sender, instance, created, **kwargs):
-    print "********************** Issue save call celery!"
-    #issue_update_notifications.delay(instance.issue.id)
-
-
+    issue_update_notifications.delay(instance.issue.id)
 
 post_save.connect(issue_save_notification, sender=IssueEvent)
 
