@@ -34,7 +34,7 @@ def get_caselist(request):
 
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
-    response['Content-Length'] = len(resp_text)
+    #response['Content-Length'] = len(resp_text) - 123
     return response
 
 
