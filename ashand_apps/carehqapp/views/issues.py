@@ -48,7 +48,7 @@ def manage_issue(request, issue_id):
     except Issue.DoesNotExist:
         raise Http404
 
-    if not carehq_api.has_permission_issue(request.current_actor.actordoc,issue):
+    if not carehq_api.has_permission_issue(request.current_actor.actordoc,issue) and not request.user.is_superuser:
         raise PermissionDenied
     return do_manage_issue(request, issue_id)
 
