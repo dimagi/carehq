@@ -8,7 +8,7 @@ def process_patient_update_submission(sender, xform, **kwargs):
             return
         try:
             case_id = xform['form']['case']['case_id']
-            pts= PactPatient.view('pactpatient/by_case_id', key='case_id', include_docs=True).all()
+            pts= PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
             if len(pts) == 1:
                 pts[0]._cache_case(invalidate=True)
 
