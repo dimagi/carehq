@@ -16,6 +16,11 @@
     </script>
 {% endblock %}
 {% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqapp.views.ashand_admin.admin_study_landing %}">Study Admin</a> <span class="divider">/</span></li>
+        <li class="active"><a href="{% url carehqapp.views.ashand_admin.admin_patient_list %}">Global Patient List</a></li>
+    </ul>
 {% endblock page_crumbs %}
 {% block page_header %}
     <h1>Admin Patient List</h1>
@@ -38,6 +43,30 @@
             <div id="patienteditform_{{ patient_doc.get_id }}"></div>
             <br>
             {% include "carehqapp/patient/carehq_patient_info_panel.html" %}
+            <hr>
+            <h3>Careteam Info</h3>
+            <h4>Providers</h4>
+            {% if patient_doc.django_patient.get_providers %}
+            <ul>
+            {% for prov in patient_doc.django_patient.get_providers %}
+                <li>{{ prov.actordoc.first_name }} {{ prov.actordoc.last_name }} :: ({{ cg.user.username }}) {{ prov.user.is_active }}
+                    <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user prov.user.id %}">Invite/Activate</a></li>
+            {% endfor %}
+            </ul>
+            {% else %}
+                No providers
+            {% endif %}
+            <h4>Caregivers</h4>
+            {% if patient_doc.django_patient.get_caregivers %}
+            <ul>
+            {% for cg in patient_doc.django_patient.get_caregivers %}
+                    <li>{{ cg.actordoc.first_name }} {{ cg.actordoc.last_name }} :: ({{ cg.user.username }}) {{ cg.user.is_active }}
+                        <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user cg.user.id %}">Invite/Activate</a></li>
+            {% endfor %}
+            </ul>
+            {% else %}
+                No Caregivers
+            {% endif %}
             </div>
         {% endwith %}
     {% endfor %}

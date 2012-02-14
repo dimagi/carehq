@@ -12,6 +12,7 @@ from datetime import datetime, time
 import simplejson
 import math
 from clinical_shared.mixins import TypedSubclassMixin
+from hutch.models import AttachmentImage
 from permissions.models import Actor
 
 import settings
@@ -408,6 +409,20 @@ class CarehqPatient(BasePatient):
             return super(BasePatient, self).__getattr__(key)
         except KeyError:
             raise AttributeError
+
+    @property
+    def study_files(self):
+        """
+        Scans patient object for supporting documents
+
+        Returns them as a dictionary of arrays where {"patient_objects": [attachment, attachment, attachment...]}
+        """
+        ret = []
+        aux_img_dict = AttachmentImage.objects.get_doc_auxmedia(self)
+        for aux, attach_img in aux_img_dict.items():
+            ret.append((attach_img, aux['media_meta']['image_type']))
+        return ret
+
 
 class CSimpleComment(Document):
     doc_fk_id = StringProperty() #is there a fk in couchdbkit

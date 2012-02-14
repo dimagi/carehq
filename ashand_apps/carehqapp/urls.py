@@ -43,6 +43,7 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^ashandadmin/$', 'ashand_admin.admin_study_landing'),
         url(r'^ashandadmin/ccds/$', 'ashand_admin.admin_ccd_submissions'),
         url(r'^ashandadmin/patients/$', 'ashand_admin.admin_patient_list'),
+        url(r'^ashandadmin/user/activate/(?P<user_id>\d+)$', 'ashand_admin.admin_invite_activate_actor_user'),
 
 
 

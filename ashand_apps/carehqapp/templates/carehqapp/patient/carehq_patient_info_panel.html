@@ -1,19 +1,19 @@
 <table class="table">
     <tr>
-        <th class="span2">Enrolled Date</th>
+        <th class="span2">Enrolled</th>
         <td class="span2">{{ patient_doc.enrolled_date|date }}</td>
 
-        <th class="span2">HCMS Registered Date</th>
+        <th class="span2">HCMS Registered</th>
         <td class="span2">{{ patient_doc.hcms_registered_date|date }}</td>
 
-        <th class="span2">Installed Date</th>
+        <th class="span2">Installed</th>
         <td class="span2">{{ patient_doc.install_date|date }}</td>
     </tr>
     <tr>
-        <th class="span2">Device Checkin time</th>
+        <th class="span2">Guide Checkin time</th>
         <td class="span2">{{ patient_doc.checkin_time|time }}</td>
 
-        <th class="span2">Contact Time Window</th>
+        <th class="span2">Contact Time</th>
         <td class="span2">{{ patient_doc.availabe_start|time }} - {{ patient_doc.available_end|time }}</td>
 
         <th class="span2">Pickup Date</th>

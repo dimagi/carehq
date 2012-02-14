@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import base64
 import uuid
+from django.db.models.signals import post_save
 from carehq_core import carehq_api
 from carehq_core.carehq_constants import role_primary_provider, role_provider
 from carehqapp.models import CCDSubmission, get_threshold_category
 from couchforms.signals import xform_saved
 import random
-from clinical_core.issuetracker.models.issuecore import  Issue
 from clinical_core.patient.models import Patient
 from issuetracker import issue_constants
-from issuetracker.models.issuecore import ExternalIssueData
+from issuetracker.models.issuecore import ExternalIssueData, IssueEvent, Issue
 from permissions.models import Actor, Role
 
 
@@ -123,3 +123,14 @@ def process_ccd_submission(sender, xform, **kwargs):
 
 
 xform_saved.connect(process_ccd_submission)
+
+def issue_save_notification(sender, instance, created, **kwargs):
+    print "********************** Issue save call celery!"
+    #issue_update_notifications.delay(instance.issue.id)
+
+
+
+post_save.connect(issue_save_notification, sender=IssueEvent)
+
+
+

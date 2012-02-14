@@ -11,8 +11,6 @@ from tenant.models import Tenant
 from django.core.urlresolvers import reverse
 
 
-
-
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def new_actor(request, tenant_id, template="carehqadmin/actors/new_actor.html"):

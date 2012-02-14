@@ -24,7 +24,7 @@
                     </td>
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
-                <td> {{ issue.closed_by.actordoc.get_name }} </td>
+                <td> <a href="{% url view_actor issue.closed_by.doc_id  '' %}">issue.closed_by.actordoc.get_name</a></td>
                 <td> {{ issue.closed_date|date:"M j, Y P" }} </td>
             </tr>
         {% endfor %}

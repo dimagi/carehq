@@ -25,11 +25,6 @@
         <li class="active">{{ actor_doc.first_name }} {{ actor_doc.last_name }}</li>
     </ul>
 {% endblock page_crumbs %}
-{% block actor_badge %}
-
-{% endblock actor_badge %}
-
-
 {% block actor_identity %}
     <img class="thumbnail pull-left" style="margin-right:8px; margin-bottom:8px;"
          src="{{ STATIC_URL }}carehqapp/img/noun/noun_user_75.png" height="75">
@@ -54,17 +49,22 @@
         </table>
     </div>
     <div class="span4 well">
-        Affiliation info?
-        <br>
-        Whatup
+    {% if actor_doc.doc_type == "CaregiverActor" %}
+        {% if info_block_perms %}
+            {% for prr in info_block_perms %}
+                Caregiver for {{ prr.content }}<br>
+            {% endfor %}
+
+        {% endif %}
+    {% endif %}
     </div>
 {% endblock actor_identity %}
 
 
 {% block actor-tab-controller %}
-    <li {% if view_mode == "info" %}class="active"{% endif %}><a href="#">{% trans "Info" %}</a></li>
-    <li {% if view_mode == "network" %}class="active"{% endif %}><a href="#">{% trans "Care Network" %}</a></li>
-    <li {% if view_mode == "issues" %}class="active"{% endif %}><a href="#">{% trans "Issues" %}</a></li>
+{#    <li {% if view_mode == "info" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id '' %}">{% trans "Info" %}</a></li>#}
+    <li {% if view_mode == "networks" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id 'networks' %}">{% trans "Care Networks" %}</a></li>
+    <li {% if view_mode == "issues" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id 'issues' %}">{% trans "Issues" %}</a></li>
 {% endblock actor-tab-controller %}
 
 {% block actor-tab-container %}

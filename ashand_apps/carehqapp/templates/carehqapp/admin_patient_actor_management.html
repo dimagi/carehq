@@ -32,32 +32,35 @@
             });
         }
     </script>
-     <script>
-        function link_actor_patient(patient_guid, prov_actor_id, actor_type) {
+    <script>
+        function link_actor_patient(patient_guid, actor_id, actor_type) {
             var payload = {
-                        'csrfmiddlewaretoken': getCookie("csrftoken"),
-                        'patient_guid': patient_guid,
-                        'actor_uuid': prov_actor_id,
+                'csrfmiddlewaretoken':getCookie("csrftoken"),
+                'patient_guid':patient_guid,
+                'actor_uuid':actor_id,
+                'actor_type':actor_type,
             };
 
             url = "{% url link_actor_to_patient %}";
             send_xhr = $.ajax({
-                    "type": "POST",
-                    "url":  url,
-                    "data":payload,
-                    "success": function(data) {
-                        if (data == "Success") {
-                            alert ("Provider added to patient")
-                        } else {
-                            alert ("An error occurred in linking provider to the patient.")
-                        }
-                        $('body').replaceWith(data.responseText);
-                    }, //end success
-                    "error": function(data) {
-                        $('body').replaceWith(data.responseText);
-//                            alert("Error trying to save form, please try again: " + data);
+                "type":"POST",
+                "url":url,
+                "data":payload,
+                "success":function (data) {
+                    if (data == "Success") {
+                        alert("Provider added to patient")
+                    } else {
+                        alert("An error occurred in linking provider to the patient.");
+                        console.log(data);
                     }
-                });
+                    $('body').replaceWith(data.responseText);
+                }, //end success
+                "error":function (data) {
+                    $('body').replaceWith(data.responseText);
+                    console.log(data);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
         }
     </script>
 {% endblock %}
@@ -65,6 +68,16 @@
 
 
 {% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqapp.views.ashand_admin.admin_study_landing %}">Study Admin</a> <span
+                class="divider">/</span></li>
+        <li><a href="{% url carehqapp.views.ashand_admin.admin_patient_list %}">Global Patient List</a> <span
+                class="divider">/</span></li>
+        <li class="active"><a
+                href="{% url carehqapp.views.actors.pt_new_or_link_actor patient_doc.get_id %}">{{ patient_doc.first_name }} {{ patient_doc.last_name }}
+            Careteam Admin</a></li>
+    </ul>
 {% endblock page_crumbs %}
 {% block page_header %}
     <h1>Manage {{ patient_doc.first_name }} {{ patient_doc.last_name }}'s {{ actor_type }}s</h1>
@@ -72,7 +85,54 @@
 
 {% block content %}
     <div class="container">
+        <div class="row">
+            <div class="span6">
+                <h3>Existing Team</h3>
+            <br>
+                <h4>Providers</h4>
+                {% if patient_doc.django_patient.get_providers %}
+                    <ul>
+                        {% for prov in patient_doc.django_patient.get_providers %}
+                            <li>{{ prov.actordoc.first_name }} {{ prov.actordoc.last_name }} ::
+                                ({{ cg.user.username }}) {{ prov.user.is_active }}
+                                <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user prov.user.id %}">Invite/Activate</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No providers
+                {% endif %}
+
+                <br>
+                <h4>Caregivers</h4>
+                {% if patient_doc.django_patient.get_caregivers %}
+                    <ul>
+                        {% for cg in patient_doc.django_patient.get_caregivers %}
+                            <li>{{ cg.actordoc.first_name }} {{ cg.actordoc.last_name }} ::
+                                ({{ cg.user.username }}) {{ cg.user.is_active }}
+                                <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user cg.user.id %}">Invite/Activate</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No Caregivers
+                {% endif %}
+        </div>
+        <div class="span6">
+            <div class="well">
+                <h4><i class="icon-plus"></i> Add new {{ actor_type }}</h4>
+
+                <form id="newprovider_form" action="" method="POST" class="uniForm">
+                    {% csrf_token %}
+                    {% uni_form form form.helper %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
         <div class="span12">
+            <h2>Add from Existing {{ actor_type }}s</h2>
             {% if actors %}
                 <table id="actors-table" class="table tablesorter">
                     <thead>
@@ -99,7 +159,9 @@
                             <td>
                                 <button onclick="rm_provider('{{ actor_doc.actor_uuid }}')">Remove</button>
                                 &nbsp;&nbsp;
-                                <button onclick="link_actor_patient('{{ patient.get_id }}','{{ prov.actor_uuid }}', '{{ actor_type }}')">Link</button>
+                                <button onclick="link_actor_patient('{{ patient_doc.get_id }}','{{ actor_doc.actor_uuid }}', '{{ actor_type }}')">
+                                    Link
+                                </button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -109,15 +171,6 @@
                 <h3>No Existing actors in system</h3>
             {% endif %}
         </div>
-        <hr>
-        <div id="newprovider_dlg" title="Create New Provider" class="span12">
-            <div class="well">
-                <h4><i class="icon-plus"></i> Add new {{ actor_type }}</h4>
-                <form id="newprovider_form" action="" method="POST" class="uniForm">
-                    {% csrf_token %}
-                    {% uni_form form form.helper %}
-                </form>
-            </div>
-        </div>
+    </div>
     </div>
 {% endblock content %}

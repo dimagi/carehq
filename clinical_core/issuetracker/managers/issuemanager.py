@@ -21,14 +21,16 @@ class IssueManager(models.Manager):
 
     def get_relevant(self, actor, patient=None):
         """
-        Returns any case relevant of interest.
+        Returns any case relevant of interest to the given actor.
+        Opened, Edited, Resolved, Closed, Assigned
         """
         q_opened = Q(opened_by=actor)
         q_edited = Q(last_edit_by=actor)
         q_resolved = Q(resolved_by=actor)
         q_closed = Q(closed_by=actor)
+        q_assigned = Q(assigned_to=actor)
 
-        qset = super(IssueManager, self).get_query_set().filter(q_opened | q_edited | q_resolved | q_closed)
+        qset = super(IssueManager, self).get_query_set().filter(q_opened | q_edited | q_resolved | q_closed | q_assigned)
         if patient:
             qset = qset.filter(patient=patient)
         return qset

@@ -1,0 +1,25 @@
+{% extends "carehqapp/actor/carehq_actor_profile_base.html" %}
+{% block actor-tab-container %}
+    <table id="tbl_network" class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Relationship</th>
+            <th>Info</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for connection in connections %}
+            <tr>
+                <td>
+                    <a href="{% url view_actor connection.actor.doc_id '' %}">{{ connection.actor.actordoc.first_name }} {{ connection.actor.actordoc.last_name }}</a>
+                </td>
+                <td>{{ connection.role.display }}</td>
+                <td>For
+                    patient {{ connection.content.couchdoc.first_name }} {{ connection.content.couchdoc.last_name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

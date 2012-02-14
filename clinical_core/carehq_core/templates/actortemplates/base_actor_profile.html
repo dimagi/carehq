@@ -25,7 +25,7 @@
     </script>
 {% endblock extrahead %}
 {% block page_header %}
-    <h3>{{ actor_doc.first_name }} {{ actor_doc.last_name }}</h3>
+    <h3>{{ actor_doc.first_name }} {{ actor_doc.last_name }}{% if is_me %} <small>This is you</small>{% endif %}</h3>
 {% endblock %}
 {% block content %}
     <div class="row">
