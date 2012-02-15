@@ -1,5 +1,6 @@
 import pdb
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from carehqadmin.forms.caregiver_form import CaregiverForm
 from clinical_shared.utils import generator
 from issuetracker.issue_constants import ISSUE_STATE_CLOSED
@@ -30,6 +31,12 @@ def view_actor(request, actor_doc_id, view_mode, template_name="carehqapp/actor/
     actor = Actor.objects.get(doc_id=actor_doc_id)
     context['actor_doc'] = actor.actordoc
     all_prrs = carehq_api.get_permissions(actor.actordoc, direct=True)
+
+
+    if isinstance(actor.actordoc, CaregiverActor):
+        if isinstance(request.current_actor.actordoc, CaregiverActor):
+            #stiff security check
+            raise PermissionDenied
 
     if request.current_actor.doc_id == actor_doc_id:
         is_me = True
