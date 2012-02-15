@@ -46,7 +46,7 @@ class CCDSubmission(XFormInstance):
                 b64_doc = self.form['recordTarget']['patientRole']['id'][2]['@extension']
                 bytes = base64.b64decode(b64_doc)
                 decoded_doc_id = uuid.UUID(bytes=bytes)
-                return decoded_doc_id
+                return decoded_doc_id.hex
                 #return self.form['recordTarget']['patientRole']['id'][2]['@extension']
             except:
                 return self._get_patient_guid_by_externalid()
