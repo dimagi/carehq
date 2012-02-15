@@ -1,3 +1,4 @@
+import logging
 import random
 from couchdbkit.ext.django.schema import Document, BooleanProperty
 from datetime import datetime
@@ -237,15 +238,12 @@ class CCDSubmission(XFormInstance):
         #patient_doc = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_doc_id))
 
         #hack for testing
-        if hasattr(self, '_patient_doc'):
-            return self._patient_doc
 
         try:
             patient = Patient.objects.get(doc_id=self.get_patient_guid())
-            self._patient_doc = patient.couchdoc
             return patient.couchdoc
         except Patient.DoesNotExist:
-            self._patient_doc = None
+            logging.error("Error could not match up submission %s with patient with this guid: %s" % (self._id, self.get_patient_guid()))
             return None
 
 
