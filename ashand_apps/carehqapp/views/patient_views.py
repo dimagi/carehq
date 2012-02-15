@@ -263,7 +263,10 @@ class CarehqPatientSingleView(PatientSingleView):
             context['issues'] = issues
             self.template_name = "carehqapp/patient/carehq_patient_issues.html"
         if view_mode == 'info':
-            self.template_name = "carehqapp/patient/carehq_patient_info.html"
+            if request.GET.get('print', None) is not None:
+                self.template_name = "carehqapp/patient/carehq_patient_info_print.html"
+            else:
+                self.template_name = "carehqapp/patient/carehq_patient_info.html"
 
         if view_mode == 'careteam':
             context['patient_careteam'] = carehq_api.get_careteam(pdoc)
@@ -271,6 +274,9 @@ class CarehqPatientSingleView(PatientSingleView):
 
         if view_mode == 'careplan':
             self.template_name = "carehqapp/patient/carehq_patient_careplan.html"
+
+        if view_mode == 'files':
+            self.template_name = "carehqapp/patient/carehq_patient_files.html"
 
         if view_mode == 'submissions':
             viewmonth = int(request.GET.get('month', date.today().month))
