@@ -184,7 +184,7 @@ class CaregiverActor(BaseActorDocument):
         ('child', 'Child'),
         ('parent', 'Parent'),
         ('relative', 'Relative'),
-        #('spouse', 'Spouse'),
+        ('spouse', 'Spouse'),
         ('sibling', 'Sibling'),
         ('nextofkin', 'Next of kin'),
         ('friend', 'Friend'),
