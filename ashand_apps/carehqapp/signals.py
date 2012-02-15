@@ -4,12 +4,9 @@ import uuid
 from django.db.models.signals import post_save
 from carehq_core import carehq_api
 from carehq_core.carehq_constants import role_primary_provider, role_provider
-from carehqapp.models import CCDSubmission, get_threshold_category
 from couchforms.signals import xform_saved
-import random
 from clinical_core.patient.models import Patient
-from issuetracker import issue_constants
-from issuetracker.models.issuecore import ExternalIssueData, IssueEvent, Issue
+from issuetracker.models.issuecore import  IssueEvent
 from permissions.models import Actor, Role
 from tasks import issue_update_notifications
 
@@ -39,12 +36,12 @@ def get_assigning_actor(patient):
 
 
 def process_ccd_submission(sender, xform, **kwargs):
+    from carehqapp.models import CCDSubmission
     try:
         b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
         bytes = base64.b64decode(b64_doc)
         decoded_doc_id = uuid.UUID(bytes=bytes)
         patient = Patient.objects.get(doc_id=decode_doc_id)
-        #patient = Patient.objects.get(id='d9041f5a3f2a45dba9eba636ce2f0aa8')
     except Patient.DoesNotExist:
         return
     except KeyError, ke:
@@ -60,62 +57,7 @@ def process_ccd_submission(sender, xform, **kwargs):
     #set it as a non threshold violation
     xform.is_threshold=False
     try:
-        if xform.form['component']['structuredBody']['component'][1]['section']['entry']['encounter']['entryRelationship']\
-                [1]['organizer']['component'][0]['observation']['value']['@displayName']:
-            new_issue = Issue.objects.new_issue(
-                get_threshold_category(),
-                system_actor,
-                "\tDiarrhea threshold violation",
-                CCDSubmission.find_ccd_table_data(xform),
-                random.choice(issue_constants.PRIORITY_CHOICES)[0],
-                patient=patient,
-                status=issue_constants.STATUS_CHOICES[0][0],
-                activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
-            )
-
-            #now assign it.
-            assign_actor = get_assigning_actor(patient)
-            if assign_actor is not None:
-                new_issue.assign_issue(assign_actor, actor_by=system_actor, commit=True)
-
-
-            issue_ccd_link = ExternalIssueData()
-            issue_ccd_link.issue = new_issue
-            issue_ccd_link.doc_id = xform._id
-            issue_ccd_link.save()
-
-            xform.is_threshold=True
-
-    except Exception, ex:
-        #tb = traceback.format_exc()
-        pass
-
-
-    try:
-        if xform.form['component']['structuredBody']['component'][1]['section']['entry']['encounter']['entryRelationship']\
-                [2]['organizer']['component'][0]['observation']['value']['@displayName']:
-
-            new_issue = Issue.objects.new_issue(
-                get_threshold_category(),
-                system_actor,
-                "GI threshold violation",
-                CCDSubmission.find_ccd_table_data(xform),
-                random.choice(issue_constants.PRIORITY_CHOICES)[0],
-                patient=patient,
-                status=issue_constants.STATUS_CHOICES[0][0],
-                activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
-            )
-            #now assign it.
-            assign_actor = get_assigning_actor(patient)
-            if assign_actor is not None:
-                new_issue.assign_issue(assign_actor, actor_by=system_actor, commit=True)
-
-            issue_ccd_link = ExternalIssueData()
-            issue_ccd_link.issue = new_issue
-            issue_ccd_link.doc_id = xform._id
-            issue_ccd_link.save()
-            xform.is_threshold=True
-            xform.save()
+        CCDSubmission.check_and_generate_issue(xform, patient)
     except Exception, ex:
         #tb = traceback.format_exc()
         #print tb

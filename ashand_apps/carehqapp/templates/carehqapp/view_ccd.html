@@ -20,6 +20,22 @@
     <strong>Patient:</strong>
         <a href="{{ submit.get_patient_doc.get_absolute_url }}">
             {{ submit.get_patient_doc.last_name }}, {{ submit.get_patient_doc.first_name }}</a><br>
-    <strong>Session Time:</strong> {{ submit.get_session_time|date }} <br>
+    <strong>Session Time:</strong> {{ submit.get_session_time}} <br>
     {{ submit.ccd_table_data|safe }}
+
+    <hr>
+    <ul>
+    {% for e in entries %}
+        <li>
+        <strong>{{ e.question }}</strong> :: {{ e.answer }}<br>
+        {% if e.branch %}
+            <ul>
+            {% for s in e.branch %}
+                <li>{{ s.question }} :: {{ s.answer }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}

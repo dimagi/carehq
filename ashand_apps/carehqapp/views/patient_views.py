@@ -79,25 +79,44 @@ class SubmissionCalendar(HTMLCalendar):
                 body = ['<br>']
 
                 #received
-                day_submissions = self.submissions[day]
+                day_submissions = sorted(self.submissions[day], key=lambda x: x.get_session_time())
                 threshold_resolved=True
                 treshold_body = []
+
+#                body.append('<ul class="nav">')
+#                body.append('<li class="dropdown">')
+#                body.append('<a class="dropdown-toggle label label-info" data-toggle="dropdown" href="#">Received')
+#                body.append(' <b class="caret"></b></a>')
+#                body.append('<ul class="dropdown-menu">')
+
+                body.append('<div class="btn-group">')
+                body.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Received</a>')
+                body.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                body.append('<ul class="dropdown-menu">')
+
                 for submit in day_submissions:
                     if submit.is_threshold:
                         #ok, it's a threshold violation, let's check if the issue is closed
                         issues = submit.get_issues()
                         for issue in issues:
                             if issue.is_closed:
-                                pass
+                                treshold_body.append('<li><a href="%s">%s Closed</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
                             else:
                                 threshold_resolved=False
-                                treshold_body.append('<a href="%s">Threshold</a><br>' % (reverse('manage-issue', kwargs={"issue_id": issue.id})))
+                                treshold_body.append('<li><a href="%s">%s Open</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
                     else:
                         #it's not a threshold violation, get "OK" submits
-                        pass
+#                        body.append('<li><a href="#"><i class="icon-ok"></ia> OK</a></li>')
+                        body.append('<li><a href="%s"> %s OK</a></li>' % (reverse('view_ccd', kwargs={'doc_id': submit._id}), submit.get_session_time().strftime('%I:%M%p')))
+                                    #(reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
+                body.append('</ul>')
+                body.append('</div>')
+
+
                 if threshold_resolved:
-                    body.append('<span class="label label-success">Received</span><br>')
+                    #body.append('<a href="" class="label label-success">OK</a><br>')
                     #link to resolved issues
+                    pass
                 else:
                     body.append('<span class="label label-important">Received</span><br>')
                     body.append(''.join(treshold_body))
@@ -106,21 +125,40 @@ class SubmissionCalendar(HTMLCalendar):
 
             if weekday < 5 and not future:
                 issue_check = Issue.objects.filter(patient=self.django_patient, due_date=datetime(this_day.year, this_day.month, this_day.day), category=get_missing_category())
-                missing_link = ''
+                missing_link = []
                 if issue_check.count() == 0:
-                    missing_link = '<br><span class="label label-warning">Missing</span><br>'
-                    missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
+                    #no issues resolving so completely missing
+
+                    missing_link.append('<div class="btn-group">')
+                    missing_link.append('<a class="btn btn-warning" href="#"><i class="icon white user"></i> Missing</a>')
+                    missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                    missing_link.append('<ul class="dropdown-menu">')
+                    missing_link.append('<li><a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a></li>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
+                    missing_link.append('</ul>')
+                    missing_link.append('</div>')
                 else:
                     missing_resolved=True
                     still_open = issue_check.filter(status=ISSUE_STATE_OPEN)
+                    missing_link.append('<div class="btn-group">')
                     if still_open.count() == 0:
-                        missing_link = '<br><span class="label label-info">Missing - Resolved</span>'
+                        missing_link = '<br><span class="label label-info">Missing - Closed</span>'
                     else:
-                        missing_link = '<br><span class="label label-warning">Missing - Unresolved</span><br>'
-                        for i in still_open:
-                            missing_link += '<a href="%s">View Issue</a><br>' % (reverse('manage-issue', kwargs={"issue_id": i.id}))
+                        missing_link = '<br><span class="label label-warning">Missing - Active</span><br>'
+                    if still_open.count() == 0:
+                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Missing - Closed</a>')
+                    else:
+                        missing_link.append('<a class="btn btn-warning" href="#"><i class="icon white user"></i> Missing - Open</a>')
 
-                return self.day_cell(cssclass, "%d %s" % (day, missing_link))
+                    missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                    missing_link.append('<ul class="dropdown-menu">')
+                    for i in still_open:
+                        missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+                    missing_link.append('</ul>')
+                    #missing_link = '<br><span class="label label-warning">Missing</span><br>'
+                    #missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
+                    missing_link.append('</div>')
+
+                return self.day_cell(cssclass, "%d %s" % (day, ''.join(missing_link)))
             elif weekday < 5 and future:
                 return self.day_cell('future', "%d" % day)
             else:
@@ -212,6 +250,7 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'issues':
             context['filter'] = request.GET.get('filter', 'recent')
             issues = Issue.objects.filter(patient=dj_patient)
+            foo
             if context['filter']== 'closed':
                 issues = issues.filter(status=ISSUE_STATE_CLOSED)
             elif context['filter'] == 'recent':

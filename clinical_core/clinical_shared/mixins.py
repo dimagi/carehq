@@ -29,7 +29,7 @@ class TypedSubclassMixin(object):
         db = cls.get_db()
         try:
             doc_dict = db.open_doc(doc_id)
-            if doc_dict['doc_type'].startswith('Deleted') and doc_dict['base_type ']== 'DeletedBasePatient':
+            if doc_dict['doc_type'].startswith('Deleted') and doc_dict['base_type']== 'DeletedBasePatient':
                 return None
             return cls.get_typed_from_dict(doc_dict)
         except ResourceNotFound:
