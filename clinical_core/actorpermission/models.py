@@ -137,11 +137,12 @@ class MachineActor(BaseActorDocument):
 
     def get_class_display(self):
         return "%s %s (%s)" % (self.first_name, self.last_name, self.title)
+
     class Meta:
         app_label = 'actorpermission'
 
     def get_name(self):
-        return "%s %s (%s)" % (self.first_name, self.last_name, self.title)
+        return "%s %s" % (self.first_name, self.last_name)
 
     def get_display(self):
         return "%s, %s" % (self.title, self.facility_name)

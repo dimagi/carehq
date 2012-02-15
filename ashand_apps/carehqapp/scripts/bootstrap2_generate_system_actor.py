@@ -20,7 +20,7 @@ def run():
         ma._id = sactor.doc_id
         ma.title =  "CareHQ System Actor"
         ma.first_name = "CareHQ"
-        ma.last_name = "CareHQ System"
+        ma.last_name = "System"
         ma.email = "ashand-system@dimagi.com"
         ma.actor_uuid = sactor.id
         ma.save(None, user=None)

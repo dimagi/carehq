@@ -250,7 +250,6 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'issues':
             context['filter'] = request.GET.get('filter', 'recent')
             issues = Issue.objects.filter(patient=dj_patient)
-            foo
             if context['filter']== 'closed':
                 issues = issues.filter(status=ISSUE_STATE_CLOSED)
             elif context['filter'] == 'recent':

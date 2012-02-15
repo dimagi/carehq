@@ -72,7 +72,11 @@
 
                         <tr>
                             <td><strong>Assigned to</strong></td>
-                            <td><a href="{% url view_actor issue.assigned_to.doc_id '' %}">{{ issue.assigned_to.actordoc.get_name}}</a></td>
+                            {% if issue.assigned_to %}
+                                <td><a href="{% url view_actor issue.assigned_to.doc_id '' %}">{{ issue.assigned_to.actordoc.get_name}}</a></td>
+                            {% else %}
+                                <td>None</td>
+                            {% endif %}
                         </tr>
 
                     </table>
