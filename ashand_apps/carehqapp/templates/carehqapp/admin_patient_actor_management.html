@@ -48,17 +48,17 @@
                 "data":payload,
                 "success":function (data) {
                     if (data == "Success") {
-                        alert("Provider added to patient")
+                        alert("Actor added to patient")
                     } else {
                         alert("An error occurred in linking provider to the patient.");
                         console.log(data);
                     }
-                    $('body').replaceWith(data.responseText);
+                    location.reload();
+                    //$('body').replaceWith(data.responseText);
                 }, //end success
                 "error":function (data) {
                     $('body').replaceWith(data.responseText);
-                    console.log(data);
-//                            alert("Error trying to save form, please try again: " + data);
+                    console.log(data); //                            alert("Error trying to save form, please try again: " + data);
                 }
             });
         }
