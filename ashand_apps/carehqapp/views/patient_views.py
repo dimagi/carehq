@@ -130,8 +130,8 @@ class SubmissionCalendar(HTMLCalendar):
                     #no issues resolving so completely missing
 
                     missing_link.append('<div class="btn-group">')
-                    missing_link.append('<a class="btn btn-warning" href="#"><i class="icon white user"></i> Missing</a>')
-                    missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                    missing_link.append('<a class="btn btn-danger" href="#"><i class="icon white user"></i> Missing</a>')
+                    missing_link.append('<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     missing_link.append('<ul class="dropdown-menu">')
                     missing_link.append('<li><a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a></li>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
                     missing_link.append('</ul>')
@@ -139,20 +139,23 @@ class SubmissionCalendar(HTMLCalendar):
                 else:
                     missing_resolved=True
                     still_open = issue_check.filter(status=ISSUE_STATE_OPEN)
+                    closed = issue_check.filter(status=ISSUE_STATE_CLOSED)
                     missing_link.append('<div class="btn-group">')
                     if still_open.count() == 0:
-                        missing_link = '<br><span class="label label-info">Missing - Closed</span>'
-                    else:
-                        missing_link = '<br><span class="label label-warning">Missing - Active</span><br>'
-                    if still_open.count() == 0:
-                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Missing - Closed</a>')
+                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Closed</a>')
+                        missing_link.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     else:
                         missing_link.append('<a class="btn btn-warning" href="#"><i class="icon white user"></i> Missing - Open</a>')
+                        missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
 
-                    missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     missing_link.append('<ul class="dropdown-menu">')
-                    for i in still_open:
-                        missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+                    if still_open.count() > 0:
+                        for i in still_open:
+                            missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+                    else:
+                        for i in closed:
+                            missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+
                     missing_link.append('</ul>')
                     #missing_link = '<br><span class="label label-warning">Missing</span><br>'
                     #missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
