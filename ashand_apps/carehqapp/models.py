@@ -172,12 +172,10 @@ class CCDSubmission(XFormInstance):
         issue = None
 
         if ExternalIssueData.objects.filter(doc_id=xform._id).count() > 0 and skip_if_exists:
-            print "exists"
             return None
 
         if len(violations) > 0:
             #yes, multiple violations!
-            print violations
             issue_content_body = []
 
             a = issue_content_body.append
@@ -209,10 +207,8 @@ class CCDSubmission(XFormInstance):
             issue_ccd_link.issue = new_issue
             issue_ccd_link.doc_id = xform._id
             issue_ccd_link.save()
-            print "is threshold"
             xform.is_threshold=True
         else:
-            print "no threshold"
             xform.is_threshold=False
 
         if mutate_xform:

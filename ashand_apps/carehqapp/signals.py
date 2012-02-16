@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import logging
 import traceback
 import uuid
 from django.db.models.signals import post_save
@@ -45,13 +46,13 @@ def process_ccd_submission(sender, xform, **kwargs):
         #decoded_doc_id = uuid.UUID(bytes=bytes)
         patient = Patient.objects.get(doc_id=submit.get_patient_guid())
     except Patient.DoesNotExist:
-        print "no patient"
+        logging.error("No patient found on submisison %s" % xform._id)
         return
     except KeyError, ke:
-        print "keyerror"
+        logging.error("Error accessing ccd keys: %s" % ke)
         return
     except Exception, ex:
-        print "other error %s" % ex
+        logging.error("Other unknown error trying to get patient guid from ccd: %s" % ex)
         pass
 
     try:
@@ -62,12 +63,9 @@ def process_ccd_submission(sender, xform, **kwargs):
     #set it as a non threshold violation
     xform.is_threshold=False
     try:
-        print "trying to submit with patient: %s %s" % (patient.id, patient.doc_id)
         CCDSubmission.check_and_generate_issue(xform, patient)
     except Exception, ex:
-        tb = traceback.format_exc()
-        print tb
-        pass
+        logging.error("Error trying to generate threshold issue for patient: %s" % ex)
     xform.save()
 
 
