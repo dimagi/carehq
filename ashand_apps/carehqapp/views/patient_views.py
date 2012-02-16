@@ -81,7 +81,7 @@ class SubmissionCalendar(HTMLCalendar):
                 #received
                 day_submissions = sorted(self.submissions[day], key=lambda x: x.get_session_time())
                 threshold_resolved=True
-                treshold_body = []
+                submit_body = []
 
 #                body.append('<ul class="nav">')
 #                body.append('<li class="dropdown">')
@@ -89,37 +89,38 @@ class SubmissionCalendar(HTMLCalendar):
 #                body.append(' <b class="caret"></b></a>')
 #                body.append('<ul class="dropdown-menu">')
 
-                body.append('<div class="btn-group">')
-                body.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Received</a>')
-                body.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
-                body.append('<ul class="dropdown-menu">')
 
+                threshold_sum = 0
                 for submit in day_submissions:
                     if submit.is_threshold:
                         #ok, it's a threshold violation, let's check if the issue is closed
                         issues = submit.get_issues()
+                        threshold_sum += 1
                         for issue in issues:
                             if issue.is_closed:
-                                treshold_body.append('<li><a href="%s">%s Closed</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
+                                submit_body.append('<li><a href="%s">%s Closed</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
+                                threshold_sum = threshold_sum - 1
                             else:
-                                threshold_resolved=False
-                                treshold_body.append('<li><a href="%s">%s Open</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
+                                submit_body.append('<li><a href="%s">%s Open</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
                     else:
                         #it's not a threshold violation, get "OK" submits
 #                        body.append('<li><a href="#"><i class="icon-ok"></ia> OK</a></li>')
-                        body.append('<li><a href="%s"> %s OK</a></li>' % (reverse('view_ccd', kwargs={'doc_id': submit._id}), submit.get_session_time().strftime('%I:%M%p')))
+                        submit_body.append('<li><a href="%s"> %s OK</a></li>' % (reverse('view_ccd', kwargs={'doc_id': submit._id}), submit.get_session_time().strftime('%I:%M%p')))
                                     #(reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
+
+
+                body.append('<div class="btn-group">')
+                if threshold_sum > 0:
+                    body.append('<a class="btn btn-warning" href="#"><i class="icon-white icon-warning-sign"></i> Received</a>')
+                    body.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                else:
+                    body.append('<a class="btn btn-info" href="#"><i class="icon-white icon-ok"></i> Received</a>')
+                    body.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                body.append('<ul class="dropdown-menu">')
+
+                body.extend(submit_body)
                 body.append('</ul>')
                 body.append('</div>')
-
-
-                if threshold_resolved:
-                    #body.append('<a href="" class="label label-success">OK</a><br>')
-                    #link to resolved issues
-                    pass
-                else:
-                    body.append('<span class="label label-important">Received</span><br>')
-                    body.append(''.join(treshold_body))
                 body.append('<br>')
                 return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
 
@@ -130,7 +131,7 @@ class SubmissionCalendar(HTMLCalendar):
                     #no issues resolving so completely missing
 
                     missing_link.append('<div class="btn-group">')
-                    missing_link.append('<a class="btn btn-danger" href="#"><i class="icon white user"></i> Missing</a>')
+                    missing_link.append('<a class="btn btn-danger" href="#"><i class="icon-white icon-warning-sign"></i> Missing</a>')
                     missing_link.append('<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     missing_link.append('<ul class="dropdown-menu">')
                     missing_link.append('<li><a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a></li>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
@@ -142,10 +143,10 @@ class SubmissionCalendar(HTMLCalendar):
                     closed = issue_check.filter(status=ISSUE_STATE_CLOSED)
                     missing_link.append('<div class="btn-group">')
                     if still_open.count() == 0:
-                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon white user"></i> Closed</a>')
+                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon-white icon-ok"></i> Closed</a>')
                         missing_link.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     else:
-                        missing_link.append('<a class="btn btn-warning" href="#"><i class="icon white user"></i> Missing - Open</a>')
+                        missing_link.append('<a class="btn btn-warning" href="#"><i class="icon-white icon-edit"></i> Open</a>')
                         missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
 
                     missing_link.append('<ul class="dropdown-menu">')
@@ -157,8 +158,6 @@ class SubmissionCalendar(HTMLCalendar):
                             missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
 
                     missing_link.append('</ul>')
-                    #missing_link = '<br><span class="label label-warning">Missing</span><br>'
-                    #missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
                     missing_link.append('</div>')
 
                 return self.day_cell(cssclass, "%d %s" % (day, ''.join(missing_link)))

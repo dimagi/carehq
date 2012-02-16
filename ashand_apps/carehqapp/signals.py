@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import traceback
 import uuid
 from django.db.models.signals import post_save
 from carehq_core import carehq_api
@@ -38,15 +39,19 @@ def get_assigning_actor(patient):
 def process_ccd_submission(sender, xform, **kwargs):
     from carehqapp.models import CCDSubmission
     try:
-        b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
-        bytes = base64.b64decode(b64_doc)
-        decoded_doc_id = uuid.UUID(bytes=bytes)
-        patient = Patient.objects.get(doc_id=decode_doc_id)
+        submit = CCDSubmission.get(xform._id)
+        #b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
+        #bytes = base64.b64decode(b64_doc)
+        #decoded_doc_id = uuid.UUID(bytes=bytes)
+        patient = Patient.objects.get(doc_id=submit.get_patient_guid())
     except Patient.DoesNotExist:
+        print "no patient"
         return
     except KeyError, ke:
+        print "keyerror"
         return
     except Exception, ex:
+        print "other error %s" % ex
         pass
 
     try:
@@ -57,10 +62,11 @@ def process_ccd_submission(sender, xform, **kwargs):
     #set it as a non threshold violation
     xform.is_threshold=False
     try:
+        print "trying to submit with patient: %s %s" % (patient.id, patient.doc_id)
         CCDSubmission.check_and_generate_issue(xform, patient)
     except Exception, ex:
-        #tb = traceback.format_exc()
-        #print tb
+        tb = traceback.format_exc()
+        print tb
         pass
     xform.save()
 
