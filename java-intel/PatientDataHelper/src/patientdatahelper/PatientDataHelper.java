@@ -60,6 +60,7 @@ public class PatientDataHelper {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
 		
+		//get input data from STDIN
 		String s;
 		try {
 			while ((s = in.readLine()) != null && s.length() != 0) {
@@ -72,27 +73,27 @@ public class PatientDataHelper {
 				
 		SecurityService secSvc = new SecurityService();
 		try {
-			System.setProperty("javax.net.ssl.trustStore", "/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/PatientDataHelper/dist/jssecacerts");
+			System.setProperty("javax.net.ssl.trustStore", "jssecacerts");
 			System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
-			System.setProperty("javax.net.ssl.keyStore", "/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/PatientDataHelper/dist/client.ks");
+			System.setProperty("javax.net.ssl.keyStore", "client.ks");
 			System.setProperty("javax.net.ssl.keyStorePassword", "dimagi4life");
 			secSvc.Login("Admin", "bVFiUHbqRR_2");
 
 			try {
 				System.out.println("Logged in: " + secSvc.isLoggedIn() + " Session: " + secSvc.getSessionToken());
 
-				SessionService sessSvc = new SessionService(secSvc);
-				System.out.println("Got session");
-				Patient ptzero = sessSvc.GetPatient("07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9");
-				System.out.println("Got Patient: " + ptzero.getExternalUserID());
-				ptzero.setAddress1("585 Massachusetts Avenue");
-				ptzero.setAddress2("Suite 3");
-//				ptzero.setPhoneNumber("(617) 649-2214");
-
-				PatientDataService isvc = new PatientDataService(secSvc);
-				System.out.println("Update attempt patient zero");
-				isvc.UpdatePatient(ptzero);
-				System.out.println("Updated patient zero");
+//				SessionService sessSvc = new SessionService(secSvc);
+				//System.out.println("Got session");
+				//Patient ptzero = sessSvc.GetPatient("07AB02B4-F4AD-4BCA-BEBF-34E4A392DDD9");
+				//System.out.println("Got Patient: " + ptzero.getExternalUserID());
+				//ptzero.setAddress1("585 Massachusetts Avenue");
+				//ptzero.setAddress2("Suite 3");
+////				ptzero.setPhoneNumber("(617) 649-2214");
+//
+				//PatientDataService isvc = new PatientDataService(secSvc);
+				//System.out.println("Update attempt patient zero");
+				//isvc.UpdatePatient(ptzero);
+////				System.out.println("Updated patient zero");
 
 
 
