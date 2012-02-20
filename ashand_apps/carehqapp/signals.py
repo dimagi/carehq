@@ -29,8 +29,6 @@ def get_assigning_actor(patient):
     if careteam_dict.has_key(primary_role):
         if len(careteam_dict[primary_role]) > 0:
             return careteam_dict[primary_role][0]
-
-
     if careteam_dict.has_key(provider_role):
         if len(careteam_dict[provider_role]) > 0:
             return careteam_dict[provider_role][0]

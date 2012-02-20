@@ -124,12 +124,12 @@ class CCDSubmission(XFormInstance):
         violations = []
         for x in raw_answer_data:
             if x['question'] == "Have you had diarrhea in the past 24 hours?" and x['answer'].lower() == "yes":
-            #check if it's more than three times for diarrhea
+                #check if it's more than three times for diarrhea
                 if violation_frequency.get(x['answer'], True):
                     violations.append({"protocol": 'Diarrhea Protocol', "reason" : "More than 3 times in 24 hours"})
 
             if x['question'] == "Have you vomited in the past 24 hours?" and x['answer'].lower() == "yes":
-            #check if it's more than three times for diarrhea
+                #check if it's more than three times for vomiting
                 if violation_frequency.get(x['answer'], True):
                     violations.append({"protocol": 'Vomit Protocol', "reason" : "More than 3 times in 24 hours"})
 
@@ -201,7 +201,7 @@ class CCDSubmission(XFormInstance):
             #now assign it.
             assign_actor = get_assigning_actor(django_patient)
             if assign_actor is not None:
-                new_issue.assign_issue(assign_actor, actor_by=system_actor, commit=True)
+                new_issue.assign_issue(assign_actor, actor_by=get_system_actor(), commit=True)
 
             issue_ccd_link = ExternalIssueData()
             issue_ccd_link.issue = new_issue
