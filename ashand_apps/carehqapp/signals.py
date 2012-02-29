@@ -48,9 +48,6 @@ def process_ccd_submission(sender, xform, **kwargs):
             xform.doc_type='XFormDuplicate'
             xform.save()
             return
-        else:
-            print len(dupes)
-            print "key: %s" % xform.form['id']['@root']
         #b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
         #bytes = base64.b64decode(b64_doc)
         #decoded_doc_id = uuid.UUID(bytes=bytes)
