@@ -39,6 +39,18 @@ def process_ccd_submission(sender, xform, **kwargs):
     from carehqapp.models import CCDSubmission
     try:
         submit = CCDSubmission.get(xform._id)
+
+        #check if it's a resubmit
+        dupes = CCDSubmission.view('carehqapp/ccd_submits_by_session_id', key=xform.form['id']['@root']).count()
+        if dupes > 1:
+            #then this is a dupe/resubmit
+            #change it to dupe
+            xform.doc_type='XFormDuplicate'
+            xform.save()
+            return
+        else:
+            print len(dupes)
+            print "key: %s" % xform.form['id']['@root']
         #b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
         #bytes = base64.b64decode(b64_doc)
         #decoded_doc_id = uuid.UUID(bytes=bytes)
