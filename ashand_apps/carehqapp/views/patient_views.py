@@ -1,12 +1,21 @@
+import hashlib
+import tempfile
+import uuid
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from carehq_core import carehq_api
+from carehqapp.forms.upload_form import ASHandStudyFileUploadForm
 from carehqapp.models import CCDSubmission, get_missing_category
+from hutch.models import AuxMedia
 from issuetracker.issue_constants import ISSUE_STATE_CLOSED, ISSUE_STATE_OPEN
 from issuetracker.models.issuecore import Issue
+from patient.models import BasePatient
 from patient.views import PatientSingleView
 from datetime import datetime
 
@@ -197,6 +206,48 @@ class SubmissionCalendar(HTMLCalendar):
 
     def day_cell(self, cssclass, body):
         return '<td class="%s">%s</td>' % (cssclass, body)
+
+
+@login_required
+def upload_patient_attachment(request, patient_guid, template_name='carehqapp/upload_file.html'):
+    context = RequestContext(request)
+    patient = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+
+    def handle_uploaded_file(f, form):
+        destination = tempfile.NamedTemporaryFile()
+        checksum = hashlib.md5()
+        for chunk in f.chunks():
+            checksum.update(chunk)
+            destination.write(chunk)
+        destination.seek(0)
+        image_type = form.cleaned_data['image_type'],
+        media_meta=dict(image_type=image_type[0])
+
+        attachment_id = uuid.uuid4().hex
+        new_image_aux = AuxMedia(uploaded_date=datetime.utcnow(),
+            uploaded_by=request.user.username,
+            uploaded_filename=f.name,
+            checksum=checksum.hexdigest(),
+            attachment_id=attachment_id,
+            media_meta=media_meta,
+            notes=form.cleaned_data['notes'])
+        patient.put_attachment(destination, attachment_id, content_type=f.content_type, content_length=f.size)
+        destination.close()
+        return new_image_aux
+
+    if request.method == 'POST':
+        form = ASHandStudyFileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = handle_uploaded_file(request.FILES['image_file'], form)
+            patient['aux_media'].append(file)
+            patient.save()
+            return HttpResponseRedirect(reverse('shine_single_patient', kwargs={'patient_guid': patient_guid}))
+    else:
+        form = ASHandStudyFileUploadForm()
+    context['form'] = form
+    context['patient_guid'] = patient_guid
+    return render_to_response(template_name, context)
+
 
 
 class CarehqPatientSingleView(PatientSingleView):
