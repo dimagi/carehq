@@ -8,5 +8,8 @@
     <import location="healthcare.intel.com.integration.authenticate.xml" namespace="http://healthcare.intel.com/integration/authenticate"/>
     <import location="healthcare.intel.com.integration.extracts.xml" namespace="http://healthcare.intel.com/integration/extracts"/>
     <import location="healthcare.intel.com.integration.importdata.xml" namespace="http://healthcare.intel.com/integration/importdata"/>
-    <import location="healthcare.intel.com.integration.userlookup.xml" namespace="http://healthcare.intel.com/integration/userlookup"/>
+    <import location="healthcare.careinnovations.com.integration.authenticate.xml" namespace="http://healthcare.careinnovations.com/integration/authenticate"/>
+    <import location="healthcare.careinnovations.com.integration.importdata.xml" namespace="http://healthcare.careinnovations.com/integration/importdata"/>
+    <import location="healthcare.careinnovations.com.integration.extracts.xml" namespace="http://healthcare.careinnovations.com/integration/extracts"/>
+    <import location="healthcare.careinnovations.com.integration.userlookup.xml" namespace="http://healthcare.careinnovations.com/integration/userlookup"/>
 </definitions>

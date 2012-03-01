@@ -10,7 +10,7 @@
     <h2>Your Account</h2>
 {% endblock %}
 {% block content %}
-    <h3>Hello, {{ user.first_name }} {{ user.last_name }}</h3>
+    <h3>Hello, {{ user.first_name }} {{ user.last_name }} <small>({{ user.username }})</small></h3>
     <a href="{% url auth_password_change %}">Change password</a> &nbsp; | &nbsp; <a href="{% url auth_password_reset %}">Reset password</a>
     <br>
     <br>
@@ -35,7 +35,9 @@
 
     {% else %}
         {% with request.current_actor as actor %}
+            {% if actor %}
             {% include "account/actor_fragment.html" %}
+            {% endif %}
         {% endwith %}
 
     {% endif %}

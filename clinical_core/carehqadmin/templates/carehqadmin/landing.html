@@ -1,9 +1,19 @@
 {% extends base_template %}
 {% load i18n %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">CareHQ Admin</li>
+    </ul>
+{% endblock page_crumbs%}
+
+{% block page_header %}
+<h1>CareHQ Admin :: Full System Admin</h1>
+{% endblock page_header %}
 {% block content %}
-    <h2>CareHQ :: System Adminstration</h2>
     <ul>
-        <li><a href="{% url landlord_landing %}">Landlord</a></li>
+        <li><a href="{% url landlord_landing %}">Landlord</a> :: Landlord Tenant Functions</li>
         <li>Manage CHWs</li>
         <li>Manage External Providers</li>
         <li>Manage Patients</li>

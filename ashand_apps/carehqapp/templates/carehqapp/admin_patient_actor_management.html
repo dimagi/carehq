@@ -1,0 +1,176 @@
+{% extends base_template %}
+{% load uni_form_tags %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script>
+        function rm_provider(actor_uuid) {
+            var answer = confirm("Are you sure you want to remove this provider?  This is a permanent operation that cannot be undone.")
+            if (answer) {
+
+            }
+            else {
+                return;
+            }
+
+            var payload = {
+                'csrfmiddlewaretoken':getCookie("csrftoken"),
+                'actor_uuid':actor_uuid,
+            };
+
+            url = "{% url rm_ashand_actor %}";
+            send_xhr = $.ajax({
+                "type":"POST",
+                "url":url,
+                "data":payload,
+                "success":function (data) {
+                    location.reload();
+                }, //end success
+                "error":function (data) {
+                    $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+    </script>
+    <script>
+        function link_actor_patient(patient_guid, actor_id, actor_type) {
+            var payload = {
+                'csrfmiddlewaretoken':getCookie("csrftoken"),
+                'patient_guid':patient_guid,
+                'actor_uuid':actor_id,
+                'actor_type':actor_type,
+            };
+
+            url = "{% url link_actor_to_patient %}";
+            send_xhr = $.ajax({
+                "type":"POST",
+                "url":url,
+                "data":payload,
+                "success":function (data) {
+                    if (data == "Success") {
+                        alert("Actor added to patient")
+                    } else {
+                        alert("An error occurred in linking provider to the patient.");
+                        console.log(data);
+                    }
+                    location.reload();
+                    //$('body').replaceWith(data.responseText);
+                }, //end success
+                "error":function (data) {
+                    $('body').replaceWith(data.responseText);
+                    console.log(data); //                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqapp.views.ashand_admin.admin_study_landing %}">Study Admin</a> <span
+                class="divider">/</span></li>
+        <li><a href="{% url carehqapp.views.ashand_admin.admin_patient_list %}">Global Patient List</a> <span
+                class="divider">/</span></li>
+        <li class="active"><a
+                href="{% url carehqapp.views.actors.pt_new_or_link_actor patient_doc.get_id %}">{{ patient_doc.first_name }} {{ patient_doc.last_name }}
+            Careteam Admin</a></li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Manage {{ patient_doc.first_name }} {{ patient_doc.last_name }}'s {{ actor_type }}s</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="span6">
+                <h3>Existing Team</h3>
+            <br>
+                <h4>Providers</h4>
+                {% if patient_doc.django_patient.get_providers %}
+                    <ul>
+                        {% for prov in patient_doc.django_patient.get_providers %}
+                            <li>{{ prov.actordoc.first_name }} {{ prov.actordoc.last_name }} ::
+                                ({{ cg.user.username }}) {{ prov.user.is_active }}
+                                <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user prov.user.id %}">Invite/Activate</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No providers
+                {% endif %}
+
+                <br>
+                <h4>Caregivers</h4>
+                {% if patient_doc.django_patient.get_caregivers %}
+                    <ul>
+                        {% for cg in patient_doc.django_patient.get_caregivers %}
+                            <li>{{ cg.actordoc.first_name }} {{ cg.actordoc.last_name }} ::
+                                ({{ cg.user.username }}) {{ cg.user.is_active }}
+                                <a href="{% url carehqapp.views.ashand_admin.admin_invite_activate_actor_user cg.user.id %}">Invite/Activate</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No Caregivers
+                {% endif %}
+        </div>
+        <div class="span6">
+            <div class="well">
+                <h4><i class="icon-plus"></i> Add new {{ actor_type }}</h4>
+
+                <form id="newprovider_form" action="" method="POST" class="uniForm">
+                    {% csrf_token %}
+                    {% uni_form form form.helper %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="span12">
+            <h2>Add from Existing {{ actor_type }}s</h2>
+            {% if actors %}
+                <table id="actors-table" class="table tablesorter">
+                    <thead>
+                    <tr>
+                    <th class="span2">First Name</th>
+                    <th class="span2">Last Name</th>
+                    <th class="span2">Title</th>
+                    <th class="span2">Email</th>
+                    <th class="span2">Phone Number</th>
+                    <th class="span2">Facility</th>
+                    <th></th>
+                    </thead>
+
+                    <tbody>
+                    {% for actor_doc in actors %}
+                        <tr>
+                            <td>{{ actor_doc.first_name }}</td>
+                            <td>{{ actor_doc.last_name }}</td>
+                            <td>{{ actor_doc.provider_title }}</td>
+                            <td>{{ actor_doc.email }}</td>
+                            <td>{{ actor_doc.phone_number }}</td>
+                            <td>{{ actor_doc.facility_name }}<br>
+                                {{ actor_doc.facility_address }}</td>
+                            <td>
+                                <button onclick="rm_provider('{{ actor_doc.actor_uuid }}')">Remove</button>
+                                &nbsp;&nbsp;
+                                <button onclick="link_actor_patient('{{ patient_doc.get_id }}','{{ actor_doc.actor_uuid }}', '{{ actor_type }}')">
+                                    Link
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <h3>No Existing actors in system</h3>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+{% endblock content %}

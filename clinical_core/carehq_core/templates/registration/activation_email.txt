@@ -3,4 +3,4 @@ Thank you for registering with ASHand, to complete your account activation, plea
 Your activation key is: {{activation_key}}
 This key will expire in {{ expiration_days }} days.
 
-{{site}}
+https://ashand.dimagi.com/accounts/activate/{{activation_key}}

@@ -1,15 +1,23 @@
 {% extends base_template %}
 {% load uni_form_tags %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url carehqadmin_landing %}">CareHQ Admin</a> <span class="divider">/</span></li>
+        <li><a href="{% url manage_tenant tenant.id %}">{{ tenant.name }} Admin</a> <span class="divider">/</span></li>
+        <li class="active">Add new Actor</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h2>Add new {{ actor_type }}</h2>
+{% endblock %}
 {% block content %}
-<div class="container">
-<h2>Create New Actor</h2>
-      <form action="" method="POST" class="uniForm">
-       {% csrf_token %}
-       <table>
-            {{ form|as_uni_form}}
-       </table>
-       <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
-       <input type="button" name="cancel" value="Cancel"  onclick="window.location='{{request.path}}'" class="fg-button ui-state-default ui-corner-all"/>
-   </form>
-</div>
+    <form action="" method="POST" class="form-horizontal">
+        {% csrf_token %}
+            {{ form.as_p }}
+        <input type="submit" value="Submit" class="fg-button ui-state-default ui-corner-all"/>
+        <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+               class="fg-button ui-state-default ui-corner-all"/>
+    </form>
 {% endblock content %}

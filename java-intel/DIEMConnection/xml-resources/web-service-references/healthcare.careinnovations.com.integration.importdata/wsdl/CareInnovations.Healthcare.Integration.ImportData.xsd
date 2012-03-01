@@ -1,0 +1,365 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="healthcare.careinnovations.com.integration.importdata.xsd" namespace="http://healthcare.careinnovations.com/integration/importdata" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="ArrayOfNotificationInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="NotificationInfo" nillable="true" type="tns:NotificationInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotificationInfo" nillable="true" type="tns:ArrayOfNotificationInfo" />
+  <xs:complexType name="NotificationInfo">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="EmailList" nillable="true" type="q1:ArrayOfstring" />
+      <xs:element minOccurs="0" name="NotificationID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="PatientExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientID" type="xs:int" />
+      <xs:element minOccurs="0" name="PatientInternalIdentifier" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="NotificationInfo" nillable="true" type="tns:NotificationInfo" />
+  <xs:complexType name="ArrayOfDeviceInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DeviceInfo" nillable="true" type="tns:DeviceInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDeviceInfo" nillable="true" type="tns:ArrayOfDeviceInfo" />
+  <xs:complexType name="DeviceInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AccessoryWarning" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ID" type="xs:short" />
+      <xs:element minOccurs="0" name="IsActive" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DeviceInfo" nillable="true" type="tns:DeviceInfo" />
+  <xs:complexType name="ArrayOfAccessoryInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AccessoryInfo" nillable="true" type="tns:AccessoryInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAccessoryInfo" nillable="true" type="tns:ArrayOfAccessoryInfo" />
+  <xs:complexType name="AccessoryInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ID" type="xs:short" />
+      <xs:element minOccurs="0" name="IsActive" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="AccessoryInfo" nillable="true" type="tns:AccessoryInfo" />
+  <xs:complexType name="ArrayOfMachineTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MachineTypeInfo" nillable="true" type="tns:MachineTypeInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMachineTypeInfo" nillable="true" type="tns:ArrayOfMachineTypeInfo" />
+  <xs:complexType name="MachineTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ID" type="xs:short" />
+      <xs:element minOccurs="0" name="IsActive" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsVideoConferencingEnabled" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ModelNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MachineTypeInfo" nillable="true" type="tns:MachineTypeInfo" />
+  <xs:complexType name="ArrayOfWorkOrder">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="WorkOrder" nillable="true" type="tns:WorkOrder" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfWorkOrder" nillable="true" type="tns:ArrayOfWorkOrder" />
+  <xs:complexType name="WorkOrder">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Accessories" nillable="true" type="tns:ArrayOfWorkOrderAccessory" />
+      <xs:element minOccurs="0" name="ActivationCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ConnectionType" type="tns:WorkOrderConnectionType" />
+      <xs:element minOccurs="0" name="CreationDateTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Devices" nillable="true" type="tns:ArrayOfWorkOrderDevice" />
+      <xs:element minOccurs="0" name="ID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="LastUpdateDateTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="MachineTypeID" nillable="true" type="xs:short" />
+      <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+      <xs:element xmlns:q2="http://healthcare.careinnovations.com/integration/importdata" minOccurs="0" name="Patient" nillable="true" type="q2:PatientDemographics" />
+      <xs:element minOccurs="0" name="PatientExternalID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Status" type="tns:WorkOrderStatus" />
+      <xs:element minOccurs="0" name="SupportPhone" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WorkOrder" nillable="true" type="tns:WorkOrder" />
+  <xs:complexType name="ArrayOfWorkOrderAccessory">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="WorkOrderAccessory" nillable="true" type="tns:WorkOrderAccessory" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfWorkOrderAccessory" nillable="true" type="tns:ArrayOfWorkOrderAccessory" />
+  <xs:complexType name="WorkOrderAccessory">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Accessory" nillable="true" type="tns:AccessoryInfo" />
+      <xs:element minOccurs="0" name="AccessoryID" type="xs:short" />
+      <xs:element minOccurs="0" name="Quantity" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WorkOrderAccessory" nillable="true" type="tns:WorkOrderAccessory" />
+  <xs:simpleType name="WorkOrderConnectionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Broadband">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="POTS">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MobileBroadband">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">5</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="WorkOrderConnectionType" nillable="true" type="tns:WorkOrderConnectionType" />
+  <xs:complexType name="ArrayOfWorkOrderDevice">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="WorkOrderDevice" nillable="true" type="tns:WorkOrderDevice" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfWorkOrderDevice" nillable="true" type="tns:ArrayOfWorkOrderDevice" />
+  <xs:complexType name="WorkOrderDevice">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Device" nillable="true" type="tns:DeviceInfo" />
+      <xs:element minOccurs="0" name="DeviceID" type="xs:short" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="WorkOrderDevice" nillable="true" type="tns:WorkOrderDevice" />
+  <xs:simpleType name="WorkOrderStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Install">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Closed">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SecureTransport">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">3</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Decommissioned">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">4</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="InstallationComplete">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">5</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="WorkOrderStatus" nillable="true" type="tns:WorkOrderStatus" />
+  <xs:complexType name="ArrayOfClinicianInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ClinicianInfo" nillable="true" type="tns:ClinicianInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClinicianInfo" nillable="true" type="tns:ArrayOfClinicianInfo" />
+  <xs:complexType name="ClinicianInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Assigned" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ClinicianID" type="xs:int" />
+      <xs:element minOccurs="0" name="ExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Patients" nillable="true" type="tns:ArrayOfPatientInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ClinicianInfo" nillable="true" type="tns:ClinicianInfo" />
+  <xs:complexType name="ArrayOfPatientInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PatientInfo" nillable="true" type="tns:PatientInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfPatientInfo" nillable="true" type="tns:ArrayOfPatientInfo" />
+  <xs:complexType name="PatientInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Assigned" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Clinicians" nillable="true" type="tns:ArrayOfClinicianInfo" />
+      <xs:element minOccurs="0" name="ExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientID" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PatientInfo" nillable="true" type="tns:PatientInfo" />
+  <xs:complexType name="ArrayOfMeasurementTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MeasurementTypeInfo" nillable="true" type="tns:MeasurementTypeInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurementTypeInfo" nillable="true" type="tns:ArrayOfMeasurementTypeInfo" />
+  <xs:complexType name="MeasurementTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FieldTypes" nillable="true" type="tns:ArrayOfMeasurementFieldTypeInfo" />
+      <xs:element minOccurs="0" name="MeasurementTypeId" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementTypeInfo" nillable="true" type="tns:MeasurementTypeInfo" />
+  <xs:complexType name="ArrayOfMeasurementFieldTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MeasurementFieldTypeInfo" nillable="true" type="tns:MeasurementFieldTypeInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurementFieldTypeInfo" nillable="true" type="tns:ArrayOfMeasurementFieldTypeInfo" />
+  <xs:complexType name="MeasurementFieldTypeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MeasurementFieldTypeId" type="xs:int" />
+      <xs:element minOccurs="0" name="Places" type="xs:short" />
+      <xs:element minOccurs="0" name="UnitOfMeasure" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Units" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementFieldTypeInfo" nillable="true" type="tns:MeasurementFieldTypeInfo" />
+  <xs:complexType name="ArrayOfMeasurementThresholdInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MeasurementThresholdInfo" nillable="true" type="tns:MeasurementThresholdInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurementThresholdInfo" nillable="true" type="tns:ArrayOfMeasurementThresholdInfo" />
+  <xs:complexType name="MeasurementThresholdInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DecimalPlaces" type="xs:int" />
+      <xs:element minOccurs="0" name="FieldDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="High" nillable="true" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Low" nillable="true" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Maximum" type="xs:decimal" />
+      <xs:element minOccurs="0" name="MeasurementFieldType" nillable="true" type="tns:MeasurementFieldTypeInfo" />
+      <xs:element minOccurs="0" name="MeasurementThresholdId" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="Minimum" type="xs:decimal" />
+      <xs:element minOccurs="0" name="PatientExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientID" type="xs:int" />
+      <xs:element minOccurs="0" name="PatientInternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UnitOfMeasure" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementThresholdInfo" nillable="true" type="tns:MeasurementThresholdInfo" />
+  <xs:complexType name="ArrayOfMeasurementThresholdSet">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MeasurementThresholdSet" nillable="true" type="tns:MeasurementThresholdSet" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMeasurementThresholdSet" nillable="true" type="tns:ArrayOfMeasurementThresholdSet" />
+  <xs:complexType name="MeasurementThresholdSet">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="PatientExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientInternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Thresholds" nillable="true" type="tns:ArrayOfMeasurementThresholdInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MeasurementThresholdSet" nillable="true" type="tns:MeasurementThresholdSet" />
+  <xs:complexType name="ArrayOfNote">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Note" nillable="true" type="tns:Note" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNote" nillable="true" type="tns:ArrayOfNote" />
+  <xs:complexType name="Note">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClinicianID" type="xs:int" />
+      <xs:element minOccurs="0" name="CreationDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="NoteId" type="xs:int" />
+      <xs:element minOccurs="0" name="NoteType" type="xs:short" />
+      <xs:element minOccurs="0" name="Text" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Note" nillable="true" type="tns:Note" />
+  <xs:complexType name="ArrayOfProtocolInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ProtocolInfo" nillable="true" type="tns:ProtocolInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfProtocolInfo" nillable="true" type="tns:ArrayOfProtocolInfo" />
+  <xs:complexType name="ProtocolInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Category" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ComponentID" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ProtocolInfo" nillable="true" type="tns:ProtocolInfo" />
+  <xs:complexType name="ArrayOfReminder">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Reminder" nillable="true" type="tns:Reminder" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfReminder" nillable="true" type="tns:ArrayOfReminder" />
+  <xs:complexType name="Reminder">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Actions" nillable="true" type="tns:ArrayOfReminderAction" />
+      <xs:element minOccurs="0" name="DefaultReminder" type="xs:boolean" />
+      <xs:element minOccurs="0" name="EndDate" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="PatientExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientID" type="xs:int" />
+      <xs:element minOccurs="0" name="PatientInternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Recurrence" nillable="true" type="tns:RecurrenceType" />
+      <xs:element minOccurs="0" name="ReminderID" nillable="true" type="xs:int" />
+      <xs:element minOccurs="0" name="StartDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="StatusID" type="xs:int" />
+      <xs:element minOccurs="0" name="Text" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Reminder" nillable="true" type="tns:Reminder" />
+  <xs:complexType name="ArrayOfReminderAction">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ReminderAction" nillable="true" type="tns:ReminderAction" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfReminderAction" nillable="true" type="tns:ArrayOfReminderAction" />
+  <xs:complexType name="ReminderAction">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ComponentID" type="xs:int" />
+      <xs:element minOccurs="0" name="ComponentText" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ReminderAction" nillable="true" type="tns:ReminderAction" />
+  <xs:complexType name="RecurrenceType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Friday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Monday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="RecurrenceTypeId" type="xs:int" />
+      <xs:element minOccurs="0" name="Saturday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Sunday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Thursday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Tuesday" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Wednesday" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RecurrenceType" nillable="true" type="tns:RecurrenceType" />
+</xs:schema>

@@ -7,30 +7,7 @@
         </div>
         <div class="commit-group">
             <div id="patienteditform"></div>
-            <table>
-                <tr>
-                    <th class="span3">Enrolled Date</th>
-                    <td>{{ patient_doc.enrolled_date|date }}</td>
-
-                    <th class="span3">HCMS Registered Date</th>
-                    <td>{{ patient_doc.hcms_registered_date|date }}</td>
-
-                    <th class="span3">Installed Date</th>
-                    <td>{{ patient_doc.install_date|date }}</td>
-                </tr>
-                <tr>
-                    <th class="span3">Device Checkin time</th>
-                    <td>{{ patient_doc.checkin_time|time }}</td>
-
-                    <th class="span3">Contact Time Window</th>
-                    <td>{{ patient_doc.availabe_start|time }} - {{ patient_doc.available_end|time }}</td>
-                </tr>
-
-                <tr>
-                    <th>Additional Notes</th>
-                    <td>{{ patient_doc.notes }}</td>
-                </tr>
-            </table>
+            {% include "carehqapp/patient/carehq_patient_info_panel.html" %}
         </div>
     </div>
 

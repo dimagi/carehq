@@ -5,6 +5,11 @@
 
 package com.dimagi.carehq.device.intel.ServiceWrapper;
 
+import com.careinnovations.healthcare.integration.authenticate.AuthenticateService;
+import com.careinnovations.healthcare.integration.authenticate.IAuthenticate;
+import com.careinnovations.healthcare.integration.userlookup.IUserLookup;
+import com.careinnovations.healthcare.integration.userlookup.UserLookupService;
+
 /**
  *
  * @author dmyung
@@ -37,6 +42,7 @@ public class SecurityService {
 
     public boolean Login(String username, String password) {
         _sessionToken = this.callLogin(username, password);
+		System.out.println(_sessionToken);
         if (_sessionToken.equals(NULL_SESSION)) {
             this._isLoggedIn = false;
         } else {
@@ -52,20 +58,20 @@ public class SecurityService {
     }
 
     private String callLogin(java.lang.String user, java.lang.String password) {
-        com.intel.healthcare.integration.authenticate.AuthenticateService service = new com.intel.healthcare.integration.authenticate.AuthenticateService();
-        com.intel.healthcare.integration.authenticate.IAuthenticate port = service.getBasicHttpBindingIAuthenticate();
+        AuthenticateService service = new AuthenticateService();
+        IAuthenticate port = service.getBasicHttpBindingIAuthenticate();
         return port.login(user, password);
     }
 
     private void logout(java.lang.String secureSessionToken) {
-        com.intel.healthcare.integration.authenticate.AuthenticateService service = new com.intel.healthcare.integration.authenticate.AuthenticateService();
-        com.intel.healthcare.integration.authenticate.IAuthenticate port = service.getBasicHttpBindingIAuthenticate();
+        AuthenticateService service = new AuthenticateService();
+        IAuthenticate port = service.getBasicHttpBindingIAuthenticate();
         port.logout(secureSessionToken);
     }
 
     private Boolean callPing() {
-        com.intel.healthcare.integration.userlookup.UserLookupService service = new com.intel.healthcare.integration.userlookup.UserLookupService();
-        com.intel.healthcare.integration.userlookup.IUserLookup port = service.getBasicHttpBindingIUserLookup();
+        UserLookupService service = new UserLookupService();
+        IUserLookup port = service.getBasicHttpBindingIUserLookup();
         return port.ping();
     }
 

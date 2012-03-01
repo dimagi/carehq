@@ -10,10 +10,7 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
-    (r'^accounts/', include('registration.backends.default.urls')),
-    #(r'^accounts/login/$', 'django.contrib.auth.views.login', {"template_name": settings.LOGIN_TEMPLATE}),
-    #(r'^accounts/logout/$', 'django.contrib.auth.views.logout_then_login', ),
-
+    (r'^accounts/', include('urls_registration')),
 
     (r'^admin/', include(admin.site.urls)),
     (r'^couchforms/', include('couchforms.urls')),

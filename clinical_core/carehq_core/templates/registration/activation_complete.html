@@ -23,7 +23,10 @@
             <div class="row">
                 <hr>
                 <div class="span4 offset2 well">
-                    <h4>Your activation is completed, an additional validation step will be necessary to create a user account on the system.</h4>
+                    <h4>Your activation is completed!</h4>
+                    <p>To complete the activation process, click the link below to set your account password up for the first time.</p>
+                    <a href="{% url auth_password_change %}" class="btn">Setup Account Password</a>
+                      
                 </div>
             </div>
             {#        {% endif %}#}

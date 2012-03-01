@@ -1,6 +1,8 @@
 # Django settings for blah project.
 import os
 import logging
+from dimagi.utils.couch.settingshelper import get_server_url
+from settings_utils import get_couch_server_url, make_couch_database_url, make_couchdb_tuple
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -159,6 +161,7 @@ INSTALLED_APPS = (
     'hutch',
     'clinical_shared',
     'careplan',
+    'djtables',
     #'deploy_tools',
     #end clinical_core
 
@@ -236,6 +239,9 @@ CAREHQ_CREATE_PATIENT_VIEW_NAME = "create_patient"
 
 
 ACCOUNT_ACTIVATION_DAYS=7
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+KEEP_LOGGED_DURATION = 1209600 #2 weeks
 
 import os
 
@@ -248,7 +254,7 @@ TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(filepath, 'static')
 #AUTH_PROFILE_MODULE = 'actorpermission.models.ClinicalUserProfile'
 AUTHENTICATION_BACKENDS = (
             'django.contrib.auth.backends.ModelBackend',
-            'permissions.backend.ObjectPermissionsBackend',
+#            'permissions.backend.ObjectPermissionsBackend',
         )
 
 LOCAL_APPS = ()
@@ -270,23 +276,13 @@ except ImportError, e:
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
 
+COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
+#this is the default couch database url projectwide.
+COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
+
 SMART_AGENT_SETTINGS = {
     'AGENT_DATASET_LOCATION': os.path.join(filepath, 'agents_2011_04_14.pkl')
 }
 
-####### Couch Forms & Couch DB Kit Settings #######
-def get_server_url(server_root, username, password):
-    if username and password:
-        return "http://%(user)s:%(pass)s@%(server)s" % \
-            {"user": username,
-             "pass": password,
-             "server": server_root }
-    else:
-        return "http://%(server)s" % {"server": server_root }
-
-COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
-COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
-
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
-COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]
-
+COUCHDB_DATABASES = [make_couchdb_tuple(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]

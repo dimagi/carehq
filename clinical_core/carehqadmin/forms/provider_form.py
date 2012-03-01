@@ -1,10 +1,15 @@
 from couchdbkit.ext.django.forms import DocumentForm
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from uni_form.helpers import FormHelper, Layout, Fieldset, Row
+from uni_form.helpers import FormHelper, Layout, Fieldset, Row, Submit
 from actorpermission.models import ProviderActor
 from permissions.models import Actor
+from django import forms
 
 class ProviderForm(DocumentForm):
+    new_user = forms.BooleanField(help_text="Create new user for this cargiver")
+    username = forms.CharField(max_length=160)
+
     def __init__(self, tenant, *args, **kwargs):
         super(ProviderForm, self).__init__(*args, **kwargs)
         self.tenant = tenant
@@ -17,18 +22,21 @@ class ProviderForm(DocumentForm):
         # create the layout object
         layout = Layout(
             # first fieldset shows the company
-            'title',
             'first_name',
             'last_name',
             'provider_title',
-            Row('phone_number', 'email',),
-            Row('gender', 'birthdate', 'ssn'),
+
+            'new_user',
+            'username',
+
+            Row('email', 'phone_number', ),
 
             Fieldset('Location Info',
                 'facility_name',
                 'facility_address',
                      ),
             'notes',
+            Submit(css_class="btn", name="Submit", value="Save"),
             )
 
         helper.add_layout(layout)
@@ -50,8 +58,17 @@ class ProviderForm(DocumentForm):
                 raise ValidationError("Error, a provider of this name already exists")
         return self.cleaned_data
 
+    def clean_username(self):
+        if self.cleaned_data.get('new_user', False):
+            if not self.cleaned_data.get('username', None):
+                raise ValidationError("Error, please enter a username if you're wanting to make a new user")
+            elif User.objects.filter(username=self.cleaned_data['username']).count() > 0:
+                raise ValidationError("Sorry, that username either is not valid or already exists")
+            return self.cleaned_data['username']
+        return ''
+
 
 
     class Meta:
         document = ProviderActor
-        exclude = ('actor_uuid', 'base_type', 'affiliation')
+        exclude = ('actor_uuid', 'base_type', 'affiliation', 'title')

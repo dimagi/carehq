@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://healthcare.careinnovations.com/integration/importdata" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="ImportDataService" targetNamespace="http://healthcare.careinnovations.com/integration/importdata" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpBinding_IImportData_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://healthcare.careinnovations.com/integration/importdata/Imports">
+      <xsd:import schemaLocation="healthcare.careinnovations.com.integration.importdata.xsd" namespace="http://healthcare.careinnovations.com/integration/importdata" />
+      <xsd:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
+      <xsd:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="CareInnovations.Healthcare.Integration.ImportData.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IImportData_UploadNotification_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadNotification" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadNotification_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteNotification_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteNotification" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteNotification_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientNotifications_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientNotifications" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientNotifications_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientNotificationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AcknowledgePatientMeasurement_InputMessage">
+    <wsdl:part name="parameters" element="tns:AcknowledgePatientMeasurement" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AcknowledgePatientMeasurement_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AcknowledgePatientMeasurementResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_IsPatientMeasurementAcknowledged_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsPatientMeasurementAcknowledged" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_IsPatientMeasurementAcknowledged_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsPatientMeasurementAcknowledgedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AcknowledgePatientMeasurementStep_InputMessage">
+    <wsdl:part name="parameters" element="tns:AcknowledgePatientMeasurementStep" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AcknowledgePatientMeasurementStep_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AcknowledgePatientMeasurementStepResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_IsPatientMeasurementStepAcknowledged_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsPatientMeasurementStepAcknowledged" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_IsPatientMeasurementStepAcknowledged_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsPatientMeasurementStepAcknowledgedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ActivatePatient_InputMessage">
+    <wsdl:part name="parameters" element="tns:ActivatePatient" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ActivatePatient_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ActivatePatientResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeactivatePatient_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeactivatePatient" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeactivatePatient_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeactivatePatientResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DecommissionPatientMachine_InputMessage">
+    <wsdl:part name="parameters" element="tns:DecommissionPatientMachine" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DecommissionPatientMachine_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DecommissionPatientMachineResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetDevices_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDevices" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetDevices_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDevicesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetAccessories_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAccessories" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetAccessories_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAccessoriesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetMachineTypes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMachineTypes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetMachineTypes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMachineTypesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetWorkOrders_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkOrders" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetWorkOrders_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkOrdersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientWorkOrders_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientWorkOrders" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientWorkOrders_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientWorkOrdersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_CreatePatientWorkOrder_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreatePatientWorkOrder" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_CreatePatientWorkOrder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreatePatientWorkOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UpdatePatientWorkOrder_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdatePatientWorkOrder" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UpdatePatientWorkOrder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdatePatientWorkOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_Ping_InputMessage">
+    <wsdl:part name="parameters" element="tns:Ping" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_Ping_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PingResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetClinicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicians" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetClinicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCliniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetMeasurementTypeInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMeasurementTypeInfo" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetMeasurementTypeInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMeasurementTypeInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientThresholds_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientThresholds" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientThresholds_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientThresholdsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientThresholds_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientThresholds" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientThresholds_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientThresholdsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadThresholds_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadThresholds" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadThresholds_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadThresholdsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemovePatientThreshold_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePatientThreshold" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemovePatientThreshold_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePatientThresholdResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientNote_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientNote" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientNote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientNotes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadClinicianNote_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadClinicianNote" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadClinicianNote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadClinicianNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetClinicianNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianNotes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetClinicianNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetClinicianNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientMeasurementNote_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientMeasurementNote" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientMeasurementNote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientMeasurementNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientMeasurementNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientMeasurementNotes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientMeasurementNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientMeasurementNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientMeasurementStepNote_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientMeasurementStepNote" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientMeasurementStepNote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientMeasurementStepNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientMeasurementStepNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientMeasurementStepNotes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientMeasurementStepNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientMeasurementStepNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientReminderNote_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientReminderNote" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadPatientReminderNote_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadPatientReminderNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientReminderNotes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientReminderNotes" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientReminderNotes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientReminderNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportClinicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:ImportClinicians" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportClinicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ImportCliniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteClinician_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteClinician" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteClinician_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteClinicianResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportPatients_InputMessage">
+    <wsdl:part name="parameters" element="tns:ImportPatients" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportPatients_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ImportPatientsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportPatientsStandardFormat_InputMessage">
+    <wsdl:part name="parameters" element="tns:ImportPatientsStandardFormat" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ImportPatientsStandardFormat_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ImportPatientsStandardFormatResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeletePatient_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeletePatient" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeletePatient_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeletePatientResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetProtocolInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProtocolInfo" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetProtocolInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProtocolInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientReminders_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientReminders" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatientReminders_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientRemindersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteReminder_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteReminder" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_DeleteReminder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteReminderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadReminders_InputMessage">
+    <wsdl:part name="parameters" element="tns:UploadReminders" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_UploadReminders_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UploadRemindersResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignPatientClinician_InputMessage">
+    <wsdl:part name="parameters" element="tns:AssignPatientClinician" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignPatientClinician_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AssignPatientClinicianResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignClinicianPatients_InputMessage">
+    <wsdl:part name="parameters" element="tns:AssignClinicianPatients" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignClinicianPatients_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AssignClinicianPatientsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignPatientClinicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:AssignPatientClinicians" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_AssignPatientClinicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AssignPatientCliniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAssignedPatientClinician_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAssignedPatientClinician" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAssignedPatientClinician_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAssignedPatientClinicianResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAllPatientClinicians_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAllPatientClinicians" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAllPatientClinicians_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAllPatientCliniciansResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAllClinicianPatients_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAllClinicianPatients" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_RemoveAllClinicianPatients_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAllClinicianPatientsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ReplacePatientsClinician_InputMessage">
+    <wsdl:part name="parameters" element="tns:ReplacePatientsClinician" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_ReplacePatientsClinician_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ReplacePatientsClinicianResponse" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatients_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatients" />
+  </wsdl:message>
+  <wsdl:message name="IImportData_GetPatients_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPatientsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IImportData">
+    <wsdl:operation name="UploadNotification">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadNotification" message="tns:IImportData_UploadNotification_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadNotificationResponse" message="tns:IImportData_UploadNotification_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNotification">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteNotification" message="tns:IImportData_DeleteNotification_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteNotificationResponse" message="tns:IImportData_DeleteNotification_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientNotifications">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotifications" message="tns:IImportData_GetPatientNotifications_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotificationsResponse" message="tns:IImportData_GetPatientNotifications_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AcknowledgePatientMeasurement">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurement" message="tns:IImportData_AcknowledgePatientMeasurement_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurementResponse" message="tns:IImportData_AcknowledgePatientMeasurement_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsPatientMeasurementAcknowledged">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementAcknowledged" message="tns:IImportData_IsPatientMeasurementAcknowledged_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementAcknowledgedResponse" message="tns:IImportData_IsPatientMeasurementAcknowledged_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AcknowledgePatientMeasurementStep">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurementStep" message="tns:IImportData_AcknowledgePatientMeasurementStep_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurementStepResponse" message="tns:IImportData_AcknowledgePatientMeasurementStep_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsPatientMeasurementStepAcknowledged">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementStepAcknowledged" message="tns:IImportData_IsPatientMeasurementStepAcknowledged_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementStepAcknowledgedResponse" message="tns:IImportData_IsPatientMeasurementStepAcknowledged_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ActivatePatient">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ActivatePatient" message="tns:IImportData_ActivatePatient_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ActivatePatientResponse" message="tns:IImportData_ActivatePatient_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeactivatePatient">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeactivatePatient" message="tns:IImportData_DeactivatePatient_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeactivatePatientResponse" message="tns:IImportData_DeactivatePatient_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DecommissionPatientMachine">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DecommissionPatientMachine" message="tns:IImportData_DecommissionPatientMachine_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DecommissionPatientMachineResponse" message="tns:IImportData_DecommissionPatientMachine_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDevices">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetDevices" message="tns:IImportData_GetDevices_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetDevicesResponse" message="tns:IImportData_GetDevices_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAccessories">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetAccessories" message="tns:IImportData_GetAccessories_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetAccessoriesResponse" message="tns:IImportData_GetAccessories_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMachineTypes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMachineTypes" message="tns:IImportData_GetMachineTypes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMachineTypesResponse" message="tns:IImportData_GetMachineTypes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkOrders">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetWorkOrders" message="tns:IImportData_GetWorkOrders_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetWorkOrdersResponse" message="tns:IImportData_GetWorkOrders_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientWorkOrders">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientWorkOrders" message="tns:IImportData_GetPatientWorkOrders_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientWorkOrdersResponse" message="tns:IImportData_GetPatientWorkOrders_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreatePatientWorkOrder">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/CreatePatientWorkOrder" message="tns:IImportData_CreatePatientWorkOrder_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/CreatePatientWorkOrderResponse" message="tns:IImportData_CreatePatientWorkOrder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePatientWorkOrder">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UpdatePatientWorkOrder" message="tns:IImportData_UpdatePatientWorkOrder_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UpdatePatientWorkOrderResponse" message="tns:IImportData_UpdatePatientWorkOrder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/Ping" message="tns:IImportData_Ping_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/PingResponse" message="tns:IImportData_Ping_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicians">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetClinicians" message="tns:IImportData_GetClinicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetCliniciansResponse" message="tns:IImportData_GetClinicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMeasurementTypeInfo">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMeasurementTypeInfo" message="tns:IImportData_GetMeasurementTypeInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMeasurementTypeInfoResponse" message="tns:IImportData_GetMeasurementTypeInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientThresholds">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientThresholds" message="tns:IImportData_GetPatientThresholds_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientThresholdsResponse" message="tns:IImportData_GetPatientThresholds_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientThresholds">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientThresholds" message="tns:IImportData_UploadPatientThresholds_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientThresholdsResponse" message="tns:IImportData_UploadPatientThresholds_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadThresholds">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadThresholds" message="tns:IImportData_UploadThresholds_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadThresholdsResponse" message="tns:IImportData_UploadThresholds_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePatientThreshold">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemovePatientThreshold" message="tns:IImportData_RemovePatientThreshold_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemovePatientThresholdResponse" message="tns:IImportData_RemovePatientThreshold_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientNote">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientNote" message="tns:IImportData_UploadPatientNote_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientNoteResponse" message="tns:IImportData_UploadPatientNote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientNotes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotes" message="tns:IImportData_GetPatientNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotesResponse" message="tns:IImportData_GetPatientNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadClinicianNote">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadClinicianNote" message="tns:IImportData_UploadClinicianNote_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadClinicianNoteResponse" message="tns:IImportData_UploadClinicianNote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicianNotes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetClinicianNotes" message="tns:IImportData_GetClinicianNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetClinicianNotesResponse" message="tns:IImportData_GetClinicianNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientMeasurementNote">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementNote" message="tns:IImportData_UploadPatientMeasurementNote_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementNoteResponse" message="tns:IImportData_UploadPatientMeasurementNote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientMeasurementNotes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementNotes" message="tns:IImportData_GetPatientMeasurementNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementNotesResponse" message="tns:IImportData_GetPatientMeasurementNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientMeasurementStepNote">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementStepNote" message="tns:IImportData_UploadPatientMeasurementStepNote_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementStepNoteResponse" message="tns:IImportData_UploadPatientMeasurementStepNote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientMeasurementStepNotes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementStepNotes" message="tns:IImportData_GetPatientMeasurementStepNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementStepNotesResponse" message="tns:IImportData_GetPatientMeasurementStepNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientReminderNote">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientReminderNote" message="tns:IImportData_UploadPatientReminderNote_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientReminderNoteResponse" message="tns:IImportData_UploadPatientReminderNote_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientReminderNotes">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientReminderNotes" message="tns:IImportData_GetPatientReminderNotes_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientReminderNotesResponse" message="tns:IImportData_GetPatientReminderNotes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportClinicians">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportClinicians" message="tns:IImportData_ImportClinicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportCliniciansResponse" message="tns:IImportData_ImportClinicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteClinician">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteClinician" message="tns:IImportData_DeleteClinician_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteClinicianResponse" message="tns:IImportData_DeleteClinician_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportPatients">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatients" message="tns:IImportData_ImportPatients_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatientsResponse" message="tns:IImportData_ImportPatients_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportPatientsStandardFormat">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatientsStandardFormat" message="tns:IImportData_ImportPatientsStandardFormat_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatientsStandardFormatResponse" message="tns:IImportData_ImportPatientsStandardFormat_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeletePatient">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeletePatient" message="tns:IImportData_DeletePatient_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeletePatientResponse" message="tns:IImportData_DeletePatient_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProtocolInfo">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetProtocolInfo" message="tns:IImportData_GetProtocolInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetProtocolInfoResponse" message="tns:IImportData_GetProtocolInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientReminders">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientReminders" message="tns:IImportData_GetPatientReminders_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientRemindersResponse" message="tns:IImportData_GetPatientReminders_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteReminder">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteReminder" message="tns:IImportData_DeleteReminder_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteReminderResponse" message="tns:IImportData_DeleteReminder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UploadReminders">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadReminders" message="tns:IImportData_UploadReminders_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadRemindersResponse" message="tns:IImportData_UploadReminders_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AssignPatientClinician">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientClinician" message="tns:IImportData_AssignPatientClinician_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientClinicianResponse" message="tns:IImportData_AssignPatientClinician_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AssignClinicianPatients">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignClinicianPatients" message="tns:IImportData_AssignClinicianPatients_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignClinicianPatientsResponse" message="tns:IImportData_AssignClinicianPatients_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AssignPatientClinicians">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientClinicians" message="tns:IImportData_AssignPatientClinicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientCliniciansResponse" message="tns:IImportData_AssignPatientClinicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAssignedPatientClinician">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAssignedPatientClinician" message="tns:IImportData_RemoveAssignedPatientClinician_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAssignedPatientClinicianResponse" message="tns:IImportData_RemoveAssignedPatientClinician_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAllPatientClinicians">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllPatientClinicians" message="tns:IImportData_RemoveAllPatientClinicians_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllPatientCliniciansResponse" message="tns:IImportData_RemoveAllPatientClinicians_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAllClinicianPatients">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllClinicianPatients" message="tns:IImportData_RemoveAllClinicianPatients_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllClinicianPatientsResponse" message="tns:IImportData_RemoveAllClinicianPatients_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ReplacePatientsClinician">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ReplacePatientsClinician" message="tns:IImportData_ReplacePatientsClinician_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/ReplacePatientsClinicianResponse" message="tns:IImportData_ReplacePatientsClinician_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPatients">
+      <wsdl:input wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatients" message="tns:IImportData_GetPatients_InputMessage" />
+      <wsdl:output wsaw:Action="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientsResponse" message="tns:IImportData_GetPatients_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IImportData" type="tns:IImportData">
+    <wsp:PolicyReference URI="#BasicHttpBinding_IImportData_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UploadNotification">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteNotification">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientNotifications">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotifications" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AcknowledgePatientMeasurement">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurement" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsPatientMeasurementAcknowledged">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementAcknowledged" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AcknowledgePatientMeasurementStep">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/AcknowledgePatientMeasurementStep" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsPatientMeasurementStepAcknowledged">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/IsPatientMeasurementStepAcknowledged" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ActivatePatient">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/ActivatePatient" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeactivatePatient">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeactivatePatient" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DecommissionPatientMachine">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DecommissionPatientMachine" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDevices">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetDevices" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAccessories">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetAccessories" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMachineTypes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMachineTypes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkOrders">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetWorkOrders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientWorkOrders">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientWorkOrders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreatePatientWorkOrder">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/CreatePatientWorkOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePatientWorkOrder">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UpdatePatientWorkOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Ping">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/Ping" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicians">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetClinicians" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMeasurementTypeInfo">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetMeasurementTypeInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientThresholds">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientThresholds" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientThresholds">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientThresholds" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadThresholds">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadThresholds" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePatientThreshold">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemovePatientThreshold" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientNote">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientNotes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadClinicianNote">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadClinicianNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClinicianNotes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetClinicianNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientMeasurementNote">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientMeasurementNotes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientMeasurementStepNote">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientMeasurementStepNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientMeasurementStepNotes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientMeasurementStepNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadPatientReminderNote">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadPatientReminderNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientReminderNotes">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientReminderNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportClinicians">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportClinicians" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteClinician">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteClinician" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportPatients">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatients" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportPatientsStandardFormat">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/ImportPatientsStandardFormat" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeletePatient">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeletePatient" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetProtocolInfo">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetProtocolInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatientReminders">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatientReminders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteReminder">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/DeleteReminder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UploadReminders">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/UploadReminders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AssignPatientClinician">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientClinician" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AssignClinicianPatients">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignClinicianPatients" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AssignPatientClinicians">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/AssignPatientClinicians" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAssignedPatientClinician">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAssignedPatientClinician" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAllPatientClinicians">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllPatientClinicians" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAllClinicianPatients">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/RemoveAllClinicianPatients" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReplacePatientsClinician">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/ReplacePatientsClinician" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPatients">
+      <soap:operation soapAction="http://healthcare.careinnovations.com/integration/importdata/IImportData/GetPatients" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ImportDataService">
+    <wsdl:port name="BasicHttpBinding_IImportData" binding="tns:BasicHttpBinding_IImportData">
+      <soap:address location="https://prov1804.soaesrvs.com/Integration/ImportData.svc/ImportDataService" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

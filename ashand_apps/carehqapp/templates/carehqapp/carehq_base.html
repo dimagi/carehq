@@ -34,6 +34,9 @@
                 </ul>
             </li>
             {% endif %}
+            {% if request.user.is_superuser %}
+                <li><a href="{% url carehqapp.views.ashand_admin.admin_study_landing %}">Study Admin</a> </li>
+            {% endif %}
 
         {% endblock %}
     {% endif %} {# end autenticated if#}

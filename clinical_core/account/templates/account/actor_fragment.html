@@ -6,7 +6,7 @@
     <dd>{{ actor.actordoc.title}} </dd>
     {% endif %}
     <dt>Role Type</dt>
-    <dd>{{ qctor.actordoc.actordoc.get_class_display }} <a href="{% url view_actor actor.actor_uuid %}">View Profile</a>
+    <dd>{{ qctor.actordoc.actordoc.get_class_display }} <a href="{% url view_actor actor.actordoc.get_id '' %}">View Profile</a>
     </dd>
 
 </dl>

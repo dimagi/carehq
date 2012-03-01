@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
@@ -6,6 +5,8 @@ from carehq_core import carehq_api
 from clinical_shared.decorators import actor_required
 from patient.models import Patient
 from permissions.models import PrincipalRoleRelation
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 
 @login_required
 @actor_required
@@ -17,7 +18,7 @@ def my_network(request, template="carehqapp/network/my_network.html"):
         pt_careteam = carehq_api.get_careteam(request.current_actor.actordoc.get_couch_patient())
         context['patient_relations'] = pt_careteam
     else:
-        all_prrs = carehq_api.get_permissions(request.current_actor.actordoc)
+        all_prrs = carehq_api.get_permissions(request.current_actor.actordoc, direct=True)
         #direct relations
         context['patient_relations'] = all_prrs
 

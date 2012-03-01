@@ -20,6 +20,34 @@
     <strong>Patient:</strong>
         <a href="{{ submit.get_patient_doc.get_absolute_url }}">
             {{ submit.get_patient_doc.last_name }}, {{ submit.get_patient_doc.first_name }}</a><br>
-    <strong>Session Time:</strong> {{ submit.get_session_time|date }} <br>
+    <strong>Session Time:</strong> {{ submit.get_session_time}} <br>
+    <strong>Is Threshold:</strong> {{ submit.is_threshold|title }} <br>
+    {% if issues %}
+        {% for issue in issues %}
+            <a href="{% url manage-issue issue.id %}">View Issue</a>
+        {% endfor %}
+    {% else %}
+        <p>No Issue</p>
+        {% if user.is_superuser %}
+        <a href="{% url recompute_submission submit.get_id %}">Recompute Threshold and Generate Issue if Necessary</a>
+        {% endif %}
+    {% endif %}
+    
+    
     {{ submit.ccd_table_data|safe }}
+    <hr>
+    <ul>
+    {% for e in entries %}
+        <li>
+        <strong>{{ e.question }}</strong> :: {{ e.answer }}<br>
+        {% if e.branch %}
+            <ul>
+            {% for s in e.branch %}
+                <li>{{ s.question }} :: {{ s.answer }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}

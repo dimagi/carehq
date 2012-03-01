@@ -2,10 +2,10 @@
 <jax-ws xmlns="http://www.netbeans.org/ns/jax-ws/1">
   <services/>
   <clients>
-    <client name="healthcare.intel.com.integration.authenticate">
-      <wsdl-url>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.authenticate.wsdl</wsdl-url>
-      <local-wsdl-file>healthcare.intel.com.integration.authenticate.wsdl</local-wsdl-file>
-      <package-name>com.intel.healthcare.integration.authenticate</package-name>
+    <client name="healthcare.careinnovations.com.integration.extracts">
+      <wsdl-url>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.extracts.wsdl</wsdl-url>
+      <local-wsdl-file>healthcare.careinnovations.com.integration.extracts.wsdl</local-wsdl-file>
+      <package-name>com.careinnovations.healthcare.integration.extracts</package-name>
       <catalog-file>catalog.xml</catalog-file>
       <binding>
         <file-name>simple-binding.xjb</file-name>
@@ -21,7 +21,11 @@
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
-          <wsimport-option-value>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.authenticate.wsdl</wsimport-option-value>
+          <wsimport-option-value>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.extracts.wsdl</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xnocompile</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xendorsed</wsimport-option-name>
@@ -29,10 +33,10 @@
         </wsimport-option>
       </wsimport-options>
     </client>
-    <client name="healthcare.intel.com.integration.extracts">
-      <wsdl-url>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.extracts.wsdl</wsdl-url>
-      <local-wsdl-file>healthcare.intel.com.integration.extracts.wsdl</local-wsdl-file>
-      <package-name>com.intel.healthcare.integration.extracts</package-name>
+    <client name="healthcare.careinnovations.com.integration.importdata">
+      <wsdl-url>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.importdata.wsdl</wsdl-url>
+      <local-wsdl-file>healthcare.careinnovations.com.integration.importdata.wsdl</local-wsdl-file>
+      <package-name>com.careinnovations.healthcare.integration.importdata</package-name>
       <catalog-file>catalog.xml</catalog-file>
       <binding>
         <file-name>simple-binding.xjb</file-name>
@@ -48,7 +52,11 @@
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
-          <wsimport-option-value>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.extracts.wsdl</wsimport-option-value>
+          <wsimport-option-value>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.importdata.wsdl</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xnocompile</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xendorsed</wsimport-option-name>
@@ -56,10 +64,10 @@
         </wsimport-option>
       </wsimport-options>
     </client>
-    <client name="healthcare.intel.com.integration.importdata">
-      <wsdl-url>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.importdata.wsdl</wsdl-url>
-      <local-wsdl-file>healthcare.intel.com.integration.importdata.wsdl</local-wsdl-file>
-      <package-name>com.intel.healthcare.integration.importdata</package-name>
+    <client name="healthcare.careinnovations.com.integration.userlookup">
+      <wsdl-url>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.userlookup.wsdl</wsdl-url>
+      <local-wsdl-file>healthcare.careinnovations.com.integration.userlookup.wsdl</local-wsdl-file>
+      <package-name>com.careinnovations.healthcare.integration.userlookup</package-name>
       <catalog-file>catalog.xml</catalog-file>
       <binding>
         <file-name>simple-binding.xjb</file-name>
@@ -75,7 +83,11 @@
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
-          <wsimport-option-value>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.importdata.wsdl</wsimport-option-value>
+          <wsimport-option-value>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.userlookup.wsdl</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xnocompile</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xendorsed</wsimport-option-name>
@@ -83,10 +95,10 @@
         </wsimport-option>
       </wsimport-options>
     </client>
-    <client name="healthcare.intel.com.integration.userlookup">
-      <wsdl-url>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.userlookup.wsdl</wsdl-url>
-      <local-wsdl-file>healthcare.intel.com.integration.userlookup.wsdl</local-wsdl-file>
-      <package-name>com.intel.healthcare.integration.userlookup</package-name>
+    <client name="healthcare.careinnovations.com.integration.authenticate">
+      <wsdl-url>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.authenticate.wsdl</wsdl-url>
+      <local-wsdl-file>healthcare.careinnovations.com.integration.authenticate.wsdl</local-wsdl-file>
+      <package-name>com.careinnovations.healthcare.integration.authenticate</package-name>
       <catalog-file>catalog.xml</catalog-file>
       <binding>
         <file-name>simple-binding.xjb</file-name>
@@ -102,7 +114,11 @@
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
-          <wsimport-option-value>file:/C:/Users/dmyung/Documents/Dimagi/ashand/intel/hcms-wsdls/healthcare.intel.com.integration.userlookup.wsdl</wsimport-option-value>
+          <wsimport-option-value>file:/home/dmyung/workspaces/pycharm/ashand-project/carehq/java-intel/DIEMConnection/src/META-INF/wsdl/healthcare.careinnovations.com.integration.authenticate.wsdl</wsimport-option-value>
+        </wsimport-option>
+        <wsimport-option>
+          <wsimport-option-name>xnocompile</wsimport-option-name>
+          <wsimport-option-value>true</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xendorsed</wsimport-option-name>

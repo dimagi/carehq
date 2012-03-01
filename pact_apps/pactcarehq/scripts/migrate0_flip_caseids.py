@@ -1,9 +1,8 @@
 import uuid
-from couchdbkit.ext.django.schema import Document
 from dimagi.utils.couch.database import get_db
 from pactpatient.models.pactmodels import PactPatient
 from patient.models import Patient
-import time
+
 db = get_db()
 def run():
     """Script to flip CPatient to PactPatient (subclass of BasePatient), then switch doc_id to a new id, and assign a case_id fromt he original doc_id
@@ -19,7 +18,7 @@ def run():
     #this needs to be coupled with fixing up the patient/all querying
     #patient/all needs to emit the case_id
     patients = Patient.objects.all()
-    db = get_db()
+    db = PactPatient.get_db()
     for p in patients:
         print "Flipping ID Patient ID: %s: Couchdoc: %s" % (p.id, p.doc_id)
         #so the p.couchdoc is useless here because if the model code is changed we need to do it manually.

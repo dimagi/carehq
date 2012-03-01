@@ -82,6 +82,23 @@ def add_external_provider_to_patient(patient_doc, actor_doc):
     permissions.utils.add_role(actor_doc.django_actor, role_class)
     permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)
 
+def add_provider_to_patient(patient_doc, actor_doc):
+    """
+    Add an actor as an exteranl provider for the given patient.
+    """
+    role_class = Role.objects.get(name=carehq_constants.role_provider)
+    permissions.utils.add_role(actor_doc.django_actor, role_class)
+    permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)
+
+def add_caregiver_to_patient(patient_doc, actor_doc):
+    """
+    Add an actor as an exteranl provider for the given patient.
+    """
+
+    role_class = Role.objects.get(name=carehq_constants.role_caregiver)
+    permissions.utils.add_role(actor_doc.django_actor, role_class)
+    permissions.utils.add_local_role(patient_doc.django_patient, actor_doc.django_actor, role_class)
+
 
 def get_permissions(actor_doc, direct=False):
     """

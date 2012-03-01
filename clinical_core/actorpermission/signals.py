@@ -1,8 +1,10 @@
 from couchdbkit.exceptions import ResourceNotFound
+from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import   post_init, post_delete
 import logging
 from actorpermission.models import BaseActorDocument, PatientActor, ProviderActor, CaregiverActor
 from permissions.models import Actor
+import settings
 
 def get_actor_doc(sender, instance, *args, **kwargs):
     doc_id=instance.doc_id
@@ -59,3 +61,9 @@ def actor_post_delete(sender, instance, *args, **kwargs):
     else:
         logging.debug("Document already removed")
 post_delete.connect(actor_post_delete, sender=Actor)
+
+
+def login_session_check(sender, request, user, **kwargs):
+    if request.POST.get('remember_me', None):
+        request.session.set_expiry(settings.KEEP_LOGGED_DURATION)
+user_logged_in.connect(login_session_check)

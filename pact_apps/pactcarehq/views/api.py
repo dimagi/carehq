@@ -1,10 +1,8 @@
-import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
 from actorpermission.models import BaseActorDocument
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
-from dimagi.utils.couch.database import get_db
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml

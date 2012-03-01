@@ -1,0 +1,49 @@
+{% extends "carehqapp/patient/carehq_patient_base.html" %}
+{% load carehq_tags %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+        <div id="patient-info-display">
+        <div class="commit-group-heading">
+            <h4>Study Files</h4>
+        </div>
+        <div class="commit-group">
+
+        {% with patient_doc.study_files as study_images %}
+            {% if study_images %}
+                {% for image_tuple in study_images %}
+{#                    {% thumbnail image_tuple.0.image "200x200" as im %}#}
+{#                        <p>#}
+{#                            <a href="{% url hutch_show_image image_tuple.0.id %}"><img src="{{ im.url }}"#}
+{#                                                                                       width="{{ im.width }}"#}
+{#                                                                                       height="{{ im.height }}"></a>#}
+{#                            &nbsp;#}
+{#                            {{ image_tuple.1 }}#}
+{#                        </p>#}
+{#                    {% endthumbnail %}#}
+                {% endfor %}
+            {% else %}
+                <h4>No Files</h4>
+            {% endif %}
+        {% endwith %}
+        <div class="container">
+            <a class="btn"
+{#               href="{% url mepi_upload_patient_photo patient_doc.get_id %}">#}
+                href="javascript:alert('Coming Soon')">
+                <span class="edit_btn_txt">Upload File</span>
+            </a>
+        </div>
+
+        </div>
+        </div>
+
+{% endblock %}

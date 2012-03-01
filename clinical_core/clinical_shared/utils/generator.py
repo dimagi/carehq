@@ -45,8 +45,12 @@ def generate_random_string(length=8, source=string.ascii_letters):
 def random_word(length=8):
     return generate_random_string(length=length, source=string.ascii_letters)
 
-def random_text(length=64):
-    return generate_random_string(length=length, source=string.ascii_letters + string.digits + string.whitespace + string.punctuation)
+def random_text(length=64, punctuation_whitespace=False):
+    if punctuation_whitespace:
+        return generate_random_string(length=length, source=string.ascii_letters + string.digits + string.whitespace + string.punctuation)
+    else:
+        return generate_random_string(length=length, source=string.ascii_letters + string.digits)
+
 
 def random_number(length=10):
     return generate_random_string(length=length, source=string.digits)
@@ -72,7 +76,7 @@ def generate_phones(num):
         ret.append(phone)
     return ret
 
-def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, last_name=None, gender=None):
+def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, last_name=None, gender=None, id_override=None):
     """
     Returns a patient document
     """
@@ -80,6 +84,8 @@ def get_or_create_patient(tenant, user=None, first_name=None, middle_name=None, 
         user = get_or_create_user(first_name=first_name, last_name=last_name)
 
     pt = CarehqPatient()
+    if id_override is not None:
+        pt._id = id_override
     pt.patient_id = str(random_number(length=10))
     pt.birthdate = datetime.now().date() - (timedelta(days=random.randint(0,60) * 365))
 

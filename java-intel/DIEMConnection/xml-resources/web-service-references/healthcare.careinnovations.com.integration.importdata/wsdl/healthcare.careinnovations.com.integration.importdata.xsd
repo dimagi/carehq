@@ -1,0 +1,978 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://healthcare.careinnovations.com/integration/importdata" elementFormDefault="qualified" targetNamespace="http://healthcare.careinnovations.com/integration/importdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="CareInnovations.Healthcare.Integration.ImportData.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" />
+  <xs:import schemaLocation="CareInnovations.Healthcare.Integration.Extracts.xsd" namespace="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="schemas.microsoft.com.2003.10.Serialization.Arrays.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:element name="UploadNotification">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="emailAddresses" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q1:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadNotificationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadNotificationResult" type="tns:Result" />
+        <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q2:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="Result">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Failure" />
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="Unauthorized" />
+      <xs:enumeration value="Disabled" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Result" nillable="true" type="tns:Result" />
+  <xs:element name="DeleteNotification">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="notificationID" type="xs:int" />
+        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q3:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteNotificationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteNotificationResult" type="tns:Result" />
+        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q4:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientNotifications">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q5:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientNotificationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientNotificationsResult" type="tns:Result" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notifications" nillable="true" type="q6:ArrayOfNotificationInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientMeasurement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="measurementID" type="xs:int" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q7:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientMeasurementResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AcknowledgePatientMeasurementResult" type="tns:Result" />
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q8:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientMeasurementAcknowledged">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="measurementID" type="xs:int" />
+        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q9:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientMeasurementAcknowledgedResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="IsPatientMeasurementAcknowledgedResult" type="xs:boolean" />
+        <xs:element xmlns:q10="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q10:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientMeasurementStep">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="capturedFlowStepID" type="xs:int" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q11:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AcknowledgePatientMeasurementStepResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AcknowledgePatientMeasurementStepResult" type="tns:Result" />
+        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q12:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientMeasurementStepAcknowledged">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="capturedFlowStepID" type="xs:int" />
+        <xs:element xmlns:q13="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q13:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsPatientMeasurementStepAcknowledgedResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="IsPatientMeasurementStepAcknowledgedResult" type="xs:boolean" />
+        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q14:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ActivatePatient">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q15:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ActivatePatientResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ActivatePatientResult" type="tns:Result" />
+        <xs:element xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q16:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeactivatePatient">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q17="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q17:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeactivatePatientResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeactivatePatientResult" type="tns:Result" />
+        <xs:element xmlns:q18="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q18:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DecommissionPatientMachine">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q19:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DecommissionPatientMachineResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DecommissionPatientMachineResult" type="tns:Result" />
+        <xs:element xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q20:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDevices">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q21:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDevicesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDevicesResult" type="tns:Result" />
+        <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="devices" nillable="true" type="q22:ArrayOfDeviceInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAccessories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q23="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q23:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAccessoriesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAccessoriesResult" type="tns:Result" />
+        <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="accessories" nillable="true" type="q24:ArrayOfAccessoryInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMachineTypes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q25="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q25:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMachineTypesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMachineTypesResult" type="tns:Result" />
+        <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="machineTypes" nillable="true" type="q26:ArrayOfMachineTypeInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetWorkOrders">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q27="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q27:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetWorkOrdersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetWorkOrdersResult" type="tns:Result" />
+        <xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="workOrders" nillable="true" type="q28:ArrayOfWorkOrder" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="PatientDemographics">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Action" type="tns:Action" />
+      <xs:element minOccurs="0" name="Address" nillable="true" type="tns:Address" />
+      <xs:element minOccurs="0" name="BirthDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Culture" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CultureID" nillable="true" type="xs:short" />
+      <xs:element xmlns:q29="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="Emails" nillable="true" type="q29:ArrayOfstring" />
+      <xs:element minOccurs="0" name="ExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ExternalIdentifier2" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ExternalIdentifier3" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Gender" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="HcmsUserName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MiddleInitial" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientID" type="xs:int" />
+      <xs:element minOccurs="0" name="Pin" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PinEntryRequired" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Status" type="tns:Status" />
+      <xs:element minOccurs="0" name="TimeZoneID" nillable="true" type="xs:short" />
+      <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PatientDemographics" nillable="true" type="tns:PatientDemographics" />
+  <xs:simpleType name="Action">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Add" />
+      <xs:enumeration value="Update" />
+      <xs:enumeration value="Ignore" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Action" nillable="true" type="tns:Action" />
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:element xmlns:q30="http://schemas.microsoft.com/2003/10/Serialization/Arrays" name="AddressLine" nillable="true" type="q30:ArrayOfstring" />
+      <xs:element name="City" nillable="true" type="xs:string" />
+      <xs:element name="Country" nillable="true" type="xs:string" />
+      <xs:element name="PhoneNumber" nillable="true" type="xs:string" />
+      <xs:element name="PostalCode" nillable="true" type="xs:string" />
+      <xs:element name="State" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Address" nillable="true" type="tns:Address" />
+  <xs:simpleType name="Status">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Active">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Inactive">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Status" nillable="true" type="tns:Status" />
+  <xs:element name="GetPatientWorkOrders">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalID" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalID" nillable="true" type="xs:string" />
+        <xs:element xmlns:q31="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q31:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientWorkOrdersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientWorkOrdersResult" type="tns:Result" />
+        <xs:element xmlns:q32="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="workOrders" nillable="true" type="q32:ArrayOfWorkOrder" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreatePatientWorkOrder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q33="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="workOrder" nillable="true" type="q33:WorkOrder" />
+        <xs:element xmlns:q34="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q34:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreatePatientWorkOrderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CreatePatientWorkOrderResult" type="tns:Result" />
+        <xs:element xmlns:q35="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q35:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdatePatientWorkOrder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q36="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="workOrder" nillable="true" type="q36:WorkOrder" />
+        <xs:element xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q37:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdatePatientWorkOrderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UpdatePatientWorkOrderResult" type="tns:Result" />
+        <xs:element xmlns:q38="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q38:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Ping">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PingResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="PingResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="excludeAssigned" type="xs:boolean" />
+        <xs:element xmlns:q39="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q39:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCliniciansResult" type="tns:Result" />
+        <xs:element xmlns:q40="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="clinicians" nillable="true" type="q40:ArrayOfClinicianInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMeasurementTypeInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q41="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q41:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMeasurementTypeInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMeasurementTypeInfoResult" type="tns:Result" />
+        <xs:element xmlns:q42="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="measurementTypes" nillable="true" type="q42:ArrayOfMeasurementTypeInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientThresholds">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q43="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q43:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientThresholdsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientThresholdsResult" type="tns:Result" />
+        <xs:element xmlns:q44="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="measurementThresholds" nillable="true" type="q44:ArrayOfMeasurementThresholdInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientThresholds">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q45="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="measurementThresholds" nillable="true" type="q45:ArrayOfMeasurementThresholdInfo" />
+        <xs:element xmlns:q46="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q46:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientThresholdsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadPatientThresholdsResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfImportResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ImportResult" nillable="true" type="tns:ImportResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfImportResult" nillable="true" type="tns:ArrayOfImportResult" />
+  <xs:complexType name="ImportResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Errors" nillable="true" type="tns:ArrayOfInputValidationError" />
+      <xs:element minOccurs="0" name="ExternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InternalIdentifier" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Operation" type="tns:Action" />
+      <xs:element minOccurs="0" name="Result" type="tns:Result" />
+      <xs:element minOccurs="0" name="Source" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ImportResult" nillable="true" type="tns:ImportResult" />
+  <xs:complexType name="ArrayOfInputValidationError">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="InputValidationError" nillable="true" type="tns:InputValidationError" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfInputValidationError" nillable="true" type="tns:ArrayOfInputValidationError" />
+  <xs:complexType name="InputValidationError">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ErrorMessage" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PropertyName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PropertyValue" nillable="true" type="xs:anyType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="InputValidationError" nillable="true" type="tns:InputValidationError" />
+  <xs:element name="UploadThresholds">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q47="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="measurementThresholdSets" nillable="true" type="q47:ArrayOfMeasurementThresholdSet" />
+        <xs:element xmlns:q48="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q48:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadThresholdsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadThresholdsResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemovePatientThreshold">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="thresholdID" type="xs:int" />
+        <xs:element xmlns:q49="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q49:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemovePatientThresholdResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemovePatientThresholdResult" type="tns:Result" />
+        <xs:element xmlns:q50="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q50:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientNote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q51:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientNoteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadPatientNoteResult" type="tns:Result" />
+        <xs:element xmlns:q52="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q52:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientNotes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q53="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q53:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientNotesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientNotesResult" type="tns:Result" />
+        <xs:element xmlns:q54="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notes" nillable="true" type="q54:ArrayOfNote" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadClinicianNote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q55="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q55:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadClinicianNoteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadClinicianNoteResult" type="tns:Result" />
+        <xs:element xmlns:q56="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q56:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClinicianNotes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q57="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q57:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetClinicianNotesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetClinicianNotesResult" type="tns:Result" />
+        <xs:element xmlns:q58="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notes" nillable="true" type="q58:ArrayOfNote" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientMeasurementNote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="measurementID" type="xs:int" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q59="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q59:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientMeasurementNoteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadPatientMeasurementNoteResult" type="tns:Result" />
+        <xs:element xmlns:q60="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q60:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMeasurementNotes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="measurementID" type="xs:int" />
+        <xs:element xmlns:q61="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q61:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMeasurementNotesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientMeasurementNotesResult" type="tns:Result" />
+        <xs:element xmlns:q62="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notes" nillable="true" type="q62:ArrayOfNote" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientMeasurementStepNote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="measurementStepID" type="xs:int" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q63="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q63:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientMeasurementStepNoteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadPatientMeasurementStepNoteResult" type="tns:Result" />
+        <xs:element xmlns:q64="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q64:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMeasurementStepNotes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="measurementStepID" type="xs:int" />
+        <xs:element xmlns:q65="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q65:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientMeasurementStepNotesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientMeasurementStepNotesResult" type="tns:Result" />
+        <xs:element xmlns:q66="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notes" nillable="true" type="q66:ArrayOfNote" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientReminderNote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="reminderID" type="xs:int" />
+        <xs:element minOccurs="0" name="noteText" nillable="true" type="xs:string" />
+        <xs:element xmlns:q67="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q67:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadPatientReminderNoteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadPatientReminderNoteResult" type="tns:Result" />
+        <xs:element xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q68:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientReminderNotes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="reminderID" type="xs:int" />
+        <xs:element xmlns:q69="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q69:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientReminderNotesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientReminderNotesResult" type="tns:Result" />
+        <xs:element xmlns:q70="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="notes" nillable="true" type="q70:ArrayOfNote" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q71="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" minOccurs="0" name="demographics" nillable="true" type="q71:ArrayOfClinician" />
+        <xs:element xmlns:q72="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q72:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ImportCliniciansResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteClinician">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q73="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q73:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteClinicianResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteClinicianResult" type="tns:Result" />
+        <xs:element xmlns:q74="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q74:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportPatients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q75="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.Extracts" minOccurs="0" name="demographics" nillable="true" type="q75:ArrayOfPatient" />
+        <xs:element xmlns:q76="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q76:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportPatientsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ImportPatientsResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportPatientsStandardFormat">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q77="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="patients" nillable="true" type="q77:ArrayOfstring" />
+        <xs:element xmlns:q78="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q78:guid" />
+        <xs:element minOccurs="0" name="dataFormatType" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ImportPatientsStandardFormatResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ImportPatientsStandardFormatResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeletePatient">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q79="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q79:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeletePatientResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeletePatientResult" type="tns:Result" />
+        <xs:element xmlns:q80="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q80:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetProtocolInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q81="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q81:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetProtocolInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetProtocolInfoResult" type="tns:Result" />
+        <xs:element xmlns:q82="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="protocols" nillable="true" type="q82:ArrayOfProtocolInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientReminders">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q83="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q83:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientRemindersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientRemindersResult" type="tns:Result" />
+        <xs:element xmlns:q84="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="reminders" nillable="true" type="q84:ArrayOfReminder" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteReminder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="reminderID" type="xs:int" />
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="endDate" type="xs:dateTime" />
+        <xs:element xmlns:q85="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q85:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteReminderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteReminderResult" type="tns:Result" />
+        <xs:element xmlns:q86="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q86:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadReminders">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q87="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="reminders" nillable="true" type="q87:ArrayOfReminder" />
+        <xs:element xmlns:q88="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q88:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UploadRemindersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UploadRemindersResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignPatientClinician">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q89="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q89:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignPatientClinicianResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AssignPatientClinicianResult" type="tns:Result" />
+        <xs:element xmlns:q90="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q90:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignClinicianPatients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q91="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="patientExternalIDs" nillable="true" type="q91:ArrayOfstring" />
+        <xs:element xmlns:q92="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q92:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignClinicianPatientsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AssignClinicianPatientsResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignPatientClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q93="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="clinicianExternalIDs" nillable="true" type="q93:ArrayOfstring" />
+        <xs:element xmlns:q94="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q94:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AssignPatientCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AssignPatientCliniciansResult" type="tns:Result" />
+        <xs:element minOccurs="0" name="importResults" nillable="true" type="tns:ArrayOfImportResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAssignedPatientClinician">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q95="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q95:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAssignedPatientClinicianResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemoveAssignedPatientClinicianResult" type="tns:Result" />
+        <xs:element xmlns:q96="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q96:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAllPatientClinicians">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="patientExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="patientInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q97="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q97:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAllPatientCliniciansResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemoveAllPatientCliniciansResult" type="tns:Result" />
+        <xs:element xmlns:q98="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q98:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAllClinicianPatients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="clinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="clinicianInternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q99="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q99:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAllClinicianPatientsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemoveAllClinicianPatientsResult" type="tns:Result" />
+        <xs:element xmlns:q100="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q100:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReplacePatientsClinician">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="oldClinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="newClinicianExternalIdentifier" nillable="true" type="xs:string" />
+        <xs:element xmlns:q101="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q101:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReplacePatientsClinicianResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ReplacePatientsClinicianResult" type="tns:Result" />
+        <xs:element xmlns:q102="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="errorMessages" nillable="true" type="q102:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatients">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="excludeAssigned" type="xs:boolean" />
+        <xs:element xmlns:q103="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="secureSessionToken" type="q103:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPatientsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetPatientsResult" type="tns:Result" />
+        <xs:element xmlns:q104="http://schemas.datacontract.org/2004/07/CareInnovations.Healthcare.Integration.ImportData" minOccurs="0" name="patients" nillable="true" type="q104:ArrayOfPatientInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

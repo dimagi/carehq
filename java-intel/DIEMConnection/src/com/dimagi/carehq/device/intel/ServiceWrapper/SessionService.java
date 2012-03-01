@@ -5,7 +5,11 @@
 
 package com.dimagi.carehq.device.intel.ServiceWrapper;
 
-import com.intel.healthcare.integration.extracts.ExtractResult;
+import com.careinnovations.healthcare.integration.extracts.ExtractDataService;
+import com.careinnovations.healthcare.integration.extracts.ExtractResult;
+import com.careinnovations.healthcare.integration.extracts.IExtractData;
+import com.careinnovations.healthcare.integration.userlookup.IUserLookup;
+import com.careinnovations.healthcare.integration.userlookup.UserLookupService;
 import com.microsoft.schemas._2003._10.serialization.arrays.ArrayOfstring;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,27 +19,27 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.ws.Holder;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatient;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatientFilterCondition;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatientSession;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatientSessionFilterCondition;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.FilterOperator;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Measurement;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Patient;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientFilter;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientFilterCondition;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientSession;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientSessionFilter;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientSessionFilterCondition;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.ProtocolPerformed;
-import org.datacontract.schemas._2004._07.intel_healthcare_integration.Threshold;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ArrayOfPatient;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ArrayOfPatientFilterCondition;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ArrayOfPatientSession;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ArrayOfPatientSessionFilterCondition;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.FilterOperator;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Measurement;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Patient;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.PatientSession;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.PatientSessionFilter;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.PatientSessionFilterCondition;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.ProtocolPerformed;
+import org.datacontract.schemas._2004._07.careinnovations_healthcare_integration.Threshold;
 
 /**
  *
  * @author dmyung
  */
 public class SessionService {
-    public static String DimagiZeroID = "F5942BFF-4692-4000-BCC2-A1465208E426";
+    //public static String DimagiZeroID = "F5942BFF-4692-4000-BCC2-A1465208E426";
+    public static String DimagiZeroID = "74D7AF9D-56F5-4BA2-BC9D-B4D17020BE28";
+
     
     private SecurityService _securitySvc;
 
@@ -80,7 +84,7 @@ public class SessionService {
                 String ptid = pt.getInternalUserID();
                 System.out.println("Pt ID: " + ptid + " :: " + pt.getFirstName() + " " + pt.getLastName());                
             }
-            if (getPatientsResult.value.equals(com.intel.healthcare.integration.extracts.ExtractResult.IN_PROGRESS)) {
+            if (getPatientsResult.value.equals(ExtractResult.IN_PROGRESS)) {
                 doContinue = true;
                 continue;
             } else {
@@ -183,13 +187,13 @@ public class SessionService {
         PatientSessionFilterCondition time_start = new PatientSessionFilterCondition();
         time_start.setLValue(PatientSessionFilter.DATE_SUBMITTED);
         time_start.setRValue("2010-08-01 06:00:00.000");    //YYYY-MM-DD HH:MM:SS:MMM
-        time_start.setOperator(FilterOperator.GREATER_THAN);
+        time_start.setOperator(FilterOperator.GREATER_THAN_EQUAL);
         //ptFilterConditions.getPatientSessionFilterCondition().add(time_start);
 
         PatientSessionFilterCondition time_end = new PatientSessionFilterCondition();
         time_end.setLValue(PatientSessionFilter.DATE_SUBMITTED);
         time_end.setRValue("2010-08-01 23:59:00.000");
-        time_end.setOperator(FilterOperator.LESS_THAN);
+        time_end.setOperator(FilterOperator.LESS_THAN_EQUAL);
         //ptFilterConditions.getPatientSessionFilterCondition().add(time_end);
 
         //prepare the extract results
@@ -218,42 +222,42 @@ public class SessionService {
 
     //Intel design extract
     private void callGetPatientSessions(String secureSessionToken, Boolean continueExtract, Boolean markSent, Boolean unsentOnly, Holder<ExtractResult> getPatientSessionsResult, Holder<ArrayOfPatientSession> extractData) {
-        com.intel.healthcare.integration.extracts.ExtractDataService service = new com.intel.healthcare.integration.extracts.ExtractDataService();
-        com.intel.healthcare.integration.extracts.IExtractData port = service.getBasicHttpBindingIExtractData();
+        ExtractDataService service = new ExtractDataService();
+        IExtractData port = service.getBasicHttpBindingIExtractData();
         port.getPatientSessions(secureSessionToken, continueExtract, markSent, unsentOnly, getPatientSessionsResult, extractData);
     }
 
     //Intel design extract
-    private void callGetPatientSession(java.lang.String secureSessionToken, java.lang.String patientSessionID, java.lang.Boolean markSent, javax.xml.ws.Holder<com.intel.healthcare.integration.extracts.ExtractResult> getPatientSessionResult, javax.xml.ws.Holder<org.datacontract.schemas._2004._07.intel_healthcare_integration.PatientSession> patientSession) {
-        com.intel.healthcare.integration.extracts.ExtractDataService service = new com.intel.healthcare.integration.extracts.ExtractDataService();
-        com.intel.healthcare.integration.extracts.IExtractData port = service.getBasicHttpBindingIExtractData();
+    private void callGetPatientSession(java.lang.String secureSessionToken, java.lang.String patientSessionID, java.lang.Boolean markSent, javax.xml.ws.Holder<ExtractResult> getPatientSessionResult, javax.xml.ws.Holder<PatientSession> patientSession) {
+        ExtractDataService service = new ExtractDataService();
+        IExtractData port = service.getBasicHttpBindingIExtractData();
         port.getPatientSession(secureSessionToken, patientSessionID, markSent, getPatientSessionResult, patientSession);
     }
 
     private void callGetStandardFormatPatientSession(String secureSessionToken, String patientSessionID, Boolean markSent, String dataFormatType, Holder<ExtractResult> getStandardFormatPatientSessionResult, Holder<String> patientSession) {
-        com.intel.healthcare.integration.extracts.ExtractDataService service = new com.intel.healthcare.integration.extracts.ExtractDataService();
-        com.intel.healthcare.integration.extracts.IExtractData port = service.getBasicHttpBindingIExtractData();
+        ExtractDataService service = new ExtractDataService();
+        IExtractData port = service.getBasicHttpBindingIExtractData();
         port.getStandardFormatPatientSession(secureSessionToken, patientSessionID, markSent, dataFormatType, getStandardFormatPatientSessionResult, patientSession);
     }
 
 
     
 
-    private static void callGetPatientSessionIDs(java.lang.String secureSessionToken, java.lang.Boolean unsentOnly, java.lang.Boolean continueExtract, org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatientSessionFilterCondition filterConditions, javax.xml.ws.Holder<com.intel.healthcare.integration.extracts.ExtractResult> getPatientSessionIDsResult, javax.xml.ws.Holder<com.microsoft.schemas._2003._10.serialization.arrays.ArrayOfstring> extractData) {
-        com.intel.healthcare.integration.extracts.ExtractDataService service = new com.intel.healthcare.integration.extracts.ExtractDataService();
-        com.intel.healthcare.integration.extracts.IExtractData port = service.getBasicHttpBindingIExtractData();
+    private static void callGetPatientSessionIDs(java.lang.String secureSessionToken, java.lang.Boolean unsentOnly, java.lang.Boolean continueExtract, ArrayOfPatientSessionFilterCondition filterConditions, javax.xml.ws.Holder<ExtractResult> getPatientSessionIDsResult, javax.xml.ws.Holder<com.microsoft.schemas._2003._10.serialization.arrays.ArrayOfstring> extractData) {
+        ExtractDataService service = new ExtractDataService();
+        IExtractData port = service.getBasicHttpBindingIExtractData();
         port.getPatientSessionIDs(secureSessionToken, unsentOnly, continueExtract, filterConditions, getPatientSessionIDsResult, extractData);
     }
 
-    private void callGetPatients(java.lang.String secureSessionToken, java.lang.Boolean continueExtract, org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatientFilterCondition filterConditions, javax.xml.ws.Holder<com.intel.healthcare.integration.extracts.ExtractResult> getPatientsResult, javax.xml.ws.Holder<org.datacontract.schemas._2004._07.intel_healthcare_integration.ArrayOfPatient> extractData) {
-        com.intel.healthcare.integration.extracts.ExtractDataService service = new com.intel.healthcare.integration.extracts.ExtractDataService();
-        com.intel.healthcare.integration.extracts.IExtractData port = service.getBasicHttpBindingIExtractData();
+    private void callGetPatients(java.lang.String secureSessionToken, java.lang.Boolean continueExtract, ArrayOfPatientFilterCondition filterConditions, javax.xml.ws.Holder<ExtractResult> getPatientsResult, javax.xml.ws.Holder<ArrayOfPatient> extractData) {
+        ExtractDataService service = new ExtractDataService();
+        IExtractData port = service.getBasicHttpBindingIExtractData();
         port.getPatients(secureSessionToken, continueExtract, filterConditions, getPatientsResult, extractData);
     }
 
     private static Patient callGetPatientByInternalID(java.lang.String secureSessionToken, java.lang.String internalID) {
-        com.intel.healthcare.integration.userlookup.UserLookupService service = new com.intel.healthcare.integration.userlookup.UserLookupService();
-        com.intel.healthcare.integration.userlookup.IUserLookup port = service.getBasicHttpBindingIUserLookup();
+        UserLookupService service = new UserLookupService();
+        IUserLookup port = service.getBasicHttpBindingIUserLookup();
         return port.getPatientByInternalID(secureSessionToken, internalID);
     }
 }

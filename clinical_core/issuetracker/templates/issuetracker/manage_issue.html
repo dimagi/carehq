@@ -66,13 +66,17 @@
                         <tr>
                             <td><strong>Opened</strong></td>
                             <td>{{ issue.opened_date|date:"M j, Y P" }}<br>
-                            by <a href="{% url view_actor issue.opened_by.id %}">{{ issue.opened_by.actordoc.get_name }}</a>
+                            by <a href="{% url view_actor issue.opened_by.doc_id '' %}">{{ issue.opened_by.actordoc.get_name }}</a>
                             </td>
                         </tr>
 
                         <tr>
                             <td><strong>Assigned to</strong></td>
-                            <td><a href="{% url view_actor issue.assigned_to.id %}">{{ issue.assigned_to.actordoc.get_name}}</a></td>
+                            {% if issue.assigned_to %}
+                                <td><a href="{% url view_actor issue.assigned_to.doc_id '' %}">{{ issue.assigned_to.actordoc.get_name}}</a></td>
+                            {% else %}
+                                <td>None</td>
+                            {% endif %}
                         </tr>
 
                     </table>
@@ -86,7 +90,7 @@
         {% for event in issue.issue_events.all %}
             <div class="span12">
                 <div class="commit-group-heading">
-                    <strong><a href="{% url view_actor event.created_by.id %}">{{ event.created_by.actordoc.get_name }}</a></strong>
+                    <strong><a href="{% url view_actor event.created_by.doc_id '' %}">{{ event.created_by.actordoc.get_name }}</a></strong>
                     {% get_timeago event.created_date %}
                 </div>
                         <div class="commit-group">

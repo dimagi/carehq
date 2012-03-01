@@ -5,6 +5,8 @@
 
 package com.dimagi.carehq.device.intel.ServiceWrapper;
 
+import java.util.Date;
+
 /**
  *
  * @author dmyung

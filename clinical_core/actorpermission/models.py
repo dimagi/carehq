@@ -127,6 +127,28 @@ class BaseActorDocument(Document, TypedSubclassMixin):
         return "ActorDoc %s: %s %s" % (self.doc_type, self.first_name, self.last_name)
 
 
+class MachineActor(BaseActorDocument):
+    """
+    Actors that are machines
+    """
+
+    class Meta:
+        app_label = 'actorpermission'
+
+    def get_class_display(self):
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.title)
+
+    class Meta:
+        app_label = 'actorpermission'
+
+    def get_name(self):
+        return "%s %s" % (self.first_name, self.last_name)
+
+    def get_display(self):
+        return "%s, %s" % (self.title, self.facility_name)
+
+
+
 class DeviceDocument(Document):
     device_id = StringProperty()
     active_date = DateTimeProperty()
@@ -162,7 +184,7 @@ class CaregiverActor(BaseActorDocument):
         ('child', 'Child'),
         ('parent', 'Parent'),
         ('relative', 'Relative'),
-        #('spouse', 'Spouse'),
+        ('spouse', 'Spouse'),
         ('sibling', 'Sibling'),
         ('nextofkin', 'Next of kin'),
         ('friend', 'Friend'),

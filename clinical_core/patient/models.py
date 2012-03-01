@@ -12,7 +12,7 @@ from datetime import datetime, time
 import simplejson
 import math
 from clinical_shared.mixins import TypedSubclassMixin
-from dimagi.utils.couch.database import get_db
+from hutch.models import AttachmentImage
 from permissions.models import Actor
 
 import settings
@@ -377,14 +377,19 @@ class CarehqPatient(BasePatient):
     """
     A stub implementation of the Patient model
     """
+
+    study_id = StringProperty() # readable sequential string of patient enrollment number ExternalUserID for CI
+
     start_date = DateProperty(verbose_name='Date of trial start')
-    device_id = StringProperty()
+    device_id = StringProperty(verbose_name="Health Guide Activation Key")
     checkin_time = TimeProperty(verbose_name='Preferred survey time')
 
-    enrolled_date = DateProperty()
+    enrolled_date = DateProperty(verbose_name="Date in which this is edited")
     hcms_registered_date = DateProperty()
-    install_date = DateProperty()
 
+    install_date = DateProperty()
+    pickup_date = DateProperty()
+    sim_number = StringProperty() # sim card for 3g access for phone number - for refill purposes
 
     #time window in which avalaible
     available_start = TimeProperty(verbose_name='Start time available for contact')
@@ -404,6 +409,20 @@ class CarehqPatient(BasePatient):
             return super(BasePatient, self).__getattr__(key)
         except KeyError:
             raise AttributeError
+
+    @property
+    def study_files(self):
+        """
+        Scans patient object for supporting documents
+
+        Returns them as a dictionary of arrays where {"patient_objects": [attachment, attachment, attachment...]}
+        """
+        ret = []
+        aux_img_dict = AttachmentImage.objects.get_doc_auxmedia(self)
+        for aux, attach_img in aux_img_dict.items():
+            ret.append((attach_img, aux['media_meta']['image_type']))
+        return ret
+
 
 class CSimpleComment(Document):
     doc_fk_id = StringProperty() #is there a fk in couchdbkit

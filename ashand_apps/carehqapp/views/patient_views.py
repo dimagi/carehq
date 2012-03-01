@@ -1,28 +1,29 @@
-from django.contrib.contenttypes.models import ContentType
+import hashlib
+import tempfile
+import uuid
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from carehq_core import carehq_api
+from carehqapp.forms.upload_form import ASHandStudyFileUploadForm
 from carehqapp.models import CCDSubmission, get_missing_category
-from couchforms.models import XFormInstance
+from hutch.models import AuxMedia
 from issuetracker.issue_constants import ISSUE_STATE_CLOSED, ISSUE_STATE_OPEN
 from issuetracker.models.issuecore import Issue
-from patient.forms.address_form import SimpleAddressForm
-from patient.forms.phone_form import PhoneForm
-from patient.models import Patient
+from patient.models import BasePatient
 from patient.views import PatientSingleView
-from permissions.models import Actor, PrincipalRoleRelation
-from datetime import datetime, timedelta
+from datetime import datetime
 
+from clinical_shared.decorators import actor_required
 
 from calendar import HTMLCalendar, month_name
 from datetime import date
 from itertools import groupby
-
-from django.utils.html import conditional_escape as esc
 
 class SubmissionCalendar(HTMLCalendar):
     #source: http://journal.uggedal.com/creating-a-flexible-monthly-calendar-in-django/
@@ -87,44 +88,88 @@ class SubmissionCalendar(HTMLCalendar):
                 body = ['<br>']
 
                 #received
-                day_submissions = self.submissions[day]
+                day_submissions = sorted(self.submissions[day], key=lambda x: x.get_session_time())
                 threshold_resolved=True
-                treshold_body = []
+                submit_body = []
+
+#                body.append('<ul class="nav">')
+#                body.append('<li class="dropdown">')
+#                body.append('<a class="dropdown-toggle label label-info" data-toggle="dropdown" href="#">Received')
+#                body.append(' <b class="caret"></b></a>')
+#                body.append('<ul class="dropdown-menu">')
+
+
+                threshold_sum = 0
                 for submit in day_submissions:
                     if submit.is_threshold:
                         #ok, it's a threshold violation, let's check if the issue is closed
                         issues = submit.get_issues()
+                        threshold_sum += 1
                         for issue in issues:
                             if issue.is_closed:
-                                pass
+                                submit_body.append('<li><a href="%s">%s Closed</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
+                                threshold_sum = threshold_sum - 1
                             else:
-                                threshold_resolved=False
-                                treshold_body.append('<a href="%s">Threshold</a><br>' % (reverse('manage-issue', kwargs={"issue_id": issue.id})))
-                if threshold_resolved:
-                    body.append('<span class="label label-success">Received</span><br>')
+                                submit_body.append('<li><a href="%s">%s Open</a></li>' % (reverse('manage-issue', kwargs={"issue_id": issue.id}), submit.get_session_time().strftime("%I:%M%p")))
+                    else:
+                        #it's not a threshold violation, get "OK" submits
+#                        body.append('<li><a href="#"><i class="icon-ok"></ia> OK</a></li>')
+                        submit_body.append('<li><a href="%s"> %s OK</a></li>' % (reverse('view_ccd', kwargs={'doc_id': submit._id}), submit.get_session_time().strftime('%I:%M%p')))
+                                    #(reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
+
+
+                body.append('<div class="btn-group">')
+                if threshold_sum > 0:
+                    body.append('<a class="btn btn-warning" href="#"><i class="icon-white icon-warning-sign"></i> Received</a>')
+                    body.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                 else:
-                    body.append('<span class="label label-important">Received</span><br>')
-                    body.append(''.join(treshold_body))
+                    body.append('<a class="btn btn-info" href="#"><i class="icon-white icon-ok"></i> Received</a>')
+                    body.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                body.append('<ul class="dropdown-menu">')
+
+                body.extend(submit_body)
+                body.append('</ul>')
+                body.append('</div>')
                 body.append('<br>')
                 return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
 
             if weekday < 5 and not future:
                 issue_check = Issue.objects.filter(patient=self.django_patient, due_date=datetime(this_day.year, this_day.month, this_day.day), category=get_missing_category())
-                missing_link = ''
+                missing_link = []
                 if issue_check.count() == 0:
-                    missing_link = '<br><span class="label label-warning">Missing</span><br>'
-                    missing_link += '<a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day)
+                    #no issues resolving so completely missing
+
+                    missing_link.append('<div class="btn-group">')
+                    missing_link.append('<a class="btn btn-danger" href="#"><i class="icon-white icon-warning-sign"></i> Missing</a>')
+                    missing_link.append('<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
+                    missing_link.append('<ul class="dropdown-menu">')
+                    missing_link.append('<li><a href="%s?categoryid=%s&missing_date=%d-%d-%d">Create Issue</a></li>' % (reverse('new_carehq_patient_issue', kwargs={'patient_guid': self.django_patient.doc_id}), get_missing_category().id, this_day.year, this_day.month, this_day.day))
+                    missing_link.append('</ul>')
+                    missing_link.append('</div>')
                 else:
                     missing_resolved=True
                     still_open = issue_check.filter(status=ISSUE_STATE_OPEN)
+                    closed = issue_check.filter(status=ISSUE_STATE_CLOSED)
+                    missing_link.append('<div class="btn-group">')
                     if still_open.count() == 0:
-                        missing_link = '<br><span class="label label-info">Missing - Resolved</span>'
+                        missing_link.append('<a class="btn btn-info" href="#"><i class="icon-white icon-ok"></i> Closed</a>')
+                        missing_link.append('<a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
                     else:
-                        missing_link = '<br><span class="label label-warning">Missing - Unresolved</span><br>'
-                        for i in still_open:
-                            missing_link += '<a href="%s">View Issue</a><br>' % (reverse('manage-issue', kwargs={"issue_id": i.id}))
+                        missing_link.append('<a class="btn btn-warning" href="#"><i class="icon-white icon-edit"></i> Open</a>')
+                        missing_link.append('<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>')
 
-                return self.day_cell(cssclass, "%d %s" % (day, missing_link))
+                    missing_link.append('<ul class="dropdown-menu">')
+                    if still_open.count() > 0:
+                        for i in still_open:
+                            missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+                    else:
+                        for i in closed:
+                            missing_link.append('<li><a href="%s">View Issue</a></li>' % (reverse('manage-issue', kwargs={"issue_id": i.id})))
+
+                    missing_link.append('</ul>')
+                    missing_link.append('</div>')
+
+                return self.day_cell(cssclass, "%d %s" % (day, ''.join(missing_link)))
             elif weekday < 5 and future:
                 return self.day_cell('future', "%d" % day)
             else:
@@ -163,16 +208,61 @@ class SubmissionCalendar(HTMLCalendar):
         return '<td class="%s">%s</td>' % (cssclass, body)
 
 
+@login_required
+def upload_patient_attachment(request, patient_guid, template_name='carehqapp/upload_file.html'):
+    context = RequestContext(request)
+    patient = BasePatient.get_typed_from_dict(BasePatient.get_db().get(patient_guid))
+
+    def handle_uploaded_file(f, form):
+        destination = tempfile.NamedTemporaryFile()
+        checksum = hashlib.md5()
+        for chunk in f.chunks():
+            checksum.update(chunk)
+            destination.write(chunk)
+        destination.seek(0)
+        image_type = form.cleaned_data['image_type'],
+        media_meta=dict(image_type=image_type[0])
+
+        attachment_id = uuid.uuid4().hex
+        new_image_aux = AuxMedia(uploaded_date=datetime.utcnow(),
+            uploaded_by=request.user.username,
+            uploaded_filename=f.name,
+            checksum=checksum.hexdigest(),
+            attachment_id=attachment_id,
+            media_meta=media_meta,
+            notes=form.cleaned_data['notes'])
+        patient.put_attachment(destination, attachment_id, content_type=f.content_type, content_length=f.size)
+        destination.close()
+        return new_image_aux
+
+    if request.method == 'POST':
+        form = ASHandStudyFileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = handle_uploaded_file(request.FILES['image_file'], form)
+            patient['aux_media'].append(file)
+            patient.save()
+            return HttpResponseRedirect(reverse('shine_single_patient', kwargs={'patient_guid': patient_guid}))
+    else:
+        form = ASHandStudyFileUploadForm()
+    context['form'] = form
+    context['patient_guid'] = patient_guid
+    return render_to_response(template_name, context)
+
+
+
 class CarehqPatientSingleView(PatientSingleView):
     #template carehqapp/carehq_patient_base.html
+
     def get_context_data(self, **kwargs):
         """
         Main patient view for pact.  This is a "do lots in one view" thing that probably shouldn't be replicated in future iterations.
         """
         request = self.request
 
-        if request.current_actor is None:
-            return HttpResponseRedirect(reverse('no_actor_profile'))
+        #hack to check for actor since I can't seem to get the decorators to work
+        if not hasattr(request, 'current_actor') or request.current_actor is None:
+            raise PermissionDenied
+            #return HttpResponseRedirect(reverse('no_actor_profile'))
 
         schedule_show = request.GET.get("schedule", "active")
         schedule_edit = request.GET.get("edit_schedule", False)
@@ -202,7 +292,7 @@ class CarehqPatientSingleView(PatientSingleView):
             view_mode = 'info'
         context = super(CarehqPatientSingleView, self).get_context_data(**kwargs)
 
-        if not carehq_api.has_permission(request.current_actor.actordoc, context['patient_doc']):
+        if not carehq_api.has_permission(request.current_actor.actordoc, context['patient_doc']) and not request.user.is_superuser:
             raise PermissionDenied
 
         context['view_mode'] = view_mode
@@ -223,7 +313,10 @@ class CarehqPatientSingleView(PatientSingleView):
             context['issues'] = issues
             self.template_name = "carehqapp/patient/carehq_patient_issues.html"
         if view_mode == 'info':
-            self.template_name = "carehqapp/patient/carehq_patient_info.html"
+            if request.GET.get('print', None) is not None:
+                self.template_name = "carehqapp/patient/carehq_patient_info_print.html"
+            else:
+                self.template_name = "carehqapp/patient/carehq_patient_info.html"
 
         if view_mode == 'careteam':
             context['patient_careteam'] = carehq_api.get_careteam(pdoc)
@@ -232,11 +325,14 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'careplan':
             self.template_name = "carehqapp/patient/carehq_patient_careplan.html"
 
+        if view_mode == 'files':
+            self.template_name = "carehqapp/patient/carehq_patient_files.html"
+
         if view_mode == 'submissions':
             viewmonth = int(request.GET.get('month', date.today().month))
             viewyear = int(request.GET.get('year', date.today().year))
-            sk = ['Test000001', viewyear, viewmonth, 0]
-            ek = ['Test000001', viewyear, viewmonth, 31]
+            sk = [pdoc.study_id, viewyear, viewmonth, 0]
+            ek = [pdoc.study_id, viewyear, viewmonth, 31]
 
             submissions = CCDSubmission.view('carehqapp/ccd_submits_by_patient_doc', startkey=sk, endkey=ek, include_docs=True).all()
 #            submissions = []

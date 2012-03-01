@@ -28,7 +28,7 @@
 {#                <td> {% get_timeago issue.last_event.created_date %} </td>#}
                 <td> {{ issue.last_event.created_date|date:"M j, Y P" }} </td>
                 <td> {{ issue.last_event.get_activity_display }} </td>
-                <td> {{ issue.last_event.created_by.actordoc.get_name }} </td>
+                <td> <a href="{% url view_actor issue.last_event.created_by.doc_id  '' %}">{{ issue.last_event.created_by.actordoc.get_name }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

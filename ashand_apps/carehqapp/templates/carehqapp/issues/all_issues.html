@@ -13,7 +13,7 @@
             <th class="span1">Opened By</th>
             <th class="span1">Assigned To</th>
             <th class="span1">Last Event</th>
-            <th class="span2">Activity by</th>
+            <th class="span2">Date</th>
         </tr>
         </thead>
         <tbody>
@@ -28,8 +28,8 @@
                 {% endif %}
                 <td> <a href="{{ issue.get_absolute_url }}">{{ issue.description }}</a> </td>
                 <td> {{ issue.get_status_display }} </td>
-                <td> {{ issue.opened_by.actordoc.get_name }} </td>
-                <td> {{ issue.assigned_to.actordoc.get_name }} </td>
+                <td> <a href="{% url view_actor issue.opened_by.doc_id  '' %}">issue.opened_by.actordoc.get_name</a></td>
+                <td> <a href="{% url view_actor issue.assigned_to.doc_id  '' %}">{{ issue.assigned_to.actordoc.get_name }}</a></td>
                 <td> {{ issue.last_event.get_activity_display }} </td>
                 <td> {{ issue.last_event.created_date|date:"M j, Y P"}} </td>
             </tr>
