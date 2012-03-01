@@ -1,7 +1,7 @@
 import logging
 import pdb
 import uuid
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseServerError
@@ -14,6 +14,8 @@ from carehqapp.models import CCDSubmission
 from clinical_shared.decorators import actor_required
 from couchforms.util import post_xform_to_couch
 from couchforms.views import post as couchforms_post
+from issuetracker.models.issuecore import Issue
+from patient.models import Patient
 from receiver.util import spoof_submission
 
 
@@ -80,6 +82,20 @@ def submissions_list(request, internal_id, template_name="carehqapp/ccd_submissi
     return render_to_response(template_name, context_instance=context)
 
 @login_required
+@user_passes_test(lambda u: u.is_superuser)
+def recompute_submission(request, doc_id):
+    submit = CCDSubmission.get(doc_id)
+    patient = Patient.objects.get(doc_id=submit.get_patient_guid())
+    response = HttpResponse()
+    issue = CCDSubmission.check_and_generate_issue(submit, patient)
+    if issue is not None:
+        response.write('<html><body><a href="%s">Issue Created</a></body></html>' % reverse('manage-issue', kwargs={'issue_id': issue.id}))
+    else:
+        response.write("No issue created")
+    return response
+
+
+@login_required
 @actor_required
 def view_ccd(request, doc_id, template_name='carehqapp/view_ccd.html'):
     context = RequestContext(request)
@@ -93,7 +109,8 @@ def view_ccd(request, doc_id, template_name='carehqapp/view_ccd.html'):
     #entries_raw = filter(lambda x: x.has_key('organizer'), entries_raw)
     context['entries'] = CCDSubmission.get_raw_answer_data(submit)
 
-
+    issues = Issue.objects.filter(external_data__doc_id=doc_id)
+    context['issues'] = issues
 
     if not carehq_api.has_permission(request.current_actor.actordoc, patient_doc) and not request.user.is_superuser:
         raise PermissionDenied

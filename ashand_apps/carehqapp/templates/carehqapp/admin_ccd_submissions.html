@@ -35,7 +35,7 @@
                 <tr>
                     <td>
                         {% if ccd.get_patient_doc %}
-                            <a href="{{ ccd.get_patient_doc.patient.get_absolute_url }}">
+                            <a href="{{ ccd.get_patient_doc.get_absolute_url }}">
                                 {{ ccd.get_patient_doc.last_name }}, {{ ccd.get_patient_doc.first_name }}
                             </a>
                         {% else %}

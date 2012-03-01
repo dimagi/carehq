@@ -1,4 +1,5 @@
 import logging
+import pdb
 import random
 from couchdbkit.ext.django.schema import Document, BooleanProperty
 from datetime import datetime
@@ -169,7 +170,7 @@ class CCDSubmission(XFormInstance):
         """
 
         violations = CCDSubmission.get_threshold_violations(xform)
-        issue = None
+        new_issue = None
 
         if ExternalIssueData.objects.filter(doc_id=xform._id).count() > 0 and skip_if_exists:
             return None
@@ -213,7 +214,7 @@ class CCDSubmission(XFormInstance):
 
         if mutate_xform:
             xform.save()
-        return issue
+        return new_issue
 
     def get_session_time(self):
         return datetime.strptime(self.form['author']['time']['@value'][0:12], '%Y%m%d%H%M')

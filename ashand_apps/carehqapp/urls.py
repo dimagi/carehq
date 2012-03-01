@@ -20,10 +20,12 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^data/careinnovation/ccd.html$', 'ccdreceiver.receive_ccd'), #receive care innovation ccd
 
         url(r'^data/ccd/(?P<doc_id>[0-9a-z]{32})$', 'ccdreceiver.view_ccd', name="view_ccd"),
+        url(r'^data/ccd/(?P<doc_id>[0-9a-z]{32})/recompute$', 'ccdreceiver.recompute_submission', name="recompute_submission"),
 
 
         url(r'^patient/view/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', CarehqPatientSingleView.as_view(template_name='carehqapp/patient/carehq_patient_base.html'), name='patient_url'),
         url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/actor/add$', 'actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
+        url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/files$', 'patient_views.upload_patient_attachment', name='pt_manage_files'),
         url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient_base.html'), name='patient_home'),
 
 
