@@ -29,10 +29,6 @@ def get_missing_category():
 class CCDSubmission(XFormInstance):
     is_threshold = BooleanProperty()
 
-    def save(self):
-        #do nothing, this is just a wrapper
-        pass
-
     def _get_patient_guid_by_externalid(self):
         external_id = self.form['recordTarget']['patientRole']['id'][1]['@extension']
         patient_docs = CarehqPatient.view('carehqapp/patients_by_externalid', key=external_id).all()
@@ -189,6 +185,7 @@ class CCDSubmission(XFormInstance):
             a('</ul>')
             a('<hr>')
             a(CCDSubmission.find_ccd_table_data(xform))
+            #now assign it.
             new_issue = Issue.objects.new_issue(
                 get_threshold_category(),
                 get_system_actor(),
@@ -199,7 +196,6 @@ class CCDSubmission(XFormInstance):
                 status=issue_constants.STATUS_CHOICES[0][0],
                 activity=issue_constants.ISSUE_EVENT_CHOICES[0][0],
             )
-            #now assign it.
             assign_actor = get_assigning_actor(django_patient)
             if assign_actor is not None:
                 new_issue.assign_issue(assign_actor, actor_by=get_system_actor(), commit=True)

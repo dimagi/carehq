@@ -39,19 +39,46 @@ def process_ccd_submission(sender, xform, **kwargs):
     from carehqapp.models import CCDSubmission
     try:
         submit = CCDSubmission.get(xform._id)
+        doc_id = xform._id
 
         #check if it's a resubmit
-        dupes = CCDSubmission.view('carehqapp/ccd_submits_by_session_id', key=xform.form['id']['@root']).count()
-        if dupes > 1:
+#        dupes = CCDSubmission.view('carehqapp/ccd_submits_by_session_id', key=xform.form['id']['@root']).count()
+#        if dupes > 1:
+#            #then this is a dupe/resubmit
+#            #change it to dupe
+#            xform.doc_type='XFormDuplicate'
+#            xform.save()
+#            return
+
+        session_id = submit.form['id']['@root']
+        #check if it's a resubmit
+        sessions = CCDSubmission.view('carehqapp/ccd_submits_by_session_id', key=session_id).all()
+
+        if len(sessions) == 1:
+            #if it's one, verify that the id is the same
+            session_doc_id = sessions[0]['id']
+            if session_doc_id == doc_id:
+                #we're good, proceed
+                mark_duplicate=False
+                pass
+            else:
+                mark_duplicate=True
+        elif len(sessions) == 0:
+            mark_duplicate = False
+            #it's the first time we're seeing this...or something...though that should never happen
+        else:
+            #there are mulitple, this is the likely scenario
+            mark_duplicate=True
+
+        if mark_duplicate:
             #then this is a dupe/resubmit
             #change it to dupe
-            xform.doc_type='XFormDuplicate'
-            xform.save()
+            submit.doc_type='XFormDuplicate'
+            submit.save()
             return
-        #b64_doc = xform.form['recordTarget']['patientRole']['id'][2]['@extension']
-        #bytes = base64.b64decode(b64_doc)
-        #decoded_doc_id = uuid.UUID(bytes=bytes)
-        patient = Patient.objects.get(doc_id=submit.get_patient_guid())
+        else:
+            patient = Patient.objects.get(doc_id=submit.get_patient_guid())
+            CCDSubmission.check_and_generate_issue(submit, patient)
     except Patient.DoesNotExist:
         logging.error("No patient found on submisison %s" % xform._id)
         return
@@ -61,20 +88,6 @@ def process_ccd_submission(sender, xform, **kwargs):
     except Exception, ex:
         logging.error("Other unknown error trying to get patient guid from ccd: %s" % ex)
         pass
-
-    try:
-        system_actor = get_system_actor()
-    except Actor.DoesNotExist:
-        return
-
-    #set it as a non threshold violation
-    xform.is_threshold=False
-    try:
-        CCDSubmission.check_and_generate_issue(xform, patient)
-    except Exception, ex:
-        logging.error("Error trying to generate threshold issue for patient: %s" % ex)
-    xform.save()
-
 
 xform_saved.connect(process_ccd_submission)
 
