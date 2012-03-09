@@ -101,10 +101,12 @@ def xml_download(request):
         sk = [pact_id, sixmonths.year, sixmonths.month, sixmonths.day, progress_xmlns]
         ek = [pact_id, now.year, now.month, now.day, progress_xmlns]
 
-        xforms = XFormInstance.view('pactcarehq/all_submits_by_patient_date', startkey=sk, endkey=ek).all()
+        xforms = XFormInstance.view('pactcarehq/all_submits_by_patient_date', startkey=sk, endkey=ek, include_docs=True).all()
         for form in xforms:
             try:
-                xml_str = db.fetch_attachment(form['id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+                if form.xmlns != 'http://dev.commcarehq.org/pact/progress_note':
+                    continue
+                xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
                 temp_xml.write(xml_str)
                 temp_xml.write("\n")
                 total_count += 1
