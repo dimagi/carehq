@@ -1,5 +1,4 @@
-from couchdbkit.ext.django.schema import Document, DocumentSchema, ListProperty, StringProperty, DateTimeProperty, SchemaListProperty, DictProperty
-from actorpermission.models import CHWActor
+from actorpermission.models.actortypes import CHWActor
 #
 #Remains to be seen if this should be xform'ed or django formed
 #class TrainingLog(DocumentSchema):
@@ -16,4 +15,20 @@ from actorpermission.models import CHWActor
 #
 #    supervision_by = StringProperty()
 #    supervision_date = DateTimeProperty() #actor doc_id
+from couchdbkit.ext.django.schema import Document, DateTimeProperty, SchemaListProperty, IntegerProperty, StringProperty, DocumentSchema
+from couchdbkit.schema.properties import DateProperty
 
+class UserTally(DocumentSchema):
+    username = StringProperty()
+    submitted = IntegerProperty()
+    scheduled = IntegerProperty()
+
+
+class SubmissionTallyLog(Document):
+    #report_type=StringProperty() #not needing to use this, just assume that once email is sent, then the report is successful
+    report_date = DateProperty()
+    created_time = DateTimeProperty()
+    user_log = SchemaListProperty(UserTally)
+
+
+from signals import *
