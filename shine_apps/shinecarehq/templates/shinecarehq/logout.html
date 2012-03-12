@@ -1,0 +1,14 @@
+{% extends base_template %}
+{% block title %}Goodbye{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+
+{% block page_header %}
+<h1>Thanks for visiting CareHQ!</h1>
+{% endblock page_header %}
+{% block content %}
+<h4>We hope to see you soon</h4>
+    <br><br>
+<a href="{%url django.contrib.auth.views.login %}">Log in again</a>
+    <hr>
+{% endblock %}

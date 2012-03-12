@@ -1,0 +1,65 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "Welcome to CareHQ" %}{% endblock %}
+
+{% block top_useridentity %}
+{% endblock %}
+
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>Welcome to CareHQ <small></small></h1>
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<p>You're already logged in!</p>
+{% else %}
+<div class="span12">
+<div class="row">
+    <div class="span2 pull-left">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_care_staff_75.png">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_home_75.png">
+        <img src="{{ STATIC_URL }}carehqapp/img/noun/noun_family_med_75.png">
+    </div>
+    <div class="span10">
+    <h3>CareHQ is a tool to help coordinate medical care between you, doctors, and people you care about.</h3>
+{#    <script type="text/javascript">#}
+{#            (function($) {#}
+{#                $(document).ready(function(){#}
+{#                    $('#id_username').focus();#}
+{#                });#}
+{#            })(jQuery);#}
+{#    </script>#}
+
+{#    {% if form.errors %}#}
+
+        <div class="row">
+        <hr>
+            <div class="span4 offset2 well">
+                <fieldset>
+                <legend>Please sign in</legend>
+                <form method="post" action=".">{% csrf_token %}
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                        {{ form.password.label_tag }}
+                        {{ form.password }}<br>
+                    <input type="submit" value="Login" class="btn"/>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                    &nbsp; <input type="checkbox" name="remember_me" id="id_remember_me" /> <span class="helptext">Keep me logged in</span>
+                </form>
+                    {% if form.errors %}
+                        <div class="alert alert-error">Your username and password didn't match. Please try again.</div>
+                    {% endif %}
+                    <a href="{% url auth_password_reset %}">Forgot password</a>
+                </fieldset>
+            </div>
+        </div>
+{#        {% endif %}#}
+    </div>
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}
+
