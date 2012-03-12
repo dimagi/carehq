@@ -26,7 +26,7 @@
         </script>
     {% endblock %}
     <div class="container">
-        <table id="patient-table" class="tablesorter span12 last">
+        <table id="patient-table" class="tablesorter table table-striped">
             <thead>
             <tr>
                 <th>{% trans "Surname" %}</th>
@@ -48,14 +48,14 @@
 
                     <td>
                         {% if patient.last_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.last_name|title }}</a>
                         {% else %}
                             wtf
                         {% endif %}
                     </td>
                     <td>
                         {% if patient.first_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.first_name|title }}</a>
                         {% endif %}
                     </td>
                     <td>{{ patient.enrollment_date|date:"Y-m-d" }}</td>

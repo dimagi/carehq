@@ -16,10 +16,12 @@
 
             <ul class="dropdown-menu">
                 <li><a href="{% url recent_activity %}">Recent Activity</a></li>
-                <li><a href="{% url emergency_lab_dashboard %}">Emergency Lab Dashboard</a></li>
+                <li class="divider"></li>
                 <li><a href="{% url clinical_dashboard %}">Clinical Progress</a></li>
-                <li><a href="{% url labs_dashboard %}">Lab Status</a></li>
-                <li><a href="{% url hiv_dashboard %}">CD4/HIV Status</a></li>
+                <li><a href="{% url emergency_lab_dashboard %}">Emergency Lab Dashboard</a></li>
+                <li><a href="{% url hiv_dashboard %}">HIV Dashboard</a></li>
+                <li><a href="{% url labs_dashboard %}">Lab Data Dashboard</a></li>
+                <li class="divider"></li>
                 <li><a href="{% url csv_export_landing %}">CSV Export</a></li>
             </ul>
         </li>

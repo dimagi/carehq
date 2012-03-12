@@ -17,8 +17,7 @@
 {% block content %}
     {% block extrahead %}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
-        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
-              media="print, projection, screen"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen"/>
         <script type="text/javascript" charset="utf-8">
             $().ready(function() {
                 $("#patient-table").tablesorter({sortList: [
@@ -28,7 +27,7 @@
         </script>
     {% endblock %}
     <div class="container">
-        <table id="patient-table" class="tablesorter span12 last">
+        <table id="patient-table" class="tablesorter table table-striped">
             <thead>
             <tr>
                 <th>{% trans "Surname" %}</th>
@@ -48,14 +47,14 @@
 
                     <td>
                         {% if patient.last_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.last_name|title }}</a>
                         {% else %}
                             wtf
                         {% endif %}
                     </td>
                     <td>
                         {% if patient.first_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.first_name|title }}</a>
                         {% endif %}
                     </td>
                     <td>

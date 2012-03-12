@@ -3,6 +3,7 @@ import random
 import simplejson
 from couchdbkit.ext.django.schema import  SchemaListProperty
 from django.core.files.base import ContentFile
+import isodate
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from hutch.couchdb_doc_storage import CouchDBAttachmentFile, CouchDBDocStorage
@@ -256,7 +257,8 @@ class ShinePatient(BasePatient):
         case = self.latest_case
         submissions = self._get_case_submissions(case)
         xmlns = submissions[-1]['xmlns']
-        recv = submissions[-1]['received_on']
+        #2012-02-21T11:31:05Z
+        recv = isodate.parse_datetime(submissions[-1]['received_on'])
 
         return recv, xmlns_display_map[xmlns]
 
@@ -378,13 +380,11 @@ class ShinePatient(BasePatient):
 
 
 
-
-    @property
     def get_lab_data(self):
         #get all clinical lab data submissions
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-        lab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LABDATA_FORM, submissions)
+        lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
 
 
         return merge_labs(lab_submissions)

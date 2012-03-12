@@ -63,7 +63,7 @@ def hiv_dashboard(request, template="shinecarehq/hiv_dashboard.html"):
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 
 @login_required()
-def clinical_dashboard(request, template="shinecarehq/clinical_dashboard.html"):
+def clinical_dashboard(request, template="shinecarehq/clinical_progress.html"):
     """
     Full case list for dashboard view
     """
@@ -93,7 +93,7 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
 
     show_param = request.GET.get('show', 'all')
 
-    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True, limit=20).all()
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
 
     for pt in patients:
         pt.cache_clinical_case()
@@ -132,9 +132,6 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
         show_string = "Contaminated Blood Cultures"
         show_list = contaminated
     active_pill = show_param
-
-
-
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 
 @login_required()
