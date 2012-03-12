@@ -26,7 +26,7 @@
         </script>
     {% endblock %}
     <div class="container">
-        <table id="patient-table" class="tablesorter span12 last">
+        <table id="patient-table" class="tablesorter table table-striped table-bordered">
             <thead>
             <tr>
                 <th>{% trans "Surname" %}</th>
@@ -48,24 +48,26 @@
 
                     <td>
                         {% if patient.last_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.last_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.last_name|title }}</a>
                         {% else %}
                             wtf
                         {% endif %}
                     </td>
                     <td>
                         {% if patient.first_name %}
-                            <a href="{% url shine_single_patient patient.get_id %}">{{ patient.first_name|title }}</a>
+                            <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.first_name|title }}</a>
                         {% endif %}
                     </td>
                     {% for status in patient.get_completed_tally %}
                         <td>
                             {% if status.1.0  %}
 {#                                {{ status.1.1.received_on|date}}#}
-                                <img src="{{ STATIC_URL }}carehq/img/icons/check.jpg">
+{#                                <a href="#" class="btn btn-success"><i class="icon-check"></i>&nbsp;</a>#}
+                                    <span class="label label-success"><i class="icon-ok-sign icon-white"></i></span>
+
 
                             {% else %}
-                                ---
+                                &nbsp;
                             {% endif %}
 
                         </td>
