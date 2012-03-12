@@ -27,6 +27,7 @@ from django.views.generic.simple import direct_to_template
 from registration.views import activate
 from registration.views import register
 from django.contrib.auth import views as auth_views
+import settings
 
 
 urlpatterns = patterns('',
@@ -58,11 +59,11 @@ urlpatterns = patterns('',
     #registration auth_urls put in here manually for customization
     url(r'^login/$',
         auth_views.login,
-            {'template_name': 'registration/login.html'},
+            {'template_name': settings.LOGIN_TEMPLATE},
         name='auth_login'),
     url(r'^logout/$',
         auth_views.logout,
-            {'template_name': 'registration/logout.html'},
+            {'template_name': settings.LOGGEDOUT_TEMPLATE},
         name='auth_logout'),
     url(r'^password/change/$',
         auth_views.password_change,
