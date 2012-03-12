@@ -137,12 +137,12 @@ def get_status_matrix(patient):
         status = tup[1][0]
         instance = tup[1][1]
         if displayname == "Enrollment":
-            context_dict['enrollment'] = status
+            context_dict['enrollment'] = "completed" if status else "missing"
         elif displayname == "Clinical Info":
-            context_dict['clinical_info'] = status
+            context_dict['clinical_info'] =  "completed" if status else "missing"
         elif displayname == "Lab Data":
             submissions = patient._get_case_submissions(patient.latest_case)
-            lab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LABDATA_FORM, submissions)
+            lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
             labs_dict = merge_labs(lab_submissions, as_dict=True)
             for k,v in labs_dict.items():
                 lab_status=False
@@ -151,14 +151,15 @@ def get_status_matrix(patient):
                         lab_status = False
                     else:
                         lab_status=True
+                    context_dict['lab__%s' % k] = "completed" if lab_status else "missing"
 
                 elif isinstance(v, dict):
                     lab_status = v
-                context_dict['lab_%s' % k] = lab_status
+                    context_dict['lab_%s' % k] = lab_status
         elif displayname == "Emergency Lab":
             #do check on positivity
             if status:
-                bottles = patient.get_elab_bottle_data
+                bottles = patient.get_elab_bottle_data()
                 if len(bottles) > 0:
                     context_dict['emergency_lab'] = True
                     context_dict['is_positive'] = True
@@ -171,13 +172,13 @@ def get_status_matrix(patient):
                 context_dict['is_positive'] = False
 
         elif displayname == "Biochemical Lab":
-            context_dict['biochemical']=status
+            context_dict['biochemical']= "completed" if status else "missing"
         elif displayname == "Speciation":
-            context_dict['speciation']=status
+            context_dict['speciation']= "completed" if status else "missing"
         elif displayname == "Sensitivity":
-            context_dict['sensitivity']=status
+            context_dict['sensitivity']= "completed" if status else "missing"
         elif displayname == "Outcome" or displayname == "Old Follow Up/Outcome":
-            context_dict['outcome']=status
+            context_dict['outcome']= "completed" if status else "missing"
 
     t = template.loader.get_template('shineforms/status_matrix.html')
 

@@ -4,6 +4,17 @@
 {% load shinepatient_tags %}
 {% load shineforms_tags %}
 
+{% block page_header %}
+    <h1>Recent Activity</h1>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Recent Activity</li>
+    </ul>
+{% endblock page_crumbs %}
+
 {% block content %}
     {% block extrahead %}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
@@ -16,8 +27,6 @@
         </script>
     {% endblock %}
     <div class="container">
-        <h2>Clinical Progress</h2>
-        <hr>
         <table id="submit-table" class="tablesorter span12 last">
                     <thead>
                     <tr>

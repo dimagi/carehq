@@ -1,5 +1,6 @@
 import uuid
 from couchdbkit.exceptions import ResourceNotFound
+from devserver.modules.profile import devserver_profile
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.models import User
@@ -18,7 +19,7 @@ from patient.models import BasePatient, Patient
 from datetime import datetime, timedelta
 from shinecarehq.tasks import schema_export
 import simplejson as json
-
+from django.core.cache import cache
 #
 #class MepiPatientListView(PatientListView):
 #    def get_context_data(self, **kwargs):
@@ -45,6 +46,7 @@ def emergency_lab_dashboard(request, template="shinecarehq/emergency_lab_dashboa
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 
 @login_required()
+@devserver_profile(follow=[ShinePatient.cache_clinical_case, ShinePatient.get_culture_status,  ])
 def labs_dashboard(request, template="shinecarehq/labs_dashboard.html"):
     """
     Full case list for dashboard view
@@ -83,24 +85,25 @@ def recent_activity(request, template="shinecarehq/recent_activity.html"):
 
 
 @login_required()
+@devserver_profile(follow=[ShinePatient.get_culture_status, ShinePatient.cache_clinical_case, ShinePatient._get_case_submissions, ShinePatient.get_last_action])
 def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
-    Full case list for dashboard view
+    Full case list for dashboard view - this is the default home
     """
 
     show_param = request.GET.get('show', 'all')
 
-    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True, limit=20).all()
 
     for pt in patients:
         pt.cache_clinical_case()
 
     active= filter(lambda x: not x.latest_case.closed, patients)
     inactive = set.difference(set(patients), set(active))
-    enrolled_today = filter(lambda x: x.get_last_action[1] == 'Enrollment' and x.get_last_action[0].date() == datetime.utcnow().date(), patients)
-    only_enrolled = filter(lambda x: x.get_last_action[1] == 'Enrollment', patients)
-    positive = filter(lambda x: x.get_culture_status == 'positive', patients)
-    negative = filter(lambda x: x.get_culture_status == 'negative', patients)
+    enrolled_today = filter(lambda x: x.get_last_action()[1] == 'Enrollment' and x.get_last_action()[0].date() == datetime.utcnow().date(), patients)
+    only_enrolled = filter(lambda x: x.get_last_action()[1] == 'Enrollment', patients)
+    positive = filter(lambda x: x.get_culture_status() == 'positive', patients)
+    negative = filter(lambda x: x.get_culture_status() == 'negative', patients)
     contaminated = filter(lambda x: x.latest_case.dynamic_properties().get('contamination', '') == 'yes', patients)
 
 
@@ -128,6 +131,7 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     elif show_param == 'contaminated':
         show_string = "Contaminated Blood Cultures"
         show_list = contaminated
+    active_pill = show_param
 
 
 

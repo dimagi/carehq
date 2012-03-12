@@ -37,7 +37,12 @@ class MepiPatientSingleView(PatientSingleView):
         patient_guid = self.kwargs['patient_guid']
         patient_edit = request.GET.get('edit_patient', None)
 
+        #global info
+        view_mode = self.kwargs.get('view_mode', '')
+        if view_mode == '':
+            view_mode = 'info'
         context = super(MepiPatientSingleView, self).get_context_data(**kwargs)
+        context['view_mode'] = view_mode
         pdoc = context['patient_doc']
         dj_patient = context['patient_django']
 #        context['patient_list_url'] = reverse('my_patients')
@@ -45,8 +50,24 @@ class MepiPatientSingleView(PatientSingleView):
         if patient_edit:
             context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
 
-        submissions = [XFormInstance.get(x) for x in pdoc.latest_case.xform_ids]
-        context['submissions'] = submissions
+
+
+        if view_mode == 'info':
+            self.template_name = "shinepatient/shinepatient_info.html"
+
+        if view_mode == 'files':
+            self.template_name = "shinepatient/shinepatient_files.html"
+
+        if view_mode == 'data':
+            self.template_name = "shinepatient/shinepatient_data.html"
+
+        if view_mode == 'submissions':
+            submissions = [XFormInstance.get(x) for x in pdoc.latest_case.xform_ids]
+            context['submissions'] = submissions
+            self.template_name = "shinepatient/shinepatient_submissions.html"
+
+        if view_mode == 'logs':
+            logs = ''
 
         return context
         #return render_to_response(template_name, context_instance=context)

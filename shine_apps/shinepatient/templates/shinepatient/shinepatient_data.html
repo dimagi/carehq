@@ -1,0 +1,46 @@
+{% extends "shinepatient/shinepatient_base.html" %}
+{% load shinepatient_tags %}
+{% load shineforms_tags %}
+{% load xform_tags %}
+{% load i18n %}
+{% load thumbnail %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+    {% for act in patient_doc.get_activity_history %}
+        <div class="commit-group-heading">
+            <h3><a href="#">
+                {% if act.2 %}
+                    <strong>{{ act.0 }} {{ act.2.received_on }}</strong>
+                {% else %}
+                    <em>{{ act.0 }} - No Data</em>
+                {% endif %}
+            </a>
+            </h3>
+        </div>
+
+        <div class="commit-group">
+            {% if act.2 %}
+                {% render_submission_fragment act.1 act.2 %}
+            {% else %}
+                <a class="btn"
+                    {#                           href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?mode=fullscreen">#}
+                    {# touchforms classic #}
+                     href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
+
+                    <i class="icon-plus"></i>
+                    {% trans "Enter" %} {{ act.0 }}
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}

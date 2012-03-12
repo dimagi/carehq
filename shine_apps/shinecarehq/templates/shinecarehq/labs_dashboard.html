@@ -2,12 +2,22 @@
 {% load i18n %}
 {% load patient_tags %}
 
+
+{% block page_header %}
+    <h1>Lab Data Collection</h1>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Lab Data Collection</li>
+    </ul>
+{% endblock page_crumbs %}
+
 {% block content %}
     {% block extrahead %}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
-        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css"
-              media="print, projection, screen"/>
-        <script type="text/javascript" charset="utf-8">
+        <link rel="stylesheet" href="{{ STATIC_URL }}carehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen"/> <script type="text/javascript" charset="utf-8">
             $().ready(function() {
                 $("#patient-table").tablesorter({sortList: [
                     [0,0]
@@ -16,8 +26,6 @@
         </script>
     {% endblock %}
     <div class="container">
-        <h2>Lab Data Collection (work in progress)</h2>
-        <hr>
         <table id="patient-table" class="tablesorter span12 last">
             <thead>
             <tr>

@@ -45,6 +45,8 @@ class BaseCarePlanItem(Document):
     modified_by =  StringProperty()
     modified_date = DateTimeProperty()
 
+#    due_date = DateTimeProperty()
+
     issue_container = BooleanProperty(default=True, verbose_name="Will this care plan item be something that tracks against Issues")
 
     def get_absolute_url(self):

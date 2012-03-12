@@ -2,6 +2,17 @@
 {% load i18n %}
 {% load patient_tags %}
 
+{% block page_header %}
+    <h1>Clinical Progress</h1>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Clinical Progress</li>
+    </ul>
+{% endblock page_crumbs %}
+
 {% block content %}
     {% block extrahead %}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
@@ -15,8 +26,6 @@
         </script>
     {% endblock %}
     <div class="container">
-        <h2>Clinical Progress</h2>
-        <hr>
         <table id="patient-table" class="tablesorter span12 last">
             <thead>
             <tr>

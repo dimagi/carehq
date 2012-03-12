@@ -1,5 +1,6 @@
 from datetime import datetime
 import random
+import simplejson
 from couchdbkit.ext.django.schema import  SchemaListProperty
 from django.core.files.base import ContentFile
 from casexml.apps.case.models import CommCareCase
@@ -11,7 +12,7 @@ from couchdbkit.schema.properties import StringProperty, StringListProperty
 import settings
 from shineforms.lab_utils import merge_labs
 from shineforms.constants import xmlns_display_map, form_sequence, xmlns_sequence, STR_MEPI_ENROLLMENT_FORM, STR_MEPI_LABDATA_FORM, STR_MEPI_LAB_TWO_FORM, STR_MEPI_LAB_FOUR_FORM, STR_MEPI_LAB_THREE_FORM, STR_MEPI_LAB_ONE_FORM
-
+from django.core.cache import cache
 
 
 couchdb_image_storage = CouchDBDocStorage(db_url=settings.COUCH_DATABASE)
@@ -112,18 +113,46 @@ class ShinePatient(BasePatient):
         submissions = self._get_case_submissions(case)
 
         for s in submissions:
-            formname = xmlns_display_map[s.xmlns].replace(' ','_').lower()
+            formname = xmlns_display_map[s['xmlns']].replace(' ','_').lower()
             setattr(self, "_%s" % formname, s)
         self._cached_submits=True
 
     def _get_case_submissions(self, case):
         attrib = '_case_submissions_%s' % case._id
-        if hasattr(self, attrib):
-            return getattr(self, attrib)
+        db = XFormInstance.get_db()
+
+        submissions_str = cache.get(attrib, None)
+        if submissions_str is not None:
+            submissions = simplejson.loads(submissions_str)
         else:
-            submissions = [XFormInstance.get(x) for x in case.xform_ids]
-            setattr(self, attrib, submissions)
-            return submissions
+            submissions = [db.open_doc(x) for x in case.xform_ids]
+            submissions_json = simplejson.dumps(submissions)
+            cache.set(attrib, submissions_json)
+        return submissions
+
+
+#    def foo(self):
+#        #next, do a memcached lookup
+#        if hasattr(self, '_couchdoc') and self._couchdoc != None:
+#            return self._couchdoc
+#
+#        couchjson = cache.get('%s_couchdoc' % (self.id), None)
+#        if couchjson == None:
+#            try:
+#                self._couchdoc = BasePatient.get_typed_from_id(self.doc_id)
+#                couchjson = simplejson.dumps(self._couchdoc.to_json())
+#                try:
+#                    cache.set('%s_couchdoc' % (self.id), couchjson)
+#                except:
+#                    logging.error("Error, caching framework unavailable")
+#            except Exception, ex:
+#                self._couchdoc = None
+#        else:
+#            self._couchdoc = BasePatient.get_typed_from_dict(simplejson.loads(couchjson))
+#
+#        #        if self._couchdoc == None:
+#        #            raise PatientIntegrityException("Error, unable to instantiate the patient document object")
+#        return self._couchdoc
 
 
 
@@ -132,9 +161,20 @@ class ShinePatient(BasePatient):
         if hasattr(self,'_latest_case'):
             return self._latest_case
 
+        cache_latest_case_str = cache.get('shinepatient_latest_case_%s' % self._id, None)
+        if cache_latest_case_str is not None:
+            raw_case_json = simplejson.loads(cache_latest_case_str)
+            latest_case = CommCareCase.wrap(raw_case_json)
+            self._latest_case = latest_case
+            return latest_case
+
+        #no cache no internal cache, reget
         case_docs = [CommCareCase.get(x) for x in self.cases]
         sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
         self._latest_case = sorted_docs[-1]
+
+        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(self._latest_case.to_json()))
+
         return self._latest_case
 
     def is_unique(self):
@@ -166,9 +206,8 @@ class ShinePatient(BasePatient):
         return cd4
 
 
-    @property
     def get_culture_status(self):
-        bottles = self.get_elab_bottle_data
+        bottles = self.get_elab_bottle_data()
 
         if bottles == '[No Data]':
             return '[No Data]'
@@ -213,7 +252,6 @@ class ShinePatient(BasePatient):
 
 
 
-    @property
     def get_last_action(self):
         case = self.latest_case
         submissions = self._get_case_submissions(case)
@@ -308,9 +346,9 @@ class ShinePatient(BasePatient):
             return self._elab
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-        elab_submissions = filter(lambda x: x.xmlns == STR_MEPI_LAB_ONE_FORM, submissions)
+        elab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LAB_ONE_FORM, submissions)
         #hack: assume to be one here
-        sorted_labs = sorted(elab_submissions, key=lambda x: x.received_on, reverse=True)
+        sorted_labs = sorted(elab_submissions, key=lambda x: x['received_on'], reverse=True)
 
         if len(sorted_labs) == 0:
             return None
@@ -324,7 +362,6 @@ class ShinePatient(BasePatient):
         return self._do_get_emergency_lab_submission()
 
 
-    @property
     def get_elab_bottle_data(self):
         """
         Return an array of the positive bottles or [No Data]
@@ -333,9 +370,9 @@ class ShinePatient(BasePatient):
         if lab is None:
             return "[No Data]"
 
-        if lab.form.get('positive_bottles', '') == '':
+        if lab['form'].get('positive_bottles', '') == '':
             return []
-        positives = lab.form['positive_bottles'].split(' ')
+        positives = lab['form']['positive_bottles'].split(' ')
         return positives
         
 

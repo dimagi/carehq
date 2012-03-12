@@ -1,0 +1,134 @@
+{% extends "shinepatient/shinepatient_base.html" %}
+{% load i18n %}
+{% block patient-tab-container %}
+    <div id="patient-info-display">
+
+
+        <div class="commit-group-heading">
+            <h4>Clinical Info</h4>
+        </div>
+        <div class="commit-group">
+            <dt>{% trans "System ID" %}</dt>
+            <dd>{{ patient_doc.external_id }}</dd>
+            <dt>{% trans "CD4 Count" %}</dt>
+            <dd>{{ patient_doc.get_cd4_count }}</dd>
+            <dt>{% trans "HIV Status" %}</dt>
+            <dd>{{ patient_doc.get_hiv_status }}</dd>
+
+
+            <dt>{% trans "Blood Culture Status" %}</dt>
+            <dd>
+                {% if patient.get_culture_status == '[No Data]' %}
+                    <div class="mepi_missing">
+                        Not Taken
+                    </div>
+                {% else %}
+                    {% if patient.get_culture_status == 'positive' %}
+                        Positive
+                    {% else %}
+                        Negative
+                    {% endif %}
+                {% endif %}
+            </dd>
+
+            <dt>{% trans "Status" %}</dt>
+            <dd>Inpatient | Discharged | Deceased</dd>
+
+            <dt>{% trans "Ward" %}</dt>
+            <dd>{{ patient_doc.get_current_ward }}</dd>
+            <dt>{% trans "Bed Number" %}</dt>
+            <dd>{{ patient_doc.get_current_bed }}</dd>
+        </div>
+    
+        <div class="commit-group-heading">
+{#            <h4>Basic Information <small class="pull-right"><a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">Edit</a></small></h4>#}
+            <h4>Basic Information :: getform</h4>
+        </div>
+        
+        
+        <div class="commit-group">
+            <div id="patienteditform"></div>
+            {% include "shinepatient/shinepatient_info_panel.html" %}
+        </div>
+    </div>
+
+    <div class="commit-group-heading">
+        <h4>Contact Information</h4>
+    </div>
+    <div class="commit-group">
+        <table>
+            <tr>
+                <th class="span3" style="vertical-align: top;">
+                    Address
+                </th>
+                <td>
+                    <div id="addressform"></div>
+                    {% if patient_doc.address %}
+                        {% for patient_address in patient_doc.address %}
+                            <div class="ptprofile_address">
+                                {% if patient_address.description %}
+                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ patient_address.street }}<br>
+                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}
+                                <br>
+                                <hr>
+                                <span class="editctrl">
+
+                                    Edit/change/remove
+{#                                    <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>#}
+{#                                    &nbsp;#}
+{#                                    <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>#}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No Address <br>
+                    {% endif %}
+                    <small>
+{#                        <!--<a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}','address', 'addressform');">-->#}
+{#                            Add Address </a>#}
+                        add remove address
+                    </small>
+                </td>
+            </tr>
+
+            <tr>
+                <th lass="span3" style="vertical-align: top;">
+                    Phone
+                </th>
+                <td>
+                    <div id="phoneform"></div>
+                    {% if patient_doc.phones %}
+                        {% for phone in patient_doc.phones %}
+                            <div class="ptprofile_phone">
+                                {% if phone.description %}
+                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>
+                                {% endif %}
+                                {{ phone.number }}<br>
+                                <hr>
+                                <span class="editctrl">
+{#                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>#}
+{#                                    &nbsp;#}
+{#                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>#}
+                                    add remove phones
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No Phones<br>
+                    {% endif %}
+                    <small>
+{#                        <!--<a href="javascript:ajax_get_form('{%url ajax_patient_form_get%}', '{{ patient_doc.get_id }}','phone', 'phoneform');">-->#}
+{#                            Add Phone#}
+{#                        </a>#}
+                        add phone
+                    </small>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <small>
+    <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+    </small>
+{% endblock %}

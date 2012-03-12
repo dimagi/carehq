@@ -1,12 +1,15 @@
 .mepi_status_matrix {
     /*background:  #d3d3d3;*/
+    width:240px;
 }
 
 .mepi_missing {
-    background:#FBB4AE;
+    /*background:#FBB4AE;*/
+    background-color: #b94a48;
 }
 .mepi_completed {
-    background:#CCEBC5;
+    /*background:#CCEBC5;*/
+    background-color: #468847;
 }
 
 .mepi_omit {
@@ -14,10 +17,22 @@
 }
 
 div.mepi_missing, div.mepi_completed, div.mepi_omit {
-    border-radius:4px;
-    padding:4px;
+    /*border-radius:4px;*/
+    /*padding:4px;*/
     margin-left: 4px;
     margin-top:4px;
+
+
+    padding: 2px 4px 3px;
+    font-size: 11.049999999999999px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    /*background-color: #999999;*/
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+
 }
 
 
@@ -45,5 +60,6 @@ div.mepi_missing, div.mepi_completed, div.mepi_omit {
 }
 
 div.mepi_quarter, div.mepi_third, div.mepi_full, div.mepi_half {
+
     float:left;
 }

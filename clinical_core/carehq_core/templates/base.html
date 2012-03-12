@@ -6,6 +6,7 @@
     <title>{% block title %}{% endblock %}{% block title_suffix %} :: CareHQ{% endblock %}</title>
     <link rel="shortcut icon" href="{{ STATIC_URL }}carehq/img/favicon.png"/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% block javascripts %}
         <!-- javascripts (global, app, page) -->
@@ -17,13 +18,13 @@
 
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery-ui-1.8.16.custom.min.js"></script>
-        <link rel="stylesheet/less" href="{{ STATIC_URL }}carehq/tbootstrap/less/bootstrap.less">
-        <script src="{{ STATIC_URL }}carehq/js/less-1.2.1.min.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.flickrmenu.js"></script>
+        {#        <link rel="stylesheet/less" href="{{ STATIC_URL }}carehq/tbootstrap/less/bootstrap.less">#}
+        {#        <script src="{{ STATIC_URL }}carehq/js/less-1.2.1.min.js"></script>#}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.cookie.yc.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timeago.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.ba-bbq.min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-dropdown.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-collapse.js"></script>
         {#        <script type="text/javascript" src="{{STATIC_URL}}carehq/tbootstrap/js/bootstrap-tab.js"></script>#}
         <script type="text/javascript" src="{{STATIC_URL}}carehq/tablesorter/jquery.tablesorter.min.js"></script>
     {% endblock javascripts %}
@@ -32,6 +33,7 @@
         {% include "uni_form/includes.html" %}
         <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/carehq.css" type="text/css">
         <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-1.8.16.custom.css" type="text/css">
+        <link rel="stylesheet" href="{{STATIC_URL}}carehq/tbootstrap/css/bootstrap.css" type="text/css">
         {#            <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery-ui-aristo.css" type="text/css">#}
         {#			<link rel="stylesheet" href="{{STATIC_URL}}carehq/css/flickr-menu-style.css" type="text/css">#}
 
@@ -44,19 +46,31 @@
             padding-top: 48px;
         }
     </style>
+    <link rel="stylesheet" href="{{STATIC_URL}}carehq/tbootstrap/css/bootstrap-responsive.css" type="text/css">
 </head>
 <body>
 {% block tophat %}
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    {% block branding %}
-                        <a class="brand" href="/">
-                            {#                        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">#}
-                            <h2>CareHQ</h2>
-                        </a>
-                    {% endblock branding %}
+                {% block branding %}
+                    <a class="brand" href="/">
+                        {#                        <img src="{{STATIC_URL}}carehq/img/dimagilogo.png">#}
+                        <h2>CareHQ</h2>
+                    </a>
+                {% endblock branding %}
+
+
+
+                {# collapse button #}
+                    <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+
+                    <div class="nav-collapse">
                     <ul class="nav">
                         {% block navigation_menu %}
                             <li class="active"><a href="#">Home</a></li>
@@ -101,6 +115,7 @@
 
                         {% endif %}
                     {% endblock top_useridentity %}
+                    </div> {# nav-collapse#}
             </div>
         </div>
     </div>

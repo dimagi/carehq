@@ -1,0 +1,41 @@
+{% extends "shinepatient/shinepatient_base.html" %}
+{% load shinepatient_tags %}
+{% load shineforms_tags %}
+{% load xform_tags %}
+{% load i18n %}
+{% load thumbnail %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+    {% with patient_doc.clinical_images as clinical_images %}
+        {% if clinical_images %}
+            {% for image_tuple in clinical_images %}
+                {% thumbnail image_tuple.0.image "200x200" as im %}
+                    <p>
+                        <a href="{% url hutch_show_image image_tuple.0.id %}"><img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"></a>
+                        &nbsp;
+                        {{ image_tuple.1 }}
+                    </p>
+                {% endthumbnail %}
+            {% endfor %}
+        {% else %}
+            <h4>No Images</h4>
+        {% endif %}
+    {% endwith %}
+    <div class="container">
+        <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all" href="{% url mepi_upload_patient_photo patient_doc.get_id %}">
+            <span class="ui-icon ui-icon-gear"></span>
+            <span class="edit_btn_txt">Upload New Image</span>
+        </a>
+    </div>
+
+{% endblock %}

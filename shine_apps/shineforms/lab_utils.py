@@ -3,7 +3,7 @@
 def merge_labs(lab_submissions, as_dict=False):
     """
     """
-    sorted_labs = sorted(lab_submissions, key=lambda x: x.received_on)
+    sorted_labs = sorted(lab_submissions, key=lambda x: x['received_on'])
     hiv_test = ""
     mal_rapid = "" #rapid
     mal_smear = "" #smear
@@ -19,7 +19,7 @@ def merge_labs(lab_submissions, as_dict=False):
 
     def fill_sub_dict(submission, key):
         ret_dict = dict()
-        for k,v in submission.form[key].items():
+        for k,v in submission['form'][key].items():
             if k not in ret_dict:
                 ret_dict[k] = ''
             stored_val = ret_dict[k]
@@ -31,35 +31,35 @@ def merge_labs(lab_submissions, as_dict=False):
     for sub in lab_submissions:
 
         #old style checks
-        if sub.form['hiv'] != "":
-            hiv_test = sub.form['hiv']
-        if sub.form['rapid'] != "":
-            mal_rapid = sub.form['rapid']
-        if sub.form['smear'] != "":
-            mal_smear = sub.form['smear']
-        if sub.form.get('prophylaxis', '') != "":
-            prophylaxis = sub.form['prophylaxis']
-        if sub.form['afb_smear'] != "":
-            afb_smear = sub.form['afb_smear']
-        if sub.form['xray'] != "":
-            if sub.form['xray'] == 'other':
-                if 'xrayother' in sub.form:
-                    xray = "Other: %s" % sub.form['xrayother']
+        if sub['form']['hiv'] != "":
+            hiv_test = sub['form']['hiv']
+        if sub['form']['rapid'] != "":
+            mal_rapid = sub['form']['rapid']
+        if sub['form']['smear'] != "":
+            mal_smear = sub['form']['smear']
+        if sub['form'].get('prophylaxis', '') != "":
+            prophylaxis = sub['form']['prophylaxis']
+        if sub['form']['afb_smear'] != "":
+            afb_smear = sub['form']['afb_smear']
+        if sub['form']['xray'] != "":
+            if sub['form']['xray'] == 'other':
+                if 'xrayother' in sub['form']:
+                    xray = "Other: %s" % sub['form']['xrayother']
                 else:
                     xray='other'
             else:
-                xray = sub.form['xray']
+                xray = sub['form']['xray']
 
-        if 'bloodwbc' in sub.form:
+        if 'bloodwbc' in sub['form']:
             bloodwbc = fill_sub_dict(sub, 'bloodwbc')
-        if 'hivfollowup' in sub.form:
+        if 'hivfollowup' in sub['form']:
             hivfollowup = fill_sub_dict(sub, 'hivfollowup')
-        if 'bloodcts' in sub.form:
+        if 'bloodcts' in sub['form']:
             bloodcts = fill_sub_dict(sub, 'bloodcts')
 
-        if sub.form.has_key('sections'):
+        if sub['form'].has_key('sections'):
             #new style checks
-            for labkey, val in sub.form['sections'].items():
+            for labkey, val in sub['form']['sections'].items():
                 if labkey == 'labs_xray':
                     #done: yes/no
                     xray = val

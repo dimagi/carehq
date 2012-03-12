@@ -48,7 +48,7 @@ def _get_preloaders(request, patient_guid):
     return preloaders
 
 
-def _prep_form(request, case_id, xform_url, next_url, mode):
+def _prep_form(request, case_id, xform_url, next_url, mode, instance_data=None):
 
     if request.browser_info.get('ismobiledevice') == 'true':
         mode='touch'
@@ -59,6 +59,10 @@ def _prep_form(request, case_id, xform_url, next_url, mode):
             mode = 'touch'
         else:
             mode = 'type'
+
+    if request.GET.get('override', None) is not None:
+        mode = request.GET['override']
+
     preloaders = shared_preloaders()
     preloaders.update(user_meta_preloaders(request.user))
     preloaders['case'] = {'case-id': case_id}
@@ -68,6 +72,7 @@ def _prep_form(request, case_id, xform_url, next_url, mode):
     playsettings["next"] = next_url
     playsettings["data"] = json.dumps(preloaders)
     playsettings["input_mode"] = mode
+    playsettings['instance'] = instance_data
     return play_remote(request, playsettings=playsettings)
 
 
@@ -101,7 +106,7 @@ def shine_form_cb(request, case_id):
         raise Http404
     patient_guid = pts[0]._id
 
-    reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid})
+    reverse_back = reverse('shine_single_patient', kwargs={'patient_guid': patient_guid, 'view_mode': ''})
     return HttpResponseRedirect(reverse_back)
 
 @httpdigest
