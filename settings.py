@@ -1,7 +1,6 @@
 # Django settings for blah project.
 import os
 import logging
-from dimagi.utils.couch.settingshelper import get_server_url
 from settings_utils import get_couch_server_url, make_couch_database_url, make_couchdb_tuple
 
 DEBUG = True
@@ -276,7 +275,7 @@ except ImportError, e:
 INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 COUCHDB_APPS = COUCHDB_APPS + LOCAL_COUCHDB_APPS
 
-COUCH_SERVER = get_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
+COUCH_SERVER = get_couch_server_url(COUCH_SERVER_ROOT, COUCH_USERNAME, COUCH_PASSWORD)
 #this is the default couch database url projectwide.
 COUCH_DATABASE = "%(server)s/%(database)s" % {"server": COUCH_SERVER, "database": COUCH_DATABASE_NAME }
 
