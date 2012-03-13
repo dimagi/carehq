@@ -1,0 +1,108 @@
+{% extends "patient/base_patient.html" %}
+{% load i18n %}
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timePicker.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}shinecarehq/shinecarehq.css" type="text/css">
+    <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery.timePicker.css" type="text/css">
+    {#    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/profile_tab_ctrl.js"></script>#}
+    <script>
+        $(function () {
+
+            $('#ptabs').tabs();
+            $('.editctrl').each(function () {
+                $(this).hide();
+            });
+        });
+        function toggle_edit() {
+            if ($("#edit_tgl_btn > span.edit_btn_txt").html() == "Edit Patient") {
+                $('.editctrl').each(function () {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Done Editing");
+            } else {
+                $('.editctrl').each(function () {
+                    $(this).toggle('drop', {}, 300);
+                });
+                $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
+            }
+        }
+    </script>
+{% endblock extrahead %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="#">Patients</a> <span class="divider">/</span></li>
+        <li class="active">{{ patient_doc.last_name }}, {{ patient_doc.first_name }}</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <div class="row">
+        <div class="span12">
+            {% block patient_hat %}
+                <div class="pull-left">
+                    {% block patient_name_display %}
+                        <span class="ptpage_fn"> {{ patient_doc.last_name }}, {{ patient_doc.first_name }}</span>
+                    {% endblock patient_name_display %}
+                </div>
+                <div class="pull-right">
+                    {% block hat_actions %}
+                    {% endblock hat_actions %}
+                </div>
+            {% endblock patient_hat %}
+        </div>
+    </div> {# end row for patient_hat #}
+{% endblock page_header %}
+
+{% block patient-tab-controller %}
+    <li {% if view_mode == "info" %}class="active"{% endif %}>
+        <a href="{% url shine_single_patient patient_doc.get_id 'info' %}" data-toggle="tab">{% trans "Info" %}</a></li>
+    <li {% if view_mode == "data" %}class="active"{% endif %}>
+        <a href="{% url shine_single_patient patient_doc.get_id 'data' %}" data-toggle="tab">{% trans "Data" %}</a></li>
+    <li {% if view_mode == "submissions" %}class="active"{% endif %}>
+        <a href="{% url shine_single_patient patient_doc.get_id 'submissions' %}" data-toggle="tab">{% trans "Submissions" %}</a></li>
+    <li {% if view_mode == "files" %}class="active"{% endif %}>
+        <a href="{% url shine_single_patient patient_doc.get_id 'files' %}" data-toggle="tab">{% trans "Files" %}</a></li>
+{% endblock patient-tab-controller %}
+{% block patient-tab-container %}
+   <div id="patient-info-tab" class="ui-tabs-hide">
+        <div id="patienteditform" class="modal"></div>
+        <!-- end patient info display-->
+    </div>
+
+
+    <div id="patient-careteam-tab">
+        <div class="span12">
+            <a class="editctrl fg-button ui-state-default fg-button-icon-left ui-corner-all"
+               href="javascript:alert('todo')">
+                {#                       href="{% url pt_add_provider patient_doc.get_id %}">#}
+                <span class="ui-icon ui-icon-circle-plus"></span>
+                Add Provider </a>
+
+            {% for prr in careteam_prrs %}
+{#                {% include "carehqapp/network/careteam_listitem.html" %}#}
+            {% endfor %}
+            {% comment %}
+                {% for role, actors in careteam_dict.items %}
+                    <div class="span-two-thirds last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
+                    {% for actor in actors %}
+                        <div class="span-two-thirds last" style="border: 1px solid black;padding: 8px;margin: 4px;">
+                            <div class="span7 careteam_name">{{ actor.actordoc.get_name }}</div>
+                            <div class="span4 last">{{ actor.actordoc.get_display|title }}</div>
+                            &nbsp;
+                        </div>
+                        &nbsp;
+                    {% endfor %}
+                {% endfor %}
+                {% endcomment %}
+
+
+        </div>
+        &nbsp;
+    </div>
+    <div id="patient-careplan-tab">
+        Careplan goes here
+    </div>
+{% endblock patient-tab-container %}

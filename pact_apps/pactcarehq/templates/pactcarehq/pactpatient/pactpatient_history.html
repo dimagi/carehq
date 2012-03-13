@@ -1,0 +1,18 @@
+{% extends "carehqapp/patient/carehq_patient_base.html" %}
+{% load carehq_tags %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+    {% for log in audit_log %}
+        {{ log.0.event_date|date }} by {{ log.0.user }} <br> {{ log.1}}<br><hr>
+    {% endfor %}
+{% endblock %}

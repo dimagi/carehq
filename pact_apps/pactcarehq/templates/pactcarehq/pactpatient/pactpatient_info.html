@@ -1,0 +1,63 @@
+{% extends "shinepatient/shinepatient_base.html" %}
+{% load i18n %}
+{% load shineforms_tags %}
+{% block patient-tab-container %}
+    <div id="patient-info-display">
+
+
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="commit-group-heading">
+                    <h4>Clinical Info</h4>
+                </div>
+                <div class="commit-group">
+                    <dt>{% trans "System ID" %}</dt>
+                    <dd>{{ patient_doc.external_id }}</dd>
+                    <dt>{% trans "CD4 Count" %}</dt>
+                    <dd>{{ patient_doc.get_cd4_count }}</dd>
+                    <dt>{% trans "HIV Status" %}</dt>
+                    <dd>{{ patient_doc.get_hiv_status }}</dd>
+
+
+                    <dt>{% trans "Blood Culture Status" %}</dt>
+                    <dd>
+                        {% if patient.get_culture_status == '[No Data]' %}
+                            <div class="mepi_missing">
+                                Not Taken
+                            </div>
+                        {% else %}
+                            {% if patient.get_culture_status == 'positive' %}
+                                Positive
+                            {% else %}
+                                Negative
+                            {% endif %}
+                        {% endif %}
+                    </dd>
+
+                    <dt>{% trans "Status" %}</dt>
+                    <dd>{% if patient_doc.latest_case.closed %}
+                        Inactive
+                    {% else %}
+                        Active
+                    {% endif %}
+                    </dd>
+
+                    <dt>{% trans "Ward" %}</dt>
+                    <dd>{{ patient_doc.get_current_ward }}</dd>
+                    <dt>{% trans "Bed Number" %}</dt>
+                    <dd>{{ patient_doc.get_current_bed }}</dd>
+                </div>
+            </div>
+            <div class="span9">
+                <h3>Quick Status</h3>
+        <span class="mepi_status_matrix">
+        {% get_status_matrix patient_doc %}
+        </span>
+            </div>
+        </div>
+    </div>
+
+    <small>
+        <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>
+    </small>
+{% endblock %}

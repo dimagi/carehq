@@ -1,54 +1,70 @@
-{%  extends base_template %}
+{% extends base_template %}
+
+{% block page_header %}
+    <h2>Recent Activity</h2>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li class="active"><a href="/">Home</a> <span class="divider">/</span></li>
+    </ul>
+{% endblock page_crumbs %}
 
 {% block content %}
-<div class="container">
-		<h2>Recent Activity</h2>
+    <div class="container">
 
-	<table id="dashboard-table">
-	<thead>
-		<tr>
-        <th class="span-1">ID</th>
-		<th class="span3">Name</th>
-		<th class="span1">ARM</th>
-		<th class="span1">Primary HP</th>
-		<th class="span-one-third">Last Activity</th>
-	</thead>
-	
-	<tbody>
-	{% for chw, patients in chw_patients_arr %}
-        <tr>
-            <td colspan="5"><div class="success">
-                <h4>{{ chw }}'s Patients</h4></div>
-            </td>
-        </tr>
-
-        {% for cpatient in patients %}
+        <table class="table table-striped">
+            <thead>
             <tr>
-                <td><h4>{{cpatient.pact_id}}</h4></td>
-                <td><h4><a href="{% url view_pactpatient cpatient.get_id %}">{{cpatient.last_name}}, {{cpatient.first_name}}</a></h4></td>
-                <td>{{cpatient.arm}}</td>
-                <td>{{cpatient.primary_hp}}</td>
-                <td>
-                    <strong>Total Submissions:</strong> {{ cpatient.activity_dashboard.count }}<br>
-                    <strong>Last Encounter:</strong> {{ cpatient.activity_dashboard.encounter_date|date }} by {{ cpatient.activity_dashboard.chw_id }} {{ cpatient.activity_dashboard.last_form_type }}<br>
-                    <strong>Last Bloodwork:</strong>
-                    {% if cpatient.check_last_bloodwork %}
-                        {% with cpatient.check_last_bloodwork as bw %}
-                        {{ bw.get_date|date }} <small>{{ bw.get_date|timesince }}</small>
-                        {% if bw.is_overdue %}
-                            <div class="error">
-                                Bloodwork Overdue
-                            </div>
-                        {% endif %}
-                        {% endwith %}
-                    {% else %}
-                        No bloodwork
-                    {% endif %}
-                </td>
+                <th class="span1">ID</th>
+                <th class="span2">ARM</th>
+                <th class="span3">Name</th>
+                <th class="span2">Primary HP</th>
+                <th class="span6">Last Activity</th>
             </tr>
-        {% endfor %}
-	{% endfor %}
-	</tbody>
-	</table>
-</div>
+            </thead>
+
+            <tbody>
+            {% for chw, patients in chw_patients_arr %}
+                <tr>
+                    <td colspan="5">
+                        <div class="alert alert-info">
+                            <h4>{{ chw }}'s Patients</h4></div>
+                    </td>
+                </tr>
+
+                {% for cpatient in patients %}
+                    <tr>
+                        <td><h4>{{ cpatient.pact_id }}</h4></td>
+                        <td><h4><a
+                                href="{% url view_pactpatient cpatient.get_id %}">{{ cpatient.last_name }}, {{ cpatient.first_name }}</a>
+                        </h4></td>
+                        <td>{{ cpatient.arm }}</td>
+                        <td>{{ cpatient.primary_hp }}</td>
+                        <td>
+                            <strong>Total Submissions:</strong> {{ cpatient.activity_dashboard.count }}<br>
+                            <strong>Last Encounter:</strong> {{ cpatient.activity_dashboard.encounter_date|date }}
+                            by {{ cpatient.activity_dashboard.chw_id }} {{ cpatient.activity_dashboard.last_form_type }}
+                        <br>
+                            <strong>Last Bloodwork:</strong>
+                            {% if cpatient.check_last_bloodwork %}
+                                {% with cpatient.check_last_bloodwork as bw %}
+                                    {{ bw.get_date|date }}
+                                    <small>{{ bw.get_date|timesince }}</small>
+                                    {% if bw.is_overdue %}
+                                        <div class="alert alert-error span3">
+                                            Bloodwork Overdue
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                                No bloodwork
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}

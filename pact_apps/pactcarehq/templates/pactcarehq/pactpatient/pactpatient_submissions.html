@@ -1,0 +1,34 @@
+{% extends "shinepatient/shinepatient_base.html" %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+            {% if submissions %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="span3">Date</th>
+                        <th class="span3">User</th>
+                        <th class="span3">Form</th>
+                    </tr>
+                    </thead>
+                    {% for submit in submissions %}
+                        <tr>
+                            <td><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date }}</a></td>
+                            <td> {{ submit.form.Meta.username }}</td>
+                            <td> {{ submit.xmlns }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h4>No Recent Activity</h4>
+            {% endif %}
+{% endblock %}

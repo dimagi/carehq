@@ -6,48 +6,33 @@
         </a>
     </div>
 {% endblock branding %}
+
 {% block navigation_menu %}
     {% if user.is_authenticated %}
-    <div id="menu" style="z-index:-1;">
-     <ul>
-        {% block nav_list %}
-         <li>
-             <span class="head_menu">
-               <a href="{% url pactcarehq.views.my_patient_activity %}">Dashboard</a>
-             </span>
-         </li>
-         <li>
-             <span class="head_menu">
-             <a href="{% url pactcarehq.views.my_submits %}">My Submissions</a>
-             </span>
-         </li>
+        <li><a href="{% url pactcarehq.views.my_patient_activity %}">Dashboard</a></li>
+        <li><a href="{% url pactcarehq.views.my_submits %}">My Submissions</a></li>
+        <li> <a href="{% url dots_view %}">DOT Adherence</a> </li>
 
-         <li>
-             <span class="head_menu">
-             <a href="{% url dots_view %}">DOT Adherence</a>
-             </span>
-         </li>
-        <li>
-            <span class="head_menu">
-                <a href="">Management</a>
-                <img src="{{ STATIC_URL }}carehq/img/arrow.png" width="18" height="15" align="top" class="arrow"/>
-            </span>
-            <div class="sub_menu">
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Management
+                <b class="caret"></b>
+            </a>
+
+            <ul class="dropdown-menu">
+
                 {% if user.is_superuser %}
-                    <a href="{% url carehqadmin.views.landing %}">System Admin</a>
+                    <li><a href="{% url carehqadmin.views.landing %}">System Admin</a></li>
+                    <li class="divider"></li>
                 {% endif %}
-                <a href="{% url chw_actor_list %}">CHW List</a>
-                <a href="{% url pactpatient_list %}">Patient List</a>
+                <li><a href="{% url chw_actor_list %}">CHW List</a></li>
+                <li><a href="{% url pactpatient_list %}">Patient List</a></li>
                 {% if user.is_superuser %}
-                    <a href="{% url pactcarehq.views.export_landing %}">Data Exports</a>
+                    <li class="divider"></li>
+                    <li><a href="{% url pactcarehq.views.export_landing %}">Data Exports</a></li>
                 {% endif %}
-{#                                <a href="{% url clinical_core.actors.views.providerSearch %}">Provider List</a>#}
-{#                                <a href="{% url pactcarehq.views.all_submits_by_user %}">Submissions By CHW</a>#}
-{#                                <a href="{% url pactcarehq.views.all_submits_by_patient %}">Submissions By Patient</a>#}
-            </div>
+            </ul>
         </li>
-        {% endblock %}
-     </ul>
     {% endif %} {# end autenticated if#}
 </div>
 {% endblock navigation_menu %}
