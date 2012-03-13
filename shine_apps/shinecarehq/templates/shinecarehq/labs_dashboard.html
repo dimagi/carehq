@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% load shineforms_tags %}
 {% load i18n %}
 {% load patient_tags %}
 
@@ -26,7 +27,7 @@
         </script>
     {% endblock %}
     <div class="container">
-        <table id="patient-table" class="tablesorter table table-striped">
+        <table id="patient-table" class="tablesorter table table-striped table-bordered">
             <thead>
             <tr>
                 <th>{% trans "Surname" %}</th>
@@ -60,15 +61,19 @@
                     </td>
                     <td>{{ patient.enrollment_date|date:"Y-m-d" }}</td>
                     {% for tuple in patient.get_lab_data %}
+{#                        <td>#}
+{#                        {{ tuple.0 }}#}
+{#                            {% if tuple.1 %}#}
+{#                                {% for k, v in tuple.1.items %}#}
+{#                                    {{ k }}: {{ v }}<br>#}
+{#                                {% endfor %}#}
+{#                            {% else %}#}
+{#                                {{ tuple.1 }}#}
+{#                            {% endif %}#}
+{#                        </td>#}
                         <td>
-                        {{ tuple.0 }}
-                            {% if tuple.1 %}
-                                {% for k, v in tuple.1.items %}
-                                    {{ k }}: {{ v }}
-                                {% endfor %}
-                            {% else %}
-                                {{ tuple.1 }}
-                            {% endif %}
+                            {% render_lab_tuple tuple %}
+
                         </td>
                     {% endfor %}
                 </tr>

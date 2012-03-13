@@ -60,7 +60,7 @@ ul.errorlist {
 .commit-group-heading {
     /*margin: 15px 0 0 0;*/
     padding: 7px 14px;
-    font-size: 13px;
+    font-size: 1.25em;
     color: #3A505B;
     text-shadow: 0 1px rgba(255, 255, 255, 1.0);
     background: #E6F1F6;

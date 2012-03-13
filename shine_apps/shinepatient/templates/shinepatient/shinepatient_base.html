@@ -4,6 +4,7 @@
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/djangocookie.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.timePicker.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}shinecarehq/shinecarehq.css" type="text/css">
     <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/jquery.timePicker.css" type="text/css">
     {#    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/profile_tab_ctrl.js"></script>#}
     <script>
@@ -48,9 +49,6 @@
                 </div>
                 <div class="pull-right">
                     {% block hat_actions %}
-                        <a class="btn" href="#">Edit</a>
-                        <a class="btn" href="#">Foo</a>
-                        <a class="btn" href="#">Bar</a>
                     {% endblock hat_actions %}
                 </div>
             {% endblock patient_hat %}

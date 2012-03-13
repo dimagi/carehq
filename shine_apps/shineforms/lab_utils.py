@@ -52,8 +52,8 @@ def merge_labs(lab_submissions, as_dict=False):
 
         if 'bloodwbc' in sub['form']:
             bloodwbc = fill_sub_dict(sub, 'bloodwbc')
-        if 'hivfollowup' in sub['form']:
-            hivfollowup = fill_sub_dict(sub, 'hivfollowup')
+        if 'hiv_followup' in sub['form']:
+            hivfollowup = fill_sub_dict(sub, 'hiv_followup')
         if 'bloodcts' in sub['form']:
             bloodcts = fill_sub_dict(sub, 'bloodcts')
 

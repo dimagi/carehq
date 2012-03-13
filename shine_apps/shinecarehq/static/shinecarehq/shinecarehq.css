@@ -16,6 +16,10 @@
     background:#d3d3d3;
 }
 
+.mepi-heading {
+    font-size:1.5em;
+}
+
 div.mepi_missing, div.mepi_completed, div.mepi_omit {
     /*border-radius:4px;*/
     /*padding:4px;*/

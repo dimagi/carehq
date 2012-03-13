@@ -4,10 +4,26 @@
     <link rel="stylesheet" href="{{STATIC_URL}}couchforms/stylesheets/xforms.css" type="text/css">
 {% endblock extrahead %}
 
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Submission</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h2>View Submission <small>
+                    <a class="btn"
+                       href="{% url shineforms.views.edit_xform_interaction xform.get_id %}?override=full">
+                        <i class="icon-edit"></i>
+                        Edit
+                    </a>
 
+
+
+    </small></h2>
+{% endblock page_header %}
 {% block content %}
 <div class="span12">
-<h2>View Submission</h2>
 <div>{% render_form_data xform %}</div>
 </div>
 {%  endblock content %}

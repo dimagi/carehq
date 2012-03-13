@@ -15,12 +15,12 @@ register = template.Library()
 def format_name(value):
     if not isinstance(value, basestring):
         value = unicode(value)
-    return value.replace("_", " ")
+    return value.replace("_", " ").title()
 
 def render_base_type(key, value):
     if not value:
-        return "<tr><td><span class='prompt'>%s</span></td><td></td></tr>" % format_name(key)
-    return "<tr><td><span class='prompt'>%s</span></td><td><span class='value'>%s</span></td></tr>" % (format_name(key), format_name(value))
+        return "<tr><th>%s</th><td>base type empty</td></tr>" % format_name(key)
+    return "<tr><th>%s</th><td>%s</td></tr>" % (format_name(key), format_name(value))
 
 def is_base_type(value):
     return isinstance(value, basestring) or \
@@ -29,12 +29,26 @@ def is_base_type(value):
 
 
 @register.simple_tag()
+def render_lab_tuple(t):
+    #(section, {field:val, field:val}
+    ret = []
+    if isinstance(t[1], dict):
+        for k,v in t[1].items():
+            ret.append(render_kv(k, v))
+    else:
+        print "not dict k: %s" % t[0]
+        print "not dict v: %s" % t[1]
+        ret.append(render_kv(t[0], t[1]))
+    return "<table class='table'>%s</table>" % ''.join(ret)
+
+
+@register.simple_tag()
 def render_form(form):
     ret = []
     for k, v in form.items():
         ret.append(render_kv(k,v))
 
-    return "<table>%s</table>" % (''.join(ret))
+    return "<table class='table'>%s</table>" % ''.join(ret)
 
 def is_hidden_field(field_key):
     # hackity hack this static list of things we don't actually
@@ -58,7 +72,7 @@ def render_kv(nodekey, nodevalue):
             if node: node_list.append(node)
 
         if node_list:
-            return "<tr><td><span class='prompt'>%(header)s</span></td><td><table>%(body)s</table></td></tr>" % \
+            return "<tr><th>%(header)s</th><td><table class='table table-condensed'>%(body)s</table></td></tr>" % \
                     {"header": header,
                      "body": "".join(node_list)}
         else:
@@ -76,7 +90,7 @@ def render_kv(nodekey, nodevalue):
                         node_list.append(node)
             else:
                 node_list.append("<li>%s</li>" % format_name(str(item)))
-        full_list.append("<tr><td><span class='prompt'>%(header)s</span></td><td><ul>%(body)s</ul></td></tr>" % \
+        full_list.append("<tr><th>%(header)s</th><td><ul>%(body)s</ul></td></tr>" % \
                              {"header": header,
                               "body": "".join(node_list)})
     else:

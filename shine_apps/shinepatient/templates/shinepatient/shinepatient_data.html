@@ -17,30 +17,45 @@
 {% endblock extrahead %}
 {% block patient-tab-container %}
     {% for act in patient_doc.get_activity_history %}
-        <div class="commit-group-heading">
-            <h3><a href="#">
-                {% if act.2 %}
-                    <strong>{{ act.0 }} {{ act.2.received_on }}</strong>
-                {% else %}
-                    <em>{{ act.0 }} - No Data</em>
-                {% endif %}
-            </a>
-            </h3>
-        </div>
+        <div class="row span6">
+            <div class="commit-group-heading">
+                {% if act.2|length == 1 %}
+                        <strong>{{ act.0 }}</strong> <span style="font-size:1em"><a href="{% url show_submission act.2.0.get_id %}" class="pull-right">{{ act.2.0.received_on|date:"m/d/Y H:i" }} ({{ act.2.0.form.Meta.username }})</a></span>
+                    {% endif %}
 
-        <div class="commit-group">
-            {% if act.2 %}
-                {% render_submission_fragment act.1 act.2 %}
-            {% else %}
-                <a class="btn"
-                    {#                           href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?mode=fullscreen">#}
-                    {# touchforms classic #}
-                     href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
+                    {% if act.2|length > 1 %}
+                    <strong>{{ act.0 }}</strong>
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-info" href="#">Submits</a>
+                            <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                            {% for submit in act.2 %}
+                            <li><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date:"m/d/Y H:i" }} ({{ submit.form.Meta.username }})  </a></li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
 
-                    <i class="icon-plus"></i>
-                    {% trans "Enter" %} {{ act.0 }}
+                    {% if not act.2 %}
+                        <em>{{ act.0 }} - No Data</em>
+                    {% endif %}
                 </a>
-            {% endif %}
+            </div>
+
+            <div class="commit-group">
+                {% if act.2 %}
+                    {% render_submission_fragment act.1 act.2 %}
+                {% else %}
+                    <a class="btn"
+                            {#                           href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?mode=fullscreen">#}
+                            {# touchforms classic #}
+                       href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
+
+                        <i class="icon-plus"></i>
+                        {% trans "Enter" %} {{ act.0 }}
+                    </a>
+                {% endif %}
+            </div>
         </div>
     {% endfor %}
 {% endblock %}

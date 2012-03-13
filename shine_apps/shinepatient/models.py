@@ -1,4 +1,5 @@
 from datetime import datetime
+import pdb
 import random
 import simplejson
 from couchdbkit.ext.django.schema import  SchemaListProperty
@@ -116,9 +117,12 @@ class ShinePatient(BasePatient):
         for s in submissions:
             formname = xmlns_display_map[s['xmlns']].replace(' ','_').lower()
             setattr(self, "_%s" % formname, s)
+
+
+
         self._cached_submits=True
 
-    def _get_case_submissions(self, case):
+    def _get_case_submissions(self, case, wrap=False):
         attrib = '_case_submissions_%s' % case._id
         db = XFormInstance.get_db()
 
@@ -129,7 +133,13 @@ class ShinePatient(BasePatient):
             submissions = [db.open_doc(x) for x in case.xform_ids]
             submissions_json = simplejson.dumps(submissions)
             cache.set(attrib, submissions_json, 3600)
-        return submissions
+
+
+        if wrap:
+            return [XFormInstance.wrap(x) for x in submissions]
+
+        else:
+            return submissions
 
 
 #    def foo(self):
@@ -231,11 +241,11 @@ class ShinePatient(BasePatient):
         submissions = self._get_case_submissions(case)
         hiv ="No"
         for s in submissions:
-            if s.xmlns == STR_MEPI_ENROLLMENT_FORM:
+            if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
                 if s['form'].get('hiv_test', '') == "yes":
                     return "yes"
 
-            if s.xmlns == STR_MEPI_LABDATA_FORM:
+            if s['xmlns'] == STR_MEPI_LABDATA_FORM:
                 if s['form'].has_key('hiv'):
                     hiv = s['form']['hiv']
                     return hiv
@@ -292,9 +302,13 @@ class ShinePatient(BasePatient):
         """
         For patient Activity History Tab
         For all forms possible in system, fill it in as a section in the activity tab
+
+        activities[xmlns] = [submit, submit...]
+
+        returns: [(xmlns display, xmlns, [submit, submit...]), ... ]
         """
         case = self.latest_case
-        submissions = self._get_case_submissions(case)
+        submissions = self._get_case_submissions(case, wrap=True)
         activities_dict = dict()
         all_xmlns = xmlns_display_map.keys()
 
@@ -391,17 +405,27 @@ class ShinePatient(BasePatient):
 
     @property
     def get_current_bed(self):
-        if hasattr(self, '_enrollment'):
-            return self._enrollment.form['location']['bed']
-        else:
-            return 'Unknown'
+        case = self._latest_case
+        submissions = self._get_case_submissions(case)
+        for s in submissions:
+            if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
+                return s['form']['location']['bed']
+                pass
+            else:
+                continue
+        return 'Unknown'
 
     @property
     def get_current_ward(self):
-        if hasattr(self, '_enrollment'):
-            return self._enrollment.form['location']['ward']
-        else:
-            return 'Unknown'
+        case = self._latest_case
+        submissions = self._get_case_submissions(case)
+        for s in submissions:
+            if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
+                return s['form']['location']['ward']
+                pass
+            else:
+                continue
+        return 'Unknown'
 
 
 from .signals import *
