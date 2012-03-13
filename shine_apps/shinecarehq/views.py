@@ -1,6 +1,6 @@
 import uuid
 from couchdbkit.exceptions import ResourceNotFound
-from devserver.modules.profile import devserver_profile
+#from devserver.modules.profile import devserver_profile
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.models import User
@@ -46,7 +46,7 @@ def emergency_lab_dashboard(request, template="shinecarehq/emergency_lab_dashboa
     return render_to_response(template, locals(), context_instance=RequestContext(request))
 
 @login_required()
-@devserver_profile(follow=[ShinePatient.cache_clinical_case, ShinePatient.get_culture_status,  ])
+#@devserver_profile(follow=[ShinePatient.cache_clinical_case, ShinePatient.get_culture_status,  ])
 def labs_dashboard(request, template="shinecarehq/labs_dashboard.html"):
     """
     Full case list for dashboard view
@@ -85,7 +85,7 @@ def recent_activity(request, template="shinecarehq/recent_activity.html"):
 
 
 @login_required()
-@devserver_profile(follow=[ShinePatient.get_culture_status, ShinePatient.cache_clinical_case, ShinePatient._get_case_submissions, ShinePatient.get_last_action])
+#@devserver_profile(follow=[ShinePatient.get_culture_status, ShinePatient.cache_clinical_case, ShinePatient._get_case_submissions, ShinePatient.get_last_action])
 def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     """
     Full case list for dashboard view - this is the default home
