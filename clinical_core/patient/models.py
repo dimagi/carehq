@@ -193,7 +193,7 @@ class Patient(models.Model):
 
 
 class CPhone(Document):
-    phone_id= IntegerProperty()
+    phone_id= StringProperty()
     is_default = BooleanProperty()
     description = StringProperty()
     number = StringProperty()
@@ -214,7 +214,7 @@ class CAddress(Document):
     An address.
     """
     description = StringProperty() #the title so to speak
-    address_id = IntegerProperty()
+    address_id = StringProperty()
     street = StringProperty()
     city = StringProperty()
     state = StringProperty()
