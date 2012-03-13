@@ -1,6 +1,6 @@
 import uuid
 from dimagi.utils.couch.database import get_db
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 
 db = get_db()

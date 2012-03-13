@@ -1,5 +1,5 @@
 from django import template
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 from django.core.urlresolvers import reverse
 

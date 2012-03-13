@@ -1,4 +1,4 @@
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 def run():
     #really hacky script to address null issues in couch for patient data.  a weird issue not able to pinpoint.

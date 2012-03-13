@@ -14,7 +14,7 @@ from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from .util import form_xmlns_to_names
 from pactpatient.forms.patient_form import PactPatientForm
-from pactpatient.models.pactmodels import PactPatient, CActivityDashboard
+from pactpatient.models import PactPatient, CActivityDashboard
 import logging
 from patient.views import PatientSingleView
 

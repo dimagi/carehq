@@ -1,4 +1,4 @@
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 from django.contrib.auth.models import User
 

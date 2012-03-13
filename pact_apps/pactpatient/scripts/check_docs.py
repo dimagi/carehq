@@ -1,5 +1,5 @@
 from casexml.apps.case.models import CommCareCase
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 
 def run():

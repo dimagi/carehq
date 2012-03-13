@@ -5,7 +5,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 #flipping to tuple
 from django.core.exceptions import ValidationError
 from pactpatient.enums import REGIMEN_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, PACT_RACE_CHOICES
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from django.forms import widgets
 from uni_form.helpers import FormHelper
 from uni_form.helpers import Layout, Fieldset, Row

@@ -1,5 +1,5 @@
 from django.db.models.signals import post_init
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 from functools import partial
 

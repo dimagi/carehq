@@ -4,7 +4,7 @@ from tastypie import fields
 from tastypie.authorization import ReadOnlyAuthorization
 from couchforms.models import XFormInstance
 from dimagi.utils.couch.tastykit import CouchdbkitResource, CouchdbkitTastyPaginator, DataTablesMixin
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 
 class PactXForm(XFormInstance):

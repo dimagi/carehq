@@ -12,7 +12,7 @@ from dotsview.forms import AddendumForm
 from models import *
 from django.contrib.auth.decorators import login_required
 from couchforms.models import XFormInstance
-from pactpatient.models.pactmodels import PactPatient, ghetto_regimen_map
+from pactpatient.models import PactPatient, ghetto_regimen_map
 from django.forms.formsets import formset_factory
 from django.core.cache import cache
 from dotsview.tasks import csv_export

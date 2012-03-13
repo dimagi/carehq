@@ -13,7 +13,7 @@ from clinical_shared.tests.testcase import CareHQClinicalTestCase
 from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import raddress
 from pactpatient.enums import REGIMEN_CHOICES, PACT_RACE_CHOICES, PACT_HIV_CLINIC_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from pactpatient.views import new_patient
 from patient.models import Patient
 from permissions.models import Actor, Role, PrincipalRoleRelation

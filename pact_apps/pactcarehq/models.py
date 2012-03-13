@@ -1,4 +1,3 @@
-from actorpermission.models.actortypes import CHWActor
 #
 #Remains to be seen if this should be xform'ed or django formed
 #class TrainingLog(DocumentSchema):

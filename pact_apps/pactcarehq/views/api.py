@@ -23,7 +23,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.http import require_POST
 import logging
-from pactpatient.models.pactmodels import PactPatient, CDotWeeklySchedule
+from pactpatient.models import PactPatient, CDotWeeklySchedule
 from patient.models import  Patient
 
 @login_required

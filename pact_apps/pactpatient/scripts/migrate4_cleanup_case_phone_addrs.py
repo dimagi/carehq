@@ -2,7 +2,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from casexml.apps.case.models import CommCareCase
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from pactpatient.updater import update_patient_casexml
 from receiver.util import spoof_submission
 

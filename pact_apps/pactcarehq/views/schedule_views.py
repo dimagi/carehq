@@ -13,7 +13,7 @@ from couchforms.models import XFormInstance
 from pactcarehq import schedule
 from pactcarehq.views import DAYS_OF_WEEK
 from pactcarehq.views.patient_views import getpatient
-from pactpatient.models.pactmodels import CDotWeeklySchedule
+from pactpatient.models import CDotWeeklySchedule
 from patient.models import Patient
 
 

@@ -3,7 +3,7 @@ from couchforms.signals import xform_saved
 import logging
 import simplejson
 from django.core.cache import cache
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 def process_dots_submission(sender, xform, **kwargs):
 

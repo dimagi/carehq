@@ -13,7 +13,7 @@ import time
 from quicksect import IntervalNode
 from django.core.cache import cache
 import simplejson
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 cached_schedules = {}
 

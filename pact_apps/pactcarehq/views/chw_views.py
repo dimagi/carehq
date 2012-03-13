@@ -6,7 +6,7 @@ from django.template.context import RequestContext
 from carehq_core import carehq_api
 from dimagi.utils.couch.pagination import ReportBase
 from pactcarehq.views.submission_views import _get_submissions_for_user
-from pactpatient.models.pactmodels import CActivityDashboard
+from pactpatient.models import CActivityDashboard
 
 @login_required
 def chw_list(request, template_name="pactcarehq/chw_list.html"):

@@ -1,6 +1,6 @@
 from couchforms.signals import xform_saved
 import logging
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 def process_patient_update_submission(sender, xform, **kwargs):
     try:

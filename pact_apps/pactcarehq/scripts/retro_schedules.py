@@ -1,4 +1,4 @@
-from pactpatient.models.pactmodels import CDotWeeklySchedule
+from pactpatient.models import CDotWeeklySchedule
 from patient.models import Patient
 from datetime import datetime, timedelta
 

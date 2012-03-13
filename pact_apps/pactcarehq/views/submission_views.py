@@ -18,7 +18,7 @@ from pactcarehq.forms.progress_note_comment import ProgressNoteComment
 from permissions.models import Actor
 from .util import form_xmlns_to_names, ms_from_timedelta
 from pactcarehq.views.patient_views import _get_submissions_for_patient
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import CSimpleComment, Patient
 
 import uuid

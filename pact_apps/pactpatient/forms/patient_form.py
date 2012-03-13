@@ -9,7 +9,7 @@ from django.forms.models import ModelChoiceField
 from carehq_core import carehq_api, carehq_constants
 from pactconfig.pact_constants import hack_pact_usernames
 from pactpatient.enums import REGIMEN_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, PACT_RACE_CHOICES
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from django.forms import widgets
 from uni_form.helpers import FormHelper
 from uni_form.helpers import Layout, Fieldset, Row
@@ -114,7 +114,7 @@ class PactPatientForm(DocumentForm):
             return self.cleaned_data['mass_health_expiration']
 
     def clean_pact_id(self):
-        if PactPatient.check_pact_id(self.cleaned_data['pact_id']) == False:
+        if not PactPatient.check_pact_id(self.cleaned_data['pact_id']):
             raise ValidationError("Error, pact id must be unique")
         else:
             return self.cleaned_data['pact_id']
@@ -152,7 +152,7 @@ class PactPatientForm(DocumentForm):
 
 
     class Meta:
-        document = PactPatient.wrap
+        document = PactPatient
 
 
 #

@@ -2,7 +2,7 @@ from couchdbkit.ext.django.forms import DocumentForm
 from django import forms
 from django.forms import widgets
 from django.contrib.auth.models import User
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 
 days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
 

@@ -10,7 +10,7 @@ from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
 from pytz import timezone
 from couchforms.models import XFormInstance
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from datetime import datetime
 import settings
 
