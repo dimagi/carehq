@@ -1,6 +1,5 @@
-{% extends "shinepatient/shinepatient_base.html" %}
+{% extends "pactcarehq/pactpatient/pactpatient_base.html" %}
 {% load i18n %}
-{% load shineforms_tags %}
 {% block patient-tab-container %}
     <div id="patient-info-display">
 
@@ -51,7 +50,6 @@
             <div class="span9">
                 <h3>Quick Status</h3>
         <span class="mepi_status_matrix">
-        {% get_status_matrix patient_doc %}
         </span>
             </div>
         </div>

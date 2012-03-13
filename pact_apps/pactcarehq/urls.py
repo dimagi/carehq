@@ -63,7 +63,7 @@ urlpatterns = patterns ('',
     url(r'^patients/all$', PatientListView.as_view(template_name='pactcarehq/patient_list.html', patient_type=PactPatient, create_patient_viewname='pactpatient.views.new_patient'), name='pactpatient_list'),
 
     #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
-    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/$', PactPatientSingleView.as_view(template_name='pactcarehq/pact_patient.html'), name='view_pactpatient'),
+    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', PactPatientSingleView.as_view(), name='view_pactpatient'),
 
     url(r'^ajax/getpatientform/$', 'pactcarehq.views.ajax_patient_form_get', name='ajax_patient_form_get'),
     url(r'^ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_patient_form', name='ajax_post_patient_form'),

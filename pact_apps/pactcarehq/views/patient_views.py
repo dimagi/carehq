@@ -45,25 +45,57 @@ class PactPatientSingleView(PatientSingleView):
         patient_edit = request.GET.get('edit_patient', None)
         show_all_schedule = request.GET.get('allschedules', None)
 
-
+        view_mode = self.kwargs.get('view_mode', '')
+        if view_mode == '':
+            view_mode = 'info'
         context = super(PactPatientSingleView, self).get_context_data(**kwargs)
+
+
+        context['view_mode'] = view_mode
+
         pdoc = context['patient_doc']
         dj_patient = context['patient_django']
+
+
+        if view_mode == 'issues':
+#            context['filter'] = request.GET.get('filter', 'recent')
+#            issues = Issue.objects.filter(patient=dj_patient)
+#            if context['filter']== 'closed':
+#                issues = issues.filter(status=ISSUE_STATE_CLOSED)
+#            elif context['filter'] == 'recent':
+#                issues = issues.order_by('-last_edit_date')
+#            elif context['filter'] == 'open':
+#                issues = issues.exclude(status=ISSUE_STATE_CLOSED)
+#
+#            context['issues'] = issues
+            self.template_name = "pactcarehq/pactpatient/pactpatient_issues.html"
+        if view_mode == 'info':
+            self.template_name = "pactcarehq/pactpatient/pactpatient_info.html"
+
+        if view_mode == 'careteam':
+            context['patient_careteam'] = carehq_api.get_careteam(pdoc)
+            self.template_name = "pactcarehq/pactpatient/pactpatient_careteam.html"
+
+        if view_mode == 'careplan':
+            self.template_name = "pactcarehq/pactpatient/pactpatient_careplan.html"
+
+        if view_mode == 'submissions':
+            context['submit_arr'] = _get_submissions_for_patient(dj_patient)
+            self.template_name = "pactcarehq/pactpatient/pactpatient_submissions.html"
+
         context['patient_list_url'] = reverse('pactpatient_list')
         context['schedule_show'] = schedule_show
         context['schedule_edit'] = schedule_edit
         context['phone_edit'] = phone_edit
         context['address_edit'] = address_edit
         context['patient_edit'] = patient_edit
-        context['submit_arr'] = _get_submissions_for_patient(dj_patient)
         context['casedoc'] = CommCareCase.get(pdoc.case_id)
 
         last_bw = pdoc.check_last_bloodwork
         context['last_bloodwork'] = last_bw
 
         #role_actor_dict = careteam_api.get_careteam(pdoc)
-        role_actor_dict = carehq_api.get_careteam_dict(pdoc)
-        context['careteam_dict'] = role_actor_dict
+
 
         if last_bw == None:
             context['bloodwork_missing']  = True
@@ -116,7 +148,6 @@ class PactPatientSingleView(PatientSingleView):
         all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
         context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
         return context
-        #return render_to_response(template_name, context_instance=context)
 
 
 

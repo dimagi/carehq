@@ -58,13 +58,13 @@
 
 {% block patient-tab-controller %}
     <li {% if view_mode == "info" %}class="active"{% endif %}>
-        <a href="{% url shine_single_patient patient_doc.get_id 'info' %}" data-toggle="tab">{% trans "Info" %}</a></li>
-    <li {% if view_mode == "data" %}class="active"{% endif %}>
-        <a href="{% url shine_single_patient patient_doc.get_id 'data' %}" data-toggle="tab">{% trans "Data" %}</a></li>
+        <a href="{% url view_pactpatient patient_doc.get_id 'info' %}" data-toggle="tab">{% trans "Info" %}</a></li>
+    <li {% if view_mode == "careteam" %}class="active"{% endif %}>
+        <a href="{% url view_pactpatient patient_doc.get_id 'careteam' %}" data-toggle="tab">{% trans "Careteam" %}</a></li>
     <li {% if view_mode == "submissions" %}class="active"{% endif %}>
-        <a href="{% url shine_single_patient patient_doc.get_id 'submissions' %}" data-toggle="tab">{% trans "Submissions" %}</a></li>
-    <li {% if view_mode == "files" %}class="active"{% endif %}>
-        <a href="{% url shine_single_patient patient_doc.get_id 'files' %}" data-toggle="tab">{% trans "Files" %}</a></li>
+        <a href="{% url view_pactpatient patient_doc.get_id 'submissions' %}" data-toggle="tab">{% trans "Submissions" %}</a></li>
+    <li {% if view_mode == "log" %}class="active"{% endif %}>
+        <a href="{% url view_pactpatient patient_doc.get_id 'log' %}" data-toggle="tab">{% trans "Change Log" %}</a></li>
 {% endblock patient-tab-controller %}
 {% block patient-tab-container %}
    <div id="patient-info-tab" class="ui-tabs-hide">

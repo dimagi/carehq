@@ -24,7 +24,6 @@ urlpatterns = patterns('carehqapp.views',
 
 
         url(r'^patient/view/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', CarehqPatientSingleView.as_view(template_name='carehqapp/patient/carehq_patient_base.html'), name='patient_url'),
-        url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/actor/add$', 'actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
         url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/files$', 'patient_views.upload_patient_attachment', name='pt_manage_files'),
         url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient_base.html'), name='patient_home'),
 
@@ -38,25 +37,12 @@ urlpatterns = patterns('carehqapp.views',
 
         url(r'^issue/patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/new$', 'issues.new_issue_patient', name='new_carehq_patient_issue'),
 
-        url(r'^patient/api/careteam/actor/rm$', 'actors.rm_actor_from_patient', name='rm_actor_from_patient'),
-        url(r'^patient/api/careteam/actor/add$', 'actors.do_add_actor_to_patient', name='link_actor_to_patient'),
-        url(r'^actor/api/rm$', 'actors.rm_actor', name='rm_ashand_actor'),
-
         url(r'^ashandadmin/$', 'ashand_admin.admin_study_landing'),
         url(r'^ashandadmin/ccds/$', 'ashand_admin.admin_ccd_submissions'),
         url(r'^ashandadmin/patients/$', 'ashand_admin.admin_patient_list'),
         url(r'^ashandadmin/user/activate/(?P<user_id>\d+)$', 'ashand_admin.admin_invite_activate_actor_user'),
 
 
-
-#        url(r'^addProvider/?$', 'ashandui.addProvider', name='addProvider'),
-#        url(r'^providerSearchAjax/?$', 'ashandui.providerSearchAjax', name='providerSearchAjax'),
-#        url(r'^providerListQueryAjax/(?P<term>.*)$', 'ashandui.providerListQueryAjax', name='providerListQueryAjax'),
-#        url(r'^providerSearch/?$', 'ashandui.providerSearch', name='providerSearch'),
-#        url(r'^providerPatients/(?P<doctorId>[0-9a-f]{32})$', 'ashandui.providerPatients'),
-#        url(r'^linkProvider/(?P<patientId>[0-9a-f]{32})?$', 'ashandui.editCareteam', name='linkProvider'),
-
-        url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'actors.view_actor', name='view_actor'),
         url(r'^carehq/ajax/getpatientform/$', 'ajax.ajax_patient_form_get', name='ajax_patient_form_get'),
         url(r'^carehq/ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_patient_form', name='ajax_post_patient_form'),
         url(r'^carehq/ajax/phone$', 'ajax.remove_phone', name='remove_phone'),
@@ -65,6 +51,12 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^carehq/ajax/getactorform/$', 'ajax.ajax_get_actor_form', name='ajax_get_actor_form'),
         url(r'^carehq/ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'ajax.ajax_post_actor_form', name='ajax_post_actor_form'),
 
+
+        url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'actors.view_actor', name='view_actor'),
+        url(r'^patient/api/careteam/actor/rm$', 'actors.rm_actor_from_patient', name='rm_actor_from_patient'),
+        url(r'^patient/api/careteam/actor/add$', 'actors.do_add_actor_to_patient', name='link_actor_to_patient'),
+        url(r'^actor/api/rm$', 'actors.rm_actor', name='rm_ashand_actor'),
+        url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/actor/add$', 'actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
 
 
 
