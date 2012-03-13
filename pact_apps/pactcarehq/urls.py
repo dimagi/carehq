@@ -11,7 +11,7 @@ submission_resource = UserSubmissionResource()
 urlpatterns = patterns ('',
     (r'^pact/api/', include(submission_resource.urls)),
 
-    (r'^$', 'pactcarehq.views.my_patient_activity'),
+    (r'^$', 'pactcarehq.views.patient_views.my_patient_activity'),
     (r'^uptime$', 'pactcarehq.views.uptime'),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '%spactcarehq/img/favicon.png' % (settings.STATIC_URL)}),
 

@@ -13,7 +13,7 @@ from django_digest.decorators import httpdigest
 from carehq_core import carehq_constants, carehq_api
 from casexml.apps.case.models import CommCareCase
 from pactpatient.forms import PactPatientForm
-from pactpatient.models.pactmodels import PactPatient
+from pactpatient.models import PactPatient
 from patient.models import Patient
 import urllib
 from patient.models import CPhone
