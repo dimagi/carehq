@@ -82,6 +82,14 @@ class PactPatientSingleView(PatientSingleView):
         if view_mode == 'submissions':
             context['submit_arr'] = _get_submissions_for_patient(dj_patient)
             self.template_name = "pactcarehq/pactpatient/pactpatient_submissions.html"
+        if view_mode == 'log':
+            history_logs = inspect.history_for_doc(pdoc, filter_fields=['arm','art_regimen','non_art_regimen', 'primary_hp', 'mass_health_expiration', 'hiv_care_clinic'])
+            context['history_logs'] = history_logs #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
+
+            all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
+            context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
+            self.template_name = "pactcarehq/pactpatient/pactpatient_log.html"
+
 
         context['patient_list_url'] = reverse('pactpatient_list')
         context['schedule_show'] = schedule_show
@@ -142,11 +150,7 @@ class PactPatientSingleView(PatientSingleView):
 #            audit_log_info.append((audit_log_docs[x], delta))
 
 
-        history_logs = inspect.history_for_doc(pdoc, filter_fields=['arm','art_regimen','non_art_regimen', 'primary_hp', 'mass_health_expiration', 'hiv_care_clinic'])
-        context['history_logs'] = history_logs #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
 
-        all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
-        context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
         return context
 
 
@@ -255,17 +259,3 @@ def my_patient_activity(request, template_name="pactcarehq/patients_dashboard.ht
     return render_to_response(template_name, context_instance=context)
 
 
-@login_required
-def my_patient_activity_reduce(request, template_name = "pactcarehq/patients_dashboard_reduce.html"):
-    #using customized reduce view for the patient dashboard
-    context= RequestContext(request)
-    dashboards = CActivityDashboard.view('pactcarehq/patient_dashboard', group=True).all()
-
-    context['reduces'] = []
-    for reductions in dashboards:
-        pact_id = reductions['key']
-        dashboard = reductions['value']
-        if not dashboard.has_key('patient_doc'):
-            continue
-        context['reduces'].append(dashboard)
-    return render_to_response(template_name, context_instance=context)

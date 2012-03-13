@@ -1,4 +1,4 @@
-{% extends "shinepatient/shinepatient_base.html" %}
+{% extends "pactcarehq/pactpatient/pactpatient_base.html" %}
 {% block extrahead %}
     <script>
         $(document).ready(
@@ -11,24 +11,26 @@
 
 {% endblock extrahead %}
 {% block patient-tab-container %}
-            {% if submissions %}
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th class="span3">Date</th>
-                        <th class="span3">User</th>
-                        <th class="span3">Form</th>
-                    </tr>
-                    </thead>
-                    {% for submit in submissions %}
-                        <tr>
-                            <td><a href="{% url show_submission submit.get_id %}">{{ submit.received_on|date }}</a></td>
-                            <td> {{ submit.form.Meta.username }}</td>
-                            <td> {{ submit.xmlns }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <h4>No Recent Activity</h4>
-            {% endif %}
+    {% if submit_arr %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th class="span3">Date</th>
+                <th class="span3">CHW</th>
+                <th class="span3">Form</th>
+                <th></th>
+            </tr>
+            </thead>
+            {% for submission in submit_arr %}
+                <tr>
+                    <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date }}</a></td>
+                    <td> {{ submission.2 }}</td>
+                    <td> {{ submission.3 }}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h4>No Recent Activity</h4>
+    {% endif %}
 {% endblock %}

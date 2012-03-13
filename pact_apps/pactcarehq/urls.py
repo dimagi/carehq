@@ -18,10 +18,6 @@ urlpatterns = patterns ('',
     (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")), #from http://fredericiana.com/2010/06/09/three-ways-to-add-a-robots-txt-to-your-django-project/
 
 
-
-#    (r'^grouped$', 'pactcarehq.views.my_patient_activity_grouped'),
-#    (r'^reduce$', 'pactcarehq.views.my_patient_activity_reduce'),
-
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
     (r'^cases$', 'pactcarehq.views.debug_casexml_new'),
 
@@ -88,6 +84,14 @@ urlpatterns = patterns ('',
     url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
     url(r'^pact/providers$', 'pactcarehq.views.providers.view_add_pact_provider', name="pact_providers"),
     url(r'^pact/provider/(?P<provider_guid>[0-9a-fA-Z]{25,32})/edit$', 'pactcarehq.views.providers.edit_provider', name='pact_edit_provider'),
+
+
+        url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'carehqapp.views.actors.view_actor', name='view_actor'),
+        url(r'^patient/api/careteam/actor/rm$', 'carehqapp.views.actors.rm_actor_from_patient', name='rm_actor_from_patient'),
+        url(r'^patient/api/careteam/actor/add$', 'carehqapp.views.actors.do_add_actor_to_patient', name='link_actor_to_patient'),
+        url(r'^actor/api/rm$', 'carehqapp.views.actors.rm_actor', name='rm_ashand_actor'),
+        url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/actor/add$', 'carehqapp.views.actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
+
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
