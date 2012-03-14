@@ -173,7 +173,7 @@ def _get_submissions_for_user(username):
 
 
         started = xform.get_form['Meta']['TimeStart']
-        if isinstance(started, unicode):
+        if isinstance(started, unicode) or isinstance(started, str):
             started = isodate.parse_datetime("%sT%s" % (started.split(' ')[0], started.split(' ')[1]))
 
 
@@ -181,11 +181,13 @@ def _get_submissions_for_user(username):
         if ended == '':
             #hack, touchforms doesn't seem to set a TimeEnd
             ended = xform.received_on
-        if isinstance(ended, unicode):
+        if isinstance(ended, unicode) or isinstance(ended, str):
             ended = isodate.parse_datetime("%sT%s" % (ended.split(' ')[0], ended.split(' ')[1]))
 
         start_end = stringify_delta(ended - started)
         received = xform['received_on']
+        if isinstance(received, unicode) or isinstance(received, str):
+            started = isodate.parse_datetime("%sT%s" % (received.split(' ')[0], received.split(' ')[1]))
         end_received = stringify_delta(received - ended)
 
         if xmlns == 'http://dev.commcarehq.org/pact/dots_form':

@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block page_stylesheets %}
+    {{ block.super }}
     <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}dotsview/stylesheets/dots.css"/>
 {% endblock %}
 
@@ -33,6 +34,8 @@
                                 }).focus(function() {
                 $(this).select();
             });
+
+
             $('#start-date').change(function() {
                 $(document).attr('location', get_url());
             });
@@ -139,67 +142,87 @@
     </script>
 {% endblock %}
 
+
+{% block page_header %}
+    <h4>DOT Adherence Data for
+        <select id="patients">
+            <option value="dots" {% if not patient %} selected="selected" {% endif %}>
+                No patient selected
+            </option>
+            {% for p in patients %}
+                <option value="{{p.id}}"
+                        {% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
+                    {{ p.couchdoc.last_name }}, {{ p.couchdoc.first_name }}
+                </option>
+            {% endfor %}
+        </select>
+        for visits: <input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
+        to
+        <input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
+        {% if patient and bad_date_range %}
+            <p class='date-range-warning'>
+                Just so you know, the date range you're looking at is
+                <strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
+                We only have data for <strong>{{ patient.full_name }}</strong> between
+                <strong>{{ first_observation }}</strong>
+                and <strong>{{ last_observation }}</strong>.
+            </p>
+        {% endif %}
+    </h4>
+    {% if weeks %}
+        Visits cover observation dates from <strong>{{ min_date|date }}</strong> to
+        <strong>{{ max_date|date }}</strong><br>
+    {% endif %}
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">DOT Adherence</li>
+
+    </ul>
+{% endblock page_crumbs %}
+
 {% block content %}
-    <div class="span12">
-        <div class="span-two-thirds">
-            <h4>DOT Adherence Data for
-                <select id="patients">
-                    <option value="dots" {% if not patient %} selected="selected" {% endif %}>
-                        No patient selected
-                    </option>
-                    {% for p in patients %}
-                        <option value="{{p.id}}"
-                                {% ifequal p.id patient.id %} selected="selected" {% endifequal %} >
-                            {{ p.couchdoc.last_name }}, {{ p.couchdoc.first_name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                for visits: <input id="start-date" class="date" type="text" value="{{start_date|date:"Y-m-d"}}"></input>
-                to
-                <input id="end-date" class="date" type="text" value="{{end_date|date:"Y-m-d"}}"></input>
-                {% if patient and bad_date_range %}
-                    <p class='date-range-warning'>
-                        Just so you know, the date range you're looking at is
-                        <strong>too {% if end_date < first_observation %}early{% else %}late{% endif %}</strong>.
-                        We only have data for <strong>{{ patient.full_name }}</strong> between
-                        <strong>{{ first_observation }}</strong>
-                        and <strong>{{ last_observation }}</strong>.
-                    </p>
-                {% endif %}
-            </h4>
-            {% if weeks %}
-                Visits cover observation dates from <strong>{{ min_date|date }}</strong> to
-                <strong>{{ max_date|date }}</strong><br>
-            {% endif %}
+    <div class="row">
+        <div class="span12">
             <strong>Download CSV:</strong> <a
                 href="{% url dots_csv_download %}?patient={{patient.id}}&csv=range&start={{start_date|date:"Y-m-d"}}&end={{end_date|date:"Y-m-d"}}">This
             Visit Date Range</a>
             | <a href="{% url dots_csv_download %}?patient={{patient.id}}&csv=all">All Data</a>
+
+
+            &nbsp;&nbsp;
+            <a id="legendpop" href="#" class="btn btn-info" rel="popover" data-content='
+            <strong>Obs. Method</strong><br>
+            <img src="{{ STATIC_URL }}dotsview/icons/plus.png">&nbsp;Direct<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">&nbsp;Pillbox<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/minus.png">&nbsp;Self Report<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/warning.png">&nbsp;Conflict<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/info.png">&nbsp;Notes<br>
+            <hr>
+            <strong>Pillbox</strong><br>
+            <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">&nbsp; Empty<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
+            <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">&nbsp; Full<br> ' data-original-title="Report Legend">Legend</a>
         </div>
-        <div class="span-one-third last">
-	<span style="font-size:75%">
-		<fieldset>
-            <legend>Legend</legend>
-            <div class="span2">
-                <strong>Obs. Method</strong><br>
-                <img src="{{ STATIC_URL }}dotsview/icons/plus.png">&nbsp;Direct<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/bucket.png">&nbsp;Pillbox<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/minus.png">&nbsp;Self Report<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/warning.png">&nbsp;Conflict<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/info.png">&nbsp;Notes<br>
-            </div>
-            <div class="span2 last">
-                <strong>Pillbox</strong><br>
-                <img src="{{ STATIC_URL }}dotsview/icons/check.jpg">&nbsp; Empty<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/exclamation-point.jpg">&nbsp;Partial<br>
-                <img src="{{ STATIC_URL }}dotsview/icons/x-mark.png">&nbsp; Full<br>
-            </div>
-        </fieldset>
-	</span>
-        </div>
+        <script>
+            $(function ()
+            {
+                $('#legendpop').popover(
+                        {
+                            html:true,
+                        }
+                );
+            });
+        </script>
     </div>
 
     {% if patient %}
+        <div class="row">
+        <div class="span12">
+        <br>
+        <br>
         <table class="calendar">
             <tr>
                 <th>{% trans "Monday" %}</th>
@@ -310,11 +333,16 @@
                 </tr>
             {% endfor %} {#week in weeks #}
         </table>
+        </div>
+        </div>
     {% endif %}
-    <div class="container span12">
+    <div class="row">
+    <div class="span12">
         {% if sorted_visits %}
-            <h4>Visits in this report</h4>
-            <table>
+            <br>
+            <br>
+            <h3>Visits in this report</h3>
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th>Visit Date</th>
@@ -374,6 +402,7 @@
                 </tbody>
             </table>
         {% endif %}
+    </div>
     </div>
 
 

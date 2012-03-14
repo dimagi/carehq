@@ -1,60 +1,71 @@
-{%  extends base_template %}
-{% block content %}
+{% extends base_template %}
 {% block extrahead %}
     <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
-    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css"
+          media="print, projection, screen"/>
     <script type="text/javascript" charset="utf-8">
-        $().ready(function(){
-            $("#patient-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
+        $().ready(function () {
+            $("#patient-table").tablesorter({sortList:[
+                [0, 0]
+            ], widgets:['zebra']});
         });
     </script>
 {% endblock %}
-<div class="container">
-    <div class="span12">
-        <div class="span4">
-            <h2>Patient List</h2>
-        </div>
-        <div class="offset10 span2 last">
-            <a href="{% url new_pactpatient %}">New Patient</a>
-        </div>
-    </div>
-<hr>
 
-	<table id="patient-table" class="tablesorter span12 last">
-	<thead>
-		<tr>
-        <th class="span1">PACT ID</th>
-        <th class="span3">First Name</th>
-		<th class="span3">Last Name</th>
-		<th class="span1">ARM</th>
-		<th class="span1">Primary HP</th>
-		<th class="span3">Actions</th>
-        </tr>
-	</thead>
-	
-	<tbody>
-	{% for patient in patients %}
-        <tr>
-            <td><h4>{{patient.pact_id}}</h4></td>
-            <td><h4><a href="{% url view_pactpatient patient.get_id %}">{{patient.first_name}}</a></h4></td>
-            <td><h4><a href="{% url view_pactpatient patient.get_id %}">{{patient.last_name}}</a></h4></td>
-            <td>{{patient.arm}}</td>
-            <td>{{patient.primary_hp}}</td>
-            <td>{#Edit Patient | View Schedule#}
-                {% if patient.arm == "DOT"%}
-                    <a href="{% url dots_view %}?patient={{patient.get_id}}">View DOT Adherence</a>
-                {% endif %}
-                {% if patient.check_last_bloodwork %}
-                    <br>
-                    <strong>Bloodwork</strong> {{ patient.check_last_bloodwork.get_date|date }} <small>({{ patient.check_last_bloodwork.get_date|timesince }} ago)</small>
-                    {% if patient.check_last_bloodwork.is_overdue %}
-                        <strong style="color:red;">Overdue!</strong>
-                    {% endif %}
-                {% endif %}
-            </td>
-        </tr>
-	{% endfor %}
-	</tbody>
-	</table>
-</div>
+{% block page_header %}
+    <h2>Patient List
+        <small><a href="{% url new_pactpatient %}">New Patient</a></small>
+    </h2>
+
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Patient List</li>
+    </ul>
+{% endblock page_crumbs %}
+
+{% block content %}
+    <div class="row">
+        <table id="patient-table" class="tablesorter span12 table table-striped">
+            <thead>
+            <tr>
+                <th class="span1">PACT ID</th>
+                <th class="span2">First Name</th>
+                <th class="span2">Last Name</th>
+                <th class="span1">ARM</th>
+                <th class="span1">Primary HP</th>
+                <th class="span4">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for patient in patients %}
+                <tr>
+                    <td><h4>{{ patient.pact_id }}</h4></td>
+                    <td><h4><a href="{% url view_pactpatient patient.get_id '' %}">{{ patient.first_name }}</a></h4>
+                    </td>
+                    <td><h4><a href="{% url view_pactpatient patient.get_id '' %}">{{ patient.last_name }}</a></h4></td>
+                    <td>{{ patient.arm }}</td>
+                    <td>{{ patient.primary_hp }}</td>
+                    <td>{#Edit Patient | View Schedule#}
+                        {% if patient.arm == "DOT" %}
+                            <a href="{% url dots_view %}?patient={{patient.get_id}}">View DOT Adherence</a>
+                        {% endif %}
+                        {% if patient.check_last_bloodwork %}
+                            <br>
+                            <strong>Bloodwork</strong> {{ patient.check_last_bloodwork.get_date|date }}
+                            <small>({{ patient.check_last_bloodwork.get_date|timesince }} ago)</small>
+                            {% if patient.check_last_bloodwork.is_overdue %}
+                                <span class="label label-important">Overdue!</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
 {% endblock content %}

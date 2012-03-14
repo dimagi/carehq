@@ -17,6 +17,14 @@ def run():
             print "\tActor exists"
         except Actor.DoesNotExist:
             print "\tNo django actor created"
-            actor.actor_uuid = None
-            actor.save(pact_tenant)
+            #first see if doc_id exists.
+            doc_id_exists = Actor.objects.filter(doc_id=actor._id)
+            if doc_id_exists.count() > 0:
+                existing_actor = doc_id_exists[0]
+                actor.actor_uuid = existing_actor.id
+                actor.save(pact_tenant)
+            else:
+                #create a NEW django actor paired with this actordoc
+                actor.actor_uuid = None
+                actor.save(pact_tenant)
     pass

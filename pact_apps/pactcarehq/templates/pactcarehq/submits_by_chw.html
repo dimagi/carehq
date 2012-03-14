@@ -21,15 +21,25 @@
         });
     </script>
 {% endblock %}
-{
+
+{% block page_header %}
+    <h2>Submissions by CHW</h2>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Submits by CHW</li>
+
+    </ul>
+{% endblock page_crumbs %}
 {% block content %}
-<h2>Submissions by CHW</h2>
 {%  for username, submit_arr in submit_dict.items %}
-    <h3>{{ username }}'s Submissions</h3>
-    <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
+    <h3>{{ username }}'s Submissions <small>
+    <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a></small></h3>
 
     {% if submit_arr %}
-    <table id="submits-table" class="tablesorter">
+    <table id="submits-table" class="tablesorter table table-striped">
     <thead>
         <tr>
             <th class="span3">Encounter Date</th>

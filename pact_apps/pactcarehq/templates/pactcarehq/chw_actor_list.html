@@ -12,18 +12,37 @@
 {#    );#}
 {#</script>#}
 {#{% endblock extrahead %}#}
+
+
+
+{% block page_header %}
+    <h2>CHW List</h2>
+
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">CHW List</li>
+    </ul>
+{% endblock page_crumbs %}
+
+
 {% block content %}
-<h2>CHW List</h2>
-<div class="span-one-third last">
-<strong>Schedule CSV Report for all CHWs</strong>
+<div class="row">
+<div class="span12 pull-right">
+    <h3>Schedule CSV Report for all CHWs</h3>
     <br>
     <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=7">CSV 7</a>
     <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval={% now "j" %}">CSV MTD</a>&nbsp;
     <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=30">CSV 30</a>&nbsp;
     <a href="{% url pactcarehq.views.chw_calendar_submit_report_all %}?interval=all">All Data</a>&nbsp;
-<br>
+    <br>
 </div>
-<table>
+</div>
+
+<div class="row">
+<table class="table span12 table-striped">
 <thead>
     <tr>
         <th></th>
@@ -59,5 +78,6 @@
     </tr>
 {% endfor %}
 </table>
+</div>
 
 {% endblock %}
