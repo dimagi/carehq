@@ -60,7 +60,7 @@ function post_schedule_delete(patient_id, schedule_id) {
     <hr>
 <div id="prior_schedules" class="toggler">
     <strong><span style="font-size: 125%;">Prior Schedules</span></strong>
-    <table>
+    <table class="table table-bordered">
         <thead>
         <tr>
             <th>Sunday</th>
@@ -106,7 +106,7 @@ function post_schedule_delete(patient_id, schedule_id) {
 {% if patient_doc.current_schedule %}
 {# Section current schedule #}
 <strong><span style="font-size: 125%;">Current Schedule</span></strong>
-<table>
+<table class="table table-bordered">
         <thead>
         <tr>
             <th>Sunday</th>

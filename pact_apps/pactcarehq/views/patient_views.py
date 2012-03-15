@@ -76,6 +76,9 @@ class PactPatientSingleView(PatientSingleView):
             context['patient_careteam'] = carehq_api.get_careteam(pdoc)
             self.template_name = "pactcarehq/pactpatient/pactpatient_careteam.html"
 
+        if view_mode == 'schedule':
+            context['past_schedules'] = pdoc.past_schedules
+            self.template_name = "pactcarehq/pactpatient/pactpatient_schedule.html"
         if view_mode == 'careplan':
             self.template_name = "pactcarehq/pactpatient/pactpatient_careplan.html"
 
@@ -131,8 +134,6 @@ class PactPatientSingleView(PatientSingleView):
             context['phone_form'] = PhoneForm()
         if patient_edit:
             context['patient_form'] = PactPatientForm(patient_edit, instance=pdoc)
-        if show_all_schedule != None:
-            context['past_schedules'] = pdoc.past_schedules
 
 
 
