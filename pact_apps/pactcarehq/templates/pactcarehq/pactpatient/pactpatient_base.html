@@ -28,6 +28,58 @@
                 $("#edit_tgl_btn > span.edit_btn_txt").html("Edit Patient");
             }
         }
+        function rm_phone_addr(patient_guid, phone_addr, item_idx) {
+            var payload = {
+                'csrfmiddlewaretoken': getCookie("csrftoken"),
+                'patient_guid': patient_guid,
+            };
+
+            var remove_url = '';
+            if (phone_addr == "phone") {
+                remove_url = "{% url remove_phone %}";
+                payload['phone_id'] = item_idx;
+            } else if (phone_addr == "address") {
+                attr_name = 'address_id';
+                var remove_url = "{% url remove_address %}";
+                payload['address_id'] = item_idx;
+            }
+            send_xhr = $.ajax({
+                "type": "POST",
+                "url":  remove_url,
+                "data":payload,
+                "success": function(data) {
+                    location.reload();
+                }, //end success
+                "error": function(data) {
+                    $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+
+        function unlink_patient_provider(patient_guid, actor_uuid) {
+            var remove_url = "{% url rm_provider_from_patient %}";
+            var payload = {
+                'csrfmiddlewaretoken': getCookie("csrftoken"),
+                'patient_guid': patient_guid,
+                'actor_uuid': actor_uuid,
+            };
+
+            send_xhr = $.ajax({
+                "type": "POST",
+                "url":  remove_url,
+                "data":payload,
+                "success": function(data) {
+                    location.reload();
+                    console.log(data);
+                }, //end success
+                "error": function(data) {
+                    $('body').replaceWith(data.responseText);
+//                            alert("Error trying to save form, please try again: " + data);
+                }
+            });
+        }
+
     </script>
 {% endblock extrahead %}
 

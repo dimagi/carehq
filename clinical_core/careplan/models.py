@@ -1,5 +1,5 @@
 import uuid
-from couchdbkit.ext.django.schema import Document, StringProperty, SchemaListProperty, DateTimeProperty, ListProperty, StringListProperty, SchemaProperty, BooleanProperty, DateProperty
+from couchdbkit.ext.django.schema import Document, StringProperty, SchemaListProperty, DateTimeProperty, ListProperty, StringListProperty, SchemaProperty, BooleanProperty, DateProperty, DocumentSchema
 from couchdbkit.schema.properties_proxy import SchemaDictProperty
 from django.db import models
 from django.contrib.auth.models import User
@@ -45,7 +45,7 @@ class BaseCarePlanItem(Document):
     modified_by =  StringProperty()
     modified_date = DateTimeProperty()
 
-#    due_date = DateTimeProperty()
+#    due_date = DateTimeProperty() #these are put in the instances
 
     issue_container = BooleanProperty(default=True, verbose_name="Will this care plan item be something that tracks against Issues")
 
@@ -75,7 +75,7 @@ class BaseCarePlan(Document):
     tenant = StringProperty() #who does this careplan template belong to
     title = StringProperty()
     description = StringProperty()
-    plan_items = SchemaListProperty(BaseCarePlanItem)
+    plan_items = SchemaListProperty(DocumentSchema)
 
     tags = StringListProperty()
 
@@ -85,12 +85,27 @@ class BaseCarePlan(Document):
     modified_by =  StringProperty()
     modified_date = DateTimeProperty()
 
-    
     def get_absolute_url(self):
         return reverse('careplan.views.caretemplates.single_template_careplan', kwargs={"plan_id":self._id})
     
     def __unicode__(self):
         return "[Plan Template] %s" % (self.title)
+
+
+class BaseCarePlanGroup(Document):
+    title = StringProperty()
+    template_plans = SchemaListProperty(BaseCarePlan)
+    tags = StringListProperty()
+
+    created_by = StringProperty()
+    created_date = DateTimeProperty()
+
+    modified_by =  StringProperty()
+    modified_date = DateTimeProperty()
+
+    def __unicode__(self):
+        return "[Plan Template Group] %s" % (self.title)
+
 
 
 CAREPLAN_ITEM_STATES = ( ('open', 'Open'),
@@ -101,7 +116,7 @@ CAREPLAN_ITEM_STATES = ( ('open', 'Open'),
 class CarePlanItem(BaseCarePlanItem):
     status = StringProperty(choices=CAREPLAN_ITEM_STATES)
     issues = StringListProperty(verbose_name="A list of the Issue django ids that belong to this CarePlanItem")
-    due_date=DateProperty(verbose_name="An optional field indicating whether or not this has a due date.")
+    due_date=DateProperty(verbose_name="Item due date")
 
     origin_id = StringProperty(verbose_name='The doc id of the BaseCarePlanItem that this instance is originated from')
     origin_rev = StringProperty(verbose_name='The rev_id of the BaseCarePlanItem that this instance originated from')
@@ -113,28 +128,24 @@ class CarePlanItem(BaseCarePlanItem):
         return "[CarePlanItem] %s" % self.title
     
     @staticmethod
-    def create_from_template(base_item, parent_item=None):
+    def create_from_template(base_item):
         """
         Factory method to generate a new plan item from a template
-        base_item is the BaseCarePlanItem instance
+        base_plan is the BaseCarePlanItem instance
         parent_item is a PlanItem instance parent if you're generating this programmatically
         save = do we save this to db before returning?
         """
         new_item = CarePlanItem()
-        new_item.id = uuid.uuid4().hex
-        new_item.category.add(*list(base_item.category.all()))
-        new_item.tags.add(*list(base_item.tags.all()))
-        new_item.description = base_item.description        
-        new_item.from_template = base_item
-        if parent_item != None:
-            new_item.parent = parent_item 
+        new_item._id = uuid.uuid4().hex
+        new_item.title = base_item.title
+        new_item.tags.extend(base_item.tags)
+        new_item.description = base_item.description
+        new_item.status = CAREPLAN_ITEM_STATES[0][0]
+        new_item.issue_container = base_item.issue_container
 
-        new_item.save()
-        
-        if base_item.children.count > 0:
-            for child_item in base_item.children:
-                CarePlanItem.create_from_template(child_item, parent_item=new_item)        
-        
+        new_item.origin_id = base_item['_id']
+        new_item.origin_rev = base_item['_rev']
+
         return new_item
 
 class CarePlanInstance(BaseCarePlan):
@@ -151,43 +162,27 @@ class CarePlanInstance(BaseCarePlan):
         return "[CarePlanInstance] %s" % self.title
     
     @staticmethod
-    def create_from_template(base_plan, patient, title=None, save_data=False, creator_user=None):
+    def create_from_template(base_plan):
         """
         Generate a careplan from a BaseCarePlan template
+        This does not save to the database.
         """
         
-        if save_data:
-            if creator_user==None:
-                raise Exception("Error, if you are saving this on creation from a template, you must enter a user")
-        
         new_plan = CarePlanInstance()
-        new_plan.id = uuid.uuid4().hex
-        new_plan.from_template = base_plan
-        new_plan.version = 1
-        new_plan.patient = patient
-        
-        if not title:
-            new_plan.title=base_plan.title + " from template"
-        
-        links = []
-        
+        new_plan._id = uuid.uuid4().hex
+
+        new_plan.origin_id = base_plan._id
+        new_plan.origin_rev = base_plan._rev
+
+        new_plan.created_date = make_time()
+        new_plan.modified_date = make_time()
+
         new_plan.title = base_plan.title
-        for temp_item_link in base_plan.templatecareplanitemlink_set.all():            
-            base_item = temp_item_link.item
-            new_item= CarePlanItem.create_from_template(base_item, parent_item=None)
-            links.append(CarePlanItemLink(plan=new_plan, item=new_item, order=temp_item_link.order))
-        
-        if creator_user:
-            new_plan.created_by = creator_user
-            new_plan.created_date = make_time()
-            
-            new_plan.modified_by = creator_user
-            new_plan.modified_date= make_time()
-        
-        if save_data:
-            new_plan.save()
-            for link in links:
-                link.save()
+        new_plan.description = base_plan.description
+
+        for base_item in base_plan.plan_items:
+            new_plan.plan_items.append(CarePlanItem.create_from_template(base_item))
+
         return new_plan
     
 

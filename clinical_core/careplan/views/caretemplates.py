@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 
 #see all care plans or template care plans
 from django.views.decorators.http import require_POST
-from careplan.forms import BaseCarePlanForm, BaseCarePlanItemForm, ChooseBaseCarePlanForm
+from careplan.forms import BaseCarePlanForm, BaseCarePlanItemForm, ChooseBaseItemForm
 from careplan.models import BaseCarePlan, BaseCarePlanItem
 from dimagi.utils.make_time import make_time
 
@@ -23,7 +23,7 @@ def single_template_careplan(request, plan_id, template_name="careplan/view_temp
     context['show_children'] = True    
     context['careplan'] = BaseCarePlan.get(plan_id)
 
-    context['add_form'] = ChooseBaseCarePlanForm()
+    context['add_form'] = ChooseBaseItemForm()
     context['new_form'] = BaseCarePlanItemForm()
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 

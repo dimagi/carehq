@@ -1,115 +1,88 @@
 {% extends "pactcarehq/pactpatient/pactpatient_base.html" %}
 {% load i18n %}
 {% block patient-tab-container %}
-
-        <div id="patienteditform"> </div>
-        <div id="patient-info-display">
-            <h4 class="ui-widget-header ui-corner-all">Demographic Information</h4>
-            <table>
-                <tr>
-                    <th class="span3">Race</th>
-                    <td>{{ patient_doc.get_race }}</td>
-                </tr>
-                <tr>
-                    <th class="span3">Latino</th>
-                    <td>{% if  patient_doc.is_latino %}
-                        Yes
-                    {% else %}
-                        No
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th class="span3">Language</th>
-                    <td>{{ patient_doc.get_preferred_language }}</td>
-                </tr>
-                <tr>
-                    <th class="span3">MassHealth Expiration</th>
-                    <td>{{ patient_doc.mass_health_expiration }} - {{ patient_doc.mass_health_expiration|timeuntil }}</td>
-                </tr>
-                <tr>
-                    <th>HIV Care Clinic</th>
-                    <td>{{ patient_doc.get_hiv_care_clinic }}</td>
-                </tr>
-                <tr>
-                    <th>SSN</th>
-                    <td>{{ patient_doc.ssn }}</td>
-                </tr>
-                <tr>
-                    <th>Additional Notes</th>
-                    <td>{{ patient_doc.notes }}</td>
-                </tr>
-            </table>
-            <div style="float:right;">
-                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                   href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
-                    <span class="ui-icon ui-icon-wrench"></span>
-                    Edit Info
-                </a>
+    <div class="row">
+        <div class="span12">
+            <div class="commit-group-heading">
+                <h4>Demographic Information
+                    <div style="float:right;">
+                        <small>
+                            <a
+                                    href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
+                                Edit Info
+                            </a>
+                        </small>
+                    </div>
+                </h4>
             </div>
-        </div> <!-- end patient info display-->
-        <br>
-        <br>
-        <h4 class="ui-widget-header ui-corner-all">Contact Information</h4>
-        <table>
-            {#                <tr>#}
-            {#                    <th class="span3">#}
-            {#                        PDoc Address(es)#}
-            {#                    </th>#}
-            {#                    <td>#}
-            {#                        {% for patient_address in patient_doc.address %}#}
-            {#                            <div class="ptprofile_address">#}
-            {#                                {% if patient_address.description %}#}
-            {#                                    <strong>{{ patient_address.description|title }}</strong> &nbsp;<br>#}
-            {#                                {% endif %}#}
-            {#                                {{ patient_address.street }}<br>#}
-            {#                                {{ patient_address.city }}, {{ patient_address.state }} {{ patient_address.postal_code }}<br>#}
-            {#                            <hr>#}
-            {#                            </div>#}
-            {#                        {% endfor %}#}
-            {#                    </td>#}
-            {#                </tr>#}
-            {#                <tr>#}
-            {#                    <th lass="span3">#}
-            {#                        PDoc Phone(s)#}
-            {#                    </th>#}
-            {#                    <td>#}
-            {#                        {% for phone in patient_doc.phones %}#}
-            {#                            <div class="ptprofile_phone">#}
-            {#                                {% if phone.description %}#}
-            {#                                    <strong>{{ phone.description|title }}</strong> &nbsp;<br>#}
-            {#                                {% endif %}#}
-            {#                                {{ phone.number }}<br>#}
-            {#                            <hr>#}
-            {#                            </div>#}
-            {#                        {% endfor %}#}
-            {#                    </td>#}
-            {#                </tr>#}
-
-
+            <div class="commit-group">
+                <div id="patienteditform"></div>
+                <table class="table">
+                    <tr>
+                        <th class="span3">Race</th>
+                        <td>{{ patient_doc.get_race }}</td>
+                    </tr>
+                    <tr>
+                        <th class="span3">Latino</th>
+                        <td>{% if  patient_doc.is_latino %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="span3">Language</th>
+                        <td>{{ patient_doc.get_preferred_language }}</td>
+                    </tr>
+                    <tr>
+                        <th class="span3">MassHealth Expiration</th>
+                        <td>{{ patient_doc.mass_health_expiration }}
+                            - {{ patient_doc.mass_health_expiration|timeuntil }}</td>
+                    </tr>
+                    <tr>
+                        <th>HIV Care Clinic</th>
+                        <td>{{ patient_doc.get_hiv_care_clinic }}</td>
+                    </tr>
+                    <tr>
+                        <th>SSN</th>
+                        <td>{{ patient_doc.ssn }}</td>
+                    </tr>
+                    <tr>
+                        <th>Additional Notes</th>
+                        <td>{{ patient_doc.notes }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="commit-group-heading">
+        <h4>Contact Information</h4>
+    </div>
+    <div class="commit-group">
+        <table class="table">
             <tr>
                 <th class="span3">
                     Address(es)<br>
                 </th>
                 <td>
                     <div id="addressform"></div>
-                    {% for patient_address in patient_doc.active_addresses %}
+                    {% for patient_address in patient_doc.casexml_addresss %}
                         <div class="ptprofile_address">
                             {% if patient_address.description %}
                                 <strong>{{ patient_address.description|title }}</strong><br>
                             {% endif %}
                             {{ patient_address.address }}<br>
-                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
-                                &nbsp;
-                                <a href="javascript:rm_phone_addr('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
+                            <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
+                            &nbsp;
+                            <a href="javascript:rm_phone_addr('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
                         </div>
                     {% endfor %}
                     <div style="float:right;">
-                        <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                        <a class="btn"
                            href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}','address', 'addressform');">
-                            <span class="ui-icon ui-icon-circle-plus"></span>
-                            Add Address
-                        </a>
+                            <i class="icon-plus"></i> Add Address</a>
                     </div>
                 </td>
             </tr>
@@ -120,28 +93,27 @@
                 </th>
                 <td>
                     <div id="phoneform"></div>
-                    {% for phone in patient_doc.active_phones %}
+                    {% for phone in patient_doc.casexml_phones %}
                         <div class="ptprofile_phone">
                             {% if phone.description %}
                                 <strong>{{ phone.description|title }}</strong> &nbsp;<br>
                             {% endif %}
                             {{ phone.number }}<br>
-                                <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
-                                    &nbsp;
-                                <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>
+                            <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'phone', 'phoneform', {{ forloop.counter0 }})">Change</a>
+                            &nbsp;
+                            <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'phone', {{ forloop.counter0 }})">Remove</a>
                         </div>
                     {% endfor %}
                     <div style="float:right;">
-                        <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                        <a class="btn"
                            href="javascript:ajax_get_form('{%url ajax_patient_form_get%}', '{{ patient_doc.get_id }}','phone', 'phoneform');">
-                            <span class="ui-icon ui-icon-circle-plus"></span>
-                            Add Phone
-                        </a>
+                            <i class="icon-plus"></i> Add Phone </a>
                     </div>
                 </td>
             </tr>
 
         </table>
+    </div>
 
     <small>
         <em>{% trans "Last Modified" %}: {{ patient_doc.date_modified|timesince }} ago</em>

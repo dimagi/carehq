@@ -1,0 +1,135 @@
+{% extends base_template %}
+{% load i18n %}
+{% block title %}{% trans "New Care Plan for Patient" %} {% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="#">Patients</a> <span class="divider">/</span></li>
+        <li class="active"><a
+                href="{{ patient_doc.get_absolute_url }}">{{ patient_doc.last_name }}, {{ patient_doc.first_name }}</a>
+        </li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <div class="row">
+        <div class="span12">
+            {% block patient_hat %}
+                <div class="pull-left">
+                    {% block patient_name_display %}
+                        <span class="ptpage_fn"> {{ patient_doc.first_name }}'s Care Plan</span>
+                    {% endblock patient_name_display %}
+                </div>
+                <div class="pull-right">
+                    {% block hat_actions %}
+                    {% endblock hat_actions %}
+                </div>
+            {% endblock patient_hat %}
+        </div>
+    </div> {# end row for patient_hat #}
+{% endblock page_header %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="span4">
+            <div class="well">
+                <h4>Add New Plan Item</h4>
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ new_item_form.as_table }}
+                    </table>
+                    <input type="submit" value="Submit" class="btn"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+                           class="btn"/>
+                </form>
+            </div>
+            <div class="well">
+                <h4>Add Plan Item From Existing Template</h4>
+
+                <form action="{% url link_template_careplan_for_patient %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                        {{ existing_form.as_table }}
+                    </table>
+
+                    <input type="submit" value="Submit" class="btn"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+                           class="btn"/>
+                </form>
+            </div>
+        </div>
+        <div class="span8">
+            <h2>Current Plans</h2>
+            {% if existing_plans %}
+                <div class="alert alert-heading">
+                    <ul>
+                        {% for plan in existing_plans %}
+                            <li>
+                                <h4><a href="{{ request.path }}?plan_id={{ plan.get_id }}">{{ plan.title }}</a></h4>
+                                {{ plan.description }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <h4>No plans yet</h4>
+            {% endif %}
+            <hr>
+            .
+        </div>
+        {% if careplan_instance %}
+            <div class="span8">
+                <h4>Edit <span class="label label-info">{{ careplan_instance.title }}</span> Items</h4>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Plan Item</th>
+                        <th>Status</th>
+                        <th>Issues</th>
+                        <th>Due</th>
+                    </tr>
+                    </thead>
+                    {% for item in careplan_instance.plan_items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.title }}</strong><br>
+                                {{ item.description }}
+                            </td>
+                            <td>
+                                {{ item.status }}
+                            </td>
+                            <td>
+                                {{ item.issue_container }}
+                            </td>
+                            <td>
+                                {% if item.due_date %}
+                                    {{ item.due_date }}
+                                {% else %}
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="well">
+                <h4>Add Item to Plan</h4>
+                <form action="{% url new_patient_careplan_item patient_doc.get_id careplan_instance.get_id %}" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-condensed">
+                        {{ careplan_item_form.as_table }}
+                    </table>
+
+                    <input type="submit" value="Submit" class="btn"/>
+                    <input type="button" name="cancel" value="Cancel" onclick="window.location='{{request.path}}'"
+                           class="btn"/>
+                </form>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

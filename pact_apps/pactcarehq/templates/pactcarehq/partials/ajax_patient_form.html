@@ -1,9 +1,9 @@
 
 <div class="ui-widget-content" style="padding: 8px;margin-bottom:8px;">
-<h4 class="ui-widget-header ui-corner-all">{{ title }}</h4>
+<h4>{{ title }}</h4>
 <form id="id_{{ form_name }}" action="{% url ajax_post_patient_form patient_guid form_name %}" class="uniForm" method="POST">
     {% csrf_token %}
-    <table id="tbl_{{ form_name }}">
+    <table id="tbl_{{ form_name }}" class="table table-condensed">
         {{ form.as_table }}
     </table>
     <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />

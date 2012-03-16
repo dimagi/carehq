@@ -63,14 +63,14 @@ function post_schedule_delete(patient_id, schedule_id) {
     <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th></th>
+            <th class="span1">Sun</th>
+            <th class="span1">Mon</th>
+            <th class="span1">Tue</th>
+            <th class="span1">Wed</th>
+            <th class="span1">Thu</th>
+            <th class="span1">Fri</th>
+            <th class="span1">Sat</th>
+            <th>Notes</th>
         </tr>
         </thead>
 
@@ -109,14 +109,14 @@ function post_schedule_delete(patient_id, schedule_id) {
 <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th></th>
+            <th class="span1">Sun</th>
+            <th class="span1">Mon</th>
+            <th class="span1">Tue</th>
+            <th class="span1">Wed</th>
+            <th class="span1">Thu</th>
+            <th class="span1">Fri</th>
+            <th class="span1">Sat</th>
+            <th>Notes</th>
         </tr>
     </thead>
     	<tr>
@@ -146,18 +146,18 @@ function post_schedule_delete(patient_id, schedule_id) {
 {% endif %} {# current schedules #}
 
 {% if patient_doc.future_schedules %}
-    <strong><span style="font-size: 125%;">Future Schedules</span></strong>
-    <table>
+    <strong><span style="font-size: 125%;"><em>Future Schedules</em></span></strong>
+    <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th></th>
+            <th class="span1">Sun</th>
+            <th class="span1">Mon</th>
+            <th class="span1">Tue</th>
+            <th class="span1">Wed</th>
+            <th class="span1">Thu</th>
+            <th class="span1">Fri</th>
+            <th class="span1">Sat</th>
+            <th>Notes</th>
         </tr>
     </thead>
 

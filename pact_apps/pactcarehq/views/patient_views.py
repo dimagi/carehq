@@ -7,6 +7,7 @@ from django.template.context import RequestContext
 import isodate
 from auditcare import inspect
 from carehq_core import carehq_api
+from careplan.models import CarePlanInstance
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
@@ -80,6 +81,12 @@ class PactPatientSingleView(PatientSingleView):
             context['past_schedules'] = pdoc.past_schedules
             self.template_name = "pactcarehq/pactpatient/pactpatient_schedule.html"
         if view_mode == 'careplan':
+            selected_plan_id =  request.GET.get('plan', None)
+            if selected_plan_id is not None:
+                context['selected_plan'] =  CarePlanInstance.get(selected_plan_id)
+                #todo: check for patientguid
+            context['careplans'] = CarePlanInstance.view('careplan/by_patient', key=patient_guid, include_docs=True).all()
+
             self.template_name = "pactcarehq/pactpatient/pactpatient_careplan.html"
 
         if view_mode == 'submissions':
