@@ -60,7 +60,11 @@
                     {% endif %}
                 </div>
                 <div class="mepi_third">
-                    <div class="mepi_missing"> {% trans "LLFT" %} </div>
+                    {% if lab_lft %}
+                        <div class="mepi_completed"> {% trans "LLFT" %} </div>
+                    {% else %}
+                        <div class="mepi_missing"> {% trans "LLFT" %} </div>
+                    {% endif %}
                 </div>
             </div> {# endrow #}
             <div class="row-fluid">
