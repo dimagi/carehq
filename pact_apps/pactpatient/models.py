@@ -429,6 +429,7 @@ class PactPatient(BasePatient):
                 for xform_id in case_doc['xform_ids']:
                     if db.doc_exist(xform_id):
                         last_submit = xform_id
+                        break
                     else:
                         last_submit = None
                         continue
