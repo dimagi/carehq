@@ -129,7 +129,7 @@ def touchform_callback(request, case_id):
     if len(pts) == 0:
         raise Http404
     patient_guid = pts[0]._id
-    reverse_back = reverse('view_pactpatient', kwargs={'patient_guid': patient_guid})
+    reverse_back = reverse('view_pactpatient', kwargs={'patient_guid': patient_guid, 'view_mode': ''})
     return HttpResponseRedirect(reverse_back)
 
 def fetch_xform_def(xform_url):

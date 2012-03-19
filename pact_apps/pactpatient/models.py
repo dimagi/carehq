@@ -273,7 +273,7 @@ class PactPatient(BasePatient):
 
 
     def get_absolute_url(self):
-        return reverse('view_pactpatient', kwargs={'patient_guid': self._id})
+        return reverse('view_pactpatient', kwargs={'patient_guid': self._id, 'view_mode': ''})
 
     @property
     def get_race(self):

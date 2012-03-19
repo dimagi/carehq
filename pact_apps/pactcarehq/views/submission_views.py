@@ -235,7 +235,7 @@ def rm_dot_submission(request):
                 doc_to_delete.delete()
                 if len(pts) == 1:
                     patient_doc = pts[0]
-                    return HttpResponse(status=202,content=reverse('view_pactpatient', kwargs={'patient_guid': patient_doc._id}))
+                    return HttpResponse(status=202,content=reverse('view_pactpatient', kwargs={'patient_guid': patient_doc._id, 'view_mode': ''}))
             else:
                 logging.error("Error, attempt to delete non DOT form.  User: %s, doc_id %s" % (request.user.username, doc_id))
                 return HttpResponse(status=405, content="Improper attempt to delete document")

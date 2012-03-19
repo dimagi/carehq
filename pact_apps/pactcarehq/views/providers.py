@@ -28,7 +28,7 @@ def pt_new_or_link_provider(request, patient_guid, template="pactcarehq/add_pact
             provider_actor = form.save(commit=False)
             provider_actor.save(pact_tenant)
             carehq_api.add_external_provider_to_patient(pt, provider_actor)
-            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid, 'view_mode': ''}) + "#ptabs=patient-careteam-tab")
         else:
             context['form'] = form
     else:

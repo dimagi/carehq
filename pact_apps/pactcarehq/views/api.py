@@ -83,7 +83,7 @@ def rm_provider_from_patient(request):
         #permissions.utils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         ctype = ContentType.objects.get_for_model(pdoc.django_patient)
         PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype, content_id=pdoc.django_uuid).delete()
-        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid}) + "#ptabs=patient-careteam-tab")
+        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid, 'view_mode': ''}) + "#ptabs=patient-careteam-tab")
     except Exception, e:
         logging.error("Error getting args:" + str(e))
         #return HttpResponse("Error: %s" % (e))

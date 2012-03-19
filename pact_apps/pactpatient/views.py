@@ -98,7 +98,7 @@ def new_patient(request, template_name="pactpatient/new_pactpatient.html"):
             case.save()
             messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
             recompute_chw_actor_permissions(newptdoc, old_map_full=old_map_full)
-            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':newptdoc._id}))
+            return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':newptdoc._id, 'view_mode': ''}))
         else:
             messages.add_message(request, messages.ERROR, "Failed to add patient!")
             context['patient_form'] = form

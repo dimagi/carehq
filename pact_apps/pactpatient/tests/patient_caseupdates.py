@@ -109,7 +109,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         patient, phones, addresses = self.test1CreatePatientVerifyAddressAPI()
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
-        response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient._id}))
+        response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient._id, 'view_mode': ''}))
         content = response.content
 
         phone_indices = []
