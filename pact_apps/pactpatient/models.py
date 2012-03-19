@@ -423,9 +423,21 @@ class PactPatient(BasePatient):
             else:
                 #new version pulling from case
                 case_doc = self._cache_case()
+                db = XFormInstance.get_db()
+
+                last_submit = None
+                for xform_id in case_doc['xform_ids']:
+                    if db.doc_exist(xform_id):
+                        last_submit = xform_id
+                    else:
+                        last_submit = None
+                        continue
+                if last_submit is None:
+                    return CActivityDashboard()
+
                 ret = dict()
                 ret['count'] = len(set(case_doc['xform_ids']))
-                last_form = self._get_case_submission(case_doc['xform_ids'][-1])#self._XFormInstance.get(case_doc.xform_ids[-1])
+                last_form = self._get_case_submission(last_submit)#self._XFormInstance.get(case_doc.xform_ids[-1])
                 ret['doc_id'] = last_form._id
                 ret['last_xmlns'] = last_form.xmlns
                 ret['last_received'] = last_form.received_on.strftime("%Y-%m-%dT%H:%M:%SZ")

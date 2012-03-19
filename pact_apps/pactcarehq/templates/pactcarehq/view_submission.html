@@ -43,17 +43,16 @@
             </div>
             <div class="span3 last">
                 {% if form_type == "Bloodwork" %}
-                    <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                    <a class="btn"
                        href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
-                        <span class="ui-icon ui-icon-wrench"></span>
+                        <i class="icon-edit"></i>
                         Edit
                     </a>
                 {% endif %}
 
                 {% if form_type == "Progress Note" %}
-                    <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
-                       href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
-                        <span class="ui-icon ui-icon-wrench"></span>
+                    <a class="btn" href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
+                        <i class="icon-edit"></i>
                         Edit
                     </a>
                 {% endif %}
