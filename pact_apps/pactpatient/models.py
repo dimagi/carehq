@@ -446,15 +446,21 @@ class PactPatient(BasePatient):
                 def _get_encounter_date(xform_doc):
                     ret_date = None
                     try:
-                        if xform_doc.get('encounter_date', None) is not None:
-                            ret_date = xform_doc['encounter_date']
-                        if xform_doc.get('note', None) is not None and xform_doc['note'].get('encounter_date', None) is not None:
-                            ret_date =  xform_doc['note']['encounter_date']
-                        if xform_doc.get('Meta', None) is not None:
-                            if xform_doc['Meta'].get('TimeEnd', None) is not None:
-                                ret_date = xform_doc['Meta']['TimeEnd']
-                            if xform_doc['Meta'].get('TimeStart', None) is not None:
-                                ret_date = xform_doc['Meta']['TimeStart']
+                        if xform_doc['form'].get('encounter_date', None) is not None:
+                            ret_date = xform_doc['form']['encounter_date']
+                        if xform_doc['form'].get('note', None) is not None and xform_doc['form']['note'].get('encounter_date', None) is not None:
+                            ret_date =  xform_doc['form']['note']['encounter_date']
+                        if xform_doc['form'].get('Meta', None) is not None:
+                            if xform_doc['form']['Meta'].get('TimeEnd', None) is not None:
+                                ret_date = xform_doc['form']['Meta']['TimeEnd']
+                            if xform_doc['form']['Meta'].get('TimeStart', None) is not None:
+                                ret_date = xform_doc['form']['Meta']['TimeStart']
+
+
+                        #last check
+                        if ret_date is None:
+                            ret_date = xform_doc['received_on']
+
                         if isinstance(ret_date, date):
                             ret_date = ret_date.strftime('%Y-%m-%dT04:00:00.000Z')
                         elif isinstance(ret_date, datetime):
@@ -463,14 +469,17 @@ class PactPatient(BasePatient):
                             splits = ret_date.split(' ')
                             if len(splits) > 1:
                                 ret_date = "%sT%s" % (splits[0], splits[1])
+                            else:
+                                ret_date = None
 
                     except Exception, ex:
-                        ret_date = ''
+                        ret_date = None
                         logging.error("Unable to parse an encounter date from submission %s" % xform_doc['_id'])
+
                     return ret_date
 
 
-                ret['encounter_date'] = _get_encounter_date(last_form['form'])
+                ret['encounter_date'] = _get_encounter_date(last_form)
                 cache.set('%s_dashboard' % self._id, simplejson.dumps(ret))
                 self._dashboard = CActivityDashboard.wrap(ret)
 
