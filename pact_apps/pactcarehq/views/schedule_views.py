@@ -60,7 +60,7 @@ def _get_schedule_tally(username, total_interval, override_date=None):
         for patient in patients:
             pact_id = patient.pact_id
             searchkey = [str(username), str(pact_id), visit_date.year, visit_date.month, visit_date.day]
-            submissions = XFormInstance.view('pactcarehq/submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
+            submissions = XFormInstance.view('dotsview/dots_submits_by_chw_per_patient_date', key=searchkey, include_docs=True).all()
             if len(submissions) > 0:
                 visited.append(submissions[0])
                 total_visited+= 1

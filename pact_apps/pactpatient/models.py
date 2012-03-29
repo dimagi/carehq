@@ -489,7 +489,7 @@ class PactPatient(BasePatient):
 
     def dots_casedata_for_day(self, date, art_num, non_art_num):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
-        from dotsview.models.couchmodels import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
+        from dotsview.models import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
 
         def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency

@@ -76,7 +76,7 @@ def xml_download(request):
     username = request.user.username
 
     if username == "ctsims":
-        username = 'cs783'
+        username = 'ss524'
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
@@ -84,34 +84,46 @@ def xml_download(request):
     total_count = 0
     db = XFormInstance.get_db()
 
-    assigned_patients = PactPatient.view('pactcarehq/chw_assigned_patients', key=username, include_docs=True).all()
+    submits_iter = XFormInstance.view('pactcarehq/progress_notes_by_chw_per_patient_date', startkey=[username, None], endkey=[username, {}], include_docs=True).iterator()
+
+
+    #get all patients to determine which to filter.
+    all_patients = PactPatient.view('pactcarehq/chw_assigned_patients', include_docs=True).all()
+    #assigned_patients = PactPatient.view('pactcarehq/chw_assigned_patients', key=username, include_docs=True).all()
 
     active_patients = []
-    for pt in assigned_patients:
+    for pt in all_patients:
         if pt.arm == "Discharged":
             continue
         pact_id = pt.pact_id
         active_patients.append(pact_id)
 
+    for form in submits_iter:
+        if form.xmlns != 'http://dev.commcarehq.org/pact/progress_note':
+            continue
+        if form['form']['note']['pact_id'] not in active_patients:
+            continue
+        xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+        temp_xml.write(xml_str)
+        temp_xml.write("\n")
+        total_count += 1
 
-    now = datetime.now(tz=timezone(settings.TIME_ZONE))
-    sixmonths = now - timedelta(days=180)
-    progress_xmlns = 'http://dev.commcarehq.org/pact/progress_note'
-    for pact_id in active_patients:
-        sk = [pact_id, sixmonths.year, sixmonths.month, sixmonths.day, progress_xmlns]
-        ek = [pact_id, now.year, now.month, now.day, progress_xmlns]
-
-        xforms = XFormInstance.view('pactcarehq/all_submits_by_patient_date', startkey=sk, endkey=ek, include_docs=True).all()
-        for form in xforms:
-            try:
-                if form.xmlns != 'http://dev.commcarehq.org/pact/progress_note':
-                    continue
-                xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
-                temp_xml.write(xml_str)
-                temp_xml.write("\n")
-                total_count += 1
-            except ResourceNotFound:
-                logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
+         #old code, going by patient first
+#    for pact_id in active_patients:
+#        sk = [pact_id, sixmonths.year, sixmonths.month, sixmonths.day, progress_xmlns]
+#        ek = [pact_id, now.year, now.month, now.day, progress_xmlns]
+#
+#        xforms = XFormInstance.view('pactcarehq/dots_submits_by_patient_date', startkey=sk, endkey=ek, include_docs=True).all()
+#        for form in xforms:
+#            try:
+#                if form.xmlns != 'http://dev.commcarehq.org/pact/progress_note':
+#                    continue
+#                xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+#                temp_xml.write(xml_str)
+#                temp_xml.write("\n")
+#                total_count += 1
+#            except ResourceNotFound:
+#                logging.error("Error, xform submission %s does not have a form.xml attachment." % (form._id))
     temp_xml.write("</restoredata>")
     length = temp_xml.tell()
     temp_xml.seek(0)

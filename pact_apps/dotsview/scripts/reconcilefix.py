@@ -1,4 +1,4 @@
-from dotsview.models.couchmodels import CObservation, CObservationAddendum, ADDENDUM_NOTE_STRING
+from dotsview.models import CObservation, CObservationAddendum, ADDENDUM_NOTE_STRING
 
 
 map_function = """

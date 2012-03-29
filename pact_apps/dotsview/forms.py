@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
-from dotsview.models.couchmodels import TIME_LABEL_LOOKUP, ADHERENCE_CHOICES, METHOD_CHOICES
+from dotsview.models import TIME_LABEL_LOOKUP, ADHERENCE_CHOICES, METHOD_CHOICES
 
 #source: https://wikis.utexas.edu/display/~bm6432/Django-Modifying+RadioSelect+Widget+to+have+horizontal+buttons
 class HorizRadioRenderer(forms.RadioSelect.renderer):

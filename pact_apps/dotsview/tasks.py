@@ -3,7 +3,7 @@ import csv
 from datetime import  timedelta
 from celery.decorators import task
 import simplejson
-from dotsview.models.couchmodels import CObservation
+from dotsview.models import CObservation
 from django.core.cache import cache
 from patient.models import Patient
 import tempfile, zipfile
