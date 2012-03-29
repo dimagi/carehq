@@ -166,9 +166,12 @@ class ShinePatient(BasePatient):
 #        return self._couchdoc
 
 
+    def _do_get_latest_case(self, invalidate=False):
+        if invalidate:
+            cache.delete('shinepatient_latest_case_%s' % self._id)
+            if hasattr(self,'_latest_case'):
+                delattr(self, '_latest_case')
 
-    @property
-    def latest_case(self):
         if hasattr(self,'_latest_case'):
             return self._latest_case
 
@@ -185,7 +188,12 @@ class ShinePatient(BasePatient):
         self._latest_case = sorted_docs[-1]
 
         cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(self._latest_case.to_json()), 3600)
+        return self._latest_case
 
+
+    @property
+    def latest_case(self):
+        self._do_get_latest_case()
         return self._latest_case
 
     def is_unique(self):
