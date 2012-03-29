@@ -75,8 +75,6 @@ def get_ghetto_registration_block(user):
 def xml_download(request):
     username = request.user.username
 
-    if username == "ctsims":
-        username = 'ss524'
     offset =0
     limit_count=100
     temp_xml = tempfile.TemporaryFile()
