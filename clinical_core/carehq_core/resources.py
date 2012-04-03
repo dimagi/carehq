@@ -8,7 +8,6 @@ from tastypie.resources import Resource, ModelResource
 import restkit
 from clinical_shared.utils.tastypie_utils import DatatablesModelResource
 from couchforms.models import XFormInstance
-from dimagi.utils.couch.tastykit import DataTablesMixin
 from issuetracker.models.issuecore import Issue, IssueEvent
 from patient.models import Patient
 from permissions.models import Actor

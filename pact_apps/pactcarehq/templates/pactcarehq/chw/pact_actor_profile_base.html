@@ -1,0 +1,158 @@
+{% extends "actortemplates/base_actor_profile.html" %}
+{% load i18n %}
+{% include render_json_tags %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/carehq.ajaxform.js"></script>
+{% endblock extrahead %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="{% url chw_actor_list %}">CHW List</a> <span class="divider">/</span></li>
+        <li class="active">{{ actor_doc.first_name }} {{ actor_doc.last_name }}</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block actor_identity %}
+    <img class="thumbnail pull-left" style="margin-right:8px; margin-bottom:8px;"
+         src="{{ STATIC_URL }}carehqapp/img/noun/noun_user_75.png" height="75">
+    <div class="span6">
+        <table class="actor_details">
+            <tr>
+                <td class="span2">{% trans "Name" %}</td>
+                <td class="span3">{{ actor_doc.first_name }} {{ actor_doc.last_name }}</td>
+            </tr>
+            <tr>
+                <td>{% trans "Username" %}</td>
+                <td>{{ actor_doc.django_actor.user.username }}</td>
+            </tr>
+            <tr>
+                <td>{% trans "Phone" %}</td>
+                <td>{{ actor_doc.phone_number }}</td>
+            </tr>
+            <tr>
+                <td>{% trans "Email" %}</td>
+                <td>{{ actor_doc.email }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="span4 well">
+    {% if actor_doc.doc_type == "CaregiverActor" %}
+        {% if info_block_perms %}
+            {% for prr in info_block_perms %}
+                Caregiver for {{ prr.content }}<br>
+            {% endfor %}
+
+        {% endif %}
+    {% endif %}
+    </div>
+{% endblock actor_identity %}
+
+
+{% block actor-tab-controller %}
+{#    <li {% if view_mode == "info" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id '' %}">{% trans "Info" %}</a></li>#}
+    <li {% if view_mode == "submissions" %}class="active"{% endif %}><a href="{% url pact_chw_profile actor_doc.get_id 'submissions' %}">{% trans "Submissions" %}</a></li>
+    <li {% if view_mode == "networks" %}class="active"{% endif %}><a href="{% url pact_chw_profile actor_doc.get_id 'networks' %}">{% trans "Care Networks" %}</a></li>
+    <li {% if view_mode == "issues" %}class="active"{% endif %}><a href="{% url pact_chw_profile actor_doc.get_id 'issues' %}">{% trans "Issues" %}</a></li>
+    <li {% if view_mode == "supervision" %}class="active"{% endif %}><a href="{% url pact_chw_profile actor_doc.get_id 'supervision' %}">{% trans "Supervision" %}</a></li>
+{% endblock actor-tab-controller %}
+
+{% block actor-tab-container %}
+    <div id="actor-info-tab" class="ui-tabs-hide">
+
+
+        <div id="actorprofileform" class="editctrl"></div>
+        <h4 class="ui-widget-header ui-corner-all">User Information</h4>
+        <table>
+            <tr>
+                <th class="span3">Role Title</th>
+                <td>{{ actor_doc.title }}</td>
+            </tr>
+            <tr>
+                <th class="span3">Notes</th>
+                <td>{{ actor_doc.notes }}
+                </td>
+            </tr>
+            <tr>
+            </tr>
+        </table>
+        {#        <div class="editctrl" style="float:right;">#}
+        {#            <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"#}
+        {#               href="javascript:ajax_get_form('{% url ajax_get_actor_form %}','{{ actor_doc.get_id }}', 'chweditprofile', 'actorprofileform');">#}
+        {#                <span class="ui-icon ui-icon-wrench"></span>#}
+        {#                Edit Info#}
+        {#            </a>#}
+        {#        </div>#}
+        &nbsp;
+    </div>
+    <div id="permissions-tab" class="ui-tabs-hide">
+        {% for role, subjects in permissions_dict.items %}
+            <div class="span8 last">
+                Role <strong>{{ role.display }}</strong>
+                {% if subjects %}
+                    {% for s in subjects %}
+                        {% if s %}
+                            <div class="span7 offset1">
+                                <a href="{{ s.get_absolute_url }}">{{ s }}</a><br>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div style="clear:both;"></div>
+    </div>
+
+    <div id="submissions-tab" class="ui-tabs-hide">
+        {% if submit_arr %}
+            <table id="submits-table" class="tablesorter">
+                <thead>
+                <tr>
+                    <th class="span3">Encounter Date</th>
+                    <th class="span1">ID</th>
+                    <th class="span2">Last Name</th>
+                    <th class="span2">First Name</th>
+                    <th class="span3">Form</th>
+
+                    <th class="span3">Started</th>
+                    <th class="span3">Finish Time</th>
+                    <th class="span3">Submit Time</th>
+                    <th class="span3">Submit Date</th>
+                </tr>
+                </thead>
+                {% for submission in submit_arr %}
+                    <tr>
+                        <td><a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d" }}</a></td>
+                        <td> {{ submission.2.pact_id }}</td>
+                        <td> {{ submission.2.last_name }}</td>
+                        <td> {{ submission.2.first_name }}</td>
+                        <td> {{ submission.3 }}</td>
+
+                        <td> {{ submission.4|date:"Y-m-d H:i" }}</td>
+                        <td> {{ submission.5 }}</td>
+                        <td> {{ submission.6 }}</td>
+                        <td> {{ submission.7|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <div class="notice">No Submissions</div>
+        {% endif %}
+    </div>
+
+    <div id="supervision-tab" class="ui-tabs-hide">
+        <h3>Supervision Events</h3>
+        <ul>
+            <li>Coming Soon</li>
+        </ul>
+
+    </div>
+
+    <div id="training-tab" class="ui-tabs-hide">
+        <h3>Training Events</h3>
+        <ul>
+            <li>Coming Soon</li>
+        </ul>
+    </div>
+{% endblock actor-tab-container %}

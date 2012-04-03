@@ -95,10 +95,6 @@ def all_issues(request, template_name='issuetracker/issues_list.html'):
     context = RequestContext(request)
     return render_to_response(template_name, context_instance=context)
 
-
-
-
-
 @login_required
 def manage_issue(request, issue_id, template_name='issuetracker/manage_issue.html'):
     """

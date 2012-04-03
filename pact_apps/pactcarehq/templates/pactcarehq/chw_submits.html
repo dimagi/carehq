@@ -1,50 +1,97 @@
 {% extends base_template %}
 {% include render_json_tags %}
 
+
+
+
 {% block extrahead %}
-    <script type="text/javascript" src="{{STATIC_URL}}pactcarehq/tablesorter/jquery.tablesorter.min.js"></script>
-    <link rel="stylesheet" href="{{ STATIC_URL }}pactcarehq/tablesorter/blue/style.css" type="text/css" media="print, projection, screen" />
-    <script type="text/javascript" charset="utf-8">
-        $().ready(function(){
-            $("#submits-table").tablesorter({sortList: [[0,0]],widgets:['zebra']});
-        });
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/datatables.bootstrap.js"></script>
+    <link rel="stylesheet" href="{{STATIC_URL}}carehq/css/datatables_tb.css" type="text/css" media="screen, projection">
+
+    <script>
+        var refreshNotification =
+                function()
+                {
+                    location.reload();
+                    fadeIn("slow");
+                };
+
+        $(document).ready(function() {
+
+            function eventFired( type ) {
+                console.writeln(type);
+//                var n = document.getElementById('demo_info');
+//                n.innerHTML += '<:div>:'+type+' event - '+new Date().getTime()+'<:/div>:';
+//                n.scrollTop = n.scrollHeight;
+            }
+
+            $('#submits-table').dataTable( {
+
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": "{% url api_dispatch_chw_list "PactUserSubmissions" username  %}",
+                "sAjaxDataProp": "objects",
+                "aoColumns": [
+                    { "mDataProp": "doc_id" },
+                    { "mDataProp": "start_date" },
+                    { "mDataProp": "end_time" },
+                    { "mDataProp": "encounter_date" },
+                ],
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                "sPaginationType": "bootstrap",
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_ records per page"
+                },
+
+                "fnServerParams": function ( aoData ) {
+                    aoData.push( { name:"username", value: "{{ username }}"} );
+                }
+
+            } );
+        } );
     </script>
+
 {% endblock %}
+
+{% block page_header %}
+    <h2>{{ headline_text }}</h2>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">{{ headline_text }}</li>
+    </ul>
+{% endblock page_crumbs %}
+
 {% block content %}
-<h3>{{ username }}'s Submissions</h3>
+{% if is_me %}
+    <h3>My Submissions</h3>
+{% else %}
+    <h3>{{ username }}'s Submissions</h3>
+{% endif %}
 <a href="{% url pactcarehq.views.chw_calendar_submit_report username %}">Submission Schedule</a>
-    {% if submit_arr %}
-    <table id="submits-table" class="tablesorter">
+    <table id="submits-table" class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th class="span3">Encounter Date</th>
-            <th class="span1">ID</th>
-            <th class="span2">Last Name</th>
-            <th class="span2">First Name</th>
-            <th class="span3">Form</th>
-            
-            <th class="span3">Started</th>
-            <th class="span3">Finish Time</th>
-            <th class="span3">Submit Time</th>
-            <th class="span3">Submit Date</th>
+            <th>Doc ID</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Encounter Date</th>
+{#            <th class="span3">Encounter Date</th>#}
+{#            <th class="span1">ID</th>#}
+{#            <th class="span2">Last Name</th>#}
+{#            <th class="span2">First Name</th>#}
+{#            <th class="span3">Form</th>#}
+{#            #}
+{#            <th class="span3">Started</th>#}
+{#            <th class="span3">Finish Time</th>#}
+{#            <th class="span3">Submit Time</th>#}
+{#            <th class="span3">Submit Date</th>#}
         </tr>
     </thead>
-    {% for submission in submit_arr %}
-        <tr>
-            <td> <a href="{% url show_submission submission.0 %}">{{ submission.1|date:"Y-m-d"}}</a> </td>
-            <td> {{ submission.2.pact_id }}</td>
-            <td> {{ submission.2.last_name }}</td>
-            <td> {{ submission.2.first_name }}</td>
-            <td> {{ submission.3 }}</td>
-
-            <td> {{ submission.4|date:"Y-m-d H:i" }}</td> {# started date #}
-            <td> {{ submission.5 }}</td> {# start-end interval #}
-            <td> {{ submission.6 }}</td> {# end-submit interval #}
-            <td> {{ submission.7|date:"Y-m-d H:i" }}</td> {# submitted date #}
-        </tr>
-    {% endfor %}
+    <tbody>
+    </tbody>
     </table>
-    {% else %}
-        <div class="notice">No Submissions</div>
-    {% endif %} {#if there are any submits at all #}
 {% endblock %}

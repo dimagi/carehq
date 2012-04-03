@@ -1,0 +1,67 @@
+{% extends "pactcarehq/chw/pact_actor_profile_base.html" %}
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}carehq/js/datatables.bootstrap.js"></script>
+    <script>
+        $().ready(function() {
+
+            function eventFired( type ) {
+                console.writeln(type);
+//                var n = document.getElementById('demo_info');
+//                n.innerHTML += '<:div>:'+type+' event - '+new Date().getTime()+'<:/div>:';
+//                n.scrollTop = n.scrollHeight;
+            }
+
+            $('#submits-table').dataTable( {
+
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": "{% url api_dispatch_chw_list "PactUserSubmissions" username  %}",
+                "sAjaxDataProp": "objects",
+                "aoColumns": [
+                    { "mDataProp": "pact_id" },
+                    { "mDataProp": "patient" },
+                    { "mDataProp": "encounter_date" },
+                    { "mDataProp": "received_on" },
+                ],
+                "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                "sPaginationType": "bootstrap",
+                "oLanguage": {
+                    "sLengthMenu": "_MENU_ records per page"
+                },
+
+                "fnServerParams": function ( aoData ) {
+                    aoData.push( { name:"username", value: "{{ username }}"} );
+                }
+
+            } );
+        } );
+    </script>
+
+
+{% endblock extrahead %}
+{% block actor-tab-container %}
+    <table id="submits-table" class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>PACT ID</th>
+            <th>Patient</th>
+            <th>Encounter Date</th>
+            <th>Received</th>
+            {#            <th class="span3">Encounter Date</th>#}
+            {#            <th class="span1">ID</th>#}
+            {#            <th class="span2">Last Name</th>#}
+            {#            <th class="span2">First Name</th>#}
+            {#            <th class="span3">Form</th>#}
+            {#            #}
+            {#            <th class="span3">Started</th>#}
+            {#            <th class="span3">Finish Time</th>#}
+            {#            <th class="span3">Submit Time</th>#}
+            {#            <th class="span3">Submit Date</th>#}
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}

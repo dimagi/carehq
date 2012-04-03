@@ -1,3 +1,4 @@
+import logging
 
 GENDER_CHOICES = (
        ('m','Male'),
@@ -16,6 +17,84 @@ REGIMEN_CHOICES = (
     ('TID', 'TID - Three times a day'),
     ('QID', 'QID - Four times a day'),
     )
+
+
+#http://confluence.dimagi.com/display/pactsbir/Technical+Specs
+
+def get_regimen_code_arr(str_regimen):
+    """
+    Helper function to decode regimens for both the old style regimens (in REGIMEN_CHOICES) as well as the new style
+    regimens as required in the technical specs above.
+
+    should return an array of day slot indices.
+    """
+
+    day_slots = {
+        'morning': 0,
+        'noon': 1,
+        'evening': 2,
+        'bedtime': 3,
+    }
+
+    #legacy handling
+    if str_regimen.lower() == 'qd':
+        return [0]
+    elif str_regimen.lower() == 'qd-am':
+        return [0]
+    elif str_regimen.lower() == 'qd-pm':
+        return [2]
+    elif str_regimen.lower() == 'bid':
+        return [0,2]
+    elif str_regimen.lower() == 'qid':
+        return [0,1,2,3]
+    elif str_regimen.lower() == 'tid':
+        return [0,1,2]
+    elif str_regimen.lower() == '':
+        return []
+
+
+    splits = str_regimen.split(',')
+    ret = []
+    for x in splits:
+        if x in day_slots.keys():
+            ret.append(day_slots[x])
+        else:
+            logging.error("value error, the regimen string is incorrect for the given patient, returning blank")
+            return []
+    return ret
+
+
+
+
+REGIMEN_CHOICES = (
+    ('QD - Once a day', [
+        ('morning', 'Morning'),
+        ('noon', 'Noon'),
+        ('evening', 'Evening'),
+        ('bedtime', 'Bedtime'),
+    ]),
+    ('BID - Twice a day', [
+        ('morning,noon', 'Morning, Noon'),
+        ('morning,evening', 'Morning, Evening'),
+        ('morning,bedtime', 'Morning, Bedtime'),
+
+        ('noon,evening', 'Noon, Evening'),
+        ('noon,bedtime', 'Noon, Bedtime'),
+
+        ('evening,bedtime', 'Evening, Bedtime'),
+    ]),
+    ('TID - Three times a day', [
+        ('morning,noon,evening', 'Morning, Noon, Evening'),
+        ('morning,noon,bedtime', 'Morning, Noon, Bedtime'),
+        ('morning,evening,bedtime', 'Morning, Evening, Bedtime'),
+        ('noon,evening,bedtime', 'Noon, Evening, Bedtime'),
+
+    ]),
+    ('QID - Four times a day', [
+        ('morning,noon,evening,bedtime', 'Morning, Noon, Evening, Bedtime'),
+    ]),
+)
+
 
 PACT_ARM_CHOICES = (
     ('HP', [('HP', 'HP - Health Promoter'),

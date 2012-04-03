@@ -8,33 +8,6 @@ from dimagi.utils.couch.pagination import ReportBase
 from pactcarehq.views.submission_views import _get_submissions_for_user
 from pactpatient.models import CActivityDashboard
 
-@login_required
-def chw_list(request, template_name="pactcarehq/chw_list.html"):
-    """A list of all users"""
-    context = RequestContext(request)
-    q_users = list(User.objects.all().filter(is_active=True).values_list('username', flat=True))
-
-    users = []
-    for u in q_users:
-        if u.count("_") > 0:
-            continue
-        users.append(u.encode('ascii'))
-    users.sort()
-
-    chw_dashboards = CActivityDashboard.view('pactcarehq/chw_dashboard', keys=users, group=True).all()
-
-    username_dashboard_dict = {}
-    for reduction in chw_dashboards:
-        chw_username = reduction['key']
-        dashboard = CActivityDashboard.wrap(reduction['value'])
-        username_dashboard_dict[chw_username] = dashboard
-    context['chw_dashboards'] = []
-    for uname in users:
-        if username_dashboard_dict.has_key(uname):
-            context['chw_dashboards'].append((uname, username_dashboard_dict[uname]))
-        else:
-            context['chw_dashboards'].append((uname, None))
-    return render_to_response(template_name, context_instance=context)
 
 @login_required
 def chw_actor_list(request, template_name="pactcarehq/chw_actor_list.html"):
@@ -54,10 +27,9 @@ def new_chw(request, template="pactcarehq/new_chw.html"):
     pass
 
 @login_required
-def chw_profile(request, chw_doc_id, template_name="pactcarehq/chw_profile.html"):
+def chw_profile(request, chw_doc_id, view_mode, template_name="pactcarehq/chw/pact_actor_profile_info.html"):
     context = RequestContext(request)
     chw = carehq_api.get_chw(chw_doc_id)
-    submits = _get_submissions_for_user(chw.django_actor.user.username)
 
 
     #form for supervision
@@ -81,8 +53,20 @@ def chw_profile(request, chw_doc_id, template_name="pactcarehq/chw_profile.html"
     context['actor_doc'] = chw
     context['username'] = chw.django_actor.user.username
     context['permissions_dict'] = carehq_api.get_permissions_dict(chw)
-    #context['submit_arr'] = submits[0:100]
-    context['submit_arr'] = submits
+
+    if view_mode == '':
+        view_mode = 'submissions'
+
+
+    if view_mode == 'issues':
+        template_name = 'pactcarehq/chw/pact_actor_profile_info.html'
+    elif view_mode == 'supervision':
+        template_name = 'pactcarehq/chw/pact_actor_profile_supervision.html'
+    elif view_mode == 'network':
+        template_name = 'pactcarehq/chw/pact_actor_profile_network.html'
+    elif view_mode == 'submissions':
+        template_name = 'pactcarehq/chw/pact_actor_profile_submissions.html'
+    context['view_mode'] = view_mode
 #    context['submit_arr'] = [1,2,3]
     return render_to_response(template_name, context_instance=context)
 

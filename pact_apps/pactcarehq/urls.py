@@ -9,7 +9,6 @@ from pactpatient.models import PactPatient
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 submission_resource = UserSubmissionResource()
 urlpatterns = patterns ('',
-    (r'^pact/api/', include(submission_resource.urls)),
 
     (r'^$', 'pactcarehq.views.patient_views.my_patient_activity'),
     (r'^uptime$', 'pactcarehq.views.uptime'),
@@ -38,14 +37,12 @@ urlpatterns = patterns ('',
     (r'^submits/mine$', 'pactcarehq.views.my_submits'),
     (r'^submits/mine/restore$', 'pactcarehq.views.xml_download'),
 
-    (r'^submits/chw/all$', 'pactcarehq.views.chw_list'), #to deprecate
     url(r'^chws/all$', 'pactcarehq.views.chw_views.chw_actor_list', name='chw_actor_list'),
-    url(r'^chws/(?P<chw_doc_id>[0-9a-zA-Z]{25,32})$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
+    url(r'^chws/(?P<chw_doc_id>[0-9a-zA-Z]{25,32})/(?P<view_mode>\w*)$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
 
     (r'^submits/chw/(?P<chw_username>.*)/submits$', 'pactcarehq.views.chw_submits'),
+    (r'^pact/api/', include(submission_resource.urls)),
 
-
-    (r'^submits/submits/bychw$', 'pactcarehq.views.all_submits_by_user'), #to be deprecated
     (r'^submits/patient/all$', 'pactcarehq.views.all_submits_by_patient'),
 
     (r'^exporter/$', 'pactcarehq.views.export_landing'),

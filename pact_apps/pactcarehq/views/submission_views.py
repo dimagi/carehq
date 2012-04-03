@@ -84,24 +84,9 @@ def chw_submits(request, chw_username, template_name="pactcarehq/chw_submits.htm
     except ValueError:
         page = 1
 
-    submits = _get_submissions_for_user(chw_username)
+#    submits = _get_submissions_for_user(chw_username)
     context['username'] = chw_username
-    context['submit_arr'] = submits
-    return render_to_response(template_name, context_instance=context)
-
-
-@login_required
-def all_submits_by_user(request, template_name="pactcarehq/submits_by_chw.html"):
-    """A list of all xform submissions itemized by form type for ALL users"""
-    context = RequestContext(request)
-    submit_dict = {}
-    for user in User.objects.all().filter(is_active=True):
-        username = user.username
-        #hack to skip the _ names
-        if username.count("_") > 0:
-            continue
-        submit_dict[username] = _get_submissions_for_user(username)
-    context['submit_dict'] = submit_dict
+#    context['submit_arr'] = submits
     return render_to_response(template_name, context_instance=context)
 
 @login_required
@@ -120,7 +105,7 @@ def all_submits_by_patient(request, template_name="pactcarehq/submits_by_patient
 
 def _get_submissions_for_user(username):
     """For a given username, return an array of submissions with an element [doc_id, date, patient_name, formtype]"""
-    xform_submissions = XFormInstance.view("pactcarehq/all_submits", key=username, include_docs=True).all()
+    xform_submissions = XFormInstance.view("pactcarehq/all_submits_by_chw_date", key=username, include_docs=True).all()
     submissions = []
     for xform in xform_submissions:
         if not xform.form.has_key('case'):
@@ -207,15 +192,17 @@ def _get_submissions_for_user(username):
     return submissions
 
 @login_required
-def my_submits(request, template_name="pactcarehq/submits_by_chw.html"):
+def my_submits(request, template_name="pactcarehq/chw_submits.html"):
     context = RequestContext(request)
-#    submissions = XFormInstance
+
     username = request.user.username
 
     submit_dict = {}
     submissions = _get_submissions_for_user(username)
     submit_dict[username] = submissions
     context['submit_dict'] = submit_dict
+    context['username'] = username
+    context['is_me']=True
     return render_to_response(template_name, context_instance=context)
 
 @login_required

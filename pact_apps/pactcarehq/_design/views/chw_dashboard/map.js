@@ -2,6 +2,8 @@ function(doc) {
 //chw_dashboard
 //returns an array of key: chw_username: [count, last_pact_id, last_xmlns, received_on]
 
+    // !code util/dateparse.js
+
     function bw_array_sort(a, b) {
         //doing reverse date order
         var datea = parse_date(a['test_date']);
@@ -36,13 +38,7 @@ function(doc) {
 
     //Parse the encounter date string.
     //note, that the dates are in 1 indexed months, so NO additions here.
-    function parse_date(date_string) {
-        if (!date_string) return new Date(1970, 1, 1);
-        // hat tip: http://stackoverflow.com/questions/2587345/javascript-date-parse
-        var parts = date_string.match(/(\d+)/g);
-        // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
-        return new Date(parts[0], parts[1] - 1, parts[2]); // months are 0-based
-    }
+
     if (doc.doc_type == "XFormInstance" && doc.xmlns != "http://code.javarosa.org/devicereport") {
         //map 1:  XForm Information regarding bloodwork and submission counts
         if (doc.form.encounter_date) {

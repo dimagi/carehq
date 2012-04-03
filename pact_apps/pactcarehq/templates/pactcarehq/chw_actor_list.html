@@ -58,7 +58,7 @@
 
 {%  for chw, dashboard in chw_dashboard_dict.items %}
     <tr>
-        <td><a href="{% url pact_chw_profile chw.get_id %}">Profile</a></td>
+        <td><a href="{% url pact_chw_profile chw.get_id '' %}">Profile</a></td>
         <td>{{ chw.first_name|title }}</td>
         <td>{{ chw.last_name|title }}</td>
         <td>{{ chw.django_actor.user.username }}</td>
