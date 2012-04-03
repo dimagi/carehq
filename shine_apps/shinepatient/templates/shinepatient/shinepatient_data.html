@@ -45,12 +45,16 @@
             <div class="commit-group">
                 {% if act.2 %}
                     {% render_submission_fragment act.1 act.2 %}
-                {% else %}
-                    <a class="btn"
-                            {#                           href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?mode=fullscreen">#}
-                            {# touchforms classic #}
-                       href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
+                    {% if act.0 == "Lab Data" %}
+                        {# for lab data we always show the add new #}
+                       <a class="btn" href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
+                        <i class="icon-plus"></i>
+                        {% trans "Enter/Update" %} {{ act.0 }}
+                    </a>
 
+                    {% endif %}
+                {% else %}
+                    <a class="btn" href="{% url new_mepi_interaction patient_doc.latest_case.get_id  act.0 %}?override=full">
                         <i class="icon-plus"></i>
                         {% trans "Enter" %} {{ act.0 }}
                     </a>

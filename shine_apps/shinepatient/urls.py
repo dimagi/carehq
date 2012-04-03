@@ -1,5 +1,4 @@
 #URLS for your patient management should be managed by the app that subclasses the patient model.
-
 from django.conf.urls.defaults import *
 from patient.views import PatientListView
 from shinepatient.models import ShinePatient

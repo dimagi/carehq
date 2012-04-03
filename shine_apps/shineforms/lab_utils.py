@@ -1,10 +1,10 @@
-
+import simplejson
 
 def merge_labs(lab_submissions, as_dict=False):
     """
     """
     sorted_labs = sorted(lab_submissions, key=lambda x: x['received_on'])
-    hiv_test = ""
+    hiv_status = ""
     mal_rapid = "" #rapid
     mal_smear = "" #smear
     prophylaxis = ""
@@ -27,12 +27,13 @@ def merge_labs(lab_submissions, as_dict=False):
                 ret_dict[k] = v
         return ret_dict
 
+    hiv_test_done = 'no'
 
     for sub in lab_submissions:
 
         #old style checks
         if sub['form']['hiv'] != "":
-            hiv_test = sub['form']['hiv']
+            hiv_status = sub['form']['hiv']
         if sub['form']['rapid'] != "":
             mal_rapid = sub['form']['rapid']
         if sub['form']['smear'] != "":
@@ -56,6 +57,7 @@ def merge_labs(lab_submissions, as_dict=False):
             hivfollowup = fill_sub_dict(sub, 'hiv_followup')
         if 'bloodcts' in sub['form']:
             bloodcts = fill_sub_dict(sub, 'bloodcts')
+
 
         if sub['form'].has_key('sections'):
             #new style checks
@@ -81,11 +83,16 @@ def merge_labs(lab_submissions, as_dict=False):
                     lft = val
                 if labkey == 'labs_hivstatus':
                     #done: yes/no
-                    if val['done'] == u'no':
-                        hiv_test = 'no'
-                    elif val['done'] is dict:
-                        hiv_test = 'done'
-                        #need to get data from malaria data?
+                    if val['done'] == 'no':
+                        hiv_test_done = 'no'
+                    elif val['done'] == 'done':
+                        hiv_test_done = 'done'
+                    elif val['done'] == '':
+                        hiv_test_done = 'no'
+                    else:
+                        #this is suuuuper sketchy but we're getting the hashed dict stuff here.
+                        valdict = eval(val['done'])
+                        hiv_test_done = valdict['#text']
                 if labkey == 'labs_hemogram':
                     #["done", "blood_hgb", "@name", "blood_plts", "blood_mcv"]
                     bloodcts = dict(bloodcts.items() + val.items())
@@ -100,7 +107,7 @@ def merge_labs(lab_submissions, as_dict=False):
 
     if as_dict:
         return {
-                'hiv': {'hiv_test': hiv_test, 'followup': hivfollowup},
+                'hiv': {'hiv_status': hiv_status, 'followup': hivfollowup, 'tested': hiv_test_done},
                 'malaria': {'rapid': mal_rapid, 'smear': mal_smear},
                 'prophylaxis': prophylaxis,
                 'afb_smear': afb_smear,
@@ -111,7 +118,7 @@ def merge_labs(lab_submissions, as_dict=False):
         }
     else:
         return [
-            ('hiv', { 'hiv test': hiv_test, 'followup': hivfollowup}),
+            ('hiv', { 'hiv test': hiv_status, 'followup': hivfollowup, 'tested': hiv_test_done}),
             ('malaria', {'rapid': mal_rapid, 'smear': mal_smear}),
             ('prophylaxis', prophylaxis),
             ('afb_smear', afb_smear),

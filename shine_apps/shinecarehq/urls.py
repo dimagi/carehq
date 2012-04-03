@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import url, patterns
 #from shinecarehq.views import MepiPatientListView
-from shinepatient.models import ShinePatient
 
 urlpatterns = patterns('shinecarehq.views',
     #url(r'^$', 'patient_dashboard', name='mepi_dashboard'),

@@ -10,14 +10,28 @@
     </div>
     <div class="row-fluid">
         <div class="mepi_quarter">
-        {% if lab_hiv.hiv_test == 'yes' %}
+        {% if lab_hiv.hiv_status == 'yes' %}
             <div class="mepi_completed">
-            {% trans "LHIV" %}
+                {% trans "LHIV+" %}
             </div>
-        {% else %}
-            <div class="mepi_missing">
-            {% trans "LHIV" %}
+        {% endif %}
+        {% if lab_hiv.hiv_status == 'no' %}
+            <div class="mepi_completed">
+            {% trans "LHIV-" %}
             </div>
+        {% endif %}
+        {% if lab_hiv.hiv_status == '' %}
+            {# unknown hiv status #}
+
+            {% if lab_hiv.tested == 'done' %}
+                <div class="mepi_omit">
+                {% trans "LHIV ?" %}
+                </div>            {% endif %}
+            {% if lab_hiv.tested == 'no' %}
+                <div class="mepi_missing">
+                {% trans "LHIV" %}
+                </div>
+            {% endif %}
         {% endif %}
         </div>
         <div class="mepi_quarter">
@@ -60,7 +74,11 @@
                     {% endif %}
                 </div>
                 <div class="mepi_third">
-                    <div class="mepi_missing"> {% trans "LLFT" %} </div>
+                    {% if lab_lft %}
+                        <div class="mepi_completed"> {% trans "LLFT" %} </div>
+                    {% else %}
+                        <div class="mepi_missing"> {% trans "LLFT" %} </div>
+                    {% endif %}
                 </div>
             </div> {# endrow #}
             <div class="row-fluid">
