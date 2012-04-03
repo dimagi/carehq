@@ -41,24 +41,20 @@ class PactXForm(XFormInstance):
 
 
     def _get_patient_doc(self):
-        print "_get_patient_doc"
         if not self.form.has_key('case'):
-            print "no case block"
             return '[no case block]'
         if not self.form['case'].has_key('case_id'):
-            print "no case id"
             return '[no case id]'
         case_id = self.form['case']['case_id']
-        print "got case_id"
 
         #for dev purposes this needs to be done for testing
         #case_id = _hack_get_old_caseid(case_id)
         #        if not patient_case_id_cache.has_key(case_id):
         patient_doc = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
         if patient_doc is None:
-            print "no patient with case"
+#            print "no patient with case"
             return '[no patient with case]'
-        print "got patient doc"
+        #print "got patient doc"
         return patient_doc
 
 
@@ -160,7 +156,7 @@ class UserSubmissionResource(CouchdbkitResource):
         cache_key = self.generate_cache_key(**kwargs)
 
         if kwargs.get('chw_username', None) is not None:
-            total_count =  self._meta.doc_class.view(self._meta.view_name, key=kwargs['chw_username'], reduce=True)
+            total_count =  self._meta.doc_class.view(self._meta.view_name, startkey=[kwargs['chw_username'], {}], endkey=[kwargs['chw_username'], None], descending=True).count()
         else:
             total_count =  self._meta.doc_class.view(self._meta.view_name).count()
 
@@ -172,15 +168,16 @@ class UserSubmissionResource(CouchdbkitResource):
         limit_option, skip_option = self._get_limit_skip(request)
 
         if request is not None and request.GET.get('username', None) is not None:
-            key = request.GET['username']
-            view = self._meta.doc_class.view(self._meta.view_name, key=key, skip=skip_option, limit=limit_option, reduce=False)
+            startkey = [request.GET['username'], None]
+            endkey = [request.GET['username'], {}]
+            view = self._meta.doc_class.view(self._meta.view_name, include_docs=True, startkey=endkey, endkey=startkey, skip=skip_option, limit=limit_option, descending=True)
         else:
-            view = self._meta.doc_class.view(self._meta.view_name, skip=skip_option, reduce=False, limit=limit_option)
+            view = self._meta.doc_class.view(self._meta.view_name, include_docs=True, skip=skip_option, limit=limit_option, descending=True)
         return view
 
 
     class Meta:
-        view_name = "pactcarehq/chw_dashboard"
+        view_name = "pactcarehq/all_submits_by_chw_date"
         doc_class = PactXForm
         resource_name = 'PactUserSubmissions'
         authorization = ReadOnlyAuthorization()
