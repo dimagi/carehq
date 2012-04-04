@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User as DjangoUser
 from django.views.decorators.csrf import csrf_exempt
 from couchforms.models import XFormInstance
 from shinepatient.models import ShinePatient
@@ -126,6 +127,8 @@ def shine_form_cb(request, case_id):
 @httpdigest
 def ota_restore(request):
     user = ShineUser.from_django_user(request.user)
+    all_user_ids = list(DjangoUser.objects.all().exclude(id=request.user.id).values_list('id', flat=True))
+    user.additional_owner_ids= [str(x) for x in all_user_ids]
 
     restore_id = request.GET.get('since')
     response = generate_restore_payload(user, restore_id)

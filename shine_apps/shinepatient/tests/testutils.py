@@ -15,8 +15,8 @@ patient_registration_xml = """
     <DeviceID>354957030960291</DeviceID>
     <TimeStart>2011-09-07T03:21:55.703+02</TimeStart>
     <TimeEnd>2011-09-07T03:26:27.625+02</TimeEnd>
-    <username>shine</username>
-    <chw_id>2</chw_id>
+    <username>mockmock@mockmock.com</username>
+    <chw_id>1</chw_id>
     <uid>%(uid)s</uid>
   </Meta>
   <case>
@@ -24,8 +24,8 @@ patient_registration_xml = """
     <date_modified>2011-09-07T03:26:27.625+02</date_modified>
     <create>
       <case_type_id>shine_patient</case_type_id>
-      <user_id>2</user_id>
-      <case_name>test, dan</case_name>
+      <user_id>1</user_id>
+      <case_name>%(last_name)s, %(first_name)s</case_name>
       <external_id>%(external_id)s</external_id>
     </create>
     <update>
@@ -44,8 +44,8 @@ patient_registration_xml = """
     </update>
   </case>
   <name>
-    <first_name>dan</first_name>
-    <last_name>test</last_name>
+    <first_name>%(first_name)s</first_name>
+    <last_name>%(last_name)s</last_name>
     <patient_id>999999999</patient_id>
   </name>
   <dob_known>no</dob_known>
@@ -139,8 +139,8 @@ def _mkpatient_dict():
     data_dict['uid'] = uuid.uuid4().hex
     data_dict['case_id'] = uuid.uuid4().hex
     data_dict['external_id'] = random.randint(100000,9999999)
-    data_dict['first_name'] = some_name['firstname']
-    data_dict['last_name'] = some_name['lastname']
+    data_dict['first_name'] = some_name['first_name']
+    data_dict['last_name'] = some_name['last_name']
     return data_dict
 
 

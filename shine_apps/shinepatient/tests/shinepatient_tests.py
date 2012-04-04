@@ -1,8 +1,11 @@
 import base64
+import pdb
 import uuid
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django_webtest import WebTest
 from quicksect import IntervalNode
 from datetime import datetime, timedelta
 import os
@@ -86,7 +89,7 @@ def http_auth(username, password):
     return auth_string
 
 
-class ShinePatienteTests(TestCase):
+class ShinePatientTests(TestCase):
     def setUp(self):
         User.objects.all().delete()
         self.user = self._createUser()
@@ -131,6 +134,42 @@ class ShinePatienteTests(TestCase):
 
         self.patient = shinept
         self.casedoc = casedoc
+
+
+    def testRegisterPatients(self):
+        """
+        Ensure that a submitted patient registration xml file creates ShinePatient object and Case object.
+        """
+        for x in range(0,10):
+            pdict = _mkpatient_dict()
+            case_id = pdict['case_id']
+            final_xml = get_registration_xml(pdict)
+            consent_image = create_image(100,100,"Consent Form!")
+            do_submit(final_xml, attachments_list=[('consent.jpg', consent_image)])
+
+            patient_doc = ShinePatient.view('shinepatient/patient_cases_all', include_docs=True, key=case_id).first()
+
+            client = Client()
+            client.login(username=self.user.username, password='mockmock')
+            dashboard = client.get("/")
+            client.logout()
+            self.assertTrue(dashboard.content.count(pdict['last_name']) > 0)
+            self.assertTrue(dashboard.content.count(patient_doc._id) > 0)
+
+
+            #see ota as well:
+            client = DigestClient()
+            client.set_authorization(self.user.username, 'mockmock', 'Digest')
+            restore_payload = client.get('/shine/restore', **self.extra)
+            self.assertEqual(restore_payload.content.count(case_id), 1)
+            #case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
+            #case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
+            #pdb.set_trace()
+            #self.assertEqual(case_id_xml, case_id)
+
+
+
+
 
     def testRestore(self):
         """For a given patient created, ensure that it shows up in the OTA restore.  This test also uses django_digest to authenticate to the OTA restore URL.

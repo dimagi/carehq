@@ -2,7 +2,7 @@ from datetime import datetime
 import pdb
 import random
 import simplejson
-from couchdbkit.ext.django.schema import  SchemaListProperty
+from couchdbkit.ext.django.schema import  SchemaListProperty, Document
 from django.core.files.base import ContentFile
 import isodate
 from casexml.apps.case.models import CommCareCase
@@ -18,6 +18,9 @@ from django.core.cache import cache
 
 
 couchdb_image_storage = CouchDBDocStorage(db_url=settings.COUCH_DATABASE)
+
+class Foo(Document):
+    pass
 
 class ShinePatient(BasePatient):
     """
@@ -132,7 +135,7 @@ class ShinePatient(BasePatient):
         else:
             submissions = [db.open_doc(x) for x in case.xform_ids]
             submissions_json = simplejson.dumps(submissions)
-            cache.set(attrib, submissions_json, 3600)
+            cache.set(attrib, submissions_json, 172800)
 
 
         if wrap:
@@ -187,7 +190,7 @@ class ShinePatient(BasePatient):
         sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
         self._latest_case = sorted_docs[-1]
 
-        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(self._latest_case.to_json()), 3600)
+        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(self._latest_case.to_json()), 14400)
         return self._latest_case
 
 
