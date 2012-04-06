@@ -1,9 +1,15 @@
 import urllib
 from django.contrib.contenttypes.models import ContentType
+import isodate
 from actorpermission.models import BaseActorDocument
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
+from casexml.apps.case.models import CommCareCase
+from casexml.apps.case.tests.util import CaseBlock
+from casexml.apps.case.util import post_case_blocks
+from dimagi.utils.make_time import make_time
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
+from pactpatient.enums import get_regimen_code_arr
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
 from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
@@ -25,6 +31,8 @@ from django.views.decorators.http import require_POST
 import logging
 from pactpatient.models import PactPatient, CDotWeeklySchedule
 from patient.models import  Patient
+from xml.etree import ElementTree
+from casexml.apps.phone.xml import date_to_xml_string
 
 @login_required
 @require_POST
@@ -320,6 +328,48 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             instance = form.save(commit=True)
             resp.status_code=204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
+            print "patient edit"
+
+            case = CommCareCase.get(pdoc.case_id)
+
+
+            def calculate_regimen_caseblock():
+                update_ret = {}
+                for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
+                    code_arr = get_regimen_code_arr(instance.art_regimen)
+                    digit_strings = ["zero", 'one', 'two', 'three','four']
+                    for x in range(1,5):
+                        prop_prop = prop_fmt % digit_strings[x]
+                        prop_val = getattr(case, prop_prop, None)
+                        print "%s: %s" % (prop_prop, prop_val)
+                        if x > len(code_arr):
+                            update_ret[prop_prop] = ''
+                        else:
+                            print "\tcode_arr: %s" % str(code_arr[x-1])
+                            if str(code_arr[x-1]) != prop_val:
+                                update_ret[prop_prop] = str(code_arr[x-1])
+                return update_ret
+
+            update_dict = calculate_regimen_caseblock()
+            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=make_time(), date_modified='2011-08-24T07:42:49.473-07') #make_time())
+
+            def isodate_string(date):
+                if date: return isodate.datetime_isoformat(date) + "Z"
+                return ""
+
+            #case_blocks = [caseblock.as_xml(format_datetime=date_to_xml_string)]
+            case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
+            from couchdbkit.schema import properties
+            #post_case_blocks(case_blocks)
+            #remove below
+            form = ElementTree.Element("data")
+            form.attrib['xmlns'] = "https://www.commcarehq.org/test/casexml-wrapper"
+            form.attrib['xmlns:jrm'] ="http://openrosa.org/jr/xforms"
+            for block in case_blocks:
+                form.append(block)
+            xform = ElementTree.tostring(form)
+
+            post_case_blocks(case_blocks, form_extras={})
             return resp
         else:
             context['form']=form
@@ -333,7 +383,6 @@ def remove_schedule(request):
             patient_id = urllib.unquote(request.POST['patient_id']).encode('ascii', 'ignore')
             patient = Patient.objects.get(id=patient_id)
             schedule_id = urllib.unquote(request.POST['schedule_id']).encode('ascii', 'ignore')
-            remove_id = -1
             for i in range(0, len(patient.couchdoc.weekly_schedule)):
                 sched = patient.couchdoc.weekly_schedule[i]
                 if sched.schedule_id == schedule_id:
