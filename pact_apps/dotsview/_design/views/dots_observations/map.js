@@ -24,8 +24,11 @@ function(doc) {
         if (drug_arr.length >= 2 && drug_arr[0] != 'unchecked') {
             obs_dict['adherence'] = drug_arr[0];
             obs_dict['method'] = drug_arr[1];
-            if (drug_arr.length == 3) {
+            if (drug_arr.length > 2) {
                 obs_dict['day_note'] = drug_arr[2];
+            }
+            if (drug_arr.length > 3) {
+                obs_dict['day_slot'] = drug_arr[3];
             }
             emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs_dict);
             emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs_dict)));

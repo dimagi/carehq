@@ -507,6 +507,8 @@ class PactPatient(BasePatient):
                     obs = drug_data[timekey][0]
                     if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
                         day_arr.append([obs.adherence, obs.method, obs['day_note'], '']) #todo, add regimen_item
+                    elif obs.day_slot != None:
+                        pass
                     else:
                         day_arr.append([obs.adherence, obs.method, '', ''])
 
@@ -514,9 +516,9 @@ class PactPatient(BasePatient):
                 #else:
                  #   day_arr.append(["unchecked", "pillbox"])
             if len(day_arr) < freq_arr:
-                delta = freq_arr - len(day_arr)
+                delta = len(freq_arr) - len(day_arr)
                 for n in range(delta):
-                    day_arr.append(["unchecked", "pillbox"])
+                    day_arr.append(["unchecked", "pillbox", '', 'empty'])
             return day_arr
 
         def get_empty(n):
@@ -549,7 +551,6 @@ class PactPatient(BasePatient):
             art_num = 0
             art_arr = []
             logging.error("Patient does not have a set art regimen")
-
 
         try:
             non_art_arr = get_regimen_code_arr(self.non_art_regimen.lower())
@@ -759,11 +760,28 @@ class PactPatient(BasePatient):
                     ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret
 
+    def calculate_regimen_caseblock(self):
+        update_ret = {}
+        case = CommCareCase.get(self.case_id)
+        for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
+            code_arr = get_regimen_code_arr(self.art_regimen)
+            digit_strings = ["zero", 'one', 'two', 'three','four']
+            for x in range(1,5):
+                prop_prop = prop_fmt % digit_strings[x]
+                prop_val = getattr(case, prop_prop, None)
+                print "%s: %s" % (prop_prop, prop_val)
+                if x > len(code_arr):
+                    update_ret[prop_prop] = ''
+                else:
+                    #print "\tcode_arr: %s" % str(code_arr[x-1])
+                    if str(code_arr[x-1]) != prop_val:
+                        update_ret[prop_prop] = str(code_arr[x-1])
+        return update_ret
+
     def get_ghetto_regimen_xml(self, invalidate=False):
         """
         Returns DOT regimens as well as DOT adherence information
         """
-
         if invalidate:
             cache.delete('%s_dot_xml' % self._id)
 
@@ -777,10 +795,19 @@ class PactPatient(BasePatient):
             if nonart_regimen == '0':
                 nonart_regimen = ''
 
+            labels = self.calculate_regimen_caseblock()
+            art_keys = filter(lambda x: x.startswith('dot_a_'), labels.keys())
+            non_art_keys = filter(lambda x: x.startswith('dot_n_'), labels.keys())
+
+            art_labels = ''.join(["<%s>%s</%s>" % (k, labels[k], k) for k in art_keys])
+            non_art_labels = ''.join(["<%s>%s</%s>" % (k, labels[k], k) for k in non_art_keys])
+
             dots_data = self.get_dots_data()
             ret = ''
             ret += "<artregimen>%s</artregimen>" % art_regimen
+            ret += art_labels
             ret += "<nonartregimen>%s</nonartregimen>" % nonart_regimen
+            ret += non_art_labels
             ret += "<dots>%s</dots>" % simplejson.dumps(dots_data)
             cache.set('%s_dot_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
             return ret
@@ -849,6 +876,9 @@ class PactPatient(BasePatient):
         xml_dict['hp'] = self.primary_hp
         xml_dict['phones'] = self.get_ghetto_phone_xml()
         xml_dict['addresses'] = self.get_ghetto_address_xml()
+
+
+
 
         #todo: this ought to also use a view to verify that the dots and progress notes are dynamically queried for last status.  This patient placeholder is for testing and legacy purposes
 

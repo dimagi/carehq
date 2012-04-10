@@ -120,7 +120,7 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
 
             if ob.is_reconciliation and reconcile_trump==True:
                 grouping['ART' if ob.is_art else 'Non ART'][time_label] = [ob]
-                logging.debug("Reconciled entry, droping all others for time label")
+                logging.debug("Reconciled entry, dropping all others for time label")
             else:
                 grouping['ART' if ob.is_art else 'Non ART'][time_label].append(ob)
 
