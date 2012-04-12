@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -5,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.views.decorators.http import require_POST
 from careplan.forms import CarePlanInstanceForm, ChooseBaseItemForm, ChooseBasePlanForm, BaseCarePlanItemForm, CarePlanItemForm
 from careplan.models import CarePlanInstance, CarePlanItem, BaseCarePlan, BaseCarePlanItem, CAREPLAN_ITEM_STATES
+from clinical_shared.decorators import actor_required
 from dimagi.utils.make_time import make_time
 from patient.models import BasePatient
 
@@ -25,6 +27,8 @@ def single_careplan_item(request, item_id, template_name = "careplan/careplan_it
     return render_to_response(template_name, context,context_instance=RequestContext(request))
 
 
+@login_required
+@actor_required
 def manage_patient_careplan(request, patient_guid, template_name='careplan/manage_patient_careplan.html'):
     context = RequestContext(request)
     patient_doc = BasePatient.get_typed_from_id(patient_guid)
@@ -68,11 +72,11 @@ def manage_patient_careplan(request, patient_guid, template_name='careplan/manag
 
 
 @require_POST
+@actor_required
 def link_template_careplan_for_patient(request) :
     """
     Link an existing template careplan to a patient by copying it into a CarePlanInstance first
     """
-    print request.POST
     plan_id = request.POST['base_plan']
     patient_guid = request.POST['patient_guid']
     tenant = request.POST['tenant']
@@ -86,18 +90,16 @@ def link_template_careplan_for_patient(request) :
     new_instance.modified_by = "Actor.%s" % request.current_actor.id
     new_instance.tenant = request.current_actor.actor_tenant.tenant.name
 
-
-    print new_instance.to_json()
     new_instance.save()
     return HttpResponseRedirect(reverse('manage_patient_careplan', kwargs={'patient_guid':patient_guid}))
 
 
 @require_POST
+@actor_required
 def new_patient_careplan_item(request, patient_guid, plan_id):
     """
     For a given CarePlanInstance ID, make a new CarePlanItem to place within it.
     """
-    print request.POST
     careplan_instance = CarePlanInstance.get(plan_id)
     new_item_form = CarePlanItemForm(data=request.POST)
     if new_item_form.is_valid():
@@ -109,12 +111,8 @@ def new_patient_careplan_item(request, patient_guid, plan_id):
         new_item.created_date = make_time()
         new_item.modified_date = make_time()
 
-        print "########################new item"
-        print new_item.to_json()
         careplan_instance.plan_items.append(new_item)
         careplan_instance.modified_by = "Actor.%s" % request.current_actor.id
         careplan_instance.modified_date = make_time()
-        print "########################### instance"
-        print careplan_instance.to_json()
         careplan_instance.save()
         return HttpResponseRedirect(reverse('manage_patient_careplan', kwargs={'patient_guid':patient_guid}) + "?plan_id=%s" % plan_id)

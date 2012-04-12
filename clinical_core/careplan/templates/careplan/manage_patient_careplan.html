@@ -100,7 +100,11 @@
                                 {{ item.description }}
                             </td>
                             <td>
-                                {{ item.status }}
+                                {% if item.status %}
+                                    {{ item.status }}
+                                {% else %}
+                                    ---
+                                {% endif %}
                             </td>
                             <td>
                                 {{ item.issue_container }}
@@ -109,7 +113,7 @@
                                 {% if item.due_date %}
                                     {{ item.due_date }}
                                 {% else %}
-
+                                    ---
                                 {% endif %}
                             </td>
                         </tr>

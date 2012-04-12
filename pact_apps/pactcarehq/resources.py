@@ -96,13 +96,15 @@ class PactXForm(XFormInstance):
 
     @property
     def encounter_date(self):
-        if self.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
-            return self.form['encounter_date']
-        elif self.xmlns == "http://dev.commcarehq.org/pact/progress_note":
-            return self.form['note']['encounter_date']
-        else:
-            return self.received_on
+        date_string = ''
 
+        if self.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
+            date_string = self.form['encounter_date']
+        elif self.xmlns == "http://dev.commcarehq.org/pact/progress_note":
+            date_string = self.form['note']['encounter_date']
+        else:
+            date_string = self.received_on
+        return '%s <a href="%s">View</a>' % (date_string, reverse('show_submission', kwargs={'doc_id': self._id}))
     def start_to_finish(self):
         start_end = self._stringify_delta(self.end_date - self.start_date)
         return start_end
