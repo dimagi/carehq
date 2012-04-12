@@ -1,9 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pdb
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.utils.safestring import mark_safe
 import isodate
 from auditcare import inspect
 from carehq_core import carehq_api
@@ -11,6 +13,7 @@ from careplan.models import CarePlanInstance
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
+from pactcarehq.views.dot_calendar import DOTCalendar
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
 from .util import form_xmlns_to_names
@@ -73,14 +76,14 @@ class PactPatientSingleView(PatientSingleView):
         if view_mode == 'info':
             self.template_name = "pactcarehq/pactpatient/pactpatient_info.html"
 
-        if view_mode == 'careteam':
+        elif view_mode == 'careteam':
             context['patient_careteam'] = carehq_api.get_careteam(pdoc)
             self.template_name = "pactcarehq/pactpatient/pactpatient_careteam.html"
 
-        if view_mode == 'schedule':
+        elif view_mode == 'schedule':
             context['past_schedules'] = pdoc.past_schedules
             self.template_name = "pactcarehq/pactpatient/pactpatient_schedule.html"
-        if view_mode == 'careplan':
+        elif view_mode == 'careplan':
             selected_plan_id =  request.GET.get('plan', None)
             if selected_plan_id is not None:
                 context['selected_plan'] =  CarePlanInstance.get(selected_plan_id)
@@ -89,16 +92,25 @@ class PactPatientSingleView(PatientSingleView):
 
             self.template_name = "pactcarehq/pactpatient/pactpatient_careplan.html"
 
-        if view_mode == 'submissions':
+        elif view_mode == 'submissions':
             context['submit_arr'] = _get_submissions_for_patient(dj_patient)
             self.template_name = "pactcarehq/pactpatient/pactpatient_submissions.html"
-        if view_mode == 'log':
+        elif view_mode == 'log':
             history_logs = inspect.history_for_doc(pdoc, filter_fields=['arm','art_regimen','non_art_regimen', 'primary_hp', 'mass_health_expiration', 'hiv_care_clinic'])
             context['history_logs'] = history_logs #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
 
             all_changes = inspect.history_for_doc(pdoc, filter_fields=PactPatient._properties.keys(), exclude_fields=['date_modified'])
             context['all_changes'] = all_changes #[(x, x.get_changed_fields(filters=PactPatient._properties.keys(), excludes=['date_modified'])) for x in audit_logs]
             self.template_name = "pactcarehq/pactpatient/pactpatient_log.html"
+        elif view_mode=='dots':
+            viewmonth = int(request.GET.get('month', date.today().month))
+            viewyear = int(request.GET.get('year', date.today().year))
+            cal = DOTCalendar(pdoc).formatmonth(viewyear, viewmonth)
+            context['calendar'] = mark_safe(cal)
+            self.template_name = 'pactcarehq/pactpatient/pactpatient_dots.html'
+
+        else:
+            raise Http404
 
 
         context['patient_list_url'] = reverse('pactpatient_list')

@@ -1,0 +1,19 @@
+{% extends "pactcarehq/pactpatient/pactpatient_base.html" %}
+{% block extrahead %}
+    <script>
+        $(document).ready(
+                function () {
+                    //$("#tbl_issues").tablesorter({ sortList:[ [0, 0] ], });
+                    $("#tbl_issues").tablesorter();
+                    $("abbr.timeago").timeago();
+                }
+        );</script>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}dotsview/stylesheets/dots.css"/>
+
+{% endblock extrahead %}
+{% block patient-tab-container %}
+        <div class="row-fluid">
+
+            {{ calendar }}
+    </div>
+{% endblock %}

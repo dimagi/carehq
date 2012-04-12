@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 from pytz import timezone
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
+from dimagi.utils.make_time import make_time
+from dotsview.models import CObservation
 from pactpatient.enums import  PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, get_regimen_code_arr
 from patient.models import BasePatient
 import logging
@@ -175,6 +177,10 @@ class PactPatient(BasePatient):
     pact_id = StringProperty(required=True)
     primary_hp = StringProperty(required=True)
     arm = StringProperty()
+
+    dot_status = StringProperty() #taking dot stuff from ARM
+    hp_status = StringProperty() #taking HP stuff from ARM
+
     art_regimen = StringProperty()
     non_art_regimen = StringProperty()
     prior_bloodwork = SchemaProperty(CBloodwork) #legacy bloodwork data object.  All requests will be done via xform instance querying
@@ -239,6 +245,15 @@ class PactPatient(BasePatient):
         self._cached_submits=True
         return self._case
 
+    def is_dot_patient(self):
+        """
+        boolean to see if the patient is a DOT patient.  Initial version is with ARM, but will need to convert to using the
+        explicit dot_status property
+        """
+        if self.arm.lower().startswith('dot'):
+            return True
+        else:
+            return False
 
 
 #    def _get_case_submissions(self):
@@ -486,6 +501,21 @@ class PactPatient(BasePatient):
 #            if self._dashboard is not None and self._dashboard['last_bloodwork'].test_date:
 #                self._prior_bloodwork = self._dashboard.last_bloodwork
             return self._dashboard
+
+
+    def dot_submissions_range(self, start_date=None, end_date=None):
+        if end_date is None:
+            end_date = make_time()
+        if start_date is None:
+            start_date = end_date - timedelta(days=14)
+        pact_id = self.pact_id
+        startkey = [pact_id, 'observe_date', start_date.year, start_date.month, start_date.day]
+        endkey = [pact_id, 'observe_date', end_date.year, end_date.month, end_date.day]
+        #observations = CObservation.view('dotsview/dots_observations', key=endkey).all()
+        observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
+        print observations
+        return observations
+
 
     def dots_casedata_for_day(self, date, art_arr, non_art_arr):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_arr, nonart_num):

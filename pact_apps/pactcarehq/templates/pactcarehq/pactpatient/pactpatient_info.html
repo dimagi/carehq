@@ -4,13 +4,12 @@
     <div class="row">
         <div class="span12">
             <div class="commit-group-heading">
-                <h4>Demographic Information
+                <h4>Information
                     <div style="float:right;">
                         <small>
                             <a
                                     href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'ptedit', 'patienteditform');">
-                                Edit Info
-                            </a>
+                                Edit</a>
                         </small>
                     </div>
                 </h4>
@@ -18,11 +17,20 @@
             <div class="commit-group">
                 <div id="patienteditform"></div>
                 <table class="table">
+
+                    <tr>
+                        <th>DOB</th>
+                        <td>{{ patient_doc.birthdate }} ({{ patient_doc.birthdate|timesince }})</td>
+                        <th>Gender</th>
+                        <td>{{ patient_doc.gender|title }}</td>
+                        <th>SSN</th>
+                        <td>{{ patient_doc.ssn }}</td>
+
+                    </tr>
+
                     <tr>
                         <th class="span3">Race</th>
                         <td>{{ patient_doc.get_race }}</td>
-                    </tr>
-                    <tr>
                         <th class="span3">Latino</th>
                         <td>{% if  patient_doc.is_latino %}
                             Yes
@@ -30,23 +38,32 @@
                             No
                         {% endif %}
                         </td>
-                    </tr>
-                    <tr>
                         <th class="span3">Language</th>
                         <td>{{ patient_doc.get_preferred_language }}</td>
                     </tr>
                     <tr>
+                        <th>Primary HP</th>
+                        <td>{{ patient_doc.primary_hp }} </td>
+                        <th>HP Status</th>
+                        <td>{{ patient_doc.hp_status }} | {{ patient_doc.arm }}</td>
+                        <th>DOT Status</th>
+                        <td>{{ patient_doc.dot_status }}| {{ patient_doc.arm }}</td>
+                    </tr>
+                    <tr>
+                        <th>ART Regimen</th>
+                        <td>{{ patient_doc.art_regimen }}</td>
+
+                        <th>Non ART Regimen</th>
+                        <td>{{ patient_doc.non_art_regimen }}</td>
+                    </tr>
+                
+                
+                    <tr>
                         <th class="span3">MassHealth Expiration</th>
                         <td>{{ patient_doc.mass_health_expiration }}
                             - {{ patient_doc.mass_health_expiration|timeuntil }}</td>
-                    </tr>
-                    <tr>
                         <th>HIV Care Clinic</th>
                         <td>{{ patient_doc.get_hiv_care_clinic }}</td>
-                    </tr>
-                    <tr>
-                        <th>SSN</th>
-                        <td>{{ patient_doc.ssn }}</td>
                     </tr>
                     <tr>
                         <th>Additional Notes</th>
