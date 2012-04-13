@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from pytz import timezone
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
-from pactpatient.enums import  PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, get_regimen_code_arr
+from pactpatient.enums import  PACT_RACE_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES
 from patient.models import BasePatient
 import logging
 from dimagi.utils import make_uuid
@@ -487,11 +487,11 @@ class PactPatient(BasePatient):
 #                self._prior_bloodwork = self._dashboard.last_bloodwork
             return self._dashboard
 
-    def dots_casedata_for_day(self, date, art_arr, non_art_arr):
-        from dotsview.views import _get_observations_for_date #(date, pact_id, art_arr, nonart_num):
+    def dots_casedata_for_day(self, date, art_num, non_art_num):
+        from dotsview.views import _get_observations_for_date #(date, pact_id, art_num, nonart_num):
         from dotsview.models import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
 
-        def get_day_elements(drug_data, num_timekeys, freq_arr ):
+        def get_day_elements(drug_data, num_timekeys, total_num):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
             [[adherence,method], [adherence,method]...]
             """
@@ -501,20 +501,20 @@ class PactPatient(BasePatient):
                 #get the top one from the array
                 if not drug_data.has_key(timekey):
                     continue
-#                if len(day_arr) >= freq_arr:
+#                if len(day_arr) >= total_num:
                     #logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
                 if len(drug_data[timekey]) > 0 and len(day_arr) < MAX_LEN_DAY:
                     obs = drug_data[timekey][0]
                     if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
-                        day_arr.append([obs.adherence, obs.method, obs['day_note'], '']) #todo, add regimen_item
+                        day_arr.append([obs.adherence, obs.method, obs['day_note']])
                     else:
-                        day_arr.append([obs.adherence, obs.method, '', ''])
+                        day_arr.append([obs.adherence, obs.method])
 
 
                 #else:
                  #   day_arr.append(["unchecked", "pillbox"])
-            if len(day_arr) < freq_arr:
-                delta = freq_arr - len(day_arr)
+            if len(day_arr) < total_num:
+                delta = total_num - len(day_arr)
                 for n in range(delta):
                     day_arr.append(["unchecked", "pillbox"])
             return day_arr
@@ -524,16 +524,16 @@ class PactPatient(BasePatient):
 
 
         #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_arr, non_art_arr, reconcile_trump=True)
+        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_num, non_art_num, reconcile_trump=True)
         day_arr = []
         if day_dict.has_key('Non ART'):
-            nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_arr)
+            nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_num)
         else:
-            nonart_data = get_empty(non_art_arr)
+            nonart_data = get_empty(non_art_num)
         if day_dict.has_key('ART'):
-            art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_arr)
+            art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_num)
         else:
-            nonart_data = get_empty(art_arr)
+            nonart_data = get_empty(art_num)
         day_arr.append(nonart_data)
         day_arr.append(art_data)
         return day_arr
@@ -542,21 +542,16 @@ class PactPatient(BasePatient):
         startdate = datetime.utcnow()
         ret = {}
         try:
-            art_arr = get_regimen_code_arr(self.art_regimen.lower())
-            art_num = len(art_arr)
-
+            art_num = int(ghetto_regimen_map[self.art_regimen.lower()])
         except:
             art_num = 0
-            art_arr = []
             logging.error("Patient does not have a set art regimen")
 
 
         try:
-            non_art_arr = get_regimen_code_arr(self.non_art_regimen.lower())
-            non_art_num = len(non_art_arr)
+            non_art_num = int(ghetto_regimen_map[self.non_art_regimen.lower()])
         except:
             non_art_num = 0
-            non_art_arr = []
             logging.error("Patient does not have a set non art regimen")
 
 
@@ -564,10 +559,6 @@ class PactPatient(BasePatient):
                             non_art_num, #non art is 0
                             art_num,    #art is 1
                             ]
-        ret['regimen_labels'] = [
-            non_art_arr,
-            art_arr
-        ]
 
         ret['days'] = []
         #dmyung - hack to have it be timezone be relative specific to the eastern seaboard
@@ -577,7 +568,7 @@ class PactPatient(BasePatient):
 
         for delta in range(21):
             date = startdate - timedelta(days=delta)
-            day_arr = self.dots_casedata_for_day(date, art_arr, non_art_arr)
+            day_arr = self.dots_casedata_for_day(date, art_num, non_art_num)
             ret['days'].append(day_arr)
         ret['days'].reverse()
         return ret
