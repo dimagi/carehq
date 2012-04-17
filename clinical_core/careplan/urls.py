@@ -1,13 +1,15 @@
 from django.conf.urls.defaults import *
-from careplan.resources import TemplateCarePlanResource, TemplateItemResource
+from careplan.resources import TemplateCarePlanResource, TemplateItemResource, CarePlanResource
 
 template_plan_resource = TemplateCarePlanResource()
 template_item_resource = TemplateItemResource()
+careplan_resource = CarePlanResource()
 #(r'^projects/(?P<project_id>\d+)/?$', 'buildmanager.views.show_project'),
 urlpatterns = patterns ('careplan.views',
 
     (r'^careplan/api/', include(template_plan_resource.urls)),
     (r'^careplan/api/', include(template_item_resource.urls)),
+    (r'^careplan/api/', include(careplan_resource.urls)),
 
     url(r'^careplan/templates/all$', 'caretemplates.all_template_careplans', name='all_template_careplans'),
     (r'^careplan/templates/(?P<plan_id>[0-9a-f]{32})$', 'caretemplates.single_template_careplan'),

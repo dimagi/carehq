@@ -184,9 +184,10 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
                 obsa.doc_id = addendum._id
                 obsa.pact_id = pact_id
                 obsa.provider = request.user.username
+                #note, encounter date is deliberalty off
                 obsa.observed_date = addendum_date
                 obsa.anchor_date = addendum_date
-                obsa.submited_date = datetime.utcnow()
+                obsa.submitted_date = datetime.utcnow()
                 obsa.created_date = datetime.utcnow()
                 if f.cleaned_data['drug_type'] == 'art':
                     obsa.is_art = True

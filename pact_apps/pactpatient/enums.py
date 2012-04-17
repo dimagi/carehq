@@ -1,12 +1,10 @@
 import logging
 
 GENDER_CHOICES = (
-       ('m','Male'),
-       ('f','Female'),
-       ('u','Undefined'),
-   )
-
-
+    ('m', 'Male'),
+    ('f', 'Female'),
+    ('u', 'Undefined'),
+    )
 
 REGIMEN_CHOICES = (
     ('None', '-- No Regimen --'),
@@ -20,6 +18,20 @@ REGIMEN_CHOICES = (
 
 
 #http://confluence.dimagi.com/display/pactsbir/Technical+Specs
+DAY_SLOTS_BY_TIME = {
+    'morning': 0,
+    'noon': 1,
+    'evening': 2,
+    'bedtime': 3,
+    }
+
+DAY_SLOTS_BY_IDX = {
+    0: 'Morning',
+    1: 'Noon',
+    2: 'Evening',
+    3: 'Bedtime',
+    }
+
 
 def get_regimen_code_arr(str_regimen):
     """
@@ -29,12 +41,7 @@ def get_regimen_code_arr(str_regimen):
     should return an array of day slot indices.
     """
 
-    day_slots = {
-        'morning': 0,
-        'noon': 1,
-        'evening': 2,
-        'bedtime': 3,
-    }
+
 
     #legacy handling
     if str_regimen.lower() == 'qd':
@@ -44,26 +51,23 @@ def get_regimen_code_arr(str_regimen):
     elif str_regimen.lower() == 'qd-pm':
         return [2]
     elif str_regimen.lower() == 'bid':
-        return [0,2]
+        return [0, 2]
     elif str_regimen.lower() == 'qid':
-        return [0,1,2,3]
+        return [0, 1, 2, 3]
     elif str_regimen.lower() == 'tid':
-        return [0,1,2]
+        return [0, 1, 2]
     elif str_regimen.lower() == '':
         return []
-
 
     splits = str_regimen.split(',')
     ret = []
     for x in splits:
-        if x in day_slots.keys():
-            ret.append(day_slots[x])
+        if x in DAY_SLOTS_BY_TIME.keys():
+            ret.append(DAY_SLOTS_BY_TIME[x])
         else:
             logging.error("value error, the regimen string is incorrect for the given patient, returning blank")
             return []
     return ret
-
-
 
 
 REGIMEN_CHOICES = (
@@ -93,8 +97,7 @@ REGIMEN_CHOICES = (
     ('QID - Four times a day', [
         ('morning,noon,evening,bedtime', 'Morning, Noon, Evening, Bedtime'),
     ]),
-)
-
+    )
 
 PACT_ARM_CHOICES = (
     ('HP', [('HP', 'HP - Health Promoter'),
@@ -121,38 +124,38 @@ PACT_RACE_CHOICES = (
     ('american-indian-alaska-native', 'American Indian/Alaska Native'),
     ('more-than-one', 'More than one race'),
     ('unknown', 'Unknown or not reported'),
-)
+    )
 
 PACT_LANGUAGE_CHOICES = (
     ('english', 'English'),
     ('spanish', 'Spanish'),
     ('haitian_creole', 'Haitian Creole'),
     ('portugese', 'Portugese'),
-)
+    )
 PACT_HIV_CLINIC_CHOICES = (
-    ("brigham_and_womens_hospital","Brigham and Women's Hospital"),
-    ("massachusetts_general_hospital","Massachusetts General Hospital"),
-    ("massachusetts_general_hospital_chelsea","Massachusetts General Hospital - Chelsea"),
-    ("massachusetts_general_hospital_charlestown","Massachusetts General Hospital - Charlestown"),
-    ("boston_healthcare_for_the_homeless_program","Boston Healthcare for the Homeless Program"),
-    ("beth_israel_deaconess_medical_center","Beth Israel Deaconess Medical Center"),
-    ("cambridge_health_alliance","Cambridge Health Alliance"),
-    ("cambridge_health_alliance_somerville","Cambridge Health Alliance - Somerville"),
-    ("cambridge_health_alliancewindsor_st","Cambridge Health Alliance-Windsor St"),
-    ("childrens_hospital","Children's Hospital"),
-    ("codman_square_health_center","Codman Square Health Center"),
-    ("dimock_center","Dimock Center"),
-    ("dorchester_house_multiservice_center","Dorchester House Multi-Service Center"),
-    ("east_boston_neighborhood_health_clinic","East Boston Neighborhood Health Clinic"),
-    ("faulkner_hospital","Faulkner Hospital"),
-    ("fenway_health_clinic","Fenway Health Clinic"),
-    ("harvard_vanguard_medical_associates","Harvard Vanguard Medical Associates"),
-    ("martha_eliot_health_center","Martha Eliot Health Center"),
-    ("tufts_medical_center","Tufts Medical Center"),
-    ("neponset_health_center","Neponset Health Center"),
-    ("lemuel_shattuck_hospital","Lemuel Shattuck Hospital"),
-    ("st_elizabeths_medical_center","St. Elizabeth's Medical Center"),
-    ("uphams_corner_health_center","Upham's Corner Health Center"),
-    ("boston_medical_center","Boston Medical Center"),
+    ("brigham_and_womens_hospital", "Brigham and Women's Hospital"),
+    ("massachusetts_general_hospital", "Massachusetts General Hospital"),
+    ("massachusetts_general_hospital_chelsea", "Massachusetts General Hospital - Chelsea"),
+    ("massachusetts_general_hospital_charlestown", "Massachusetts General Hospital - Charlestown"),
+    ("boston_healthcare_for_the_homeless_program", "Boston Healthcare for the Homeless Program"),
+    ("beth_israel_deaconess_medical_center", "Beth Israel Deaconess Medical Center"),
+    ("cambridge_health_alliance", "Cambridge Health Alliance"),
+    ("cambridge_health_alliance_somerville", "Cambridge Health Alliance - Somerville"),
+    ("cambridge_health_alliancewindsor_st", "Cambridge Health Alliance-Windsor St"),
+    ("childrens_hospital", "Children's Hospital"),
+    ("codman_square_health_center", "Codman Square Health Center"),
+    ("dimock_center", "Dimock Center"),
+    ("dorchester_house_multiservice_center", "Dorchester House Multi-Service Center"),
+    ("east_boston_neighborhood_health_clinic", "East Boston Neighborhood Health Clinic"),
+    ("faulkner_hospital", "Faulkner Hospital"),
+    ("fenway_health_clinic", "Fenway Health Clinic"),
+    ("harvard_vanguard_medical_associates", "Harvard Vanguard Medical Associates"),
+    ("martha_eliot_health_center", "Martha Eliot Health Center"),
+    ("tufts_medical_center", "Tufts Medical Center"),
+    ("neponset_health_center", "Neponset Health Center"),
+    ("lemuel_shattuck_hospital", "Lemuel Shattuck Hospital"),
+    ("st_elizabeths_medical_center", "St. Elizabeth's Medical Center"),
+    ("uphams_corner_health_center", "Upham's Corner Health Center"),
+    ("boston_medical_center", "Boston Medical Center"),
 
-)
+    )

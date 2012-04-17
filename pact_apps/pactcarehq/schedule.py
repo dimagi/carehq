@@ -84,9 +84,6 @@ def get_schedule(chw_username, override_date = None):
 
         daytree.insert(get_seconds(startdate), get_seconds(enddate), other=pact_id)
         day_intervaltree[day_of_week] = daytree
-
-
-
     #cached_schedules[chw_username] = CHWPatientSchedule(chw_username, day_intervaltree, chw_schedules)
     #return cached_schedules[chw_username]
     return CHWPatientSchedule(chw_username, day_intervaltree, cached_arr)

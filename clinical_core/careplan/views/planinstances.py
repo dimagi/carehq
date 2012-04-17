@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.views.decorators.http import require_POST
-from careplan.forms import CarePlanInstanceForm, ChooseBaseItemForm, ChooseBasePlanForm, BaseCarePlanItemForm, CarePlanItemForm
-from careplan.models import CarePlanInstance, CarePlanItem, BaseCarePlan, BaseCarePlanItem, CAREPLAN_ITEM_STATES
+from careplan.forms import CarePlanInstanceForm, ChooseBasePlanForm, CarePlanItemForm
+from careplan.models import CarePlanInstance, CarePlanItem, BaseCarePlan, CAREPLAN_ITEM_STATES
 from clinical_shared.decorators import actor_required
 from dimagi.utils.make_time import make_time
 from patient.models import BasePatient

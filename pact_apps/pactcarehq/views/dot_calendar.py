@@ -1,9 +1,12 @@
 from calendar import HTMLCalendar
 from calendar import HTMLCalendar, month_name
+from collections import defaultdict
 from datetime import date
 from django.core.urlresolvers import reverse
 from django import forms
 from django.forms.forms import Form
+from pactpatient.enums import DAY_SLOTS_BY_IDX
+import settings
 
 class AggForm(Form):
     """
@@ -38,7 +41,35 @@ def merge_dot_day(patient_doc, dots_observations):
     for DOT calendar display AND ota restore.
     """
 
-    day_dict = {'ART': {}, 'NONART': {}}
+    def cmp_observation(x, y):
+        """
+        for a given COBservation, do the following.
+        If it's an addendump trumps all
+        If it's direct, and other is not direct, direct wins
+        If both direct, do by earliest date
+        If neither direct, do by earliest date.
+        < -1
+        = 0
+        > 1
+        """
+        #Reconcilation handling
+        if getattr(x, 'is_reconciliation', False) and getattr(y, 'is_reconcilation', False):
+            return cmp(x.submitted_date, y.submitted_date)
+        elif getattr(x, 'is_reconciliation', False) and not getattr(y, 'is_reconcilation', False):
+            return -1
+        elif not getattr(x, 'is_reconciliation', False) and getattr(y, 'is_reconciliation', False):
+            return 1
+
+        if x.method == 'direct' and y.method == 'direct':
+            return cmp(x.encounter_date, y.encounter_date)
+        elif x.method == 'direct' and y.method != 'direct':
+            return -1
+        elif x.method != 'direct' and y.method == 'direct':
+            return 1
+        else:
+            return cmp(x.encounter_date, y.encounter_date)
+
+    day_dict = {'ART': {'total_doses':0, 'dose_dict': {} }, 'NONART': {'total_doses': 0, 'dose_dict': {}}}
 
     for obs in dots_observations:
         if obs.is_art:
@@ -46,16 +77,23 @@ def merge_dot_day(patient_doc, dots_observations):
         else:
             dict_to_use = day_dict['NONART']
 
-        if dict_to_use.get(obs.dose_number, None) is None:
-            dict_to_use[obs.dose_number] = []
-        dict_to_use[obs.dose_number].append(obs)
 
-    for drug_type in day_dict.keys():
-        type_dict = day_dict[drug_type]
-        for dose_num in type_dict.keys():
-            observations = type_dict[dose_num]
-            observations = sorted(observations, key=lambda x: x.created_date, reverse=True)
-            type_dict[dose_num]=observations
+        if dict_to_use['total_doses'] < obs.total_doses:
+            print "changing total doses! %s: from %s to %s" % ("ART" if obs.is_art else "NONART", dict_to_use['total_doses'], obs.total_doses)
+            dict_to_use['total_doses'] = obs.total_doses
+
+        if dict_to_use['dose_dict'].get(obs.dose_number, None) is None:
+            dict_to_use['dose_dict'][obs.dose_number] = []
+        dict_to_use['dose_dict'][obs.dose_number].append(obs)
+        print "%s:%s/%s" % ("ART" if obs.is_art else "NONART", obs.dose_number, obs.total_doses)
+
+    for drug_type, wrapper_dict in day_dict.items():
+        dose_dict = wrapper_dict['dose_dict']
+        for dose_num in dose_dict.keys():
+            observations = dose_dict[dose_num]
+            observations = sorted(observations, cmp=cmp_observation, reverse=True) #key=lambda x: x.created_date, reverse=True)
+            dose_dict[dose_num]=observations
+        #wrapper_dict['dose_dict'] = dose_dict
     return day_dict
 
 
@@ -119,27 +157,49 @@ class DOTCalendar(HTMLCalendar):
                 future=False
 
             day_submissions = self.patient_doc.dot_submissions_range(start_date=this_day, end_date=this_day)
-            print "day: %s %s" % (day, weekday)
-            print len(day_submissions)
             if len(day_submissions) > 0:
                 cssclass += ' filled'
                 body = ['<div class="calendar-cell">']
                 day_data = merge_dot_day(self.patient_doc, day_submissions)
+
                 for drug_type in day_data.keys():
                     body.append('')
                     body.append('<div class="drug-cell">')
                     body.append('<div class="drug-label">%s</div>' % drug_type)
 
-                    for dose_num in day_data[drug_type].keys():
-                        body.append('<div class="time-label">%s</div>' % dose_num)
-                        body.append('<div class="time-cell">')
-                        for obs in day_data[drug_type][dose_num]:
+                    drug_total = day_data[drug_type]['total_doses']
 
+                    for dose_num, obs_list in day_data[drug_type]['dose_dict'].items():
+                        for obs in obs_list:
+                            if obs.day_slot != '' and obs.day_slot is not None:
+                                day_slot_string = DAY_SLOTS_BY_IDX.get(int(obs.day_slot), 'Unknown')
+                                body.append('<div class="time-label">%s</div>' % day_slot_string)
+                            else:
+                                body.append('<div class="time-label">Dose %d</div>' % (int(dose_num) + 1))
+                            body.append('<div class="time-cell">')
                             body.append('<div class="observation">')
-                            body.append("%s,%s,%s,%s,%s,%s<br>" % (obs.encounter_date, obs.dose_number, obs.adherence, obs.method, obs.day_note, obs.day_slot))
-                            body.append('</div>')
-                        body.append('</div>')
-                    body.append('</div>')
+                            #body.append("%s,%s,%s,%s,%s,%s<br>" % (obs.encounter_date, obs.dose_number, obs.adherence, obs.method, obs.day_note, obs.day_slot))
+                            if obs.adherence =='unchecked':
+                                body.append('<span style="font-size:85%;color:#888;font-style:italic;">unchecked</span>')
+                            else:
+                                if obs.adherence == 'empty':
+                                    body.append('<img src="%sdotsview/icons/check.jpg">' % settings.STATIC_URL)
+                                elif obs.adherence == 'partial':
+                                    body.append('<img src="%sdotsview/icons/exclamation-point.jpg">' % settings.STATIC_URL)
+                                elif obs.adherence == 'full':
+                                    body.append('<img src="%sdotsview/icons/x-mark.png">' % settings.STATIC_URL)
+
+                                if obs.method == 'direct':
+                                    body.append('<img src="%sdotsview/icons/plus.png">' % settings.STATIC_URL)
+                                elif obs.method == 'pillbox':
+                                    body.append('<img src="%sdotsview/icons/bucket.png">' % settings.STATIC_URL)
+                                elif obs.method == 'self':
+                                    body.append('<img src="%sdotsview/icons/minus.png">' % settings.STATIC_URL)
+
+                            body.append('&nbsp;</div>')
+                            break
+                        body.append('&nbsp;</div>')
+                    body.append('&nbsp;</div>')
                 return self.day_cell(cssclass, '%d %s' % (day, ''.join(body)))
 
             if weekday < 5 and not future:

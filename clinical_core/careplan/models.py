@@ -1,17 +1,10 @@
 import uuid
-from couchdbkit.ext.django.schema import Document, StringProperty, SchemaListProperty, DateTimeProperty, ListProperty, StringListProperty, SchemaProperty, BooleanProperty, DateProperty, DocumentSchema
-from couchdbkit.schema.properties_proxy import SchemaDictProperty
-from django.db import models
-from django.contrib.auth.models import User
-from issuetracker.models import Issue
-from patient.models import Patient
-from datetime import datetime
-from django.utils.translation import ugettext_lazy as _
+from couchdbkit.ext.django.schema import Document, StringProperty, SchemaListProperty, DateTimeProperty, StringListProperty, BooleanProperty, DateProperty, DocumentSchema
 from django.core.urlresolvers import reverse
 
 
 # Create your models here.
-from dimagi.utils import make_uuid, make_time
+from dimagi.utils import  make_time
 
 #class PlanRule(models.Model):
 #    """

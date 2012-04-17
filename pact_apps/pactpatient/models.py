@@ -29,6 +29,26 @@ ghetto_regimen_map = {
     "tid": '3',
     "qid": '4',
     '': '' ,
+
+    'morning': 1,
+    'noon': 1,
+    'evening': 1,
+    'bedtime': 1,
+
+    'morning,noon': 2,
+    'morning,evening': 2,
+    'morning,bedtime': 2,
+    'noon,evening': 2,
+    'noon,bedtime': 2,
+    'evening,bedtime': 2,
+
+    'morning,noon,evening':3,
+    'morning,noon,bedtime':3,
+    'morning,evening,bedtime':3,
+    'noon,evening,bedtime':3,
+
+    'morning,noon,evening,bedtime':4,
+
 }
 
 html_escape_table = {
@@ -513,7 +533,6 @@ class PactPatient(BasePatient):
         endkey = [pact_id, 'observe_date', end_date.year, end_date.month, end_date.day]
         #observations = CObservation.view('dotsview/dots_observations', key=endkey).all()
         observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
-        print observations
         return observations
 
 
