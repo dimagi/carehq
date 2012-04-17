@@ -27,6 +27,26 @@ ghetto_regimen_map = {
     "tid": '3',
     "qid": '4',
     '': '' ,
+
+    'morning': 1,
+    'noon': 1,
+    'evening': 1,
+    'bedtime': 1,
+
+    'morning,noon': 2,
+    'morning,evening': 2,
+    'morning,bedtime': 2,
+    'noon,evening': 2,
+    'noon,bedtime': 2,
+    'evening,bedtime': 2,
+
+    'morning,noon,evening':3,
+    'morning,noon,bedtime':3,
+    'morning,evening,bedtime':3,
+    'noon,evening,bedtime':3,
+
+    'morning,noon,evening,bedtime':4,
+
 }
 
 html_escape_table = {
