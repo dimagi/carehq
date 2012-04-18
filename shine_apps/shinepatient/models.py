@@ -406,7 +406,7 @@ class ShinePatient(BasePatient):
 
     @property
     def get_current_bed(self):
-        case = self._latest_case
+        case = self.latest_case
         submissions = self._get_case_submissions(case)
         for s in submissions:
             if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
@@ -418,7 +418,7 @@ class ShinePatient(BasePatient):
 
     @property
     def get_current_ward(self):
-        case = self._latest_case
+        case = self.latest_case
         submissions = self._get_case_submissions(case)
         for s in submissions:
             if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
