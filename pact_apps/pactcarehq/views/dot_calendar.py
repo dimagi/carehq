@@ -40,6 +40,7 @@ def merge_dot_day(patient_doc, dots_observations):
     Receive an array of CObservations and try to priority sort them and make a json-able array of ART and NON ART submissions
     for DOT calendar display AND ota restore.
     """
+    day_dict = {'ART': {'total_doses':0, 'dose_dict': {} }, 'NONART': {'total_doses': 0, 'dose_dict': {}}}
 
     def cmp_observation(x, y):
         """
@@ -69,7 +70,7 @@ def merge_dot_day(patient_doc, dots_observations):
         else:
             return cmp(x.encounter_date, y.encounter_date)
 
-    day_dict = {'ART': {'total_doses':0, 'dose_dict': {} }, 'NONART': {'total_doses': 0, 'dose_dict': {}}}
+
 
     for obs in dots_observations:
         if obs.is_art:
@@ -79,13 +80,11 @@ def merge_dot_day(patient_doc, dots_observations):
 
 
         if dict_to_use['total_doses'] < obs.total_doses:
-            print "changing total doses! %s: from %s to %s" % ("ART" if obs.is_art else "NONART", dict_to_use['total_doses'], obs.total_doses)
             dict_to_use['total_doses'] = obs.total_doses
 
         if dict_to_use['dose_dict'].get(obs.dose_number, None) is None:
             dict_to_use['dose_dict'][obs.dose_number] = []
         dict_to_use['dose_dict'][obs.dose_number].append(obs)
-        print "%s:%s/%s" % ("ART" if obs.is_art else "NONART", obs.dose_number, obs.total_doses)
 
     for drug_type, wrapper_dict in day_dict.items():
         dose_dict = wrapper_dict['dose_dict']

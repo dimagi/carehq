@@ -539,13 +539,33 @@ class PactPatient(BasePatient):
     def dots_casedata_for_day(self, date, art_arr, non_art_arr):
         from dotsview.views import _get_observations_for_date #(date, pact_id, art_arr, nonart_num):
         from dotsview.models import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
+        from pactcarehq.views.dot_calendar import merge_dot_day
+
+
+        def get_day_elements_new(day_data):
+            ret = []
+
+            for drug_type in day_data.keys():
+                drug_arr = []
+                for dose_num, obs_list in day_data[drug_type]['dose_dict'].items():
+                    for obs in obs_list:
+                        day_slot = -1
+                        if obs.day_slot != '' and obs.day_slot is not None:
+                            day_slot = obs.day_slot
+
+                        if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != "[AddendumEntry]":
+                            day_note = obs.day_note
+                        else:
+                            day_note = ''
+                        drug_arr.append([obs.adherence, obs.method, day_note, day_slot]) #todo, add regimen_item
+                ret.append(drug_arr)
+            return ret
 
         def get_day_elements(drug_data, num_timekeys, freq_arr ):
             """helper function to return an array of the observations for a given drug_type, for the regimen frequency
-            [[adherence,method], [adherence,method]...]
+            [[adherence,method, notes, label_index], [adherence,method, notes, label_index]...]
             """
             day_arr = []
-
             for timekey in TIME_LABELS: #this is just getting ALL the timelabels to see if the line up
                 #get the top one from the array
                 if not drug_data.has_key(timekey):
@@ -554,12 +574,16 @@ class PactPatient(BasePatient):
                     #logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
                 if len(drug_data[timekey]) > 0 and len(day_arr) < MAX_LEN_DAY:
                     obs = drug_data[timekey][0]
-                    if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
-                        day_arr.append([obs.adherence, obs.method, obs['day_note'], '']) #todo, add regimen_item
-                    elif obs.day_slot != None:
-                        pass
+
+                    if obs.day_slot != None and obs.date_slot != '':
+                        day_slot = obs.day_slot
                     else:
-                        day_arr.append([obs.adherence, obs.method, '', ''])
+                        day_slot = -1
+
+                    if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
+                        day_arr.append([obs.adherence, obs.method, obs['day_note'], day_slot]) #todo, add regimen_item
+                    else:
+                        day_arr.append([obs.adherence, obs.method, '', day_slot])
 
 
                 #else:
@@ -567,26 +591,33 @@ class PactPatient(BasePatient):
             if len(day_arr) < freq_arr:
                 delta = len(freq_arr) - len(day_arr)
                 for n in range(delta):
-                    day_arr.append(["unchecked", "pillbox", '', 'empty'])
+                    day_arr.append(["unchecked", "pillbox", '', ''])
             return day_arr
 
         def get_empty(n):
+            print "get empty!"
             return [["unchecked", "pillbox"] for x in range(n)]
 
 
         #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
         day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_arr, non_art_arr, reconcile_trump=True)
-        day_arr = []
-        if day_dict.has_key('Non ART'):
-            nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_arr)
-        else:
-            nonart_data = get_empty(non_art_arr)
-        if day_dict.has_key('ART'):
-            art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_arr)
-        else:
-            nonart_data = get_empty(art_arr)
-        day_arr.append(nonart_data)
-        day_arr.append(art_data)
+
+        day_submissions = self.dot_submissions_range(start_date=date, end_date=date)
+        day_data = merge_dot_day(self, day_submissions)
+
+        day_arr = get_day_elements_new(day_data)
+
+#        day_arr = []
+#        if day_dict.has_key('Non ART'):
+#            nonart_data = get_day_elements(day_dict['Non ART'], len(day_dict['Non ART'].keys()), non_art_arr)
+#        else:
+#            nonart_data = get_empty(non_art_arr)
+#        if day_dict.has_key('ART'):
+#            art_data = get_day_elements(day_dict['ART'], len(day_dict['ART'].keys()), art_arr)
+#        else:
+#            nonart_data = get_empty(art_arr)
+#        day_arr.append(nonart_data)
+#        day_arr.append(art_data)
         return day_arr
 
     def get_dots_data(self):
@@ -818,7 +849,6 @@ class PactPatient(BasePatient):
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
                 prop_val = getattr(case, prop_prop, None)
-                print "%s: %s" % (prop_prop, prop_val)
                 if x > len(code_arr):
                     update_ret[prop_prop] = ''
                 else:
