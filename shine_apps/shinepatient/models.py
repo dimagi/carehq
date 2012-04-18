@@ -116,13 +116,8 @@ class ShinePatient(BasePatient):
     def cache_clinical_case(self):
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-
         for s in submissions:
             formname = xmlns_display_map[s['xmlns']].replace(' ','_').lower()
-            setattr(self, "_%s" % formname, s)
-
-
-
         self._cached_submits=True
 
     def _get_case_submissions(self, case, wrap=False):
@@ -172,32 +167,27 @@ class ShinePatient(BasePatient):
     def _do_get_latest_case(self, invalidate=False):
         if invalidate:
             cache.delete('shinepatient_latest_case_%s' % self._id)
-            if hasattr(self,'_latest_case'):
-                delattr(self, '_latest_case')
-
-        if hasattr(self,'_latest_case'):
-            return self._latest_case
 
         cache_latest_case_str = cache.get('shinepatient_latest_case_%s' % self._id, None)
         if cache_latest_case_str is not None:
             raw_case_json = simplejson.loads(cache_latest_case_str)
             latest_case = CommCareCase.wrap(raw_case_json)
-            self._latest_case = latest_case
-            return latest_case
+        else:
+            #no cache no internal cache, reget
+            case_docs = [CommCareCase.get(x) for x in self.cases]
+            sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
+            latest_case = sorted_docs[-1]
 
-        #no cache no internal cache, reget
-        case_docs = [CommCareCase.get(x) for x in self.cases]
-        sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
-        self._latest_case = sorted_docs[-1]
-
-        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(self._latest_case.to_json()), 14400)
-        return self._latest_case
+        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(latest_case.to_json()), 14400)
+        if invalidate:
+            attrib = '_case_submissions_%s' % latest_case._id
+            cache.delete(attrib)
+        return latest_case
 
 
     @property
     def latest_case(self):
-        self._do_get_latest_case()
-        return self._latest_case
+        return self._do_get_latest_case()
 
     def is_unique(self):
         return True

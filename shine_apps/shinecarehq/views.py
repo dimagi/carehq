@@ -95,9 +95,6 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
 
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
 
-    for pt in patients:
-        pt.cache_clinical_case()
-
     active= filter(lambda x: not x.latest_case.closed, patients)
     inactive = set.difference(set(patients), set(active))
     enrolled_today = filter(lambda x: x.get_last_action()[1] == 'Enrollment' and x.get_last_action()[0].date() == datetime.utcnow().date(), patients)
