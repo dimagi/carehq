@@ -172,6 +172,7 @@ class ShinePatient(BasePatient):
         if cache_latest_case_str is not None:
             raw_case_json = simplejson.loads(cache_latest_case_str)
             latest_case = CommCareCase.wrap(raw_case_json)
+            return latest_case
         else:
             #no cache no internal cache, reget
             case_docs = [CommCareCase.get(x) for x in self.cases]
