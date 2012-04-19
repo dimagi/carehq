@@ -33,10 +33,10 @@
                 "sAjaxSource": "{% url api_dispatch_chw_list "PactUserSubmissions" username  %}",
                 "sAjaxDataProp": "objects",
                 "aoColumns": [
-                    { "mDataProp": "doc_id" },
-                    { "mDataProp": "start_date" },
-                    { "mDataProp": "end_time" },
+                    { "mDataProp": "pact_id" },
+                    { "mDataProp": "patient" },
                     { "mDataProp": "encounter_date" },
+                    { "mDataProp": "received_on" },
                 ],
                 "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
                 "sPaginationType": "bootstrap",
@@ -75,10 +75,10 @@
     <table id="submits-table" class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th>Doc ID</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th>PACT ID</th>
+            <th>Patient</th>
             <th>Encounter Date</th>
+            <th>Received</th>
 {#            <th class="span3">Encounter Date</th>#}
 {#            <th class="span1">ID</th>#}
 {#            <th class="span2">Last Name</th>#}
