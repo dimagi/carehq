@@ -195,7 +195,10 @@ class ShinePatient(BasePatient):
 
     @property
     def enrollment_date(self):
-        return self.latest_case.opened_on
+        if hasattr(self, '_enrollment_date'):
+            return self._enrollment_date
+        self._enrollment_date =  self.latest_case.opened_on
+        return self._enrollment_date
 
     @property
     def view_name(self):
@@ -220,22 +223,20 @@ class ShinePatient(BasePatient):
 
 
     def get_culture_status(self):
+        if hasattr(self, "_get_culture_status"):
+            return self._get_culture_status
+
         bottles = self.get_elab_bottle_data()
 
         if bottles == '[No Data]':
             return '[No Data]'
 
         if len(bottles) > 0:
+            self._get_culture_status = 'positive'
             return 'positive'
         else:
+            self._get_culture_status = 'negative'
             return 'negative'
-
-
-    @property
-    def get_status(self):
-        case = self.latest_case
-        submissions = self._get_case_submissions(case)
-
 
     @property
     def get_hiv_status(self):
@@ -266,12 +267,17 @@ class ShinePatient(BasePatient):
 
 
     def get_last_action(self):
-        case = self.latest_case
-        submissions = self._get_case_submissions(case)
-        xmlns = submissions[-1]['xmlns']
+        cached_action = cache.get('patient_last_action_%s' % self._id, None)
+        if cached_action is not None:
+            last_submission = simplejson.loads(cached_action)
+        else:
+            case = self.latest_case
+            submissions = self._get_case_submissions(case)
+            last_submission = submissions[-1]
+        xmlns = last_submission['xmlns']
         #2012-02-21T11:31:05Z
-        recv = isodate.parse_datetime(submissions[-1]['received_on'])
-
+        recv = isodate.parse_datetime(last_submission['received_on'])
+        cache.set('patient_last_action_%s' % self._id, simplejson.dumps(last_submission))
         return recv, xmlns_display_map[xmlns]
 
     @property
@@ -407,27 +413,33 @@ class ShinePatient(BasePatient):
 
     @property
     def get_current_bed(self):
-        case = self.latest_case
-        submissions = self._get_case_submissions(case)
-        for s in submissions:
-            if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
-                return s['form']['location']['bed']
-                pass
-            else:
-                continue
-        return 'Unknown'
+        if hasattr(self, '_get_current_bed'):
+            return self._get_current_bed
+        else:
+            case = self.latest_case
+            submissions = self._get_case_submissions(case)
+            for s in submissions:
+                if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
+                    self._get_current_bed = s['form']['location']['bed']
+                    return self._get_current_bed
+                else:
+                    continue
+            return 'Unknown'
 
     @property
     def get_current_ward(self):
-        case = self.latest_case
-        submissions = self._get_case_submissions(case)
-        for s in submissions:
-            if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
-                return s['form']['location']['ward']
-                pass
-            else:
-                continue
-        return 'Unknown'
+        if hasattr(self, '_get_current_ward'):
+            return self._get_current_ward
+        else:
+            case = self.latest_case
+            submissions = self._get_case_submissions(case)
+            for s in submissions:
+                if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
+                    self._get_current_ward = s['form']['location']['ward']
+                    return self._get_current_ward
+                else:
+                    continue
+            return 'Unknown'
 
 
 from .signals import *

@@ -1,6 +1,5 @@
 import uuid
 from couchdbkit.exceptions import ResourceNotFound
-#from devserver.modules.profile import devserver_profile
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.models import User

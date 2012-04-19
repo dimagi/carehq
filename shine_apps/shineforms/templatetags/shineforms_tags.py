@@ -1,4 +1,5 @@
 from django import template
+from django.core.cache import cache
 
 
 from datetime import datetime, date
@@ -142,6 +143,10 @@ def render_submission_fragment(xmlns, submissions):
 
 @register.simple_tag
 def get_status_matrix(patient):
+    cached_rendering = cache.get("patient_matrix_%s" % patient._id, None)
+    if cached_rendering is not None:
+        return cached_rendering
+
 
     context_dict = dict()
     tally = patient.get_completed_tally
@@ -197,4 +202,6 @@ def get_status_matrix(patient):
     t = template.loader.get_template('shineforms/status_matrix.html')
 
 
-    return t.render(Context(context_dict, autoescape=False))
+    rendering = t.render(Context(context_dict, autoescape=False))
+    cache.set("patient_matrix_%s" % patient._id, rendering, 172800)
+    return rendering

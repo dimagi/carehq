@@ -11,6 +11,8 @@ def process_patient_submission(sender, xform, **kwargs):
             if len(pts) == 1:
                 #pts[0]._do_get_latest_case(invalidate=True)
                 cache.delete('shinepatient_latest_case_%s' % pts[0]._id)
+                cache.delete('patient_matrix_%s' % pts[0]._id)
+                cache.delete('patient_last_action_%s' % pts[0]._id, None)
                 for case_id in pts[0].cases:
                     attrib = '_case_submissions_%s' % case_id
                     cache.delete(attrib)
