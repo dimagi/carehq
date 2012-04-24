@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 from couchdbkit.exceptions import ResourceNotFound
 from django.contrib.auth.decorators import login_required
@@ -30,6 +31,18 @@ from django.core.cache import cache
 #    pass
 from shineforms.models import ShineUser
 from shinepatient.models import ShinePatient
+
+
+def uptime(request):
+    """
+
+    """
+    users = User.objects.all().count()
+    submits = XFormInstance.view('shinecarehq/all_submits_by_date', include_docs=True, limit=1).all()
+    foo = ShinePatient.view('shinepatient/patient_cases_all', include_docs=False, limit=1).all()
+    #response = HttpResponse("success 22ff3ccfe2994d108ea8be5125d3fb88")
+    response = HttpResponse(hashlib.sha1('success').hexdigest())
+    return response
 
 @login_required()
 def my_cases(request, template="shinecarehq/my_cases.html"):
