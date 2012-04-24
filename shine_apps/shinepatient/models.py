@@ -132,7 +132,6 @@ class ShinePatient(BasePatient):
             submissions_json = simplejson.dumps(submissions)
             cache.set(attrib, submissions_json, 172800)
 
-
         if wrap:
             return [XFormInstance.wrap(x) for x in submissions]
 
@@ -178,8 +177,7 @@ class ShinePatient(BasePatient):
             case_docs = [CommCareCase.get(x) for x in self.cases]
             sorted_docs = sorted(case_docs, key=lambda x: x.opened_on)
             latest_case = sorted_docs[-1]
-
-        cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(latest_case.to_json()), 14400)
+            cache.set('shinepatient_latest_case_%s' % self._id, simplejson.dumps(latest_case.to_json()), 14400)
         if invalidate:
             attrib = '_case_submissions_%s' % latest_case._id
             cache.delete(attrib)
@@ -259,7 +257,6 @@ class ShinePatient(BasePatient):
     def last_activity(self):
         cases = CommCareCase.view("shinepatient/shine_patient_cases", key=self._id, include_docs=True).all()
         if len(cases) == 0:
-            #return "No activity"
             return datetime.mindate
         else:
             return cases[0].modified_on
@@ -267,13 +264,15 @@ class ShinePatient(BasePatient):
 
 
     def get_last_action(self):
+        case = self.latest_case
         cached_action = cache.get('patient_last_action_%s' % self._id, None)
         if cached_action is not None:
             last_submission = simplejson.loads(cached_action)
         else:
             case = self.latest_case
-            submissions = self._get_case_submissions(case)
-            last_submission = submissions[-1]
+            #submissions = self._get_case_submissions(case)
+            last_submission_id = case.xform_ids[-1]
+            last_submission = XFormInstance.get_db().get(last_submission_id)
         xmlns = last_submission['xmlns']
         #2012-02-21T11:31:05Z
         recv = isodate.parse_datetime(last_submission['received_on'])
@@ -340,29 +339,6 @@ class ShinePatient(BasePatient):
 
         return ret
 
-    @property
-    def get_current_status(self):
-        """
-        Returns whether or not patient is active in the study (whether they've been discharged)
-        """
-        case = self.latest_case
-        submissions = self._get_case_submissions(case)
-        keys = xmlns_display_map.keys()
-        full_len = len(keys)
-        for i,s in enumerate(submissions):
-            if s['xmlns'] in keys:
-                keys.remove(s['xmlns'])
-        if len(keys) != 0:
-            return "%d/%d" % (full_len-len(keys), full_len)
-        else:
-            return "[Done]"
-
-    @property
-    def data_complete(self):
-        """
-        todo: Do an analysis of all the fields collected in all forms to determine if dataset is complete
-        """
-        return random.choice([True, False])
 
 
     def _do_get_emergency_lab_submission(self):
@@ -407,8 +383,6 @@ class ShinePatient(BasePatient):
         case = self.latest_case
         submissions = self._get_case_submissions(case)
         lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
-
-
         return merge_labs(lab_submissions)
 
     @property
@@ -416,30 +390,16 @@ class ShinePatient(BasePatient):
         if hasattr(self, '_get_current_bed'):
             return self._get_current_bed
         else:
-            case = self.latest_case
-            submissions = self._get_case_submissions(case)
-            for s in submissions:
-                if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
-                    self._get_current_bed = s['form']['location']['bed']
-                    return self._get_current_bed
-                else:
-                    continue
-            return 'Unknown'
+            self._get_current_bed  = self.latest_case.bed
+            return self._get_current_bed
 
     @property
     def get_current_ward(self):
         if hasattr(self, '_get_current_ward'):
             return self._get_current_ward
         else:
-            case = self.latest_case
-            submissions = self._get_case_submissions(case)
-            for s in submissions:
-                if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
-                    self._get_current_ward = s['form']['location']['ward']
-                    return self._get_current_ward
-                else:
-                    continue
-            return 'Unknown'
+            self._get_current_ward = self.latest_case.ward
+            return self._get_current_ward
 
 
 from .signals import *
