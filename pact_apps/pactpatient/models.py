@@ -586,6 +586,7 @@ class PactPatient(BasePatient):
                         day_slot = -1
 
                     if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
+
                         day_arr.append([obs.adherence, obs.method, obs['day_note'], day_slot]) #todo, add regimen_item
                     else:
                         day_arr.append([obs.adherence, obs.method, '', day_slot])
