@@ -29,7 +29,7 @@ def single_careplan_item(request, item_id, template_name = "careplan/careplan_it
 
 @login_required
 @actor_required
-def manage_patient_careplan(request, patient_guid, template_name='careplan/manage_patient_careplan.html'):
+def manage_patient_careplan(request, patient_guid, template_name='careplan/manage_patient_careplan_ko.html'):
     context = RequestContext(request)
     patient_doc = BasePatient.get_typed_from_id(patient_guid)
 
