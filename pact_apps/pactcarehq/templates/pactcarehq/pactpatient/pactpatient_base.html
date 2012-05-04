@@ -133,12 +133,12 @@
         <a href="{% url view_pactpatient patient_doc.get_id 'schedule' %}" data-toggle="tab">{% trans "Schedule" %}</a>
     </li>
 
-    {% if patient_doc.is_dot_patient %}
-     <li {% if view_mode == "dots" %}class="active"{% endif %}>
-        <a href="{% url view_pactpatient patient_doc.get_id 'dots' %}"
-           data-toggle="tab">{% trans "DOT Adherence" %}</a>
-     </li>
-    {% endif %}
+{#    {% if patient_doc.is_dot_patient %}#}
+{#     <li {% if view_mode == "dots" %}class="active"{% endif %}>#}
+{#        <a href="{% url view_pactpatient patient_doc.get_id 'dots' %}"#}
+{#           data-toggle="tab">{% trans "DOT Adherence" %}</a>#}
+{#     </li>#}
+{#    {% endif %}#}
 
 
 

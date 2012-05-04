@@ -16,6 +16,8 @@
 #    supervision_date = DateTimeProperty() #actor doc_id
 from couchdbkit.ext.django.schema import Document, DateTimeProperty, SchemaListProperty, IntegerProperty, StringProperty, DocumentSchema
 from couchdbkit.schema.properties import DateProperty
+from casexml.apps.phone.models import User
+from casexml.apps.case.models import CommCareCase
 
 class UserTally(DocumentSchema):
     username = StringProperty()
@@ -29,5 +31,8 @@ class SubmissionTallyLog(Document):
     created_time = DateTimeProperty()
     user_log = SchemaListProperty(UserTally)
 
-
+class PactUser(User):
+    @property
+    def raw_username(self):
+        return self.username
 from signals import *

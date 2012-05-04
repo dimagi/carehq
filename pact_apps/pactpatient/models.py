@@ -126,6 +126,7 @@ ghetto_patient_xml = """<case>
                        <last_dot>%(last_dot)s</last_dot>
                        %(last_bw_xml)s
                    </update>
+                   %(close)s
            </case>"""
 
 class CBloodworkCD(Document):
@@ -215,6 +216,10 @@ class PactPatient(BasePatient):
     mass_health_expiration = DateProperty()
     hiv_care_clinic = StringProperty()
     ssn = StringProperty()
+
+
+    def show_notes(self):
+        return self.notes.replace('\n', '<br>')
 
     @property
     def last_progress_note_date(self):
@@ -956,8 +961,10 @@ class PactPatient(BasePatient):
         xml_dict['phones'] = self.get_ghetto_phone_xml()
         xml_dict['addresses'] = self.get_ghetto_address_xml()
 
-
-
+        if casedoc.get('closed', False):
+            xml_dict['close'] = "<close/>"
+        else:
+            xml_dict['close'] = ''
 
         #todo: this ought to also use a view to verify that the dots and progress notes are dynamically queried for last status.  This patient placeholder is for testing and legacy purposes
 
@@ -975,6 +982,8 @@ class PactPatient(BasePatient):
         else:
             xml_dict['dot_schedule'] = ''
             xml_dict['regimens'] = ''
+
+
         ret = ghetto_patient_xml % (xml_dict)
         return ret
 

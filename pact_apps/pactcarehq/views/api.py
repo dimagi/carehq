@@ -8,6 +8,7 @@ from casexml.apps.case.models import CommCareCase
 from casexml.apps.case.signals import process_cases
 from casexml.apps.case.tests.util import CaseBlock
 from casexml.apps.case.util import post_case_blocks
+from couchforms.util import post_xform_to_couch
 from dimagi.utils.make_time import make_time
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactpatient.enums import get_regimen_code_arr
@@ -325,15 +326,23 @@ def ajax_post_patient_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
+            old_arm = pdoc.arm
             old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
+            new_arm = instance.arm
+
             resp.status_code=204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
 
             case = CommCareCase.get(pdoc.case_id)
 
             update_dict = instance.calculate_regimen_caseblock()
-            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=make_time(), date_modified='2011-08-24T07:42:49.473-07') #make_time())
+            if new_arm != old_arm and new_arm == 'Discharged':
+                close_case = True
+            else:
+                close_case = False
+
+            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=make_time(), close=close_case, date_modified='2011-08-24T07:42:49.473-07') #make_time())
 
             def isodate_string(date):
                 if date: return isodate.datetime_isoformat(date) + "Z"
@@ -349,7 +358,10 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             for block in case_blocks:
                 form.append(block)
             xform = ElementTree.tostring(form)
-            process_cases(sender="pactapi", xform=xform)
+            xform_posted = post_xform_to_couch(ElementTree.tostring(form))
+            print xform
+            print xform_posted
+            process_cases(sender="pactapi", xform=xform_posted)
             return resp
         else:
             context['form']=form

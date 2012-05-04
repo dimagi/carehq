@@ -35,8 +35,8 @@ def get_caselist(request):
     patient_block = ""
     patients = PactPatient.view("patient/search", include_docs=True)
     for pt in patients:
-        if pt.arm == "Discharged":
-            continue
+        #if pt.arm == "Discharged":
+            #continue
         patient_block += pt.ghetto_xml()
     resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
     #logging.error(resp_text)
@@ -91,8 +91,8 @@ def xml_download(request):
 
     active_patients = []
     for pt in all_patients:
-        if pt.arm == "Discharged":
-            continue
+        #if pt.arm == "Discharged":
+            #continue
         pact_id = pt.pact_id
         active_patients.append(pact_id)
 
