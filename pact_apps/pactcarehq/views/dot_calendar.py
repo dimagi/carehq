@@ -54,11 +54,11 @@ def merge_dot_day(patient_doc, dots_observations):
         > 1
         """
         #Reconcilation handling
-        if getattr(x, 'is_reconciliation', False) and getattr(y, 'is_reconcilation', False):
+        if (hasattr(x, 'is_reconciliation') and getattr(x, 'is_reconciliation')) and (hasattr(y, 'is_reconciliation') and getattr(y, 'is_reconciliation')):
             return cmp(x.submitted_date, y.submitted_date)
-        elif getattr(x, 'is_reconciliation', False) and not getattr(y, 'is_reconcilation', False):
+        elif (hasattr(x, 'is_reconciliation') and getattr(x, 'is_reconciliation')) and (not hasattr(y,'is_reconciliation') or not getattr(y, 'is_reconciliation')):
             return -1
-        elif not getattr(x, 'is_reconciliation', False) and getattr(y, 'is_reconciliation', False):
+        elif (not hasattr(x, 'is_reconciliation') or not getattr(x, 'is_reconciliation')) and (hasattr(y, 'is_reconciliation') and getattr(y, 'is_reconciliation')):
             return 1
 
         if x.method == 'direct' and y.method == 'direct':

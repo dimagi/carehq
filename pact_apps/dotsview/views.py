@@ -112,7 +112,7 @@ def _get_observations_for_date(date, pact_id, art_num, nonart_num, reconcile_tru
 #                total_doses = hack_patient.art_num
 #            else:
 #                total_doses = hack_patient.non_art_num
-            time_label = TIME_LABELS[ob.dose_number]
+            time_label = TIME_LABELS[0] #weird we're getting tis wwayyyy outside the number
 
         if time_label != "":
             if not grouping['ART' if ob.is_art else 'Non ART'].has_key(time_label):
@@ -398,7 +398,7 @@ def get_couchdata(request):
                     time_label = ob.get_time_label()
                 except IndexError:
                     logging.error("Error, observation time label index not found, DOT data generation error")
-                    time_label = TIME_LABELS[ob.dose_number]
+                    time_label = TIME_LABELS[0]
 
                 #if any observation on this date has a notes for that particular check, record it.
                 if ob.day_note != None and ob.day_note != '' and day_notes.count(ob.day_note) == 0:

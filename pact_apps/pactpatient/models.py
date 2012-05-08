@@ -546,14 +546,29 @@ class PactPatient(BasePatient):
         from dotsview.models import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
         from pactcarehq.views.dot_calendar import merge_dot_day
 
-
         def get_day_elements_new(day_data):
             ret = []
-
             for drug_type in day_data.keys():
                 drug_arr = []
+                max_total = 0
+                if drug_type == "ART":
+                    max_total = len(art_arr)
+                elif drug_type == "NONART":
+                    max_total = len(non_art_arr)
+                legal_dose_combos = ['%d/%d' % (x, max_total) for x in range(0,max_total)]
+
+
+
                 for dose_num, obs_list in day_data[drug_type]['dose_dict'].items():
+                    seen_dose_combos = {}
                     for obs in obs_list:
+                        dose_combo = "%d/%d" % (obs.dose_number, obs.total_doses)
+                        if seen_dose_combos.has_key(dose_combo):
+                            continue
+                        elif dose_combo not in legal_dose_combos:
+                            continue
+                        else:
+                            seen_dose_combos[dose_combo] = True
                         day_slot = -1
                         if obs.day_slot != '' and obs.day_slot is not None:
                             day_slot = obs.day_slot
@@ -563,6 +578,10 @@ class PactPatient(BasePatient):
                         else:
                             day_note = ''
                         drug_arr.append([obs.adherence, obs.method, day_note, day_slot]) #todo, add regimen_item
+
+                        if len(drug_arr) >= max_total:
+                            #we've seen enough to meet the total doses
+                            break
                 ret.append(drug_arr)
             return ret
 
@@ -586,7 +605,6 @@ class PactPatient(BasePatient):
                         day_slot = -1
 
                     if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
-
                         day_arr.append([obs.adherence, obs.method, obs['day_note'], day_slot]) #todo, add regimen_item
                     else:
                         day_arr.append([obs.adherence, obs.method, '', day_slot])
@@ -601,7 +619,6 @@ class PactPatient(BasePatient):
             return day_arr
 
         def get_empty(n):
-            print "get empty!"
             return [["unchecked", "pillbox"] for x in range(n)]
 
 
@@ -854,11 +871,13 @@ class PactPatient(BasePatient):
             digit_strings = ["zero", 'one', 'two', 'three','four']
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
-                prop_val = getattr(case, prop_prop, None)
+                if hasattr(case, prop_prop):
+                    prop_val = getattr(case, prop_prop, None)
+                else:
+                    prop_val = ''
                 if x > len(code_arr):
                     update_ret[prop_prop] = ''
                 else:
-                    #print "\tcode_arr: %s" % str(code_arr[x-1])
                     if str(code_arr[x-1]) != prop_val:
                         update_ret[prop_prop] = str(code_arr[x-1])
         return update_ret
