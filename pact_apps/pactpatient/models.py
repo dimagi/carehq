@@ -219,7 +219,10 @@ class PactPatient(BasePatient):
 
 
     def show_notes(self):
-        return self.notes.replace('\n', '<br>')
+        if self.notes is not None:
+            return self.notes.replace('\n', '<br>')
+        else:
+            return ''
 
     @property
     def last_progress_note_date(self):
