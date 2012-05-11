@@ -106,18 +106,36 @@ def case_dashboard(request, template="shinecarehq/patient_dashboard.html"):
     show_param = request.GET.get('show', 'all')
 
     patients = ShinePatient.view("shinepatient/shine_patients", include_docs=True).all()
+    patient_tuples = []
+    cached_docs = {}
 
-    active= filter(lambda x: not x.latest_case.closed, patients)
-    inactive = set.difference(set(patients), set(active))
-    enrolled_today = filter(lambda x: x.get_last_action()[1] == 'Enrollment' and x.get_last_action()[0].date() == datetime.utcnow().date(), patients)
-    only_enrolled = filter(lambda x: x.get_last_action()[1] == 'Enrollment', patients)
-    positive = filter(lambda x: x.get_culture_status() == 'positive', patients)
-    negative = filter(lambda x: x.get_culture_status() == 'negative', patients)
-    contaminated = filter(lambda x: x.latest_case.dynamic_properties().get('contamination', '') == 'yes', patients)
+    for pt in patients:
+        patient_tuples.append((pt, pt.get_cached_object()))
+
+    #active= filter(lambda x: not x.latest_case.closed, patients)
+    active = filter(lambda x: x[1].active, patient_tuples)
+
+    #inactive = set.difference(set(patients), set(active))
+    inactive = set.difference(set(patient_tuples), set(active))
+
+    #enrolled_today = filter(lambda x: x.get_last_action()[1] == 'Enrollment' and x.get_last_action()[0].date() == datetime.utcnow().date(), patients)
+    enrolled_today = filter(lambda x: x[1].enrollment_date == datetime.utcnow().date(), patient_tuples)
+
+    #only_enrolled = filter(lambda x: x.get_last_action()[1] == 'Enrollment', patients)
+    only_enrolled = filter(lambda x: x[1].last_encounter == 'Enrollment', patient_tuples)
+
+    #positive = filter(lambda x: x.get_culture_status() == 'positive', patients)
+    positive = filter(lambda x: x[1].culture_status == 'positive', patient_tuples)
+
+    #negative = filter(lambda x: x.get_culture_status() == 'negative', patients)
+    negative = filter(lambda x: x[1].culture_status == 'negative', patient_tuples)
+
+    #contaminated = filter(lambda x: x.latest_case.dynamic_properties().get('contamination', '') == 'yes', patients)
+    contaminated = filter(lambda x: x[1].contamination, patient_tuples)
 
 
     if show_param == 'all':
-        show_list = patients
+        show_list = patient_tuples
         show_string = "All Patients"
     elif show_param == 'active':
         show_list = active

@@ -65,41 +65,41 @@
                     </thead>
 
                     <tbody>
-                    {% for patient in show_list %}
+                    {% for patient_tuple in show_list %}
                         <tr>
 
                             <td>
-                                {% if patient.last_name %}
-                                    <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.last_name|title }}</a>
+                                {% if patient_tuple.0.last_name %}
+                                    <a href="{% url shine_single_patient patient_tuple.0.get_id '' %}">{{ patient_tuple.0.last_name|title }}</a>
                                 {% else %}
                                     wtf
                                 {% endif %}
                             </td>
                             <td>
-                                {% if patient.first_name %}
-                                    <a href="{% url shine_single_patient patient.get_id '' %}">{{ patient.first_name|title }}</a>
+                                {% if patient_tuple.0.first_name %}
+                                    <a href="{% url shine_single_patient patient_tuple.0.get_id '' %}">{{ patient_tuple.0.first_name|title }}</a>
                                 {% endif %}
                             </td>
                             <td>
-                                {{ patient.gender|slice:":1"|title }}
+                                {{ patient_tuple.0.gender|slice:":1"|title }}
                             </td>
                             <td>
-                                {{ patient.age_int }}
+                                {{ patient_tuple.0.age_int }}
                             </td>
                             <td>
-                                Ward {{ patient.get_current_ward }} Bed {{ patient.get_current_bed }}
+                                Ward {{ patient_tuple.1.ward }} Bed {{ patient_tuple.1.bed }}
                             </td>
-                            <td>{{ patient.enrollment_date|date:"Y-m-d" }}</td>
+                            <td>{{ patient_tuple.1.enrollment_date|date:"Y-m-d" }}</td>
 
 
                             <td>
-                                {{ patient.get_last_action.1 }}
+                                {{ patient_tuple.1.last_encounter }}
                             </td>
                             <td>
-                                {{ patient.get_last_action.0|date:"Y-m-d" }}
+                                {{ patient_tuple.1.last_encounter_date|date:"Y-m-d" }}
                             </td>
                             <td class="mepi_status_matrix">
-                                {% get_status_matrix patient %}
+                                {% get_status_matrix patient_tuple %}
                             </td>
                         </tr>
                     {% endfor %}

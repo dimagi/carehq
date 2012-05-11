@@ -37,8 +37,6 @@ def render_lab_tuple(t):
         for k,v in t[1].items():
             ret.append(render_kv(k, v))
     else:
-        print "not dict k: %s" % t[0]
-        print "not dict v: %s" % t[1]
         ret.append(render_kv(t[0], t[1]))
     return "<table class='table'>%s</table>" % ''.join(ret)
 
@@ -142,27 +140,32 @@ def render_submission_fragment(xmlns, submissions):
 
 
 @register.simple_tag
-def get_status_matrix(patient):
-    cached_rendering = cache.get("patient_matrix_%s" % patient._id, None)
-    if cached_rendering is not None:
-        return cached_rendering
-
+def get_status_matrix(patient_tuple):
+    #cached_rendering = cache.get("patient_matrix_%s" % patient_tuple._id, None)
+    #if cached_rendering is not None:
+        #return cached_rendering
 
     context_dict = dict()
-    tally = patient.get_completed_tally
-    for tup in tally:
+    tally = patient_tuple[1].tally
+    #for k, v in tally.items():
+    for xmlns, displayname in xmlns_display_map.items():
         #(displayname, (True|False, instance))
-        displayname = tup[0]
-        status = tup[1][0]
-        instance = tup[1][1]
+        #status = v['status']
+
+        if tally.get(displayname, False):
+            status = tally[displayname]
+        else:
+            status = False
+
         if displayname == "Enrollment":
             context_dict['enrollment'] = "completed" if status else "missing"
         elif displayname == "Clinical Info":
             context_dict['clinical_info'] =  "completed" if status else "missing"
         elif displayname == "Lab Data":
-            submissions = patient._get_case_submissions(patient.latest_case)
-            lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
-            labs_dict = merge_labs(lab_submissions, as_dict=True)
+            #submissions = patient_tuple._get_case_submissions(patient_tuple.latest_case)
+            #lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
+            #labs_dict = merge_labs(lab_submissions, as_dict=True)
+            labs_dict = patient_tuple[1].labs_dict
             for k,v in labs_dict.items():
                 lab_status=False
                 if isinstance(v, str) or isinstance(v, unicode):
@@ -178,8 +181,8 @@ def get_status_matrix(patient):
         elif displayname == "Emergency Lab":
             #do check on positivity
             if status:
-                bottles = patient.get_elab_bottle_data()
-                if len(bottles) > 0:
+                culture_status = patient_tuple[1].culture_status
+                if culture_status == 'positive':
                     context_dict['emergency_lab'] = True
                     context_dict['is_positive'] = True
                 else:
@@ -203,5 +206,5 @@ def get_status_matrix(patient):
 
 
     rendering = t.render(Context(context_dict, autoescape=False))
-    cache.set("patient_matrix_%s" % patient._id, rendering, 172800)
+    # cache.set("patient_matrix_%s" % patient_tuple._id, rendering, 172800)
     return rendering

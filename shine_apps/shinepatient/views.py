@@ -50,10 +50,9 @@ class MepiPatientSingleView(PatientSingleView):
         if patient_edit:
             context['patient_form'] = SimplePatientForm(patient_edit, instance=pdoc)
 
-
-
         if view_mode == 'info':
             self.template_name = "shinepatient/shinepatient_info.html"
+            context['patient_tuple'] = (pdoc, pdoc.get_cached_object())
 
         if view_mode == 'files':
             self.template_name = "shinepatient/shinepatient_files.html"

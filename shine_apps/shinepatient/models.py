@@ -2,7 +2,7 @@ from datetime import datetime
 import pdb
 import random
 import simplejson
-from couchdbkit.ext.django.schema import  SchemaListProperty, Document
+from couchdbkit.ext.django.schema import  SchemaListProperty, Document, DateTimeProperty, IntegerProperty, DateProperty, BooleanProperty, DictProperty, ListProperty
 from django.core.files.base import ContentFile
 import isodate
 from casexml.apps.case.models import CommCareCase
@@ -22,15 +22,47 @@ couchdb_image_storage = CouchDBDocStorage(db_url=settings.COUCH_DATABASE)
 class Foo(Document):
     pass
 
+
+class ShinePatientReportCache(Document):
+    """
+    Due to the way in which the casexml is structured, and our need for reporting on status, it's becoming necessary
+    to make a separate cache document to efficiently store/retrieve things.  Even memcached queries are too slow because
+    i still try to do some walking of the data to see if it's stale or not, or i get too much data to serialize/deserialize.
+
+    Time to be more compact
+    """
+    case_id = StringProperty()
+    patient_doc_id = StringProperty()
+
+    active = BooleanProperty()
+
+    ward = StringProperty()
+    bed = StringProperty()
+
+    culture_status = StringProperty()
+    contamination = BooleanProperty()
+
+    hiv_status = StringProperty()
+    cd4_count = StringProperty()
+    enrollment_date = DateProperty()
+
+    labs_dict = DictProperty()
+
+    last_encounter = StringProperty()
+    last_encounter_date = DateTimeProperty()
+    last_encounter_by = StringProperty()
+
+    tally = DictProperty()
+
 class ShinePatient(BasePatient):
     """
     A stub implementation of the Patient model
     """
     external_id = StringProperty() #patient_id for human readable
-
     cases = StringListProperty()
-
     aux_media = SchemaListProperty(AuxMedia)
+    cache_doc_id = StringProperty() # add on cache id for the document with all the computed values for web reports
+
 
     @property
     def clinical_images(self):
@@ -52,8 +84,6 @@ class ShinePatient(BasePatient):
         ret = []
 
         #step 1, check the case's submissions
-
-
         for submit in attach_submissions:
 
             xmlns = submit['value'][0]
@@ -90,7 +120,7 @@ class ShinePatient(BasePatient):
                     elif submission.form['agar_photos'].get('lowenstein-jensen', None) == attachment_filename:
                         image_context = 'Lowenstein-Jensen'
             elif xmlns == STR_MEPI_LAB_THREE_FORM:
-                #vitek_photo
+            #vitek_photo
                 if submission.form.get('vitek_photo',None) == attachment_filename:
                     image_context = 'Vitek'
                 #api_strip_photo
@@ -120,6 +150,117 @@ class ShinePatient(BasePatient):
             formname = xmlns_display_map[s['xmlns']].replace(' ','_').lower()
         self._cached_submits=True
 
+    def compute_cache(self):
+        case = self.latest_case
+        submissions = self._get_case_submissions(case)
+        cache_doc = ShinePatientReportCache.get(self.cache_doc_id)
+
+        cache_doc.ward = case.ward
+        cache_doc.bed = case.bed
+        cache_doc.sex = self.gender
+
+        cache_doc.enrollment_date = case.opened_on.date()
+
+        #compute last_encounter stuff
+        last_submission = submissions[-1]
+        last_submission_id = last_submission['_id']
+        last_xmlns = last_submission['xmlns']
+        recv = isodate.parse_datetime(last_submission['received_on'])
+        cache_doc.last_encounter = xmlns_display_map[last_xmlns]
+        cache_doc.last_encounter_date = recv
+        cache_doc.last_encounter_by = last_submission['form']['Meta']['username']
+
+
+        #cd4 count, hiv status
+        seen_hiv = False
+        seen_cd4 = False
+        elab_submissions = []
+
+        #for tally
+        completed = dict()
+        done_keys = xmlns_display_map.keys()
+        for submit in submissions:
+            if not seen_hiv and submit['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
+                if submit['form'].get('hiv_test', '') == "yes":
+                    cache_doc.hiv_status = "yes"
+                    seen_hiv = True
+
+            if not seen_hiv and submit['xmlns'] == STR_MEPI_LABDATA_FORM:
+                if submit['form'].has_key('hiv'):
+                    hiv = submit['form']['hiv']
+                    cache_doc.hiv_status = hiv
+                    seen_hiv = True
+
+            if not seen_cd4 and submit['xmlns'] == STR_MEPI_LABDATA_FORM:
+               if submit['form'].has_key('hiv_followup'):
+                    if submit['form']['hiv_followup']['cdfour'] != '':
+                        cd4 = submit['form']['hiv_followup']['cdfour']
+                        cache_doc.cd4_count = cd4
+                        seen_cd4 = True
+            if submit['xmlns'] == STR_MEPI_LAB_ONE_FORM:
+                elab_submissions.append(submit)
+
+            #tally calculation
+            xmlns = submit['xmlns']
+            displayname = xmlns_display_map[xmlns]
+            if xmlns in done_keys:
+                completed[displayname] = {'status': True, 'instance': True}
+                done_keys.remove(submit['xmlns'])
+
+
+
+        #labs dict
+        lab_submissions = filter(lambda x: x['xmlns'] == STR_MEPI_LABDATA_FORM, submissions)
+        cache_doc.labs_dict = merge_labs(lab_submissions, as_dict=True)
+
+        #culture_status positive | negative
+        sorted_labs = sorted(elab_submissions, key=lambda x: x['received_on'], reverse=True)
+        if len(sorted_labs) == 0:
+            cache_doc.culture_status = "[No Data]"
+        else:
+            latest_lab = sorted_labs[0]
+            bottle_string = latest_lab['form'].get('positive_bottles', '')
+            positives = bottle_string.split(' ')
+            if len(positives) > 0:
+                cache_doc.culture_status = "positive"
+            else:
+                cache_doc.culture_status = "negative"
+
+        #active
+        cache_doc.active = not case.closed
+        #contamination
+        if hasattr(case, 'contamination'):
+            cache_doc.contamination = getattr(case, 'contamination', '') == 'yes'
+        else:
+            cache_doc.contamination = False
+
+
+        #tally calculation
+        tally = []
+        #for n in form_sequence:
+            #status = completed.get(n, [False, None])
+            #tally.append([n,status])
+        cache_doc.tally = completed
+
+        cache_doc.save()
+        return cache_doc
+
+    def get_cached_object(self):
+        """
+        New cached document to store all the precomputed stuff for this patient.
+        """
+        if self.cache_doc_id is None:
+            cache_doc = ShinePatientReportCache()
+            cache_doc.patient_doc_id = self._id
+            cache_doc.save()
+            self.cache_doc_id = cache_doc._id
+            self.save()
+            return self.compute_cache()
+
+        else:
+            cache_doc = ShinePatientReportCache.get(self.cache_doc_id)
+            return cache_doc
+
     def _get_case_submissions(self, case, wrap=False):
         attrib = '_case_submissions_%s' % case._id
         db = XFormInstance.get_db()
@@ -137,30 +278,6 @@ class ShinePatient(BasePatient):
 
         else:
             return submissions
-
-
-#    def foo(self):
-#        #next, do a memcached lookup
-#        if hasattr(self, '_couchdoc') and self._couchdoc != None:
-#            return self._couchdoc
-#
-#        couchjson = cache.get('%s_couchdoc' % (self.id), None)
-#        if couchjson == None:
-#            try:
-#                self._couchdoc = BasePatient.get_typed_from_id(self.doc_id)
-#                couchjson = simplejson.dumps(self._couchdoc.to_json())
-#                try:
-#                    cache.set('%s_couchdoc' % (self.id), couchjson)
-#                except:
-#                    logging.error("Error, caching framework unavailable")
-#            except Exception, ex:
-#                self._couchdoc = None
-#        else:
-#            self._couchdoc = BasePatient.get_typed_from_dict(simplejson.loads(couchjson))
-#
-#        #        if self._couchdoc == None:
-#        #            raise PatientIntegrityException("Error, unable to instantiate the patient document object")
-#        return self._couchdoc
 
 
     def _do_get_latest_case(self, invalidate=False):
@@ -238,9 +355,12 @@ class ShinePatient(BasePatient):
 
     @property
     def get_hiv_status(self):
+        """
+        Return HIV positive/negative status
+        """
         case = self.latest_case
         submissions = self._get_case_submissions(case)
-        hiv ="No"
+        hiv ="no"
         for s in submissions:
             if s['xmlns'] == STR_MEPI_ENROLLMENT_FORM:
                 if s['form'].get('hiv_test', '') == "yes":
@@ -260,7 +380,6 @@ class ShinePatient(BasePatient):
             return datetime.mindate
         else:
             return cases[0].modified_on
-
 
 
     def get_last_action(self):
