@@ -41,6 +41,8 @@ def get_regimen_code_arr(str_regimen):
     should return an array of day slot indices.
     """
 
+    if str_regimen is None or str_regimen == '' or str_regimen == 'None':
+        return []
 
 
     #legacy handling
@@ -59,6 +61,7 @@ def get_regimen_code_arr(str_regimen):
     elif str_regimen.lower() == '':
         return []
 
+    #newer handling, a split string
     splits = str_regimen.split(',')
     ret = []
     for x in splits:
@@ -66,7 +69,7 @@ def get_regimen_code_arr(str_regimen):
             ret.append(DAY_SLOTS_BY_TIME[x])
         else:
             logging.error("value error, the regimen string is incorrect for the given patient, returning blank")
-            return []
+            ret = []
     return ret
 
 

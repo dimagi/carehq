@@ -585,6 +585,10 @@ class PactPatient(BasePatient):
                         if len(drug_arr) >= max_total:
                             #we've seen enough to meet the total doses
                             break
+                if len(drug_arr) < max_total:
+                    delta = max_total - len(drug_arr)
+                    for x in range(0, delta):
+                        drug_arr.append(["unchecked", "pillbox", '', -1])
                 ret.append(drug_arr)
             return ret
 
@@ -622,7 +626,7 @@ class PactPatient(BasePatient):
             return day_arr
 
         def get_empty(n):
-            return [["unchecked", "pillbox"] for x in range(n)]
+            return [["unchecked", "pillbox", '', ''] for x in range(n)]
 
 
         #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
@@ -652,7 +656,6 @@ class PactPatient(BasePatient):
         try:
             art_arr = get_regimen_code_arr(self.art_regimen.lower())
             art_num = len(art_arr)
-
         except:
             art_num = 0
             art_arr = []
@@ -870,19 +873,22 @@ class PactPatient(BasePatient):
         update_ret = {}
         case = CommCareCase.get(self.case_id)
         for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
-            code_arr = get_regimen_code_arr(self.art_regimen)
+            if prop_fmt[4] == 'a':
+                code_arr = get_regimen_code_arr(self.art_regimen)
+            elif prop_fmt[4] == 'n':
+                 code_arr = get_regimen_code_arr(self.non_art_regimen)
             digit_strings = ["zero", 'one', 'two', 'three','four']
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
-                if hasattr(case, prop_prop):
-                    prop_val = getattr(case, prop_prop, None)
-                else:
-                    prop_val = ''
+                #always get it from the artregimen properties of patient
+#                if hasattr(case, prop_prop):
+#                    prop_val = getattr(case, prop_prop, None)
+#                else:
+#                    prop_val = ''
                 if x > len(code_arr):
                     update_ret[prop_prop] = ''
                 else:
-                    if str(code_arr[x-1]) != prop_val:
-                        update_ret[prop_prop] = str(code_arr[x-1])
+                    update_ret[prop_prop] = str(code_arr[x-1])
         return update_ret
 
     def get_ghetto_regimen_xml(self, invalidate=False):
