@@ -1,12 +1,13 @@
 import logging
 import pdb
 import random
-from couchdbkit.ext.django.schema import Document, BooleanProperty
+from couchdbkit.ext.django.schema import Document, BooleanProperty, StringProperty, DocumentSchema, IntegerProperty, DateTimeProperty
 from datetime import datetime
 from carehqapp.signals import get_assigning_actor
 from clinical_shared.manager import patient
 from couchforms.models import XFormInstance
 from lxml import etree
+from dimagi.utils import make_time
 from issuetracker import issue_constants
 from issuetracker.models.issuecore import ExternalIssueData, IssueCategory, Issue
 from patient.models import BasePatient, CarehqPatient
@@ -14,8 +15,50 @@ import settings
 import base64
 import uuid
 
-class UsabilitySurvey(Document):
-    pass
+LIKERT_CHOICES = (
+    (None, '- - -'),
+    (1, '1 - Disagree Strongly'),
+    (2, '2 - Disagree Moderately'),
+    (3, '3 - Disagree Slightly'),
+    (4, '4 - Undecided'),
+    (5, '5 - Agree Slightly'),
+    (6, '6 - Agree Moderately'),
+    (7, '7 - Agree Strongly'),
+#    (1, '1 - Disagree Strongly'),
+#    (2, '2'),
+#    (3, '3'),
+#    (4, '4 - Undecided'),
+#    (5, '5'),
+#    (6, '6'),
+#    (7, '7 - Agree Strongly'),
+    )
+
+SURVEY_CONTEXT = (
+    ('caregiver_midpoint', 'Caregiver Midpoint'),
+    ('caregiver_endpoint', 'Caregiver Endpoint'),
+    ('patient_endpoint', 'Patient Endpoint'),
+
+    )
+
+class UsabilitySurvey(DocumentSchema):
+    patient_doc_id = StringProperty(required=True)
+    user = StringProperty(required=True)
+    survey_date = DateTimeProperty(default=make_time)
+    survey_context = StringProperty(choices=SURVEY_CONTEXT, required=True)
+    question_one = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_two = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_three = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_four = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_five = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_six = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_seven = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_eight = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_nine = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_ten = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_eleven = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+    question_twelve = IntegerProperty(choices=LIKERT_CHOICES, required=True)
+
+
 
 
 def get_threshold_category():

@@ -325,6 +325,16 @@ class CarehqPatientSingleView(PatientSingleView):
         if view_mode == 'careplan':
             self.template_name = "carehqapp/patient/carehq_patient_careplan.html"
 
+        if view_mode == 'surveys':
+            self.template_name = "carehqapp/patient/carehq_patient_surveys.html"
+            if hasattr(context['patient_doc'], 'surveys'):
+                surveys = getattr(context['patient_doc'], 'surveys')
+            else:
+                surveys = {}
+            context['surveys'] = surveys
+
+
+
         if view_mode == 'files':
             self.template_name = "carehqapp/patient/carehq_patient_files.html"
 

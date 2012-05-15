@@ -1,0 +1,24 @@
+{% extends base_template %}
+{% load i18n %}
+{% load carehq_tags %}
+{% block title %}{% trans "CareHQ :: Usability Survey" %}{% endblock %}
+{% block extrahead %}
+{% endblock %}
+{% block page_crumbs %}
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>{{ survey_title }}</h1>
+{% endblock %}
+{% block content %}
+    <div class="span12">
+        <p>
+        {{ survey_preamble }}
+        </p>
+        <form action="" method="POST">
+            <table class="table table-bordered table-striped">
+                {{ form.as_table }}
+            </table>
+            <input type="submit" value="Submit"/>
+        </form>
+    </div>
+{% endblock %}

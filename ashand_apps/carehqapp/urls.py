@@ -28,6 +28,10 @@ urlpatterns = patterns('carehqapp.views',
         url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/files$', 'patient_views.upload_patient_attachment', name='pt_manage_files'),
         url(r'^home/mycare/', CarehqPatientSingleView.as_view(template_name='carehqapp/carehq_patient_base.html'), name='patient_home'),
 
+        url(r'^surveys/(?P<patient_guid>[0-9a-fA-Z]{25,32})/caregiver/midpoint', 'surveys.caregiver_midpoint', name='survey_caregiver_midpoint'),
+        url(r'^surveys/(?P<patient_guid>[0-9a-fA-Z]{25,32})/caregiver/endpoint', 'surveys.caregiver_endpoint', name='survey_caregiver_endpoint'),
+        url(r'^surveys/(?P<patient_guid>[0-9a-fA-Z]{25,32})/patient/endpoint', 'surveys.patient_endpoint', name='survey_patient_endpoint'),
+
 
         url(r'^network/$', 'network_views.my_network', name='my_network'),
         url(r'^network/mypatients/$', 'network_views.my_patients', name='my_patients'),
