@@ -31,8 +31,24 @@
                         <td></td>
                     {% else %}
                         <td><span class="label label-important">Incomplete</span></td>
-                        <td></td>
-                        <td><a href="{% url survey_caregiver_midpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a></td>
+                        <td>
+                            {% if days_since_install %}
+                                {{ days_since_install }} days since install
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if days_since_install %}
+                                {% if days_since_install >= 12 %}
+                                    {% if days_since_install <= 16 %}
+                                        <a href="{% url survey_caregiver_midpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
+                                    {% else %}
+                                        <small>Survey window for midpoint expired</small>
+                                    {% endif %}
+                                {% else %}
+                                    <small>It's not quite half way yet</small>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                 </tr>
@@ -45,22 +61,19 @@
                     {% else %}
                         <td>
                             <span class="label label-important">Incomplete</span>
-                            {% if days_since_install %}
-                            <br>
-                            {{ days_since_install }} days since install
-                            {% endif %}
-
                         </td>
-                        <td></td>
                         <td>
-
-                            {% if days_since_install %}
-                                {% if days_since_install >= 12 and days_since_install <= 16 %}
-                                    <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
-                                {% else %}
-                                    <small>Survey window for midpoint expired</small>
-                                {% endif %}
-
+                            {% if days_since_pickup %}
+                                {{ days_since_pickup }} days since pickup
+                            {% else %}
+                                Device is still deployed
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if patient_doc.pickup_date %}
+                                <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
+                            {% else %}
+                                Device is still deployed
                             {% endif %}
                         </td>
                     {% endif %}
@@ -75,12 +88,13 @@
                     {% else %}
                         <td>
                             <span class="label label-important">Incomplete</span>
+
+                        </td>
+                        <td>
                             {% if days_since_pickup %}
-                                <br>
                                 {{ days_since_pickup }} days since pickup
                             {% endif %}
                         </td>
-                        <td></td>
                         <td>
                             {% if patient_doc.pickup_date %}
                                 <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
