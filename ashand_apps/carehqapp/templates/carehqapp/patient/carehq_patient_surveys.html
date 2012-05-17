@@ -71,7 +71,7 @@
                         </td>
                         <td>
                             {% if patient_doc.pickup_date %}
-                                <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
+                                <a href="{% url survey_caregiver_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
                             {% else %}
                                 Device is still deployed
                             {% endif %}
