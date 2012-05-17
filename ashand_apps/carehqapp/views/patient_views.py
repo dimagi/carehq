@@ -17,7 +17,7 @@ from issuetracker.issue_constants import ISSUE_STATE_CLOSED, ISSUE_STATE_OPEN
 from issuetracker.models.issuecore import Issue
 from patient.models import BasePatient
 from patient.views import PatientSingleView
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from clinical_shared.decorators import actor_required
 
@@ -73,7 +73,9 @@ class SubmissionCalendar(HTMLCalendar):
 
 
     def formatday(self, day, weekday):
+        INSTALL_TAG = '<span class="label label-success">Installed</span>'
         if day != 0:
+            body = ['<br>']
             cssclass = self.cssclasses[weekday]
             this_day = date(self.year, self.month, day)
             if date.today() == this_day:
@@ -84,27 +86,35 @@ class SubmissionCalendar(HTMLCalendar):
                 future=False
 
 
-            if this_day == self.django_patient.couchdoc.install_date:
-                return self.day_cell('future', '%d <br><span class="label label-success">Install</span>' % day)
+            if self.django_patient.couchdoc.install_date is not None:
+                if this_day == self.django_patient.couchdoc.install_date:
+                    if day in self.submissions:
+                        body.append(INSTALL_TAG)
+                    else:
+                        return self.day_cell('future', "%d <br>%s" % (day, INSTALL_TAG))
 
-            if this_day < self.django_patient.couchdoc.install_date:
+                if this_day < self.django_patient.couchdoc.install_date:
+                    return self.day_cell('future', "%d" % day)
+            else:
                 return self.day_cell('future', "%d" % day)
 
-            if this_day > self.django_patient.couchdoc.pickup_date:
-                return self.day_cell('future', "%d" % day)
 
-            if this_day == self.django_patient.couchdoc.pickup_date:
-                return self.day_cell('future', '%d <br><span class="label label-important">Pickup</span>' % day)
+            if self.django_patient.couchdoc.pickup_date is not None:
+                if this_day > self.django_patient.couchdoc.pickup_date:
+                    return self.day_cell('future', "%d" % day)
+
+                if this_day == self.django_patient.couchdoc.pickup_date:
+                    return self.day_cell('future', '%d <br><span class="label label-important">Pickup Date</span>' % day)
+            else:
+                if self.django_patient.couchdoc.install_date is not None:
+                    if this_day == self.django_patient.couchdoc.install_date + timedelta(days=28):
+                        return self.day_cell('future', '%d <br><span class="label">Scheduled Pickup</span>' % day)
+                    if this_day > self.django_patient.couchdoc.install_date + timedelta(days=28):
+                        return self.day_cell('future', "%d" % day)
 
 
-
-
-
-
-
-            if day in self.submissions:
+            if day in self.submissions: #s day a key of submissions
                 cssclass += ' filled'
-                body = ['<br>']
 
                 #received
                 day_submissions = sorted(self.submissions[day], key=lambda x: x.get_session_time())
