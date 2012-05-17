@@ -43,11 +43,29 @@
                         <td>{{ surveys.caregiver_endpoint.survey_date|date }}</td>
                         <td></td>
                     {% else %}
-                        <td><span class="label label-important">Incomplete</span></td>
+                        <td>
+                            <span class="label label-important">Incomplete</span>
+                            {% if days_since_install %}
+                            <br>
+                            {{ days_since_install }} days since install
+                            {% endif %}
+
+                        </td>
                         <td></td>
-                        <td><a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a></td>
+                        <td>
+
+                            {% if days_since_install %}
+                                {% if days_since_install >= 12 and days_since_install <= 16 %}
+                                    <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
+                                {% else %}
+                                    <small>Survey window for midpoint expired</small>
+                                {% endif %}
+
+                            {% endif %}
+                        </td>
                     {% endif %}
                 </tr>
+                {% if request.current_actor.is_provider %}
                 <tr>
                     <td>3: Patient Endpoint</td>
                     {% if surveys.patient_endpoint %}
@@ -55,11 +73,25 @@
                         <td>{{ surveys.patient_endpoint.survey_date|date }}</td>
                         <td></td>
                     {% else %}
-                        <td><span class="label label-important">Incomplete</span></td>
+                        <td>
+                            <span class="label label-important">Incomplete</span>
+                            {% if days_since_pickup %}
+                                <br>
+                                {{ days_since_pickup }} days since pickup
+                            {% endif %}
+                        </td>
                         <td></td>
-                        <td><a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a></td>
+                        <td>
+                            {% if patient_doc.pickup_date %}
+                                <a href="{% url survey_patient_endpoint patient_doc.get_id %}" class="btn btn-primary">Start Survey</a>
+                            {% else %}
+                                Device is still deployed
+                            {% endif %}
+
+                        </td>
                     {% endif %}
                 </tr>
+                {% endif %}
             </table>
         </div>
     </div>

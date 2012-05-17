@@ -10,15 +10,15 @@
     <h1>{{ survey_title }}</h1>
 {% endblock %}
 {% block content %}
-    <div class="span12">
-        <p>
+        <div class="well">
+        <span style="font-size: 1.25em">
         {{ survey_preamble }}
-        </p>
+        </span>
+        </div>
         <form action="" method="POST">
             <table class="table table-bordered table-striped">
                 {{ form.as_table }}
             </table>
             <input type="submit" value="Submit"/>
         </form>
-    </div>
 {% endblock %}

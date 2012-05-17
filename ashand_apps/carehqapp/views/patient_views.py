@@ -83,6 +83,25 @@ class SubmissionCalendar(HTMLCalendar):
             else:
                 future=False
 
+
+            if this_day == self.django_patient.couchdoc.install_date:
+                return self.day_cell('future', '%d <br><span class="label label-success">Install</span>' % day)
+
+            if this_day < self.django_patient.couchdoc.install_date:
+                return self.day_cell('future', "%d" % day)
+
+            if this_day > self.django_patient.couchdoc.pickup_date:
+                return self.day_cell('future', "%d" % day)
+
+            if this_day == self.django_patient.couchdoc.pickup_date:
+                return self.day_cell('future', '%d <br><span class="label label-important">Pickup</span>' % day)
+
+
+
+
+
+
+
             if day in self.submissions:
                 cssclass += ' filled'
                 body = ['<br>']
@@ -332,6 +351,11 @@ class CarehqPatientSingleView(PatientSingleView):
             else:
                 surveys = {}
             context['surveys'] = surveys
+            if pdoc.install_date is not None:
+                context['days_since_install'] = (datetime.utcnow().date() -pdoc.install_date).days
+            if pdoc.pickup_date is not None:
+                context['days_since_pickup'] = (datetime.utcnow().date() - pdoc.pickup_date).days
+
 
 
 
