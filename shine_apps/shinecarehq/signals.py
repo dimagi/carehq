@@ -8,6 +8,8 @@ def process_patient_submission(sender, xform, **kwargs):
         try:
             case_id = xform['form']['case']['case_id']
             pts = ShinePatient.view('shinepatient/patient_cases_all', key=case_id, include_docs=True).all()
+            for pt in pts:
+                pt.compute_cache()
             if len(pts) == 1:
                 #pts[0]._do_get_latest_case(invalidate=True)
                 cache.delete('shinepatient_latest_case_%s' % pts[0]._id)

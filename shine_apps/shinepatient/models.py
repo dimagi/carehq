@@ -219,12 +219,29 @@ class ShinePatient(BasePatient):
             cache_doc.culture_status = "[No Data]"
         else:
             latest_lab = sorted_labs[0]
-            bottle_string = latest_lab['form'].get('positive_bottles', '')
-            positives = bottle_string.split(' ')
-            if len(positives) > 0:
-                cache_doc.culture_status = "positive"
+
+            if latest_lab['form'].get('result', None) is None:
+                #where there's no explicit result field
+
+                bottle_string = latest_lab['form'].get('positive_bottles', '')
+                if bottle_string == '':
+                    cache_doc.culture_status = "negative"
+                else:
+                    cache_doc.culture_status = 'positive'
+
+
+#                positives = bottle_string.split(' ')
+#
+#                if len(positives) > 0:
+#                    cache_doc.culture_status = "positive"
+#                else:
             else:
-                cache_doc.culture_status = "negative"
+                #where there is an explicit result field
+                if latest_lab['form']['result'] == 'negative':
+                    cache_doc.culture_status = 'negative'
+                elif latest_lab['form']['result'] == 'positive':
+                    cache_doc.culture_status = 'positive'
+
 
         #active
         cache_doc.active = not case.closed
