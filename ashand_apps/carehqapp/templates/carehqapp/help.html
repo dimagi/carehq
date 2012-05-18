@@ -1,0 +1,60 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{% trans "CareHQ Help" %}{% endblock %}
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Help</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h1>About ASHand/Help</h1>
+{% endblock page_header %}
+
+{% block content %}
+    <div class="row">
+    {# Pills, patineet view, issue view, issues, etc. #}
+    <div class="span8">
+            <h4>For the Caregiver</h4>
+
+            <p>Thank you for participating in our study!</p>
+
+            <p>Your participation will help in our efforts to develop a better communication tool for caregivers
+            like you helping patients receive their care.</p>
+
+            <p>
+            The patient you are caring for will have received a monitoring device installed in their home.
+            This device will ask series of questions asking they are feeling. These questions are typical
+            side effect questions related to cancer treatments they have taken in the past. They will be
+            asked these same questions every week day (Monday to Friday) at the specified time of their
+            request. The total time for their using this system will be 4 weeks since the time of installation.
+            Note, the questions your patient will be answering should only be answered as part of a
+            simulation. </p>
+
+            <p>
+            If they are truly feeling sick, they should contact their health provider immediately.
+            We have encouraged the patient to use the system to simulate a time in which they were
+            undergoing treatment, and were suspect to the side effects being asked. Your participation with
+            using the website is to give you a chance to track your patient’s day to day feeling using our
+            electronic system.
+            </p>
+            <p>
+            All the answers provided by your patient will be sent to a website (<a href="https://ashand.dimagi.com">https://ashand.dimagi.com</a>)
+            where you will have an account setup. The answers that your patient will give will trigger
+            electronic issues that the BMC careteam will need to address on the website. These issues
+            will also be made available for you to view as well via the website. The BMC careteam will be
+            respond to the issues generated to demonstrate how it would be in a real scenario.
+            There will be two surveys given during the 4 week time. One at 2 weeks time and another at
+            4 weeks time to assess your impressions of the system. You will receive notification during
+            those times to fill out these surveys. You also may interact with the system however you are
+            comfortable with during the 4 weeks of the study.
+            </p>
+            <p>
+            If you have any questions regarding the functioning of the system, do not hesitate to contact me,
+            Dan, the study coordinator. I can be reached via email (<a href="mailto:dmyung@dimagi.com">dmyung@dimagi.com</a>) or phone at 617-
+            863-0678. Thanks again for your participation!
+            </p>
+    </div>
+</div>
+{% endblock %}

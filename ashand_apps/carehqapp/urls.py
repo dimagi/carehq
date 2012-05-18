@@ -1,11 +1,13 @@
 from django.conf.urls.defaults import *
 from carehqapp.views.patient_views import CarehqPatientSingleView
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('carehqapp.views',
         #url(r'^$', 'home.home_view', name='home'),
 
 
         (r'^uptime$', 'pingdom.uptime'),
+        url(r'^help/$',   direct_to_template, {'template': 'carehqapp/help.html'}, name="carehq_help"),
 
 
 
