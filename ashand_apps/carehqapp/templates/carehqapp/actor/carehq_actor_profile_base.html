@@ -64,7 +64,7 @@
 {% block actor-tab-controller %}
 {#    <li {% if view_mode == "info" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id '' %}">{% trans "Info" %}</a></li>#}
     <li {% if view_mode == "networks" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id 'networks' %}">{% trans "Care Networks" %}</a></li>
-    <li {% if view_mode == "issues" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id 'issues' %}">{% trans "Issues" %}</a></li>
+{#    <li {% if view_mode == "issues" %}class="active"{% endif %}><a href="{% url view_actor actor_doc.get_id 'issues' %}">{% trans "Issues" %}</a></li>#}
 {% endblock actor-tab-controller %}
 
 {% block actor-tab-container %}
