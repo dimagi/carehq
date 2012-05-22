@@ -84,6 +84,7 @@ urlpatterns = patterns ('',
 
 
         url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'carehqapp.views.actors.view_actor', name='view_actor'),
+        url(r'^network/$', 'carehqapp.views.network_views.my_network', name='my_network'),
         url(r'^patient/api/careteam/actor/rm$', 'carehqapp.views.actors.rm_actor_from_patient', name='rm_actor_from_patient'),
         url(r'^patient/api/careteam/actor/add$', 'carehqapp.views.actors.do_add_actor_to_patient', name='link_actor_to_patient'),
         url(r'^actor/api/rm$', 'carehqapp.views.actors.rm_actor', name='rm_ashand_actor'),

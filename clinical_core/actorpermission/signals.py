@@ -38,6 +38,12 @@ def set_actor_props(sender, instance, *args, **kwargs):
             setattr(instance, 'is_caregiver',True)
         else:
             setattr(instance, 'is_caregiver', False)
+    else:
+        setattr(instance, 'is_patient', False)
+        setattr(instance, 'is_caregiver', False)
+        setattr(instance, 'is_provider', False)
+
+
 post_init.connect(set_actor_props, sender=Actor)
 
 
