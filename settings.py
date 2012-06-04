@@ -166,7 +166,7 @@ INSTALLED_APPS = (
 
     'uni_form',
     'smartagent',
-    'south',
+    #'south',
     'registration',
     #end third party apps
 
@@ -278,3 +278,52 @@ SMART_AGENT_SETTINGS = {
 
 XFORMS_POST_URL = "http://%s/%s/_design/couchforms/_update/xform/" % (COUCH_SERVER_ROOT, COUCH_DATABASE_NAME)
 COUCHDB_DATABASES = [make_couchdb_tuple(app_label, COUCH_DATABASE) for app_label in COUCHDB_APPS ]
+
+DJANGO_LOG_FILE = "%s/%s" % (filepath, "carehq.django.log")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file' : {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': DJANGO_LOG_FILE
+        },
+        'couchlog':{
+            'level':'WARNING',
+            'class':'couchlog.handlers.CouchHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers':['console', 'file', 'couchlog'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        }
+    }
+}
+
