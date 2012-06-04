@@ -13,6 +13,7 @@ from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import make_random_cphone, make_random_caddress
 from couchforms.models import XFormInstance
 from casexml.apps.case.models import CommCareCase
+from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.models import PactPatient
 from pactpatient.views import new_patient
 from patient.models import Patient
@@ -25,6 +26,9 @@ from permissions.tests import RequestFactory
 from tenant.models import Tenant
 
 class patientCaseUpdateTests(CareHQClinicalTestCase):
+    """
+    Tests for existing hacked OTA restore case
+    """
     NUM_PHONES = 5
     NUM_ADDRESSES = 2
 
@@ -40,6 +44,16 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         self._createUser()
         self.client = Client()
 
+
+    def _doOTARestore(self):
+
+        client = DigestClient()
+        client.set_authorization(self.user.username, 'mockmock', 'Digest')
+        restore_payload = client.get('/provider/caselist')
+        return restore_payload
+
+
+
     def testOTARestore(self):
         """
         For a given patient created, ensure that it shows up in the OTA restore.
@@ -51,15 +65,12 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         """
         patient_doc = self.test0CreatePatient()
 
-        client = DigestClient()
-        client.set_authorization(self.user.username, 'mockmock', 'Digest')
-        restore_payload = client.get('/provider/caselist')
+        restore_payload = self._doOTARestore()
 
         case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
         case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
 
         casedoc = CommCareCase.get(patient_doc.case_id)
-
         self.assertEqual(case_id_xml, casedoc._id)
 
     def test3PushPhonesIteratively(self):
@@ -227,8 +238,8 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                                                      'birthdate': '1/1/2000',
                                                      'pact_id': 'mockmock',
                                                      'arm': 'DOT',
-                                                     'art_regimen': 'QD',
-                                                     'non_art_regimen': 'BID',
+                                                     'art_regimen': 'morning',
+                                                     'non_art_regimen': 'morning,evening',
                                                      'primary_hp':  random.choice(chws).django_actor.user.username,
                                                      'patient_id': uuid.uuid4().hex,
                                                      'race': 'asian',
@@ -239,6 +250,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                                                      'preferred_language': 'english',
                                                      })
 
+        print response
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
 
 #        rf = RequestFactory()
@@ -266,5 +278,37 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
 
 
         #setup phone numbers using old style
+
+    def testPatientRegimenChange(self):
+        """
+        For a given patient created, ensure that it shows up in the OTA restore.
+        Ensure also that changes in phone and addresses also show up in OTA restore.
+        This test also uses django_digest to authenticate to the OTA restore URL.
+
+        Verify all the phone and address information
+        """
+        patient_doc = self.test0CreatePatient()
+
+        restore_payload = self._doOTARestore()
+        print restore_payload
+
+        form = PactPatientForm('regimen', instance=patient_doc, data={'art_regimen':'morning,noon,evening','non_art_regimen':'evening'})
+
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+        response = self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}),
+            form.data
+        )
+
+        print "########## posting changed regimen"
+
+        restore_payload2 = self._doOTARestore()
+        print restore_payload2
+
+        case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
+        case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
+
+        casedoc = CommCareCase.get(patient_doc.case_id)
+        self.assertEqual(case_id_xml, casedoc._id)
+        pass
 
 

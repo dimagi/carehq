@@ -55,7 +55,7 @@ class CObservation(Document):
     day_index = IntegerProperty()
 
     day_note = StringProperty() #if there's something for that particular day, then it'll be here
-    day_slot = StringProperty() #new addition, if there's a slot for the day label, then retain it
+    day_slot = IntegerProperty() #new addition, if there's a slot for the day label, then retain it
     note = StringProperty() #this is for the overall note for that submission, will exist on the anchor date
 
 

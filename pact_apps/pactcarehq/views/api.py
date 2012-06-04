@@ -326,6 +326,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
+            print request.POST
             old_arm = pdoc.arm
             old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
@@ -342,7 +343,8 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 close_case = False
 
-            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=make_time(), close=close_case, date_modified='2011-08-24T07:42:49.473-07') #make_time())
+            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=case.opened_on, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            #'2011-08-24T07:42:49.473-07') #make_time())
 
             def isodate_string(date):
                 if date: return isodate.datetime_isoformat(date) + "Z"
@@ -359,8 +361,6 @@ def ajax_post_patient_form(request, patient_guid, form_name):
                 form.append(block)
             xform = ElementTree.tostring(form)
             xform_posted = post_xform_to_couch(ElementTree.tostring(form))
-            print xform
-            print xform_posted
             process_cases(sender="pactapi", xform=xform_posted)
             return resp
         else:

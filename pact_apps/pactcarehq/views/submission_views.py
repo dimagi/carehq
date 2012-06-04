@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import logging
 import isodate
+import time
 from couchforms.models import XFormInstance
 from couchforms.util import post_xform_to_couch
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
@@ -240,6 +241,10 @@ def show_submission(request, doc_id, template_name="pactcarehq/view_submission.h
     form_data = xform['form']
     context['form_type'] = form_xmlns_to_names.get(xform.xmlns, "Unknown")
     context['xform'] = xform
+
+    if context['form_type'] == "DOTS":
+        anchor_date = datetime(*time.strptime(xform.pact_data['dots']['anchor'], "%d %b %Y %H:%M:%S %Z")[:3])
+        #for day_arr in xform.pact_data['dots']
 
     comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
     comment_arr = []

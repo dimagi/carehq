@@ -551,7 +551,8 @@ class PactPatient(BasePatient):
 
         def get_day_elements_new(day_data):
             ret = []
-            for drug_type in day_data.keys():
+            #for drug_type in day_data.keys():
+            for drug_type in ['NONART','ART']:
                 drug_arr = []
                 max_total = 0
                 if drug_type == "ART":
@@ -912,16 +913,16 @@ class PactPatient(BasePatient):
             art_keys = filter(lambda x: x.startswith('dot_a_'), labels.keys())
             non_art_keys = filter(lambda x: x.startswith('dot_n_'), labels.keys())
 
-            art_labels = ''.join(["<%s>%s</%s>" % (k, labels[k], k) for k in art_keys])
-            non_art_labels = ''.join(["<%s>%s</%s>" % (k, labels[k], k) for k in non_art_keys])
+            art_labels = ''.join(["\t<%s>%s</%s>\n" % (k, labels[k], k) for k in art_keys])
+            non_art_labels = ''.join(["\t<%s>%s</%s>\n" % (k, labels[k], k) for k in non_art_keys])
 
             dots_data = self.get_dots_data()
             ret = ''
-            ret += "<artregimen>%s</artregimen>" % art_regimen
+            ret += "\n<artregimen>%s</artregimen>\n" % art_regimen
             ret += art_labels
-            ret += "<nonartregimen>%s</nonartregimen>" % nonart_regimen
+            ret += "\n<nonartregimen>%s</nonartregimen>\n" % nonart_regimen
             ret += non_art_labels
-            ret += "<dots>%s</dots>" % simplejson.dumps(dots_data)
+            ret += "\n<dots>%s</dots>\n" % simplejson.dumps(dots_data)
             cache.set('%s_dot_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
             return ret
         else:

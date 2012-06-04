@@ -43,8 +43,7 @@
         </div>
         <div class="span5 pull-right">
             {% if form_type == "Bloodwork" %}
-                <a class="btn"
-                   href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
+                <a class="btn" href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
                     <i class="icon-edit"></i>
                     Edit
                 </a>
@@ -57,14 +56,14 @@
                 </a>
             {% endif %}
             {% if form_type == "DOTS" %}
-                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                <a class="btn"
                    href="{% url webxforms.views.edit_xform_interaction xform.get_id %}?override=full">
-                    <span class="ui-icon ui-icon-wrench"></span>
+                    <i class="icon-edit"></i>
                     Edit
                 </a> &nbsp;
-                <a class="fg-button ui-state-default fg-button-icon-left ui-corner-all"
+                <a class="btn"
                    href="javascript:rm_dot('{{ xform.get_id }}')">
-                    <span class="ui-icon ui-icon-circle-minus"></span>
+                    <i class="icon-trash"></i>
                     Delete
                 </a>
             {% endif %}
@@ -76,6 +75,12 @@
 {% block content %}
     <div class="row">
         <div class="span12">{% render_form_data xform %}</div>
+        {% if form_type == "DOTS" %}
+        <div class="span12">
+            <h4>Rendered DOTS</h4>
+
+        </div>
+        {% endif %}
     </div>
 
     <div class="row">
