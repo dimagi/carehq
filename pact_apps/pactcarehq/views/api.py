@@ -355,7 +355,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             from couchdbkit.schema import properties
             #remove below
             form = ElementTree.Element("data")
-            form.attrib['xmlns'] = "https://www.commcarehq.org/test/casexml-wrapper"
+            form.attrib['xmlns'] = "http://dev.commcarehq.org/pact/patientupdate"
             form.attrib['xmlns:jrm'] ="http://openrosa.org/jr/xforms"
             for block in case_blocks:
                 form.append(block)

@@ -253,7 +253,10 @@ class PactPatient(BasePatient):
     def _cache_case(self, invalidate=False):
         if invalidate:
             cache.delete('%s_casedoc' % self._id)
-            delattr(self, '_case')
+            cache.delete('%s_dot_xml' % self._id)
+            cache.delete('%s_schedule_xml' % self._id)
+            if hasattr(self,'_case'):
+                delattr(self, '_case')
 
         if hasattr(self,'_case'):
             return self._case
