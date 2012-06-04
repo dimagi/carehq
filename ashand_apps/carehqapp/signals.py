@@ -89,7 +89,7 @@ def process_ccd_submission(sender, xform, **kwargs):
         logging.error("Other unknown error trying to get patient guid from ccd: %s" % ex)
         pass
 
-xform_saved.connect(process_ccd_submission)
+#xform_saved.connect(process_ccd_submission)
 
 def issue_save_notification(sender, instance, created, **kwargs):
     issue_update_notifications.delay(instance.issue.id)
