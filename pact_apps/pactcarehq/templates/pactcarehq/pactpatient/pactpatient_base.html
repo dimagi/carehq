@@ -38,7 +38,7 @@
                 remove_url = "{% url remove_phone %}";
                 payload['phone_id'] = item_idx;
             } else if (phone_addr == "address") {
-                attr_name = 'address_id';
+                attr_name = 'address';
                 var remove_url = "{% url remove_address %}";
                 payload['address_id'] = item_idx;
             }
@@ -95,7 +95,7 @@
             {% block patient_hat %}
                 <div class="pull-left">
                     {% block patient_name_display %}
-                        <span class="ptpage_fn"> {{ patient_doc.last_name }}, {{ patient_doc.first_name }}</span>
+                        <span class="ptpage_fn"> {{ patient_doc.last_name }}, {{ patient_doc.first_name }} ({{ patient_doc.pact_id }})</span>
                     {% endblock patient_name_display %}
                 </div>
                 <div class="pull-right">

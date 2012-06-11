@@ -24,6 +24,7 @@ from django_digest.test import Client as DigestClient
 from permissions.models import Actor, Role, PrincipalRoleRelation
 from permissions.tests import RequestFactory
 from tenant.models import Tenant
+from django.core.cache import cache
 
 class patientCaseUpdateTests(CareHQClinicalTestCase):
     """
@@ -43,10 +44,10 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         self.tenant = Tenant.objects.all()[0]
         self._createUser()
         self.client = Client()
-
+        cache.clear()
 
     def _doOTARestore(self):
-
+        cache.clear()
         client = DigestClient()
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
         restore_payload = client.get('/provider/caselist')
@@ -73,7 +74,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         casedoc = CommCareCase.get(patient_doc.case_id)
         self.assertEqual(case_id_xml, casedoc._id)
 
-    def test3PushPhonesIteratively(self):
+    def test3PushPhoneUpdateXForm(self):
         """
         Check to see if transactional single updates can do it vs. doing all each time
         """
@@ -113,11 +114,11 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                 self.assertTrue(hasattr(casedoc_updated, 'Phone%dType' % i))
 
 
-    def test2PushNewPhone(self):
+    def test2PushPhoneWeb(self):
         """
         Verify on the webform that the display is showing up on the patient view.
         """
-        patient, phones, addresses = self.test1CreatePatientVerifyAddressAPI()
+        patient, phones, addresses = self.test1PatientPhoneAddressCaseXML()
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
 
         response = self.client.get(reverse('view_pactpatient', kwargs={'patient_guid': patient._id, 'view_mode': ''}))
@@ -130,7 +131,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         self.assertEquals(sorted(phone_indices), phone_indices)
 
 
-    def test1CreatePatientVerifyAddressAPI(self):
+    def test1PatientPhoneAddressCaseXML(self):
         """
         Test create phone and addresses, submit via casexml and verify casexml gets updated with latest from patient model.
         This does it via API
@@ -196,6 +197,8 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
         restore_payload = client.get('/provider/caselist')
 
+        #pdb.set_trace()
+        #fails because patient_doc._case is too aggressively sticky
         for n in range(1, self.NUM_PHONES + 1):
             phone = phones[n - 1]
             phone_re = re.compile('<Phone%d>(?P<phone>.*)<\/Phone%d>' % (n, n))
@@ -250,7 +253,6 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                                                      'preferred_language': 'english',
                                                      })
 
-        print response
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
 
 #        rf = RequestFactory()
@@ -290,19 +292,15 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         patient_doc = self.test0CreatePatient()
 
         restore_payload = self._doOTARestore()
-        print restore_payload
 
         form = PactPatientForm('regimen', instance=patient_doc, data={'art_regimen':'morning,noon,evening','non_art_regimen':'evening'})
 
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
-        response = self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}),
-            form.data
-        )
+        response = self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}), form.data )
 
         print "########## posting changed regimen"
 
         restore_payload2 = self._doOTARestore()
-        print restore_payload2
 
         case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
         case_id_xml = case_id_re.search(restore_payload.content).group('case_id')

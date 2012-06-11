@@ -250,16 +250,22 @@ class PactPatient(BasePatient):
             return '1969-12-13'
 
 
+    def clear_case_cache(self):
+        cache.delete('%s_casedoc' % self._id)
+        cache.delete('%s_dot_xml' % self._id)
+        cache.delete('%s_schedule_xml' % self._id)
+        if hasattr(self,'_case'):
+            delattr(self, '_case')
+
+
+
     def _cache_case(self, invalidate=False):
         if invalidate:
-            cache.delete('%s_casedoc' % self._id)
-            cache.delete('%s_dot_xml' % self._id)
-            cache.delete('%s_schedule_xml' % self._id)
-            if hasattr(self,'_case'):
-                delattr(self, '_case')
+            self.clear_case_cache()
 
-        if hasattr(self,'_case'):
-            return self._case
+        #if hasattr(self,'_case'):
+        # wtf, this is being set too aggressively for unit tests
+            #return self._case
 
         mem_case_string = cache.get('%s_casedoc' % (self._id), None)
         if mem_case_string is None:

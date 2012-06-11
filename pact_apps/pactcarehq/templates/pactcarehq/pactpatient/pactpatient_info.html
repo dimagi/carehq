@@ -91,9 +91,9 @@
                                 <strong>{{ patient_address.description|title }}</strong><br>
                             {% endif %}
                             {{ patient_address.address }}<br>
-                            <a href="javascript:ajax_get_form('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', 'addressform', {{ forloop.counter0 }})">Change</a>
+                            <a href="javascript:ajax_get_form('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Change</a>
                             &nbsp;
-                            <a href="javascript:rm_phone_addr('{% url ajax_patient_form_get %}', '{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
+                            <a href="javascript:rm_phone_addr('{{ patient_doc.get_id }}', 'address', {{ forloop.counter0 }})">Remove</a>
                         </div>
                     {% endfor %}
                     <div style="float:right;">

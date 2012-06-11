@@ -50,7 +50,6 @@ def remove_phone(request):
         new_phones = pdoc.casexml_phones()
         new_phones[phone_id] = {'number':'', 'description': ''}
 
-        print "Remove phone: %s" % new_phones
         xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.casexml_addresses)
         spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
         resp.status_code = 204
@@ -326,7 +325,6 @@ def ajax_post_patient_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
-            print request.POST
             old_arm = pdoc.arm
             old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
