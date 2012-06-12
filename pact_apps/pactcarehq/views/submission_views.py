@@ -243,7 +243,8 @@ def show_submission(request, doc_id, template_name="pactcarehq/view_submission.h
     context['xform'] = xform
 
     if context['form_type'] == "DOTS":
-        anchor_date = datetime(*time.strptime(xform.pact_data['dots']['anchor'], "%d %b %Y %H:%M:%S %Z")[:3])
+        pass
+        #anchor_date = datetime(*time.strptime(xform.pact_data['dots']['anchor'], "%d %b %Y %H:%M:%S %Z")[:3])
         #for day_arr in xform.pact_data['dots']
 
     comment_docs = CSimpleComment.view('patient/all_comments', key=doc_id, include_docs=True).all()
