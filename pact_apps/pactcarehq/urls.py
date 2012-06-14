@@ -18,6 +18,7 @@ urlpatterns = patterns ('',
 
 
     (r'^provider/caselist$', 'pactcarehq.views.get_caselist'),
+    (r'^restore/$', 'pactcarehq.views.ota.ota_restore_casexml'),
     (r'^cases$', 'pactcarehq.views.debug_casexml_new'),
 
 

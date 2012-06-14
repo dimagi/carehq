@@ -1,18 +1,17 @@
-from datetime import timedelta
-import logging
 import tempfile
 import uuid
-from couchdbkit.exceptions import ResourceNotFound
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
-from pytz import timezone
+from casexml.apps.phone.restore import  generate_restore_payload
 from couchforms.models import XFormInstance
+from pactcarehq.models import PactUser
+from pactcarehq.views.util import ms_from_timedelta
 from pactpatient.models import PactPatient
 from datetime import datetime
-import settings
+from django.contrib.auth.models import User as DjangoUser
 
 @httpdigest()
 def debug_casexml_new(request):
@@ -27,6 +26,9 @@ def debug_casexml_new(request):
     context['casexml'] = resp_text
     return render_to_response(template_name, context_instance=context)
 
+
+
+
 @httpdigest()
 def get_caselist(request):
     """Intermediary/ghetto way of producing casexml, to be deprecated.
@@ -38,14 +40,27 @@ def get_caselist(request):
         #if pt.arm == "Discharged":
             #continue
         patient_block += pt.ghetto_xml()
-    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
-    #logging.error(resp_text)
 
+    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
     response = HttpResponse(mimetype='text/xml')
     response.write(resp_text)
-    #response['Content-Length'] = len(resp_text) - 123
     return response
 
+
+
+
+@httpdigest
+def ota_restore_casexml(request):
+    """
+    2.0 restore methods
+    """
+    user = PactUser.from_django_user(request.user)
+    all_user_ids = list(DjangoUser.objects.all().exclude(id=request.user.id).values_list('id', flat=True))
+    user.additional_owner_ids= [str(x) for x in all_user_ids]
+
+    restore_id = request.GET.get('since')
+    response = generate_restore_payload(user, restore_id)
+    return HttpResponse(response, mimetype="text/xml")
 
 
 def get_ghetto_registration_block(user):
