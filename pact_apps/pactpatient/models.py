@@ -288,6 +288,7 @@ class PactPatient(BasePatient):
         explicit dot_status property
         """
         if self.arm.lower().startswith('dot'):
+            #dot_status
             return True
         else:
             return False
