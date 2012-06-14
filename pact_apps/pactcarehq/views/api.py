@@ -334,14 +334,24 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
 
             case = CommCareCase.get(pdoc.case_id)
-
             update_dict = instance.calculate_regimen_caseblock()
             if new_arm != old_arm and new_arm == 'Discharged':
                 close_case = True
             else:
                 close_case = False
 
-            caseblock = CaseBlock(case._id, update=update_dict, owner_id='', external_id=pdoc.pact_id, case_type='', date_opened=case.opened_on, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            if case.opened_on is None:
+                #hack calculate the opened on date from the first xform
+                opened_date = case.actions[0].date
+            else:
+                opened_date = case.opened_on
+
+            if case.owner_id is None or len(case.owner_id) == 0:
+                owner_id = str(request.user.id)
+            else:
+                owner_id = case.owner_id
+
+            caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=pdoc.pact_id, case_type='', date_opened=opened_date, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
             #'2011-08-24T07:42:49.473-07') #make_time())
 
             def isodate_string(date):
@@ -350,8 +360,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
 
             #case_blocks = [caseblock.as_xml(format_datetime=date_to_xml_string)]
             case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
-            from couchdbkit.schema import properties
-            #remove below
+
             form = ElementTree.Element("data")
             form.attrib['xmlns'] = "http://dev.commcarehq.org/pact/patientupdate"
             form.attrib['xmlns:jrm'] ="http://openrosa.org/jr/xforms"
