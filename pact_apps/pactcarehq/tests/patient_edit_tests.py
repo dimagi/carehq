@@ -67,15 +67,14 @@ class patientEditTests(CareHQClinicalTestCase):
            u'ssn': generator.random_word(length=9),
            u'gender': random.choice(GENDER_CHOICES)[0],
            u'notes': generator.random_text(length=160),
-           u'art_regimen': random.choice(REGIMEN_CHOICES)[0],
+           u'art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
            u'birthdate': generator.random_past_date().strftime("%m/%d/%Y"),
            u'pact_id': pact_id,
            u'race': random.choice(PACT_RACE_CHOICES)[0],
            u'hiv_care_clinic': random.choice(PACT_HIV_CLINIC_CHOICES)[0],
            u'primary_hp': random.choice(chws).django_actor.user.username,
-           u'non_art_regimen': random.choice(REGIMEN_CHOICES)[0],
+           u'non_art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
            u'arm': random.choice(['HP1','HP2','HP3','DOT3','DOT5','DOT7','DOT1']),
-
         }
         #client = Client()
         #login_resp = client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
