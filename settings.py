@@ -294,7 +294,7 @@ LOGGING = {
     },
     'handlers': {
         'console':{
-            'level':'DEBUG',
+            'level':'ERROR',
             'class':'logging.StreamHandler',
             'formatter': 'simple'
         },
