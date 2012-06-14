@@ -40,7 +40,6 @@ def get_regimen_code_arr(str_regimen):
 
     should return an array of day slot indices.
     """
-
     if str_regimen is None or str_regimen == '' or str_regimen == 'None':
         return []
 
@@ -74,6 +73,8 @@ def get_regimen_code_arr(str_regimen):
 
 
 REGIMEN_CHOICES = (
+
+    ('None',[('', '-- None --')]),
     ('QD - Once a day', [
         ('morning', 'Morning'),
         ('noon', 'Noon'),

@@ -661,6 +661,9 @@ class PactPatient(BasePatient):
         return day_arr
 
     def get_dots_data(self):
+        """
+        Return JSON-ready array of the DOTS block for given patient.
+        """
         startdate = datetime.utcnow()
         ret = {}
         try:
@@ -885,8 +888,10 @@ class PactPatient(BasePatient):
         for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
             if prop_fmt[4] == 'a':
                 code_arr = get_regimen_code_arr(self.art_regimen)
+                update_ret['artregimen'] = str(len(code_arr))
             elif prop_fmt[4] == 'n':
-                 code_arr = get_regimen_code_arr(self.non_art_regimen)
+                code_arr = get_regimen_code_arr(self.non_art_regimen)
+                update_ret['nonartregimen'] = str(len(code_arr))
             digit_strings = ["zero", 'one', 'two', 'three','four']
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
@@ -899,6 +904,7 @@ class PactPatient(BasePatient):
                     update_ret[prop_prop] = ''
                 else:
                     update_ret[prop_prop] = str(code_arr[x-1])
+        print "calc regimen caseblock: %s" % update_ret
         return update_ret
 
     def get_ghetto_regimen_xml(self, invalidate=False):

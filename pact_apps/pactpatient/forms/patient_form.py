@@ -51,8 +51,8 @@ class PactPatientForm(DocumentForm):
     DocumentForm
     """
     arm = forms.ChoiceField(label="PACT ARM", choices=PACT_ARM_CHOICES)
-    art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
-    non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES)
+    art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
+    non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
 
     #primary_hp = forms.ChoiceField(label="Primary health promoter", choices=tuple([(x, x) for x in hack_pact_usernames])) #old style pre actor setup
     primary_hp = forms.ChoiceField(label="Primary health promoter", choices=())
