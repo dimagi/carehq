@@ -67,9 +67,8 @@ def run():
             fix_non_art_regimen = str_non_art.lower()
 
         form = PactPatientForm('regimen', instance=patient_doc, data={'art_regimen': fix_art_regimen,'non_art_regimen':fix_non_art_regimen })
-        print form.data
-        response = client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
-        response = client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}), form.data )
-        print response.status_code
+        if form.is_valid():
+            print form.cleaned_data
+            print form.save(commit=True)
 
 
