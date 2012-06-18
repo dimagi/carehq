@@ -59,7 +59,7 @@ def ota_restore_casexml(request):
     user.additional_owner_ids= [str(x) for x in all_user_ids]
 
     restore_id = request.GET.get('since')
-    response = generate_restore_payload(user, restore_id)
+    response = generate_restore_payload(user, restore_id, version='2.0')
     return HttpResponse(response, mimetype="text/xml")
 
 
@@ -87,8 +87,14 @@ def get_ghetto_registration_block(user):
 
 
 @httpdigest()
-def xml_download(request):
+def progress_note_download(request):
+    """
+    Download prior progress note submissions for local access
+    """
     username = request.user.username
+    if request.user.username == 'admin':
+        username = 'ctsims'
+
 
     offset =0
     limit_count=100
@@ -96,6 +102,7 @@ def xml_download(request):
     temp_xml.write("<restoredata>\n")
     total_count = 0
     db = XFormInstance.get_db()
+
 
     submits_iter = XFormInstance.view('pactcarehq/progress_notes_by_chw_per_patient_date', startkey=[username, None], endkey=[username, {}], include_docs=True).iterator()
 
@@ -116,7 +123,7 @@ def xml_download(request):
             continue
         if form['form']['note']['pact_id'] not in active_patients:
             continue
-        xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '')
+        xml_str = db.fetch_attachment(form['_id'], 'form.xml').replace("<?xml version=\'1.0\' ?>", '').replace("<?xml version='1.0' encoding='UTF-8' ?>", '')
         temp_xml.write(xml_str)
         temp_xml.write("\n")
         total_count += 1

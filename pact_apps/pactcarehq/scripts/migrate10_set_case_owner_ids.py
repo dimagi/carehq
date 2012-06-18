@@ -13,21 +13,25 @@ def run():
 
     patients = Patient.objects.all()
     for pt in patients:
+        print "Patient: %s" % pt.couchdoc._id
         patient_doc = pt.couchdoc
         case_id = pt.couchdoc.case_id
         owner_username = patient_doc.primary_hp
         try:
             user_id = User.objects.get(username=owner_username).id
         except:
-            print "no userid, continuing: #%s#" % owner_username
+            print "\tno userid, continuing: #%s#" % owner_username
+            user_id = ""
             continue
 
+        print "CaseID: %s" % case_id
         print owner_username
         print user_id
 
         #todo, make this a case update
         casedoc = CommCareCase.get(case_id)
         casedoc.owner_id = str(user_id)
+        casedoc.user_id = str(user_id)
         casedoc.save()
 
 
