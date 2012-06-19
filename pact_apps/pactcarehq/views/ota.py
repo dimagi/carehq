@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
+from casexml.apps.case.xml import V2
 from casexml.apps.phone.restore import  generate_restore_payload
 from couchforms.models import XFormInstance
 from pactcarehq.models import PactUser
@@ -54,12 +55,19 @@ def ota_restore_casexml(request):
     """
     2.0 restore methods
     """
-    user = PactUser.from_django_user(request.user)
+    #user_id=str(django_user.pk), username=django_user.username, password=django_user.password, date_joined=django_user.date_joined, user_data={})
+    #(self, user_id, username, password, date_joined,  user_data=None, additional_owner_ids=[]):
     all_user_ids = list(DjangoUser.objects.all().exclude(id=request.user.id).values_list('id', flat=True))
-    user.additional_owner_ids= [str(x) for x in all_user_ids]
+    user = PactUser(str(request.user.id),
+                    request.user.username,
+                    request.user.password,
+                    request.user.date_joined,
+                    user_data = {'promoter_id': str(request.user.id), 'promopter_name': request.user.username, 'promoter_member_id': 'blah'},
+                    additional_owner_ids = [str(x) for x in all_user_ids]
+        )
 
     restore_id = request.GET.get('since')
-    response = generate_restore_payload(user, restore_id, version='2.0')
+    response = generate_restore_payload(user, restore_id, version=V2)
     return HttpResponse(response, mimetype="text/xml")
 
 
