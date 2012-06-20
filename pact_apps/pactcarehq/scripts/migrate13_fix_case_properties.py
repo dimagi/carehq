@@ -14,6 +14,9 @@ from patient.models import Patient
 
 def compute_case_info(patient_doc):
     #reconcile and resubmit DOT json - commcare2.0
+    patient_doc.hp_status = ''
+    patient_doc.dot_status = ''
+    patient_doc.save()
     dots_data = patient_doc.get_dots_data()
     case = CommCareCase.get(patient_doc.case_id)
     if case.opened_on is None:
@@ -47,7 +50,9 @@ def compute_case_info(patient_doc):
         'dob': patient_doc.birthdate.strftime("%Y-%m-%d"),
         'hp': patient_doc.primary_hp,
         'patient_notes': html_escape(patient_doc.notes) if patient_doc.notes != None else "",
-        'type': patient_doc.arm, #arm
+        'dot_status': patient_doc.dot_status, #arm
+        'arm': patient_doc.arm, #arm
+        'hp_status': patient_doc.hp_status, #arm
 #        'last_bw_xml': '',
         }
 

@@ -15,6 +15,9 @@ def compute_case_info(patient_doc):
     #reconcile and resubmit DOT json - commcare2.0
     dots_data = patient_doc.get_dots_data()
     case = CommCareCase.get(patient_doc.case_id)
+    del(case.type)
+    case.save()
+
     if case.opened_on is None:
         #hack calculate the opened on date from the first xform
         opened_date = case.actions[0].date
