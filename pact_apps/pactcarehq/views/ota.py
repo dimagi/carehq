@@ -62,7 +62,7 @@ def ota_restore_casexml(request):
                     request.user.username,
                     request.user.password,
                     request.user.date_joined,
-                    user_data = {'promoter_id': str(request.user.id), 'promopter_name': request.user.username, 'promoter_member_id': 'blah'},
+                    user_data = {'promoter_id': str(request.user.id), 'promoter_name': request.user.username, 'promoter_member_id': 'blah'},
                     additional_owner_ids = [str(x) for x in all_user_ids]
         )
 
