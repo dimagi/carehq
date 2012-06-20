@@ -8,6 +8,7 @@ from django_digest.decorators import httpdigest
 from casexml.apps.case.xml import V2
 from casexml.apps.phone.restore import  generate_restore_payload
 from couchforms.models import XFormInstance
+from pactcarehq.fixturegenerators import PACT_HP_GROUP_ID
 from pactcarehq.models import PactUser
 from pactcarehq.views.util import ms_from_timedelta
 from pactpatient.models import PactPatient
@@ -63,7 +64,7 @@ def ota_restore_casexml(request):
                     request.user.password,
                     request.user.date_joined,
                     user_data = {'promoter_id': str(request.user.id), 'promoter_name': request.user.username, 'promoter_member_id': 'blah'},
-                    additional_owner_ids = [str(x) for x in all_user_ids]
+                    additional_owner_ids = [PACT_HP_GROUP_ID,]
         )
 
     restore_id = request.GET.get('since')

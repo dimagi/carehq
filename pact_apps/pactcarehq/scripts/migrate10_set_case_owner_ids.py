@@ -9,6 +9,7 @@ from casexml.apps.case.tests.util import CaseBlock
 from couchforms.util import post_xform_to_couch
 from couchlog.models import ExceptionRecord
 from dimagi.utils.make_time import make_time
+from pactcarehq.fixturegenerators import PACT_HP_GROUP_ID
 from patient.models import Patient
 
 def compute_case_info(patient_doc):
@@ -38,9 +39,7 @@ def compute_case_info(patient_doc):
     case_name = "%s %s" % (patient_doc.first_name, patient_doc.last_name)
     case_type = "cc_path_client"
 
-    owner_id = case.owner_id
-    if owner_id is None:
-        owner_id = ''
+    owner_id = PACT_HP_GROUP_ID
 
 #    update_dict = {
 #        'owner_id': owner_id,
@@ -89,12 +88,12 @@ def run():
 #        print user_id
 #
 #        #todo, make this a case update
-#        casedoc = CommCareCase.get(case_id)
+        #casedoc = CommCareCase.get(case_id)
 #        casedoc.owner_id = str(user_id)
-#        casedoc.user_id = str(user_id)
+        #casedoc.user_id = str(user_id)
 #        casedoc.case_name = case_name
 #        casedoc.case_type = case_type
-#        casedoc.save()
+        #casedoc.save()
 
         compute_case_info(pt.couchdoc)
 
