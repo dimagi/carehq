@@ -42,7 +42,7 @@ class PactXForm(XFormInstance):
 
     def _get_patient_doc(self):
         if self.xmlns == "http://dev.commcarehq.org/pact/progress_note":
-            if self.form['note'].has_key('pact_id'):
+            if not self.form['note'].has_key('pact_id'):
                 return '[no pact id]'
             elif self.form['note'].has_key('pact_id'):
                 pact_id = self.form['note']['pact_id']
@@ -118,6 +118,9 @@ class PactXForm(XFormInstance):
             return "DOTS"
         elif self.xmlns == "http://dev.commcarehq.org/pact/progress_note":
             return "Progress Note"
+        else:
+            s = self.xmlns.split('/')
+            return s[-1].replace('_', ' ').title()
 
 
 class UserSubmissionResource(CouchdbkitResource):
