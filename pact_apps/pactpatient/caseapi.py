@@ -182,6 +182,37 @@ def compute_case_update_block(patient_doc):
     case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
     return submit_blocks(case_blocks, "compute_pactpatient_update_general")
 
+def compute_schedule_block(patient_doc):
+    #reconcile and resubmit DOT json - commcare2.0
+    #patient_doc.save()
+    case = CommCareCase.get(patient_doc.case_id)
+    if case.opened_on is None:
+        #hack calculate the opened on date from the first xform
+        opened_date = case.actions[0].date
+    else:
+        opened_date = case.opened_on
+    owner_username = patient_doc.primary_hp
+    try:
+        user_id = User.objects.get(username=owner_username).id
+    except:
+        print "\tno userid, setting blank for #%s#" % owner_username
+        user_id = ""
+
+    if user_id is None:
+        user_id = ''
+
+    owner_id = case.owner_id
+    if owner_id is None:
+        owner_id = ''
+
+    update_dict = patient_doc.get_latest_schedule()
+
+    caseblock = CaseBlock(case._id, owner_id=owner_id, external_id=patient_doc.pact_id, update=update_dict,
+        user_id=str(user_id), date_opened=opened_date, close=False,
+        date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
+    case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
+    return submit_blocks(case_blocks, "compute_pactpatient_update_general")
+
 
 def submit_blocks(case_blocks, sender_name):
     form = ElementTree.Element("data")

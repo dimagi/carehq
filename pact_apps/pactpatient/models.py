@@ -989,6 +989,39 @@ class PactPatient(BasePatient):
         cache.set('%s_schedule_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
         return ret
 
+    def get_latest_schedule(self, invalidate=False):
+        """
+        Non ghetto means to get the schedule xml into a dict for a case update for OTA restore.
+        """
+        ret = {}
+        counter = 1
+        days_of_week = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
+        if self.current_schedule != None:
+            #current_schedule is the NEW format for scheduling.  If it is not null, use it and use it only.
+            #else,
+            for day in days_of_week:
+                if getattr(self.current_schedule, day) != None:
+                    hp_username = getattr(self.current_schedule,day)
+                else:
+                    hp_username=self.primary_hp
+                key = 'dotSchedule%s' % day
+                val = hp_username
+                ret[key] = val
+                #ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day,hp_username, day)
+        else:
+            for sched in self.dots_schedule:
+                day_of_week = sched.day_of_week
+                hp_username = sched.hp_username
+                if hp_username == '':
+                    hp_username = self.primary_hp
+
+                key = 'dotSchedule%s' % day_of_week
+                val = hp_username
+                #ret += "<dotSchedule%s>%s</dotSchedule%s>" % (day_of_week,hp_username, day_of_week)
+                ret[key] = val
+        return ret
+
+
     def ghetto_xml(self):
         casedoc = self._cache_case()
         xml_dict = defaultdict(lambda: '')
