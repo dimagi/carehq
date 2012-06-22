@@ -57,8 +57,8 @@ def get_caselist(request):
 
 
 
-from devserver.modules.profile import devserver_profile
 from receiver import xml as rxml
+#from devserver.modules.profile import devserver_profile
 #@devserver_profile(follow=[generate_restore_payload, CaseStateHash.parse, CaseSyncOperation.__init__, CommCareCase.view])
 @httpdigest
 def ota_restore_casexml(request):
@@ -111,7 +111,7 @@ def progress_note_download(request):
     """
     username = request.user.username
     if request.user.username == 'admin':
-        username = 'ctsims'
+        username = 'rachel'
 
 
     offset =0

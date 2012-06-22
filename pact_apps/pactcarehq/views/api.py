@@ -124,6 +124,7 @@ def remove_address(request):
     """
     Remove a casexml address by injecting a new casexml update block into the submissions
     """
+    print "wtf"
     resp = HttpResponse()
     try:
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
@@ -294,7 +295,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
 
             #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), active_addresses)
             #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
-            caseapi.phone_addr_updater(pdoc, active_phones, active_addresses)
+            caseapi.phone_addr_updater(pdoc, pdoc.casexml_phones(), active_addresses)
 
             resp.status_code = 204
             return resp
@@ -322,7 +323,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
 
             #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.casexml_addresses)
             #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
-            caseapi.phone_addr_updater(pdoc, active_phones, active_addresses)
+            caseapi.phone_addr_updater(pdoc, active_phones, pdoc.casexml_addresses)
             resp.status_code = 204
             return resp
         else:
