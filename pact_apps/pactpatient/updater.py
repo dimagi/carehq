@@ -89,6 +89,7 @@ def update_patient_casexml(user, case_id, pact_id, active_phones, active_address
             a = {'address': '', 'description': ''}
         address_xml.append(get_address_xml(i+1, a['address'], typestring=a['description']))
 
+
     #print phone_xml
     #print address_xml
 

@@ -7,6 +7,6 @@ function(doc) {
     if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/progress_note") {
         var edate = parse_date(doc.form.note.encounter_date);
         //return it in regular months, not zero indexed.
-        emit([doc.form.Meta.username, doc.form.note.pact_id, edate.getFullYear(), edate.getMonth()+1, edate.getDate()], null);
+        emit([doc.form.meta.username, doc.form.note.pact_id, edate.getFullYear(), edate.getMonth()+1, edate.getDate()], null);
     }
 }

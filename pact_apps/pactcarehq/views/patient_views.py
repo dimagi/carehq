@@ -231,16 +231,16 @@ def _get_submissions_for_patient(patient):
         elif xmlns == "http://dev.commcarehq.org/pact/progress_note":
             date = note['form']['note']['encounter_date']
         else:
-            if isinstance(note['form']['Meta']['TimeStart'], datetime):
-                date = note['form']['Meta']['TimeStart'].date()
+            if isinstance(note['form']['meta']['timeStart'], datetime):
+                date = note['form']['meta']['timeStart'].date()
             else:
                 try:
-                    timesplit = note['form']['Meta']['TimeStart'].split(' ')
+                    timesplit = note['form']['meta']['timeStart'].split(' ')
                     tstring = "%sT%s" % (timesplit[0], timesplit[1])
                     date = isodate.parse_datetime(tstring).date()
                 except Exception, e:
                     date = datetime.min.date()
-        submissions.append([note._id, date, note.form['Meta']['username'] , displayname])
+        submissions.append([note._id, date, note.form['meta']['username'] , displayname])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 

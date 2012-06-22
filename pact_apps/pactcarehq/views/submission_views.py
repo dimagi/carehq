@@ -109,19 +109,20 @@ def _get_submissions_for_user(username):
     xform_submissions = XFormInstance.view("pactcarehq/all_submits_by_chw_date", key=username, include_docs=True).all()
     submissions = []
     for xform in xform_submissions:
-        if not xform.form.has_key('case'):
-            continue
-        if not xform.form['case'].has_key('case_id'):
-            continue
-        case_id = xform.form['case']['case_id']
+        if not self.form.has_key('pact_id') and not self.form['note'].has_key('pact_id'):
+            pact_id=''
 
-        #for dev purposes this needs to be done for testing
-        #case_id = _hack_get_old_caseid(case_id)
-        if cache.get("case.%s" % case_id, None) is None:
-            patient = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
-            cache.set("case.%s" % case_id, simplejson.dumps(patient.to_json()))
+        if self.form.has_key('pact_id'):
+            pact_id = self.form['pact_id']
+        if self.form['note'].has_key('pact_id'):
+            pact_id = self.form['note']['pact_id']
+
+
+        if cache.get("pactid.%s" % pact_id, None) is None:
+            patient = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()
+            cache.set("pactid.%s" % pact_id, simplejson.dumps(patient.to_json()))
         else:
-            patient = PactPatient.wrap(simplejson.loads(cache.get("case.%s" % case_id)))
+            patient = PactPatient.wrap(simplejson.loads(cache.get("pactid.%s" % pact_id)))
 
         if patient == None:
             patient_name = "Unknown"
@@ -158,12 +159,12 @@ def _get_submissions_for_user(username):
             return ', '.join(newsplit)
 
 
-        started = xform.get_form['Meta']['TimeStart']
+        started = xform.get_form['meta']['timeStart']
         if isinstance(started, unicode) or isinstance(started, str):
             started = isodate.parse_datetime("%sT%s" % (started.split(' ')[0], started.split(' ')[1]))
 
 
-        ended = xform.get_form['Meta']['TimeEnd']
+        ended = xform.get_form['meta']['timeEnd']
         if ended == '':
             #hack, touchforms doesn't seem to set a TimeEnd
             ended = xform.received_on
@@ -188,7 +189,7 @@ def _get_submissions_for_user(username):
 #            submissions.append([xform._id, xform.form['case']['date_modified'].date(), patient_name, formtype,started, start_end, end_received, received])
         else:
             formtype = "Unknown"
-            #submissions.append([xform._id, xform.form['Meta']['TimeEnd'], patient_name, formtype, started, start_end, end_received, received])
+            #submissions.append([xform._id, xform.form['meta']['timeEnd'], patient_name, formtype, started, start_end, end_received, received])
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
@@ -218,8 +219,9 @@ def rm_dot_submission(request):
         if doc_id is not None:
             doc_to_delete = XFormInstance.get(doc_id)
             if doc_to_delete.xmlns == 'http://dev.commcarehq.org/pact/dots_form':
-                case_id = doc_to_delete.form['case']['case_id']
-                pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
+                pact_id = doc_to_delete.form['pact_id']
+                #pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
+                pts = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).all()
                 doc_to_delete.delete()
                 if len(pts) == 1:
                     patient_doc = pts[0]

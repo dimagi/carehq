@@ -23,19 +23,20 @@ def raddress():
 def make_random_caddress():
     """deprecated address schemadocument generator
     """
-    addr = CAddress()
-    addr.description = random.choice(ADDR_DESCRIPTIONS)
-    addr.street = "%d %s" % (random.randint(1,5000), raddress())
-    addr.city = random.choice(["Boston",'Brookline','Cambridge','Somerville','Charlestown','Dorchester','Roxbury','Allston','Brighton','Watertown','Malden','Medford','South Boston','Quincy'])
-    addr.postal_code = "00000"
-    addr.state = "MA"
+    addr = {}
+    addr['description'] = random.choice(ADDR_DESCRIPTIONS)
+    street = "%d %s" % (random.randint(1,5000), raddress())
+    city = random.choice(["Boston",'Brookline','Cambridge','Somerville','Charlestown','Dorchester','Roxbury','Allston','Brighton','Watertown','Malden','Medford','South Boston','Quincy'])
+    postal_code = "00000"
+    state = "MA"
+    addr['address'] = "%s %s, %s %s" % (street, city, state, postal_code)
     return addr
 
 def make_random_cphone():
     """
     Deprecated phone schemadocument generator
     """
-    phone = CPhone()
-    phone.description = random.choice(PHONE_DESCRIPTIONS)
-    phone.number = make_phone()
+    phone = {}
+    phone['description'] = random.choice(PHONE_DESCRIPTIONS)
+    phone['number'] = make_phone()
     return phone

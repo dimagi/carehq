@@ -80,8 +80,8 @@ def all_chw_submit_report(total_interval, download_id):
                         #visit kept
                         rowdata.append(v.form['visit_kept'])
 
-                        rowdata.append(v.form['Meta']['username'])
-                        if v.form['Meta']['username'] == username:
+                        rowdata.append(v.form['meta']['username'])
+                        if v.form['meta']['username'] == username:
                             rowdata.append('assigned')
                         else:
                             rowdata.append('covered')

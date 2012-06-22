@@ -8,9 +8,11 @@ from casexml.apps.case.models import CommCareCase
 from casexml.apps.case.signals import process_cases
 from casexml.apps.case.tests.util import CaseBlock
 from casexml.apps.case.util import post_case_blocks
+from casexml.apps.case.xml import V2
 from couchforms.util import post_xform_to_couch
 from dimagi.utils.make_time import make_time
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
+from pactpatient import caseapi
 from pactpatient.enums import get_regimen_code_arr
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.updater import update_patient_casexml
@@ -20,7 +22,6 @@ from patient.forms.phone_form import PhoneForm
 from patient.models import  BasePatient, CPhone
 from permissions.models import Role, PrincipalRoleRelation, Actor
 from permissions import utils as putils
-from receiver.util import spoof_submission
 from tenant.models import Tenant
 from .util import DAYS_OF_WEEK
 from datetime import datetime, time
@@ -48,10 +49,11 @@ def remove_phone(request):
         pdoc = PactPatient.get(patient_guid)
         phone_id = int(urllib.unquote(request.POST['phone_id']).encode('ascii', 'ignore'))
         new_phones = pdoc.casexml_phones()
-        new_phones[phone_id] = {'number':'', 'description': ''}
+        new_phones[phone_id] = {'number': '', 'description': ''}
 
-        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.casexml_addresses)
-        spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, new_phones, pdoc.casexml_addresses)
+        #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        caseapi.phone_addr_updater(pdoc, new_phones, pdoc.casexml_addresses)
         resp.status_code = 204
     except Exception, e:
         logging.error("Error getting args:" + str(e))
@@ -91,12 +93,15 @@ def rm_provider_from_patient(request):
         role_class = Role.objects.get(name=carehq_constants.role_external_provider)
         #permissions.utils.add_local_role(pdoc.django_patient, provider_actor_django, role_class)
         ctype = ContentType.objects.get_for_model(pdoc.django_patient)
-        PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype, content_id=pdoc.django_uuid).delete()
-        return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid': patient_guid, 'view_mode': ''}) + "#ptabs=patient-careteam-tab")
+        PrincipalRoleRelation.objects.filter(role=role_class, actor=provider_actor_django, content_type=ctype,
+            content_id=pdoc.django_uuid).delete()
+        return HttpResponseRedirect(reverse('view_pactpatient',
+            kwargs={'patient_guid': patient_guid, 'view_mode': ''}) + "#ptabs=patient-careteam-tab")
     except Exception, e:
         logging.error("Error getting args:" + str(e))
         #return HttpResponse("Error: %s" % (e))
     return resp
+
 
 @login_required
 @require_POST
@@ -113,7 +118,6 @@ def rm_provider(request):
     return resp
 
 
-
 @login_required
 @require_POST
 def remove_address(request):
@@ -127,10 +131,11 @@ def remove_address(request):
         address_id = int(urllib.unquote(request.POST['address_id']).encode('ascii', 'ignore'))
         new_addrs = pdoc.casexml_addresses
         new_addrs[address_id] = {'address': '', 'description': ''}
-#        new_addrs.pop(address_id)
+        #        new_addrs.pop(address_id)
 
-        xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), new_addrs)
-        spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), new_addrs)
+        #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+        caseapi.phone_addr_updater(pdoc, pdoc.casexml_phones(), new_addrs)
         resp.status_code = 204
     except Exception, e:
         logging.error("Error getting args:" + str(e))
@@ -156,17 +161,18 @@ def ajax_get_actor_form(request, template='pactcarehq/partials/ajax_actor_form.h
     context['title'] = title
     return render_to_response(template, context_instance=context)
 
+
 @login_required
 @require_POST
 def ajax_post_actor_form(request, doc_id, form_name):
-    context=RequestContext(request)
+    context = RequestContext(request)
     resp = HttpResponse()
     actor_doc = BaseActorDocument.get_typed_from_id(doc_id)
     tenant = Tenant.objects.get(name='PACT')
 
     if form_name == 'chweditprofile':
         title = "Edit Profile"
-        form_class=get_actor_form(actor_doc.__class__)
+        form_class = get_actor_form(actor_doc.__class__)
         form = form_class(tenant, data=request.POST, instance=actor_doc)
     context['title'] = title
     context['doc_id'] = doc_id
@@ -176,10 +182,10 @@ def ajax_post_actor_form(request, doc_id, form_name):
         get_chw_pt_permissions(from_cache=False)
         instance = form.save(commit=False)
         instance.save(tenant)
-        resp.status_code=204
+        resp.status_code = 204
         return resp
     else:
-        context['form']=form
+        context['form'] = form
     resp.write(context['form'].as_table())
     return resp
 
@@ -211,7 +217,7 @@ def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_fo
         elif form_name == 'ptedit':
             title = "Edit Patient Info"
             form = PactPatientForm('edit', instance=pdoc)
-            template='pactcarehq/partials/ajax_patient_form.html'
+            template = 'pactcarehq/partials/ajax_patient_form.html'
     else:
         #this really is only just for phones and addresses
         if form_name == 'address':
@@ -223,18 +229,15 @@ def ajax_patient_form_get(request, template='pactcarehq/partials/ajax_patient_fo
             form = PhoneForm(initial=p)
             title = "New Phone"
 
-
     context['form'] = form
     context['title'] = title
     return render_to_response(template, context_instance=context)
 
 
-
-
 @login_required
 @require_POST
 def ajax_post_patient_form(request, patient_guid, form_name):
-    context=RequestContext(request)
+    context = RequestContext(request)
     resp = HttpResponse()
     pdoc = PactPatient.get(patient_guid)
     context['patient_guid'] = patient_guid
@@ -259,12 +262,12 @@ def ajax_post_patient_form(request, patient_guid, form_name):
                 if form.cleaned_data[day] != None:
                     setattr(sched, day, form.cleaned_data[day].username)
             if form.cleaned_data['active_date'] == None:
-                sched.started=datetime.utcnow()
+                sched.started = datetime.utcnow()
             else:
                 sched.started = datetime.combine(form.cleaned_data['active_date'], time.min)
-            sched.comment=form.cleaned_data['comment']
+            sched.comment = form.cleaned_data['comment']
             sched.created_by = request.user.username
-            sched.deprecated=False
+            sched.deprecated = False
             pdoc.set_schedule(sched)
             resp.status_code = 204
             return resp
@@ -279,18 +282,19 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             addr_dict['address'] = form.cleaned_data['address']
 
             if address_edit_id == '':
-                is_new_addr=True
+                is_new_addr = True
             else:
-                is_new_addr=False
+                is_new_addr = False
 
             active_addresses = pdoc.casexml_addresses
             if is_new_addr:
                 active_addresses.append(addr_dict)
             else:
-                active_addresses[int(address_edit_id)-1] = addr_dict
+                active_addresses[int(address_edit_id) - 1] = addr_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), active_addresses)
-            spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, pdoc.casexml_phones(), active_addresses)
+            #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            caseapi.phone_addr_updater(pdoc, active_phones, active_addresses)
 
             resp.status_code = 204
             return resp
@@ -314,15 +318,16 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             if is_new_phone:
                 active_phones.append(phone_dict)
             else:
-                active_phones[int(phone_edit_id)-1] = phone_dict
+                active_phones[int(phone_edit_id) - 1] = phone_dict
 
-            xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.casexml_addresses)
-            spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            #xml_body = update_patient_casexml(request.user, pdoc.case_id, pdoc.pact_id, active_phones, pdoc.casexml_addresses)
+            #spoof_submission(reverse("receiver.views.post"), xml_body, hqsubmission=False)
+            caseapi.phone_addr_updater(pdoc, active_phones, active_addresses)
             resp.status_code = 204
             return resp
         else:
             context['form'] = form
-    elif form_name=="ptedit":
+    elif form_name == "ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
             old_dot = pdoc.dot_status
@@ -333,7 +338,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             new_dot = instance.dot_status
             new_hp = instance.hp_status
 
-            resp.status_code=204
+            resp.status_code = 204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
 
             case = CommCareCase.get(pdoc.case_id)
@@ -358,7 +363,9 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             update_dict['dot_status'] = new_dot
             update_dict['patient_notes'] = html_escape(instance.notes) if instance.notes != None else ""
 
-            caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=pdoc.pact_id, date_opened=opened_date, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            caseblock = CaseBlock(case._id, update=update_dict,
+                owner_id=owner_id, external_id=pdoc.pact_id, date_opened=opened_date, close=close_case,
+                date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
             #'2011-08-24T07:42:49.473-07') #make_time())
 
             def isodate_string(date):
@@ -370,7 +377,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
 
             form = ElementTree.Element("data")
             form.attrib['xmlns'] = "http://dev.commcarehq.org/pact/patientupdate"
-            form.attrib['xmlns:jrm'] ="http://openrosa.org/jr/xforms"
+            form.attrib['xmlns:jrm'] = "http://openrosa.org/jr/xforms"
             for block in case_blocks:
                 form.append(block)
             xform = ElementTree.tostring(form)
@@ -378,9 +385,10 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             process_cases(sender="pactapi", xform=xform_posted)
             return resp
         else:
-            context['form']=form
+            context['form'] = form
     resp.write(context['form'].as_table())
     return resp
+
 
 @login_required
 def remove_schedule(request):

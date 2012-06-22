@@ -14,6 +14,7 @@ from clinical_shared.utils.scrambler import make_random_cphone, make_random_cadd
 from couchforms.models import XFormInstance
 from casexml.apps.case.models import CommCareCase
 from dimagi.utils.printing import print_pretty_xml
+from pactpatient import caseapi
 from pactpatient.enums import PACT_HIV_CLINIC_CHOICES
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.models import PactPatient
@@ -85,24 +86,17 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         addresses = []
         for n in range(0, self.NUM_PHONES):
             newphone = make_random_cphone()
-            newphone.description += "%s" % str(n + 1)
+            newphone['description'] += "%s" % str(n + 1)
             allphones.append(newphone)
 
             to_send = [None for q in range(0, n)]
             to_send.append(newphone)
 
-            #now, submit the xml.
-            xml_body = generate_update_xml_old(User.objects.all()[0], patient_doc, to_send, addresses)
-            xml_stream = StringIO(xml_body.encode('utf-8'))
-            xml_stream.name = "xml_submission_file"
-
-            uid_re = re.compile('<uid>(?P<doc_id>\w+)<\/uid>')
-            submit_doc_id = uid_re.search(xml_body).group('doc_id')
-            response = self.client.post(reverse('receiver.views.post'), {'xml_submission_file': xml_stream})
+            xform = caseapi.phone_addr_updater(patient_doc, to_send, addresses)
 
             #verify submission worked
             try:
-                XFormInstance.get(submit_doc_id)
+                XFormInstance.get(xform._id)
             except:
                 self.fail("XForm submit failed")
 
@@ -143,11 +137,11 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         addresses = []
         for n in range(0, self.NUM_PHONES):
             newphone = make_random_cphone()
-            newphone.description += "%s" % str(n + 1)
+            newphone['description'] += "%s" % str(n + 1)
             phones.append(newphone)
         for n in range(0, self.NUM_ADDRESSES):
             newaddress = make_random_caddress()
-            newaddress.description += "%s" % str(n + 1)
+            newaddress['description'] += "%s" % str(n + 1)
             addresses.append(newaddress)
         patient_doc.save()
         #first verify that the case got nothing
@@ -161,18 +155,11 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
             self.assertFalse(hasattr(casedoc_blank, 'address%dtype' % n))
 
 
-        #now, submit the xml.
-        xml_body = generate_update_xml_old(User.objects.all()[0], patient_doc, phones, addresses)
-        xml_stream = StringIO(xml_body.encode('utf-8'))
-        xml_stream.name = "xml_submission_file"
-
-        uid_re = re.compile('<uid>(?P<doc_id>\w+)<\/uid>')
-        submit_doc_id = uid_re.search(xml_body).group('doc_id')
-        response = self.client.post(reverse('receiver.views.post'), {'xml_submission_file': xml_stream})
+        xform = caseapi.phone_addr_updater(patient_doc, phones, addresses)
 
         #verify submission worked
         try:
-            XFormInstance.get(submit_doc_id)
+            XFormInstance.get(xform._id)
         except:
             self.fail("XForm submit failed")
 
@@ -199,6 +186,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
         restore_payload = client.get('/restore')
 
+        print_pretty_xml(restore_payload.content)
         #fails because patient_doc._case is too aggressively sticky
         for n in range(1, self.NUM_PHONES + 1):
             phone = phones[n - 1]
@@ -245,8 +233,8 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
                                                      'birthdate': '1/1/2000',
                                                      u'pact_id': pact_id,
                                                      'art_regimen': 'morning',
-                                                     'hp_status': random.choice(['HP1','HP2','HP3','']),
-                                                     'dot_status': random.choice(['', 'DOT3','DOT5','DOT7','DOT1']),
+                                                     'hp_status': random.choice(['HP1','HP2','HP3',]),
+                                                     'dot_status': random.choice([ 'DOT3','DOT5','DOT7','DOT1']),
                                                      'non_art_regimen': 'morning,evening',
                                                      'primary_hp':  random.choice(chws).django_actor.user.username,
                                                      'patient_id': uuid.uuid4().hex,
@@ -273,7 +261,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         self.assertEquals(casedoc.external_id, patient.couchdoc.pact_id)
 
         restore_payload = self._doOTARestore()
-        print print_pretty_xml(restore_payload.content)
+        #print print_pretty_xml(restore_payload.content)
         return patient.couchdoc
 
 

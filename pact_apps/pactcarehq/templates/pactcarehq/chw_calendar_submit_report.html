@@ -78,10 +78,10 @@
                                         ({{ visit.form.visit_type|title }})
                                     </a></strong>
                                 by
-                                {% if visit.form.Meta.username == username %}
-                                    <strong>{{ visit.form.Meta.username }}</strong>
+                                {% if visit.form.meta.username == username %}
+                                    <strong>{{ visit.form.meta.username }}</strong>
                                 {% else %}
-                                    <em>{{ visit.form.Meta.username }}</em>
+                                    <em>{{ visit.form.meta.username }}</em>
                                 {% endif %}
                                 &nbsp;&nbsp;
                                 <a href="{% url show_submission visit.get_id %}">View</a>

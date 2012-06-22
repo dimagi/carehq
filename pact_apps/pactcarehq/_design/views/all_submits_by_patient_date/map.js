@@ -11,7 +11,7 @@ function(doc) {
         } else if (doc.form.note && doc.form.note.encounter_date) {
             var edate = parse_date(doc.form.note.encounter_date);
         } else {
-            var edate = parse_date(doc.form['Meta']['TimeStart']);
+            var edate = parse_date(doc.form['meta']['timeStart']);
         }
 
         var pact_id = "";

@@ -23,8 +23,8 @@ function(doc) {
             // check some expected places for a date
             if (xform_doc.encounter_date) return xform_doc.encounter_date;
             if (xform_doc.note && xform_doc.note.encounter_date) return xform_doc.note.encounter_date;
-            if (xform_doc.Meta && xform_doc.Meta.TimeEnd) return xform_doc.Meta.TimeEnd;
-            if (xform_doc.Meta && xform_doc.Meta.TimeStart) return xform_doc.Meta.TimeStart;
+            if (xform_doc.meta && xform_doc.meta.timeEnd) return xform_doc.meta.timeEnd;
+            if (xform_doc.meta && xform_doc.meta.timeStart) return xform_doc.meta.timeStart;
             return null;
         }
 
@@ -32,8 +32,8 @@ function(doc) {
     }
 
     function get_user_id(xform_doc) {
-        if (xform_doc.Meta && xform_doc.Meta.username) return xform_doc.Meta.username;
-        if (xform_doc.Meta && xform_doc.Meta.chw_id) return xform_doc.Meta.chw_id;
+        if (xform_doc.meta && xform_doc.meta.username) return xform_doc.meta.username;
+        if (xform_doc.meta && xform_doc.meta.chw_id) return xform_doc.meta.chw_id;
     }
 
     //Parse the encounter date string.

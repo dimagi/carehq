@@ -39,7 +39,7 @@ urlpatterns = patterns ('',
     (r'^submits/mine/restore$', 'pactcarehq.views.progress_note_download'),
 
     url(r'^chws/all$', 'pactcarehq.views.chw_views.chw_actor_list', name='chw_actor_list'),
-    url(r'^chws/(?P<chw_doc_id>[0-9a-zA-Z]{25,32})/(?P<view_mode>\w*)$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
+    url(r'^chws/(?P<chw_doc_id>[\w\-]+)/(?P<view_mode>\w*)$', 'pactcarehq.views.chw_profile', name='pact_chw_profile'),
 
     (r'^submits/chw/(?P<chw_username>.*)/submits$', 'pactcarehq.views.chw_submits'),
     (r'^pact/api/', include(submission_resource.urls)),
@@ -51,19 +51,19 @@ urlpatterns = patterns ('',
 
     (r'^schedules/chw/(?P<username>.*)$', 'pactcarehq.views.chw_calendar_submit_report'),
     (r'^reports/chw/schedule/all/$', 'pactcarehq.views.chw_calendar_submit_report_all'),
-    (r'^schedules/patient/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_schedule_report'),
+    (r'^schedules/patient/(?P<patient_id>[\w\-]+)$', 'pactcarehq.views.patient_schedule_report'),
 
     #(r'^patients/all$', 'pactcarehq.views/patient_list'),
     url(r'^patients/all$', PatientListView.as_view(template_name='pactcarehq/patient_list.html', patient_type=PactPatient, create_patient_viewname='pactpatient.views.new_patient'), name='pactpatient_list'),
 
     #url(r'^patients/(?P<patient_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.patient_view', name='view_pactpatient'),
-    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<view_mode>\w*)$', PactPatientSingleView.as_view(), name='view_pactpatient'),
+    url(r'^patient/(?P<patient_guid>[\w\-]+)/(?P<view_mode>\w*)$', PactPatientSingleView.as_view(), name='view_pactpatient'),
 
     url(r'^ajax/getpatientform/$', 'pactcarehq.views.ajax_patient_form_get', name='ajax_patient_form_get'),
-    url(r'^ajax/postpatientform/(?P<patient_guid>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_patient_form', name='ajax_post_patient_form'),
+    url(r'^ajax/postpatientform/(?P<patient_guid>[\w\-]+)/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_patient_form', name='ajax_post_patient_form'),
 
     url(r'^ajax/getactorform/$', 'pactcarehq.views.ajax_get_actor_form', name='ajax_get_actor_form'),
-    url(r'^ajax/postactorform/(?P<doc_id>[0-9a-fA-Z]{25,32})/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_actor_form', name='ajax_post_actor_form'),
+    url(r'^ajax/postactorform/(?P<doc_id>[\w\-]+)/(?P<form_name>.*)/$', 'pactcarehq.views.ajax_post_actor_form', name='ajax_post_actor_form'),
 
 
     url(r'^patient/schedule/rm$', 'pactcarehq.views.remove_schedule', name='remove_schedule'),
@@ -76,20 +76,20 @@ urlpatterns = patterns ('',
 
     #(r'^patients/(?P<patient_id>[0-9a-f]{32})/schedule/set$', 'pactcarehq.views.set_schedule'),
 
-    url(r'^submission/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_submission', name='show_submission'),
+    url(r'^submission/(?P<doc_id>[\w\-]+)$', 'pactcarehq.views.show_submission', name='show_submission'),
     url(r'^submission/pact/rm$', 'pactcarehq.views.rm_dot_submission', name='rm_pact_submission'),
 
-    url(r'^patient/(?P<patient_guid>[0-9a-fA-Z]{25,32})/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
+    url(r'^patient/(?P<patient_guid>[\w\-]+)/provider/add$', 'pactcarehq.views.pt_new_or_link_provider', name='pt_new_or_link_provider'),
     url(r'^pact/providers$', 'pactcarehq.views.providers.view_add_pact_provider', name="pact_providers"),
-    url(r'^pact/provider/(?P<provider_guid>[0-9a-fA-Z]{25,32})/edit$', 'pactcarehq.views.providers.edit_provider', name='pact_edit_provider'),
+    url(r'^pact/provider/(?P<provider_guid>[\w\-]+)/edit$', 'pactcarehq.views.providers.edit_provider', name='pact_edit_provider'),
 
 
-        url(r'^actors/(?P<actor_doc_id>[0-9a-f]{32})/(?P<view_mode>\w*)$', 'carehqapp.views.actors.view_actor', name='view_actor'),
+        url(r'^actors/(?P<actor_doc_id>[\w\-]+)/(?P<view_mode>\w*)$', 'carehqapp.views.actors.view_actor', name='view_actor'),
         url(r'^network/$', 'carehqapp.views.network_views.my_network', name='my_network'),
         url(r'^patient/api/careteam/actor/rm$', 'carehqapp.views.actors.rm_actor_from_patient', name='rm_actor_from_patient'),
         url(r'^patient/api/careteam/actor/add$', 'carehqapp.views.actors.do_add_actor_to_patient', name='link_actor_to_patient'),
         url(r'^actor/api/rm$', 'carehqapp.views.actors.rm_actor', name='rm_ashand_actor'),
-        url(r'^patient/api/(?P<patient_guid>[0-9a-fA-Z]{25,32})/actor/add$', 'carehqapp.views.actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
+        url(r'^patient/api/(?P<patient_guid>[\w\-]+)/actor/add$', 'carehqapp.views.actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
 
 
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),

@@ -88,12 +88,12 @@ function(doc) {
                         //create the dictionary to be emitted
                         var drug_obs = {};
                         drug_obs['doc_id'] = doc._id;
-                        drug_obs['patient'] = doc.form['case']['case_id'];
+                        //drug_obs['patient'] = doc.form['case']['case_id'];
                         drug_obs['pact_id'] = doc.form['pact_id'];
-                        drug_obs['provider'] = doc.form['Meta']['username'];
-                        drug_obs['created_date'] = doc.form['Meta']['TimeStart'];
+                        drug_obs['provider'] = doc.form['meta']['username'];
+                        drug_obs['created_date'] = doc.form['meta']['timeStart'];
                         drug_obs['encounter_date'] = toISOString(encounter_date);
-                        drug_obs['completed_date'] = doc.form['Meta']['TimeEnd'];
+                        drug_obs['completed_date'] = doc.form['meta']['timeEnd'];
                         drug_obs['anchor_date'] = toISOString(anchor_date);
                         drug_obs['day_index'] = day_delta;
                         drug_obs['is_art'] = is_art;
@@ -113,12 +113,12 @@ function(doc) {
             if (anchor_datestring != doc.form['encounter_date']) {
                 var new_drug_obs = {};
                 new_drug_obs['doc_id'] = doc._id;
-                new_drug_obs['patient'] = doc.form['case']['case_id'];
+                //new_drug_obs['patient'] = doc.form['case']['case_id'];
                 new_drug_obs['pact_id'] = doc.form['pact_id'];
-                new_drug_obs['provider'] = doc.form['Meta']['username'];
-                new_drug_obs['created_date'] = doc.form['Meta']['TimeStart'];
+                new_drug_obs['provider'] = doc.form['meta']['username'];
+                new_drug_obs['created_date'] = doc.form['meta']['timeStart'];
                 new_drug_obs['encounter_date'] = toISOString(encounter_date);
-                new_drug_obs['completed_date'] = doc.form['Meta']['TimeEnd'];
+                new_drug_obs['completed_date'] = doc.form['meta']['timeEnd'];
                 new_drug_obs['anchor_date'] = toISOString(encounter_date);
                 new_drug_obs['day_index'] = -1;
                 new_drug_obs['day_note'] = "No check, from form";

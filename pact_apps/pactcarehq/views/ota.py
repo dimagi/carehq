@@ -1,11 +1,17 @@
 import tempfile
 import uuid
+from xml.etree import ElementTree
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
+from casexml.apps.case.models import CommCareCase
 from casexml.apps.case.xml import V2
+from casexml.apps.phone import xml
+from casexml.apps.phone.caselogic import CaseSyncOperation
+from casexml.apps.phone.checksum import CaseStateHash
+from casexml.apps.phone.models import SyncLog
 from casexml.apps.phone.restore import  generate_restore_payload
 from couchforms.models import XFormInstance
 from pactcarehq.fixturegenerators import PACT_HP_GROUP_ID
@@ -51,6 +57,9 @@ def get_caselist(request):
 
 
 
+from devserver.modules.profile import devserver_profile
+from receiver import xml as rxml
+#@devserver_profile(follow=[generate_restore_payload, CaseStateHash.parse, CaseSyncOperation.__init__, CommCareCase.view])
 @httpdigest
 def ota_restore_casexml(request):
     """

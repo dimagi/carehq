@@ -503,11 +503,11 @@ class PactPatient(BasePatient):
                             ret_date = xform_doc['form']['encounter_date']
                         if xform_doc['form'].get('note', None) is not None and xform_doc['form']['note'].get('encounter_date', None) is not None:
                             ret_date =  xform_doc['form']['note']['encounter_date']
-                        if xform_doc['form'].get('Meta', None) is not None:
-                            if xform_doc['form']['Meta'].get('TimeEnd', None) is not None:
-                                ret_date = xform_doc['form']['Meta']['TimeEnd']
-                            if xform_doc['form']['Meta'].get('TimeStart', None) is not None:
-                                ret_date = xform_doc['form']['Meta']['TimeStart']
+                        if xform_doc['form'].get('meta', None) is not None:
+                            if xform_doc['form']['meta'].get('timeEnd', None) is not None:
+                                ret_date = xform_doc['form']['meta']['timeEnd']
+                            if xform_doc['form']['meta'].get('timeStart', None) is not None:
+                                ret_date = xform_doc['form']['meta']['timeStart']
 
 
                         #last check

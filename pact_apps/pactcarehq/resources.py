@@ -41,20 +41,20 @@ class PactXForm(XFormInstance):
 
 
     def _get_patient_doc(self):
-        if not self.form.has_key('case'):
-            return '[no case block]'
-        if not self.form['case'].has_key('case_id'):
-            return '[no case id]'
-        case_id = self.form['case']['case_id']
+        if self.xmlns == "http://dev.commcarehq.org/pact/progress_note":
+            if self.form['note'].has_key('pact_id'):
+                return '[no pact id]'
+            elif self.form['note'].has_key('pact_id'):
+                pact_id = self.form['note']['pact_id']
+        else:
+            if not self.form.has_key('pact_id'):
+                return '[no pact id]'
+            elif self.form.has_key('pact_id'):
+                pact_id = self.form['pact_id']
 
-        #for dev purposes this needs to be done for testing
-        #case_id = _hack_get_old_caseid(case_id)
-        #        if not patient_case_id_cache.has_key(case_id):
-        patient_doc = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).first()
+        patient_doc = PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).first()
         if patient_doc is None:
-#            print "no patient with case"
             return '[no patient with case]'
-        #print "got patient doc"
         return patient_doc
 
 
@@ -62,7 +62,6 @@ class PactXForm(XFormInstance):
     def get_patient_name(self):
         patient_doc = self._get_patient_doc()
         if isinstance(patient_doc, str):
-            print "returning: %s" % patient_doc
             return patient_doc
         return '<a href="%s">%s, %s</a>' % (reverse('view_pactpatient', kwargs={"patient_guid": patient_doc.get_id, 'view_mode': ''}), patient_doc.last_name, patient_doc.first_name)
 
@@ -76,7 +75,7 @@ class PactXForm(XFormInstance):
 
     @property
     def start_date(self):
-        started = self.get_form['Meta']['TimeStart']
+        started = self.get_form['meta']['timeStart']
         if isinstance(started, unicode) or isinstance(started, str):
             if len(started) == 0:
                 return self.received_on
@@ -86,7 +85,7 @@ class PactXForm(XFormInstance):
 
     @property
     def end_date(self):
-        ended = self.get_form['Meta']['TimeEnd']
+        ended = self.get_form['meta']['timeEnd']
         if ended == '':
             #hack, touchforms doesn't seem to set a TimeEnd
             ended = self.received_on

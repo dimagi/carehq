@@ -7,10 +7,10 @@ function (doc) {
     } else if (doc.form.note && doc.form.note.encounter_date) {
         var edate = parse_date(doc.form.note.encounter_date);
     } else {
-        var edate = parse_date(doc.form['Meta']['TimeStart']);
+        var edate = parse_date(doc.form['meta']['timeStart']);
     }
 
-    if (doc.doc_type == "XFormInstance" && doc.form.Meta !== undefined) {
-        emit([doc.form.Meta.username, edate.getFullYear(), edate.getMonth() + 1, edate.getDate()],  null);
+    if (doc.doc_type == "XFormInstance" && doc.form.meta !== undefined) {
+        emit([doc.form.meta.username, edate.getFullYear(), edate.getMonth() + 1, edate.getDate()],  null);
     }
 }
