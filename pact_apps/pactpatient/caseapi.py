@@ -74,8 +74,7 @@ def recompute_dots_casedata(patient_doc):
         'dots': simplejson.dumps(dots_data)
     }
 
-    caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=patient_doc.pact_id, case_type=''
-        , date_opened=opened_date, close=False, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
+    caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=patient_doc.pact_id, case_type='cc_path_client', date_opened=opened_date, close=False, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
     #'2011-08-24T07:42:49.473-07') #make_time())
 
     case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
