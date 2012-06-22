@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.forms.models import ModelChoiceField
 from carehq_core import carehq_api, carehq_constants
 from pactconfig.pact_constants import hack_pact_usernames
-from pactpatient.enums import REGIMEN_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, PACT_RACE_CHOICES
+from pactpatient.enums import REGIMEN_CHOICES, GENDER_CHOICES, PACT_ARM_CHOICES, PACT_LANGUAGE_CHOICES, PACT_HIV_CLINIC_CHOICES, PACT_RACE_CHOICES, PACT_HP_CHOICES, PACT_DOT_CHOICES
 from pactpatient.models import PactPatient
 from django.forms import widgets
 from uni_form.helpers import FormHelper
@@ -51,6 +51,8 @@ class PactPatientForm(DocumentForm):
     DocumentForm
     """
     arm = forms.ChoiceField(label="PACT ARM", choices=PACT_ARM_CHOICES)
+    hp_status = forms.ChoiceField(label="HP Status", choices=PACT_HP_CHOICES)
+    dot_status = forms.ChoiceField(label="DOT Status", choices=PACT_DOT_CHOICES)
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
 
@@ -77,17 +79,17 @@ class PactPatientForm(DocumentForm):
         if mode == "new":
             includes = ['pact_id','first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'race', 'is_latino',
                         'preferred_language', 'mass_health_expiration', 'hiv_care_clinic', 'ssn', 'notes',
-                        'primary_hp', 'arm', 'art_regimen', 'non_art_regimen',]
+                        'primary_hp', 'art_regimen', 'non_art_regimen','dot_status','hp_status', ]#'arm']
         elif mode == 'edit':
-            includes = ['first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'notes', 'primary_hp', 'arm',
+            includes = ['first_name', 'middle_name', 'last_name', 'gender', 'birthdate', 'notes', 'primary_hp',
                          'race', 'is_latino', 'preferred_language', 'mass_health_expiration', 'hiv_care_clinic', 'ssn',
-                        'art_regimen', 'non_art_regimen',]
+                        'art_regimen', 'non_art_regimen','hp_status','dot_status']
         elif mode == "regimen":
             includes = ['art_regimen','non_art_regimen',]
         elif mode == "birthdate":
             includes = ['birthdate',]
         elif mode == "arm":
-            includes = ['arm',]
+            includes = ['arm','hp_status','dot_status']
         elif mode == "primaryhp":
             includes = ['primary_hp',]
         elif mode == "notes":

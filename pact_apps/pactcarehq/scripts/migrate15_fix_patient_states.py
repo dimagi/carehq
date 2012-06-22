@@ -112,6 +112,9 @@ pactid_hpstatus_map = {
     }
 
 def compute_case_update(patient_doc):
+    """
+    One time use of this function, hence why it's duped functionality
+    """
     #reconcile and resubmit DOT json - commcare2.0
     case = CommCareCase.get(patient_doc.case_id)
 

@@ -36,3 +36,5 @@ class PactUser(User):
     def raw_username(self):
         return self.username
 from signals import *
+
+from receiver.signal_emits import *

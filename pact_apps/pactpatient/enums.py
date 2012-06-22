@@ -102,15 +102,15 @@ REGIMEN_CHOICES = (
         ('morning,noon,evening,bedtime', 'Morning, Noon, Evening, Bedtime'),
     ]),
     )
-
 PACT_ARM_CHOICES = (
-    ('HP', [('HP', 'HP - Health Promoter'),
-
+    ('HP', [
+        ('HP', 'HP - Health Promoter (old)'),
         ('HP1', 'Health Promoter 1 (HP-1)'),
         ('HP2', 'Health Promoter 2 (HP-2)'),
         ('HP3', 'Health Promoter 3 (HP-3)')]),
 
-    ('DOT', [('DOT', 'DOT - Directly Observed Therapy'),
+    ('DOT', [
+        ('DOT', 'DOT - Directly Observed Therapy (old)'),
         ('DOT7', 'Directly Observed Therapy 7 (DOT-7)'),
         ('DOT5', 'Directly Observed Therapy 5 (DOT-5)'),
         ('DOT3', 'Directly Observed Therapy 3 (DOT-3)'),
@@ -119,6 +119,23 @@ PACT_ARM_CHOICES = (
     ('Discharged', 'Discharged'),
     ('', '')
     #todo: more choices
+    )
+
+PACT_HP_CHOICES = (
+        ('HP', 'HP - Health Promoter (old)'),
+        ('HP1', 'Health Promoter 1 (HP-1)'),
+        ('HP2', 'Health Promoter 2 (HP-2)'),
+        ('HP3', 'Health Promoter 3 (HP-3)'),
+        ('Discharged', 'Discharged'),
+)
+
+PACT_DOT_CHOICES = (
+        ('DOT', 'DOT - Directly Observed Therapy (old)'),
+        ('DOT7', 'Directly Observed Therapy 7 (DOT-7)'),
+        ('DOT5', 'Directly Observed Therapy 5 (DOT-5)'),
+        ('DOT3', 'Directly Observed Therapy 3 (DOT-3)'),
+        ('DOT1', 'Directly Observed Therapy 1 (DOT-1)'),
+        ('', 'No DOT'),
     )
 
 PACT_RACE_CHOICES = (

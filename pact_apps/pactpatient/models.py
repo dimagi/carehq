@@ -905,7 +905,6 @@ class PactPatient(BasePatient):
                     update_ret[prop_prop] = ''
                 else:
                     update_ret[prop_prop] = str(code_arr[x-1])
-        print "calc regimen caseblock: %s" % update_ret
         return update_ret
 
     def get_ghetto_regimen_xml(self, invalidate=False):

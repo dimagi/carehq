@@ -13,9 +13,19 @@
 </script>
 {% endblock %}
 {#override the stuff to use uni_forms#}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li><a href="/patients/all">Patients</a> <span class="divider">/</span></li>
+        <li class="active">New Patient</li>
+    </ul>
+{% endblock page_crumbs %}
+{% block page_header %}
+    <h2>Enroll New Patient</h2>
+{% endblock page_header %}
 {% block content %}
 <div class="container">
-<h2>Enroll New Patient</h2>
       <form action="" method="POST" class="uniForm">
        {% csrf_token %}
        <table>

@@ -1,7 +1,7 @@
 from couchforms.signals import xform_saved
 import logging
 import simplejson
-from dotsview.formprocess import recompute_dots_casedata
+from pactpatient import caseapi
 from pactpatient.models import PactPatient
 
 def process_dots_submission(sender, xform, **kwargs):
@@ -22,7 +22,7 @@ def process_dots_submission(sender, xform, **kwargs):
                 if len(pts) == 1:
                     pts[0]._cache_case(invalidate=True)
                     pts[0].get_ghetto_regimen_xml(invalidate=True)
-                    recompute_dots_casedata(pts[0])
+                    caseapi.recompute_dots_casedata(pts[0])
         except Exception, ex:
             logging.error("Error, dots submission did not have a dots block in the update section: %s" % (ex))
 

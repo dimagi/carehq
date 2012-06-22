@@ -12,6 +12,8 @@ from django.core.cache import cache
 from django_digest.decorators import httpdigest
 from carehq_core import carehq_constants, carehq_api
 from casexml.apps.case.models import CommCareCase
+from dimagi.utils.make_time import make_time
+from pactpatient import caseapi
 from pactpatient.forms import PactPatientForm
 from pactpatient.models import PactPatient
 from patient.models import Patient
@@ -93,11 +95,19 @@ def new_patient(request, template_name="pactpatient/new_pactpatient.html"):
             #now create a case for this
             case = CommCareCase()
             case._id = newptdoc.case_id
+            case.opened_on = make_time()
             case.start_date = datetime.utcnow().date()
             case.external_id = newptdoc.pact_id
             case.save()
             messages.add_message(request, messages.SUCCESS, "Added patient " + form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name'])
             recompute_chw_actor_permissions(newptdoc, old_map_full=old_map_full)
+
+            #submit update to set stuff.
+            #create stuff
+            caseapi.compute_case_create_block(newptdoc)
+            #update stuff
+            caseapi.compute_case_update_block(newptdoc)
+
             return HttpResponseRedirect(reverse('view_pactpatient', kwargs={'patient_guid':newptdoc._id, 'view_mode': ''}))
         else:
             messages.add_message(request, messages.ERROR, "Failed to add patient!")

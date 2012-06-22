@@ -1,0 +1,113 @@
+<?xml version='1.0' ?>
+<dots_form version="6" uiVersion="6" xmlns:cc="http://commcarehq.org/xforms"
+           xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://dev.commcarehq.org/pact/dots_form">
+    <n0:meta xmlns:n0="http://openrosa.org/jr/xforms">
+        <n0:deviceID>A000002C4B92DC</n0:deviceID>
+        <n0:timeStart>2012-06-11T15:20:15.010-04</n0:timeStart>
+        <n0:timeEnd>2012-06-11T15:21:11.179-04</n0:timeEnd>
+        <n0:username>ctsims</n0:username>
+        <n0:userID>1954eb1fe11dc90616e3ee6309cdb515</n0:userID>
+        <n0:instanceID>defd72e5-979c-4ee5-b126-179b76e3413e</n0:instanceID>
+        <cc:appVersion>CommCare ODK, version "2.0"(106). CommCare Version 2.0. Build #CUSTOM_BUILD, built on:
+            UNKNOWN_DATE
+        </cc:appVersion>
+    </n0:meta>
+    <n1:case case_id="66a4f2d0e9d5467e34122514c341ed92" date_modified="2012-06-11T15:21:11.179-04"
+             user_id="1954eb1fe11dc90616e3ee6309cdb515" xmlns:n1="http://commcarehq.org/case/transaction/v2">
+        <n1:update>
+            <n1:last_dot>2012-06-11</n1:last_dot>
+            <n1:artregimen>4</n1:artregimen>
+            <n1:nonartregimen>1</n1:nonartregimen>
+            <n1:dots>
+                {"days":[[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["empty","pillbox"]],[["empty","pillbox"],["full","pillbox"],["full","pillbox"],["full","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["partial","direct"]],[["unchecked","pillbox"],["empty","pillbox"],["empty","direct"],["full","pillbox"]]]],"regimens":[1,4],"anchor":"11
+                Jun 2012 04:00:00 GMT"}
+            </n1:dots>
+        </n1:update>
+    </n1:case>
+    <preload>
+        <regtypes>art nonart</regtypes>
+        <artregimen>4</artregimen>
+        <nonartregimen>1</nonartregimen>
+    </preload>
+    <normalized>
+        <regtypes>art nonart</regtypes>
+    </normalized>
+    <question/>
+    <args>
+        <regarg>[1,4]</regarg>
+    </args>
+    <encounter_date>2012-06-11</encounter_date>
+    <pact_id>999999</pact_id>
+    <scheduled>yes</scheduled>
+    <visit_type>home</visit_type>
+    <visit_kept>yes</visit_kept>
+    <contact_type>person</contact_type>
+    <observed_art>yes</observed_art>
+    <observed_art_dose>2</observed_art_dose>
+    <observed_non_art>some</observed_non_art>
+    <pillbox_check>
+        <artnow>['empty', 'direct']</artnow>
+        <artbox>2</artbox>
+        <nonartnow>['partial', 'direct']</nonartnow>
+        <nonartbox>0</nonartbox>
+        <check>
+            {"days":[[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["empty","pillbox"]],[["empty","pillbox"],["full","pillbox"],["full","pillbox"],["full","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["unchecked","pillbox"]],[["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"],["unchecked","pillbox"]]],[[["partial","direct"]],[["unchecked","pillbox"],["empty","pillbox"],["empty","direct"],["full","pillbox"]]]],"regimens":[1,4],"anchor":"11
+            Jun 2012 04:00:00 GMT"}
+        </check>
+    </pillbox_check>
+    <notes>No</notes>
+    <static_art_dose_data><a>
+        <v>0</v>
+        <dose>
+            <value>0</value>
+            <label>Morning</label>
+            <patlabel>0</patlabel>
+        </dose>
+    </a><b>
+        <v>1</v>
+        <dose>
+            <value>1</value>
+            <label>Noon</label>
+            <patlabel>1</patlabel>
+        </dose>
+    </b>
+        <c>
+            <v>2</v>
+            <dose>
+                <value>2</value>
+                <label>Evening</label>
+                <patlabel>2</patlabel>
+            </dose>
+        </c>
+        <d>
+            <v>3</v>
+            <dose>
+                <value>3</value>
+                <label>Bedtime</label>
+                <patlabel>3</patlabel>
+            </dose>
+        </d>
+    </static_art_dose_data>
+    <static_non_art_dose_data><a>
+        <v>0</v>
+        <dose>
+            <value>0</value>
+            <label>Morning</label>
+            <patlabel>0</patlabel>
+        </dose>
+    </a><b>
+        <v>1</v>
+    </b>
+        <c>
+            <v>2</v>
+        </c>
+        <d>
+            <v>3</v>
+        </d>
+    </static_non_art_dose_data>
+    <static>
+        <ed>['empty', 'direct']</ed>
+        <pd>['partial', 'direct']</pd>
+        <es>['empty', 'self']</es>
+    </static>
+</dots_form>

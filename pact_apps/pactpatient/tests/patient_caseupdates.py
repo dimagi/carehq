@@ -13,6 +13,8 @@ from clinical_shared.utils import generator
 from clinical_shared.utils.scrambler import make_random_cphone, make_random_caddress
 from couchforms.models import XFormInstance
 from casexml.apps.case.models import CommCareCase
+from dimagi.utils.printing import print_pretty_xml
+from pactpatient.enums import PACT_HIV_CLINIC_CHOICES
 from pactpatient.forms.patient_form import PactPatientForm
 from pactpatient.models import PactPatient
 from pactpatient.views import new_patient
@@ -50,7 +52,7 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         cache.clear()
         client = DigestClient()
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
-        restore_payload = client.get('/provider/caselist')
+        restore_payload = client.get('/restore/')
         return restore_payload
 
 
@@ -195,9 +197,8 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         #next verify OTA restore
         client = DigestClient()
         client.set_authorization(self.user.username, 'mockmock', 'Digest')
-        restore_payload = client.get('/provider/caselist')
+        restore_payload = client.get('/restore')
 
-        #pdb.set_trace()
         #fails because patient_doc._case is too aggressively sticky
         for n in range(1, self.NUM_PHONES + 1):
             phone = phones[n - 1]
@@ -234,40 +235,45 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         for x in range(0,5):
             chws.append(self._new_chw(self.tenant, generator.get_or_create_user()))
 
+        pact_id = generator.random_number(length=9)
         response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
-        response = self.client.post('/patient/new', {'first_name':'foo',
-                                                     'last_name': 'bar',
+        response = self.client.post('/patient/new', {
+                                                    u'first_name': generator.random_word(),
+                                                    u'last_name': generator.random_word(),
+                                                    u'middle_name': generator.random_word(),
                                                      'gender':'m',
                                                      'birthdate': '1/1/2000',
-                                                     'pact_id': 'mockmock',
-                                                     'arm': 'DOT',
+                                                     u'pact_id': pact_id,
                                                      'art_regimen': 'morning',
+                                                     'hp_status': random.choice(['HP1','HP2','HP3','']),
+                                                     'dot_status': random.choice(['', 'DOT3','DOT5','DOT7','DOT1']),
                                                      'non_art_regimen': 'morning,evening',
                                                      'primary_hp':  random.choice(chws).django_actor.user.username,
                                                      'patient_id': uuid.uuid4().hex,
+                                                     u'notes': generator.random_text(length=160),
                                                      'race': 'asian',
                                                      'is_latino': 'yes',
                                                      'mass_health_expiration': '1/1/2020',
-                                                     'hiv_care_clinic': 'brigham_and_womens_hospital',
-                                                     'ssn': '1112223333',
+                                                     u'hiv_care_clinic': random.choice(PACT_HIV_CLINIC_CHOICES)[0],
+                                                     u'ssn': generator.random_word(length=9),
                                                      'preferred_language': 'english',
                                                      })
 
+
+        fout = open ('foobar.html','w')
+        fout.write(response.content)
+        fout.close()
+
         self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
 
-#        rf = RequestFactory()
-#        request = rf.get('/')
-#        request.session = SessionStore()
-#        request.user = self.user
-#        request.POST = newpatient_data
-#        request.method = "POST"
-#        response = new_patient(request)
-        self.assertEquals(response.status_code, 302) #if it's successful, then it'll do a redirect.
         self.assertEqual(1, Patient.objects.all().count())
         patient = Patient.objects.all()[0]
 
         casedoc = CommCareCase.get(patient.couchdoc.case_id)
         self.assertEquals(casedoc.external_id, patient.couchdoc.pact_id)
+
+        restore_payload = self._doOTARestore()
+        print print_pretty_xml(restore_payload.content)
         return patient.couchdoc
 
 

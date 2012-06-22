@@ -31,7 +31,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.http import require_POST
 import logging
-from pactpatient.models import PactPatient, CDotWeeklySchedule
+from pactpatient.models import PactPatient, CDotWeeklySchedule, html_escape
 from patient.models import  Patient
 from xml.etree import ElementTree
 from casexml.apps.phone.xml import date_to_xml_string
@@ -325,17 +325,20 @@ def ajax_post_patient_form(request, patient_guid, form_name):
     elif form_name=="ptedit":
         form = PactPatientForm('edit', instance=pdoc, data=request.POST)
         if form.is_valid():
-            old_arm = pdoc.arm
+            old_dot = pdoc.dot_status
+            old_hp = pdoc.hp_status
+
             old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
-            new_arm = instance.arm
+            new_dot = instance.dot_status
+            new_hp = instance.hp_status
 
             resp.status_code=204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
 
             case = CommCareCase.get(pdoc.case_id)
             update_dict = instance.calculate_regimen_caseblock()
-            if new_arm != old_arm and new_arm == 'Discharged':
+            if new_hp != old_hp and new_hp == 'Discharged':
                 close_case = True
             else:
                 close_case = False
@@ -351,7 +354,11 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             else:
                 owner_id = case.owner_id
 
-            caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=pdoc.pact_id, case_type='', date_opened=opened_date, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            update_dict['hp_status'] = new_hp
+            update_dict['dot_status'] = new_dot
+            update_dict['patient_notes'] = html_escape(instance.notes) if instance.notes != None else ""
+
+            caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=pdoc.pact_id, date_opened=opened_date, close=close_case, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"))
             #'2011-08-24T07:42:49.473-07') #make_time())
 
             def isodate_string(date):

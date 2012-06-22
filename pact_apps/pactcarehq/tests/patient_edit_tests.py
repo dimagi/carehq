@@ -74,14 +74,9 @@ class patientEditTests(CareHQClinicalTestCase):
            u'hiv_care_clinic': random.choice(PACT_HIV_CLINIC_CHOICES)[0],
            u'primary_hp': random.choice(chws).django_actor.user.username,
            u'non_art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
-           u'arm': random.choice(['HP1','HP2','HP3','DOT3','DOT5','DOT7','DOT1']),
+           u'hp_status': random.choice(['HP1','HP2','HP3','']),
+           u'dot_status': random.choice(['', 'DOT3','DOT5','DOT7','DOT1']),
         }
-        #client = Client()
-        #login_resp = client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
-        #resp = client.post(reverse('new_pactpatient'), newpatient_data)
-        #fout = open('foo.html','w')
-        #fout.write(resp.content)
-        #fout.close()
 
         rf = RequestFactory()
         request = rf.get('/')
