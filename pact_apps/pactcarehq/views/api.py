@@ -270,6 +270,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             sched.created_by = request.user.username
             sched.deprecated = False
             pdoc.set_schedule(sched)
+            caseapi.compute_schedule_block(pdoc)
             resp.status_code = 204
             return resp
         else:
