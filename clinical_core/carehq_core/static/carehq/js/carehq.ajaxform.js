@@ -2,7 +2,6 @@ function ajax_get_form(endpoint_url, doc_id, form_name, target_div, edit_id) {
     //Helper function to help retrieve django backed forms via url, and place it into the target_div.
     //The Form itelf ought to know how to POST itself back.
     //adapted from http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit/133997#133997
-    console.log(edit_id);
     if (edit_id === undefined) {
         var form_url = endpoint_url + "?doc_id=" + doc_id + "&form_name=" + form_name;
     } else {
