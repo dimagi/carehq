@@ -554,9 +554,7 @@ class PactPatient(BasePatient):
         return observations
 
 
-    def dots_casedata_for_day(self, date, art_arr, non_art_arr):
-        from dotsview.views import _get_observations_for_date #(date, pact_id, art_arr, nonart_num):
-        from dotsview.models import  TIME_LABELS, MAX_LEN_DAY, ADDENDUM_NOTE_STRING
+    def dots_casedata_for_day(self, date):
         from pactcarehq.views.dot_calendar import merge_dot_day
 
         def get_day_elements_new(day_data):
@@ -564,25 +562,12 @@ class PactPatient(BasePatient):
             #for drug_type in day_data.keys():
             for drug_type in ['NONART','ART']:
                 drug_arr = []
-                max_total = 0
-                if drug_type == "ART":
-                    max_total = len(art_arr)
-                elif drug_type == "NONART":
-                    max_total = len(non_art_arr)
-                legal_dose_combos = ['%d/%d' % (x, max_total) for x in range(0,max_total)]
-
-
-
-                for dose_num, obs_list in day_data[drug_type]['dose_dict'].items():
-                    seen_dose_combos = {}
+                #for dose_num, obs_list in day_data[drug_type]['dose_dict'].items():
+                dose_nums = day_data[drug_type]['dose_dict'].keys()
+                dose_nums.sort()
+                for dose_num in dose_nums:
+                    obs_list = day_data[drug_type]['dose_dict'][dose_num]
                     for obs in obs_list:
-                        dose_combo = "%d/%d" % (obs.dose_number, obs.total_doses)
-                        if seen_dose_combos.has_key(dose_combo):
-                            continue
-                        elif dose_combo not in legal_dose_combos:
-                            continue
-                        else:
-                            seen_dose_combos[dose_combo] = True
                         day_slot = -1
                         if obs.day_slot != '' and obs.day_slot is not None:
                             day_slot = obs.day_slot
@@ -591,62 +576,33 @@ class PactPatient(BasePatient):
                             day_note = obs.day_note
                         else:
                             day_note = ''
-                        drug_arr.append([obs.adherence, obs.method, day_note, day_slot]) #todo, add regimen_item
 
-                        if len(drug_arr) >= max_total:
-                            #we've seen enough to meet the total doses
-                            break
-                if len(drug_arr) < max_total:
-                    delta = max_total - len(drug_arr)
+                        drug_arr.append([obs.adherence, obs.method, day_note, day_slot]) #todo, add regimen_item
+                        #one and done per array
+                        break
+
+                #don't fill because we're looking at what was submitted.
+                if len(drug_arr) <= day_data[drug_type]['total_doses']:
+                    if day_data[drug_type]['total_doses'] == 0:
+                        #hack, in cases where we have zero data, put in the current regimen delta count
+                        if drug_type == "NONART":
+                            delta = len(get_regimen_code_arr(self.non_art_regimen.lower()))
+                        elif drug_type == "ART":
+                            delta = len(get_regimen_code_arr(self.art_regimen.lower()))
+                    else:
+                        delta = day_data[drug_type]['total_doses'] - len(drug_arr)
                     for x in range(0, delta):
                         drug_arr.append(["unchecked", "pillbox", '', -1])
                 ret.append(drug_arr)
             return ret
 
-        def get_day_elements(drug_data, num_timekeys, freq_arr ):
-            """helper function to return an array of the observations for a given drug_type, for the regimen frequency
-            [[adherence,method, notes, label_index], [adherence,method, notes, label_index]...]
-            """
-            day_arr = []
-            for timekey in TIME_LABELS: #this is just getting ALL the timelabels to see if the line up
-                #get the top one from the array
-                if not drug_data.has_key(timekey):
-                    continue
-#                if len(day_arr) >= freq_arr:
-                    #logging.error("Day array for getting long, skipping superfluous data for patient %s" % (self.pact_id))
-                if len(drug_data[timekey]) > 0 and len(day_arr) < MAX_LEN_DAY:
-                    obs = drug_data[timekey][0]
-
-                    if obs.day_slot != None and obs.date_slot != '':
-                        day_slot = obs.day_slot
-                    else:
-                        day_slot = -1
-
-                    if obs.day_note != None and len(obs.day_note) > 0 and obs.day_note != ADDENDUM_NOTE_STRING:
-                        day_arr.append([obs.adherence, obs.method, obs['day_note'], day_slot]) #todo, add regimen_item
-                    else:
-                        day_arr.append([obs.adherence, obs.method, '', day_slot])
-
-
-                #else:
-                 #   day_arr.append(["unchecked", "pillbox"])
-            if len(day_arr) < freq_arr:
-                delta = len(freq_arr) - len(day_arr)
-                for n in range(delta):
-                    day_arr.append(["unchecked", "pillbox", '', ''])
-            return day_arr
-
-        def get_empty(n):
-            return [["unchecked", "pillbox", '', ''] for x in range(n)]
-
-
         #[(ak, [(tk, sorted(grouping[ak][tk], key=lambda x: x.anchor_date)[-1:]) for tk in timekeys]) for ak in artkeys],
-        day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_arr, non_art_arr, reconcile_trump=True)
+        #day_dict, is_reconciled = _get_observations_for_date(date, self.pact_id, art_arr, non_art_arr, reconcile_trump=True)
 
         day_submissions = self.dot_submissions_range(start_date=date, end_date=date)
-        day_data = merge_dot_day(self, day_submissions)
+        day_data_dict = merge_dot_day(self, day_submissions)
 
-        day_arr = get_day_elements_new(day_data)
+        day_arr = get_day_elements_new(day_data_dict)
 
 #        day_arr = []
 #        if day_dict.has_key('Non ART'):
@@ -701,7 +657,7 @@ class PactPatient(BasePatient):
 
         for delta in range(21):
             date = startdate - timedelta(days=delta)
-            day_arr = self.dots_casedata_for_day(date, art_arr, non_art_arr)
+            day_arr = self.dots_casedata_for_day(date)
             ret['days'].append(day_arr)
         ret['days'].reverse()
         return ret
@@ -883,9 +839,13 @@ class PactPatient(BasePatient):
                     ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret
 
-    def calculate_regimen_caseblock(self):
+    def calculate_regimen_caseblock(self, casedoc=None):
         update_ret = {}
-        case = CommCareCase.get(self.case_id)
+        if casedoc is None:
+            case = CommCareCase.get(self.case_id)
+        else:
+            case = casedoc
+
         for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
             if prop_fmt[4] == 'a':
                 code_arr = get_regimen_code_arr(self.art_regimen)
@@ -906,44 +866,6 @@ class PactPatient(BasePatient):
                 else:
                     update_ret[prop_prop] = str(code_arr[x-1])
         return update_ret
-
-    def get_ghetto_regimen_xml(self, invalidate=False):
-        """
-        Returns DOT regimens as well as DOT adherence information
-        """
-        if invalidate:
-            cache.delete('%s_dot_xml' % self._id)
-
-        xml_ret = cache.get('%s_dot_xml' % self._id, None)
-        if xml_ret is None:
-            art_regimen = ghetto_regimen_map[self.art_regimen.lower()]
-            if art_regimen == '0':
-                art_regimen = ''
-
-            nonart_regimen = ghetto_regimen_map[self.non_art_regimen.lower()]
-            if nonart_regimen == '0':
-                nonart_regimen = ''
-
-            labels = self.calculate_regimen_caseblock()
-            art_keys = filter(lambda x: x.startswith('dot_a_'), labels.keys())
-            non_art_keys = filter(lambda x: x.startswith('dot_n_'), labels.keys())
-
-            art_labels = ''.join(["\t<%s>%s</%s>\n" % (k, labels[k], k) for k in art_keys])
-            non_art_labels = ''.join(["\t<%s>%s</%s>\n" % (k, labels[k], k) for k in non_art_keys])
-
-            dots_data = self.get_dots_data()
-            ret = ''
-            ret += "\n<artregimen>%s</artregimen>\n" % art_regimen
-            ret += art_labels
-            ret += "\n<nonartregimen>%s</nonartregimen>\n" % nonart_regimen
-            ret += non_art_labels
-            ret += "\n<dots>%s</dots>\n" % simplejson.dumps(dots_data)
-            cache.set('%s_dot_xml' % self._id, ret, PACT_CACHE_TIMEOUT)
-            return ret
-        else:
-            return xml_ret
-
-
 
 
     def get_ghetto_address_xml(self):
@@ -1056,7 +978,9 @@ class PactPatient(BasePatient):
 
         if self.arm.lower().startswith('dot'):
             xml_dict['dot_schedule'] = self.get_ghetto_schedule_xml()
-            xml_dict['regimens'] = self.get_ghetto_regimen_xml()
+            #xml_dict['regimens'] = self.get_ghetto_regimen_xml()
+            xml_dict['regimens'] = '' # deprecated
+
         else:
             xml_dict['dot_schedule'] = ''
             xml_dict['regimens'] = ''

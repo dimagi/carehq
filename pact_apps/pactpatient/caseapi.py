@@ -60,7 +60,6 @@ def compute_case_create_block(patient_doc):
 
 def recompute_dots_casedata(patient_doc):
     #reconcile and resubmit DOT json - commcare2.0
-    dots_data = patient_doc.get_dots_data()
     case = CommCareCase.get(patient_doc.case_id)
     if case.opened_on is None:
         #hack calculate the opened on date from the first xform
@@ -69,10 +68,11 @@ def recompute_dots_casedata(patient_doc):
         opened_date = case.opened_on
 
     owner_id = case.owner_id
-    update_dict = {
-        'pactid': patient_doc.pact_id,
-        'dots': simplejson.dumps(dots_data)
-    }
+    update_dict = patient_doc.calculate_regimen_caseblock()
+    update_dict['pactid'] =  patient_doc.pact_id
+
+    dots_data = patient_doc.get_dots_data()
+    update_dict['dots'] =  simplejson.dumps(dots_data)
 
     caseblock = CaseBlock(case._id, update=update_dict, owner_id=owner_id, external_id=patient_doc.pact_id, case_type='cc_path_client', date_opened=opened_date, close=False, date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
     #'2011-08-24T07:42:49.473-07') #make_time())
@@ -142,7 +142,7 @@ def phone_addr_updater(patient_doc, active_phones, active_addresses):
     case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
     return submit_blocks(case_blocks, "compute_pactpatient_update_phone_addr")
 
-def compute_case_update_block(patient_doc):
+def compute_case_update_block(patient_doc, close=False):
     #reconcile and resubmit DOT json - commcare2.0
     #patient_doc.save()
     case = CommCareCase.get(patient_doc.case_id)

@@ -1,8 +1,6 @@
 from calendar import HTMLCalendar
-from calendar import HTMLCalendar, month_name
-from collections import defaultdict
+from calendar import  month_name
 from datetime import date
-from django.core.urlresolvers import reverse
 from django import forms
 from django.forms.forms import Form
 from pactpatient.enums import DAY_SLOTS_BY_IDX
@@ -92,7 +90,6 @@ def merge_dot_day(patient_doc, dots_observations):
             observations = dose_dict[dose_num]
             observations = sorted(observations, cmp=cmp_observation, reverse=True) #key=lambda x: x.created_date, reverse=True)
             dose_dict[dose_num]=observations
-        #wrapper_dict['dose_dict'] = dose_dict
     return day_dict
 
 

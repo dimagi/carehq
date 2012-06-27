@@ -99,6 +99,12 @@ class CObservation(Document):
     class Meta:
         app_label = 'dotsview'
 
+    def __unicode__(self):
+        return "Obs %s [%s] %d/%d" % (self.observed_date.strftime("%Y-%m-%d"), "ART" if self.is_art else "NonART", self.dose_number, self.total_doses)
+
+    def __str__(self):
+        return "Obs %s [%s] %d/%d" % (self.observed_date.strftime("%Y-%m-%d"), "ART" if self.is_art else "NonART", self.dose_number, self.total_doses)
+
 class CObservationAddendum(Document):
 #    sub_id = StringProperty(default=make_uuid)
     observed_date = DateProperty()

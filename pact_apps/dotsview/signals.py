@@ -21,7 +21,6 @@ def process_dots_submission(sender, xform, **kwargs):
                 pts= PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).all()
                 if len(pts) == 1:
                     pts[0]._cache_case(invalidate=True)
-                    pts[0].get_ghetto_regimen_xml(invalidate=True)
                     caseapi.recompute_dots_casedata(pts[0])
         except Exception, ex:
             logging.error("Error, dots submission did not have a dots block in the update section: %s" % (ex))

@@ -124,7 +124,6 @@ def remove_address(request):
     """
     Remove a casexml address by injecting a new casexml update block into the submissions
     """
-    print "wtf"
     resp = HttpResponse()
     try:
         patient_guid = urllib.unquote(request.POST['patient_guid']).encode('ascii', 'ignore')
@@ -335,56 +334,38 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             old_dot = pdoc.dot_status
             old_hp = pdoc.hp_status
 
+            old_art_regimen = pdoc.art_regimen
+            old_nonart_regimen = pdoc.non_art_regimen
+
             old_map_full = get_chw_pt_permissions(from_cache=False)
             instance = form.save(commit=True)
             new_dot = instance.dot_status
             new_hp = instance.hp_status
 
+            new_art_regimen = instance.art_regimen
+            new_nonart_regimen = instance.non_art_regimen
+
+            if (old_art_regimen != new_art_regimen) or (old_nonart_regimen != new_nonart_regimen):
+                regimen_changed = True
+            else:
+                regimen_changed = False
+
             resp.status_code = 204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
 
             case = CommCareCase.get(pdoc.case_id)
-            update_dict = instance.calculate_regimen_caseblock()
             if new_hp != old_hp and new_hp == 'Discharged':
                 close_case = True
             else:
                 close_case = False
 
-            if case.opened_on is None:
-                #hack calculate the opened on date from the first xform
-                opened_date = case.actions[0].date
-            else:
-                opened_date = case.opened_on
 
-            if case.owner_id is None or len(case.owner_id) == 0:
-                owner_id = str(request.user.id)
-            else:
-                owner_id = case.owner_id
+            caseapi.compute_case_update_block(instance, close=close_case)
 
-            update_dict['hp_status'] = new_hp
-            update_dict['dot_status'] = new_dot
-            update_dict['patient_notes'] = html_escape(instance.notes) if instance.notes != None else ""
+            if regimen_changed:
+                #need to recompute the whole DOT block on account of the regimen labeling changes
+                caseapi.recompute_dots_casedata(instance)
 
-            caseblock = CaseBlock(case._id, update=update_dict,
-                owner_id=owner_id, external_id=pdoc.pact_id, date_opened=opened_date, close=close_case,
-                date_modified=make_time().strftime("%Y-%m-%dT%H:%M:%SZ"), version=V2)
-            #'2011-08-24T07:42:49.473-07') #make_time())
-
-            def isodate_string(date):
-                if date: return isodate.datetime_isoformat(date) + "Z"
-                return ""
-
-            #case_blocks = [caseblock.as_xml(format_datetime=date_to_xml_string)]
-            case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
-
-            form = ElementTree.Element("data")
-            form.attrib['xmlns'] = "http://dev.commcarehq.org/pact/patientupdate"
-            form.attrib['xmlns:jrm'] = "http://openrosa.org/jr/xforms"
-            for block in case_blocks:
-                form.append(block)
-            xform = ElementTree.tostring(form)
-            xform_posted = post_xform_to_couch(ElementTree.tostring(form))
-            process_cases(sender="pactapi", xform=xform_posted)
             return resp
         else:
             context['form'] = form

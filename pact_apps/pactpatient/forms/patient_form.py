@@ -51,8 +51,8 @@ class PactPatientForm(DocumentForm):
     DocumentForm
     """
     arm = forms.ChoiceField(label="PACT ARM", choices=PACT_ARM_CHOICES)
-    hp_status = forms.ChoiceField(label="HP Status", choices=PACT_HP_CHOICES)
-    dot_status = forms.ChoiceField(label="DOT Status", choices=PACT_DOT_CHOICES)
+    hp_status = forms.ChoiceField(label="HP Status", choices=PACT_HP_CHOICES, required=False)
+    dot_status = forms.ChoiceField(label="DOT Status", choices=PACT_DOT_CHOICES, required=False)
     art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
     non_art_regimen = forms.ChoiceField(choices=REGIMEN_CHOICES, required=False)
 

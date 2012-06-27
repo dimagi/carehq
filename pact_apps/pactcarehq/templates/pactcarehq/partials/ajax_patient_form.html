@@ -6,9 +6,9 @@
     <table id="tbl_{{ form_name }}" class="table table-condensed">
         {{ form.as_table }}
     </table>
-    <input type="submit" value="Save" class="fg-button ui-state-default ui-corner-all" />
+    <input type="submit" value="Save" class="btn" />
     <input type="button" name="cancel" value="Cancel" onclick="$(this).parent().parent().parent().hide('blind',{},300);$(this).parent().parent().parent().html('');"
-           class="fg-button ui-state-default ui-corner-all"/>
+           class="btn"/>
 </form>
 <script>
 	$(function() {
