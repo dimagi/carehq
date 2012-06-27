@@ -1,24 +1,16 @@
 import tempfile
 import uuid
-from xml.etree import ElementTree
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django_digest.decorators import httpdigest
-from casexml.apps.case.models import CommCareCase
 from casexml.apps.case.xml import V2
-from casexml.apps.phone import xml
-from casexml.apps.phone.caselogic import CaseSyncOperation
-from casexml.apps.phone.checksum import CaseStateHash
-from casexml.apps.phone.models import SyncLog
 from casexml.apps.phone.restore import  generate_restore_payload
 from couchforms.models import XFormInstance
 from pactcarehq.fixturegenerators import PACT_HP_GROUP_ID
 from pactcarehq.models import PactUser
-from pactcarehq.views.util import ms_from_timedelta
 from pactpatient.models import PactPatient
-from datetime import datetime
 from django.contrib.auth.models import User as DjangoUser
 
 @httpdigest()
@@ -57,7 +49,6 @@ def get_caselist(request):
 
 
 
-from receiver import xml as rxml
 #from devserver.modules.profile import devserver_profile
 #@devserver_profile(follow=[generate_restore_payload, CaseStateHash.parse, CaseSyncOperation.__init__, CommCareCase.view])
 @httpdigest
@@ -77,6 +68,7 @@ def ota_restore_casexml(request):
         )
 
     restore_id = request.GET.get('since')
+    restore_id = None #making full OTA restore for now
     response = generate_restore_payload(user, restore_id, version=V2)
     return HttpResponse(response, mimetype="text/xml")
 
@@ -110,7 +102,7 @@ def progress_note_download(request):
     Download prior progress note submissions for local access
     """
     username = request.user.username
-    if request.user.username == 'admin':
+    if request.user.username == 'ctsims':
         username = 'rachel'
 
 
