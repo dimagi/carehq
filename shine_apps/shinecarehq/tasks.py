@@ -15,8 +15,8 @@ from django.core.cache import cache
 @task
 def schema_export(namespace, download_id, email=None):
     cache_container = {}
-    tmp = tempfile.NamedTemporaryFile(suffix='.xls', delete=False)
-    if export(namespace, tmp, format=Format.XLS):
+    tmp = tempfile.NamedTemporaryFile(suffix='.xlsx', delete=False)
+    if export(namespace, tmp, format=Format.XLS_2007):
         cache_container['mimetype'] = 'application/vnd.ms-excel'
         cache_container['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace
         cache_container['location'] = tmp.name
