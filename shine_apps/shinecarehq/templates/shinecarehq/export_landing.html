@@ -1,6 +1,15 @@
 {% extends "base.html" %}
-{% block content %}
-    <h2>Bulk Exports</h2>
+
+{% block page_header %}
+    <h1>Bulk Exporter</h1>
+{% endblock %}
+
+{% block page_crumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a> <span class="divider">/</span></li>
+        <li class="active">Bulk Exporter</li>
+    </ul>
+{% endblock page_crumbs %}{% block content %}
     <h3>Form Exporter</h3>
     <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/patient/reg">Registration</a><br>
     <a href="{% url export_excel_file %}?export_tag=http://shine.commcarehq.org/questionnaire/clinical">Clinical Info</a><br>
