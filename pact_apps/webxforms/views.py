@@ -93,7 +93,11 @@ def new_xform_interaction(request, case_id, interaction):
 def edit_xform_interaction(request, xform_id):
     orig_doc = XFormInstance.get(xform_id)
     xform_url = xmlns_url_map.get(orig_doc.xmlns, None)
-    case_id = orig_doc['form']['case']['@case_id']
+    try:
+        case_id = orig_doc['form']['case']['@case_id']
+    except KeyError:
+        case_id = orig_doc['form']['case']['case_id']
+
     pts = PactPatient.view('pactpatient/by_case_id', key=case_id, include_docs=True).all()
 
     if xform_url is None:
