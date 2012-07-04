@@ -8,6 +8,8 @@ def process_dots_submission(sender, xform, **kwargs):
     try:
         if xform.xmlns != "http://dev.commcarehq.org/pact/dots_form":
             return
+
+        #first, set the pact_data to json if the dots update stuff is there.
         try:
             dots_json = xform['form']['case']['update']['dots']
             if isinstance(dots_json, str) or isinstance(dots_json, unicode):
@@ -15,16 +17,16 @@ def process_dots_submission(sender, xform, **kwargs):
                 xform['pact_data'] = {}
                 xform['pact_data']['dots'] = json_data
                 xform.save()
-
-                #next, we recache the casedoc as well as the ota restore fragment of this patient.
-                pact_id = xform['form']['pact_id']
-                pts= PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).all()
-                if len(pts) == 1:
-                    pts[0]._cache_case(invalidate=True)
-                    caseapi.recompute_dots_casedata(pts[0])
         except Exception, ex:
-            logging.error("Error, dots submission did not have a dots block in the update section: %s" % (ex))
+            #if this gets triggered, that's ok because web entry don't got them
+            logging.debug("Error, dots submission did not have a dots block in the update section: %s" % (ex))
 
+        # next get pact_id information first off
+        pact_id = xform['form']['pact_id']
+        pts= PactPatient.view('pactcarehq/patient_pact_ids', key=pact_id, include_docs=True).all()
+        for pt in pts:
+            pt._cache_case(invalidate=True)
+            caseapi.recompute_dots_casedata(pt)
     except:
         logging.error("Error processing the submission due to an unknown error.")
 

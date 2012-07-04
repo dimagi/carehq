@@ -59,6 +59,9 @@ def compute_case_create_block(patient_doc):
 
 
 def recompute_dots_casedata(patient_doc):
+    """
+    Recompute and reset the ART regimen and NONART regimen to whatever the server says it is, in the case where there's an idiosyncracy with how the phone has it set.
+    """
     #reconcile and resubmit DOT json - commcare2.0
     case = CommCareCase.get(patient_doc.case_id)
     if case.opened_on is None:
@@ -142,7 +145,7 @@ def phone_addr_updater(patient_doc, active_phones, active_addresses):
     case_blocks = [caseblock.as_xml(format_datetime=isodate_string)]
     return submit_blocks(case_blocks, "compute_pactpatient_update_phone_addr")
 
-def compute_case_update_block(patient_doc, close=False):
+def compute_case_update_block(patient_doc, include_dots=False, close=False):
     #reconcile and resubmit DOT json - commcare2.0
     #patient_doc.save()
     case = CommCareCase.get(patient_doc.case_id)
@@ -175,6 +178,11 @@ def compute_case_update_block(patient_doc, close=False):
         'dot_status': patient_doc.dot_status,
         'hp_status': patient_doc.hp_status,
         }
+
+    if include_dots:
+        update_dict.update(patient_doc.calculate_regimen_caseblock())
+        dots_data = patient_doc.get_dots_data()
+        update_dict['dots'] =  simplejson.dumps(dots_data)
 
     caseblock = CaseBlock(case._id, owner_id=owner_id, external_id=patient_doc.pact_id, update=update_dict,
         user_id=str(user_id), date_opened=opened_date, close=False,

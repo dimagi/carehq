@@ -1,21 +1,13 @@
+import pdb
 import urllib
 from django.contrib.contenttypes.models import ContentType
-import isodate
 from actorpermission.models import BaseActorDocument
 from carehq_core import carehq_constants
 from carehqadmin.forms.actor_form import get_actor_form
 from casexml.apps.case.models import CommCareCase
-from casexml.apps.case.signals import process_cases
-from casexml.apps.case.tests.util import CaseBlock
-from casexml.apps.case.util import post_case_blocks
-from casexml.apps.case.xml import V2
-from couchforms.util import post_xform_to_couch
-from dimagi.utils.make_time import make_time
 from pactcarehq.forms.weekly_schedule_form import ScheduleForm
 from pactpatient import caseapi
-from pactpatient.enums import get_regimen_code_arr
 from pactpatient.forms.patient_form import PactPatientForm
-from pactpatient.updater import update_patient_casexml
 from pactpatient.views import recompute_chw_actor_permissions, get_chw_pt_permissions
 from patient.forms.address_form import SimpleAddressForm
 from patient.forms.phone_form import PhoneForm
@@ -32,10 +24,8 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.views.decorators.http import require_POST
 import logging
-from pactpatient.models import PactPatient, CDotWeeklySchedule, html_escape
+from pactpatient.models import PactPatient, CDotWeeklySchedule
 from patient.models import  Patient
-from xml.etree import ElementTree
-from casexml.apps.phone.xml import date_to_xml_string
 
 @login_required
 @require_POST
@@ -348,7 +338,8 @@ def ajax_post_patient_form(request, patient_guid, form_name):
             if (old_art_regimen != new_art_regimen) or (old_nonart_regimen != new_nonart_regimen):
                 regimen_changed = True
             else:
-                regimen_changed = False
+                #regimen_changed = False
+                regimen_changed = True
 
             resp.status_code = 204
             recompute_chw_actor_permissions(instance, old_map_full=old_map_full)
@@ -360,12 +351,7 @@ def ajax_post_patient_form(request, patient_guid, form_name):
                 close_case = False
 
 
-            caseapi.compute_case_update_block(instance, close=close_case)
-
-            if regimen_changed:
-                #need to recompute the whole DOT block on account of the regimen labeling changes
-                caseapi.recompute_dots_casedata(instance)
-
+            caseapi.compute_case_update_block(instance, include_dots=regimen_changed, close=close_case)
             return resp
         else:
             context['form'] = form

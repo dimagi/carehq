@@ -620,6 +620,7 @@ class PactPatient(BasePatient):
     def get_dots_data(self):
         """
         Return JSON-ready array of the DOTS block for given patient.
+        Pulling properties from PATIENT document.  patient document trumps casedoc in this use case.
         """
         startdate = datetime.utcnow()
         ret = {}
@@ -839,13 +840,13 @@ class PactPatient(BasePatient):
                     ret += "<Phone%dType>Default</Phone%dType>" % (num, num)
         return ret
 
-    def calculate_regimen_caseblock(self, casedoc=None):
-        update_ret = {}
-        if casedoc is None:
-            case = CommCareCase.get(self.case_id)
-        else:
-            case = casedoc
+    def calculate_regimen_caseblock(self):
+        """
+        Forces all labels to be reset back to the labels set on the patient document.
 
+        patient document trumps casedoc in this case.
+        """
+        update_ret = {}
         for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
             if prop_fmt[4] == 'a':
                 code_arr = get_regimen_code_arr(self.art_regimen)
@@ -856,11 +857,6 @@ class PactPatient(BasePatient):
             digit_strings = ["zero", 'one', 'two', 'three','four']
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
-                #always get it from the artregimen properties of patient
-#                if hasattr(case, prop_prop):
-#                    prop_val = getattr(case, prop_prop, None)
-#                else:
-#                    prop_val = ''
                 if x > len(code_arr):
                     update_ret[prop_prop] = ''
                 else:
