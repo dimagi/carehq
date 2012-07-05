@@ -50,10 +50,10 @@ function(doc) {
     if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form") {
         var pactdata = doc['pact_data'];
         if (pactdata['dots'] != undefined) {
-            var anchor_date = new Date(pactdata['dots']['anchor']);
+            var anchor_date = new Date(pactdata['dots']['anchor']); //this is in num 3lettermonth YYYY
             var daily_data = pactdata['dots']['days'];
             var drop_note = true;
-            var encounter_date = new Date(doc.form['encounter_date']);
+            var encounter_date = parse_date(doc.form['encounter_date']); //yyyy-mm-dd which sucks at parsing with new Date
 
             for (var i = 0; i < daily_data.length; i += 1) {
                 //iterate through each day = i
@@ -62,8 +62,8 @@ function(doc) {
                 var day_delta = daily_data.length - 1 - i;
                 var drug_classes = daily_data[i];
                 //var observed_date = new Date(anchor_date.getTime() - (24*3600*1000 * i));
-                var observed_date = new Date(pactdata['dots']['anchor']);
-                observed_date.setDate(anchor_date.getDate() - day_delta);
+                var observed_date = new Date(pactdata['dots']['anchor']); //set value based upon anchor...
+                observed_date.setDate(anchor_date.getDate() - day_delta); //adjusted with the day_delta
                 for (var j = 0; j < drug_classes.length; j += 1) {
                     //iterate through the drugs to get art status within a given day.  right now that's just 2
                     var dispenses = drug_classes[j]; //right now just 2 elements[art, nonart]
@@ -109,7 +109,7 @@ function(doc) {
             //doing a direct string interpretation due to timezone issues, at the time of creation on the phone, the DATE is correct, regardless of time taken.  So comparing by the individual
             //date components is the most accurate way to fly here.
 
-            var anchor_datestring = anchor_date.getFullYear() + "-" + padzero(anchor_date.getMonth() + 1) + "-" + anchor_date.getDate()
+            var anchor_datestring = anchor_date.getFullYear() + "-" + padzero(anchor_date.getMonth() + 1) + "-" + anchor_date.getDate();
             if (anchor_datestring != doc.form['encounter_date']) {
                 var new_drug_obs = {};
                 new_drug_obs['doc_id'] = doc._id;
