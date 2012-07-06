@@ -1,4 +1,4 @@
-function(doc) {
+function (doc) {
     //this indexes by the observed date the dots observations
     function padzero(n) {
         return n < 10 ? '0' + n : n;
@@ -30,7 +30,7 @@ function(doc) {
             if (drug_arr.length > 3) {
                 obs_dict['day_slot'] = drug_arr[3];
             }
-            emit([doc.form['pact_id'], 'anchor_date',anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs_dict);
+            emit([doc.form['pact_id'], 'anchor_date', anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], obs_dict);
             emit([doc.form['pact_id'], 'observe_date', observe_date.getFullYear(), observe_date.getMonth() + 1, observe_date.getDate()], eval(uneval(obs_dict)));
             emit([anchor_date.getFullYear(), anchor_date.getMonth() + 1, anchor_date.getDate()], eval(uneval(obs_dict)));
             emit(['doc_id', doc._id], eval(uneval(obs_dict)));
@@ -45,6 +45,16 @@ function(doc) {
         return new Date(parts[0], parts[1] - 1, parts[2]); // months are 0-based, subtract fromour encoutner date
     }
 
+    function getkeys(obj) {
+        var keys = [];
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) { //to be safe
+                keys.push(key);
+            }
+        }
+        return keys;
+    }
+
 
     //function to emit all the dots observations into a format that's readable by the dotsview app
     if (doc.doc_type == "XFormInstance" && doc.xmlns == "http://dev.commcarehq.org/pact/dots_form") {
@@ -54,6 +64,7 @@ function(doc) {
             var daily_data = pactdata['dots']['days'];
             var drop_note = true;
             var encounter_date = parse_date(doc.form['encounter_date']); //yyyy-mm-dd which sucks at parsing with new Date
+            var anchor_datestring = anchor_date.getFullYear() + "-" + padzero(anchor_date.getMonth() + 1) + "-" + anchor_date.getDate();
 
             for (var i = 0; i < daily_data.length; i += 1) {
                 //iterate through each day = i
@@ -105,12 +116,11 @@ function(doc) {
                     }
                 }
             }
-            //finally, if the observed_date and anchor dates are different, we need to make a manual single DOT entry:
-            //doing a direct string interpretation due to timezone issues, at the time of creation on the phone, the DATE is correct, regardless of time taken.  So comparing by the individual
-            //date components is the most accurate way to fly here.
-
-            var anchor_datestring = anchor_date.getFullYear() + "-" + padzero(anchor_date.getMonth() + 1) + "-" + anchor_date.getDate();
             if (anchor_datestring != doc.form['encounter_date']) {
+                //finally, if the observed_date and anchor dates are different, we need to make a manual single DOT entry:
+                //doing a direct string interpretation due to timezone issues, at the time of creation on the phone, the DATE is correct, regardless of time taken.  So comparing by the individual
+                //date components is the most accurate way to fly here.
+
                 var new_drug_obs = {};
                 new_drug_obs['doc_id'] = doc._id;
                 //new_drug_obs['patient'] = doc.form['case']['case_id'];
@@ -123,12 +133,37 @@ function(doc) {
                 new_drug_obs['day_index'] = -1;
                 new_drug_obs['day_note'] = "No check, from form";
 
+                function determine_day_slot(dose_data, selected_idx) {
+                    //dose_data = doc.form['static_non_art_dose_data'] | doc.form['static_art_dose_data']
+                    var dosekeys = getkeys(dose_data);
+                    for (var q = 0; q < dosekeys.length; q++) {
+                        var k = dosekeys[q];
+                        var dose_data_val = dose_data[k];
+                        if (dose_data_val['v'] == selected_idx) {
+                            //verify that v == selected_idx
+                            if (dose_data_val['dose'] != undefined) {
+                                if (dose_data_val['dose']['patlabel'] != "") {
+                                    return parseInt(dose_data_val['dose']['patlabel']);
+                                }
+                            }
+                        }
+                    }
+                    return -1;
+                }
+
+                var form_day_slot = -1;
 
                 //non_art
                 if (doc.form['pillbox_check']['nonartbox'] != "") {
                     new_drug_obs['is_art'] = false;
                     new_drug_obs['total_doses'] = parseInt(doc.form['case']['update']['nonartregimen']);
                     new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['nonartbox']);
+
+                    form_day_slot = determine_day_slot(doc.form['static_non_art_dose_data'], parseInt(doc.form['pillbox_check']['nonartbox']));
+                    if (form_day_slot >= 0) {
+                        new_drug_obs['day_slot'] = form_day_slot;
+                    }
+
                     new_drug_obs['observed_date'] = toISOString(encounter_date);
                     var non_art_dispense = eval(doc.form['pillbox_check']['nonartnow']);
                     if (non_art_dispense != null) {
@@ -142,6 +177,10 @@ function(doc) {
                     new_drug_obs['total_doses'] = parseInt(doc.form['case']['update']['artregimen']);
                     new_drug_obs['dose_number'] = parseInt(doc.form['pillbox_check']['artbox']);
                     new_drug_obs['observed_date'] = toISOString(encounter_date);
+                    form_day_slot = determine_day_slot(doc.form['static_art_dose_data'], parseInt(doc.form['pillbox_check']['artbox']));
+                    if (form_day_slot >= 0) {
+                        new_drug_obs['day_slot'] = form_day_slot;
+                    }
                     var art_dispense = eval(doc.form['pillbox_check']['artnow']);
                     if (art_dispense != null) {
                         do_observation(doc, encounter_date, anchor_date, art_dispense, eval(uneval(new_drug_obs)));
