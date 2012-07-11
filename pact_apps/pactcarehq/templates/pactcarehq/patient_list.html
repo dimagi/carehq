@@ -34,7 +34,8 @@
                 <th class="span1">PACT ID</th>
                 <th class="span2">First Name</th>
                 <th class="span2">Last Name</th>
-                <th class="span1">ARM</th>
+                <th class="span1">HP Tier</th>
+                <th class="span1">DOT Tier</th>
                 <th class="span1">Primary HP</th>
                 <th class="span4">Actions</th>
             </tr>
@@ -47,7 +48,8 @@
                     <td><h4><a href="{% url view_pactpatient patient.get_id '' %}">{{ patient.first_name }}</a></h4>
                     </td>
                     <td><h4><a href="{% url view_pactpatient patient.get_id '' %}">{{ patient.last_name }}</a></h4></td>
-                    <td>{{ patient.arm }}</td>
+                    <td>{{ patient.hp_status }}</td>
+                    <td>{{ patient.dot_status }}</td>
                     <td>{{ patient.primary_hp }}</td>
                     <td>{#Edit Patient | View Schedule#}
                         {% if patient.arm == "DOT" %}
