@@ -67,7 +67,8 @@ def ashand_production():
     """ use ashand environment on remote host for MEPI"""
     env.code_branch = 'ashand-dev'
     env.sudo_user = 'ashand'
-    env.hosts = ['192.168.100.108']
+    #env.hosts = ['192.168.100.108']
+    env.hosts = ['10.180.59.149']
     env.environment = 'ashand_production'
     env.user = prompt("Username: ", default=env.user)
     _setup_ashand_production()
@@ -82,6 +83,25 @@ def _setup_ashand_production():
 
 #END ASHAND
 
+
+################################################################
+# rackspace bootstrap
+def _setup_rackspace_production():
+    env.virtualenv_root = '/home/ashand/.virtualenvs/carehq' #todo: change pact user to carehq
+    env.root = '/home/ashand'
+    env.src_root       = _join(env.root, 'src')
+    env.code_root       = _join(env.root, 'src/carehq')
+    env.project_root    = _join(env.root, 'src/carehq')
+
+
+def rackspace_production():
+    """ use pact_production environment on remote host for PACT"""
+    env.code_branch = 'ashand-dev'
+    env.sudo_user = 'ashand'
+    env.hosts = ['10.180.59.149']
+    env.environment = 'ashand_production'
+    env.user = prompt("Username: ", default=env.user)
+    _setup_rackspace_production()
 
 
 def enter_virtualenv():
@@ -101,7 +121,7 @@ def get_code():
     require('root', provided_by=('staging', 'pact_production', 'mepi_production'))
     with cd(env.src_root):
         if not files.exists(os.path.join(env.src_root, 'carehq')):
-            sudo('git clone %(code_repo)s' % env, user=env.sudo_user)
+            sudo('git clone %(code_repo)s' % env, user=env.sudo_user, shell=False)
         else:
             update()
         sudo('ln -s %(code_root)s/services/production/upstart/carehq_celery.conf /etc/init/' % env, shell=False)
