@@ -1,4 +1,3 @@
-from carehqapp.scripts.demo.demo_cases import DEMO_CASES
 from datetime import timedelta, datetime
 from django.contrib.contenttypes.models import ContentType
 import os

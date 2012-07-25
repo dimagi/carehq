@@ -61,7 +61,6 @@ class AshandPatientSingleView(PatientSingleView):
         context['case_columns'] = ['opened_date', 'opened_by', 'assigned_to','description', 'last_edit_date', 'last_edit_by']
         context['cases'] = Case.objects.filter(patient=dj_patient)
 
-
         role_actor_dict = careteam_api.get_careteam(pdoc.django_patient)
         context['careteam_dict'] = role_actor_dict
 

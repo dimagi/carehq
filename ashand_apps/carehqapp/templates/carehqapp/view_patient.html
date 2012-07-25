@@ -117,7 +117,8 @@
                 <div class="span-18 last" style="margin-bottom:8px;">
                     <div class="span-18 last"><strong>{{ case.opened_by.get_name }}</strong>  {{ case.opened_date|date }} {{ case.opened_date|time }}</div>
                     <div class="span-18 prepend-1 last">{{ case.description }}</div>
-                    <div class="span-4"><a href="{% url manage-case case.id %}">View Case</a></div>
+                    case.id
+{#                    <div class="span-4"><a href="{% url manage-case case.id %}">View Case</a></div>#}
                     &nbsp;
                 </div>
             {% endfor %}
@@ -214,8 +215,8 @@
                     <div class="span-16 last"><span style="font-size:125%">{{ role.display }}(s)</span></div>
                     {% for actor in actors %}
                         <div class="span-16 last" style="border: 1px solid black;padding: 8px;margin: 4px;">
-                            <div class="span-10 careteam_name">{{ actor.get_name }}</div>
-                            <div class="span-6 last">{{ actor.get_display|title }}</div>
+                            <div class="span-10 careteam_name">{{ actor.actordoc.name }}</div>
+                            <div class="span-6 last">{{ actor.actordoc.get_display|title }}</div>
                             &nbsp;
                         </div>
                         &nbsp;
