@@ -240,7 +240,12 @@ def _get_submissions_for_patient(patient):
                     date = isodate.parse_datetime(tstring).date()
                 except Exception, e:
                     date = datetime.min.date()
-        submissions.append([note._id, date, note.form['meta']['username'] , displayname])
+        if not note.form.has_key('meta'):
+            username = 'unknown - missing meta!'
+            logging.error("Error, submission %s is missing a meta block!" % note._id)
+        else:
+            username = note.form['meta']['username']
+        submissions.append([note._id, date, username , displayname])
     submissions=sorted(submissions, key=lambda x: x[1], reverse=True)
     return submissions
 
