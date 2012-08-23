@@ -10,6 +10,7 @@ urlpatterns =  []
 admin.autodiscover()
 
 urlpatterns += patterns('',
+    (r'', include('auditcare.urls')), #this needs to go before!
     (r'^accounts/', include('urls_registration')),
 
     (r'^admin/', include(admin.site.urls)),
@@ -19,7 +20,6 @@ urlpatterns += patterns('',
     (r'^djangocouch', include('djangocouch.urls')),
     (r'^formplayer/', include('touchforms.formplayer.urls')),
     (r'', include('account.urls')),
-    (r'', include('auditcare.urls')),
     #(r'', include('issuetracker.urls')), #TODO
     (r'', include('clinical_core.carehqadmin.urls')),
     (r'', include('downloader.urls')),
