@@ -37,9 +37,6 @@
 [submodule "submodules/soil-src"]
 	path = submodules/soil-src
 	url = git://github.com/dimagi/django-soil.git
-[submodule "submodules/deploy_tools_src"]
-	path = submodules/deploy_tools_src
-	url = git://github.com/dimagi/deploy_tools.git
 [submodule "submodules/carehq-mobile"]
 	path = submodules/carehq-mobile
 	url = git://github.com/dimagi/carehq-mobile

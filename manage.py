@@ -4,7 +4,6 @@ import sys, os
 filedir = os.path.dirname(__file__)
 
 sys.path.insert(0,'..')
-sys.path.insert(0, os.path.join(filedir,'submodules','deploy_tools_src'))
 sys.path.insert(0, os.path.join(filedir))
 sys.path.insert(0, os.path.join(filedir,'clinical_core'))
 sys.path.insert(0, os.path.join(filedir,'ashand_apps'))
@@ -12,22 +11,29 @@ sys.path.insert(0, os.path.join(filedir,'lib'))
 sys.path.insert(0, os.path.join(filedir,'pact_apps'))
 sys.path.insert(0, os.path.join(filedir,'shine_apps'))
 
-sys.path.insert(0, os.path.join(filedir,'submodules','couchforms'))
-sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
-sys.path.insert(0, os.path.join(filedir,'submodules','dimagi-utils'))
-sys.path.insert(0, os.path.join(filedir,'submodules','receiver'))
-sys.path.insert(0, os.path.join(filedir,'submodules','touchforms'))
-sys.path.insert(0, os.path.join(filedir,'submodules','casexml-src'))
-sys.path.insert(0, os.path.join(filedir,'submodules','carehq-mobile'))
-#sys.path.insert(0, os.path.join(filedir,'submodules','core-hq'))
-#sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq'))
-sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq', 'apps'))
-sys.path.insert(0, os.path.join(filedir,'submodules','auditcare'))
-sys.path.insert(0, os.path.join(filedir,'submodules','couchlog'))
-sys.path.insert(0, os.path.join(filedir,'submodules','djactor-permissions'))
-sys.path.insert(0, os.path.join(filedir,'submodules','djangocouch-src'))
-sys.path.insert(0, os.path.join(filedir,'submodules','hutch-src'))
-sys.path.insert(0, os.path.join(filedir,'submodules','soil-src'))
+submodules_list = os.listdir(os.path.join(filedir, 'submodules'))
+for d in submodules_list:
+    if d == "__init__.py":
+        continue
+    sys.path.insert(0, os.path.join(filedir,'submodules',d))
+    pass
+
+#sys.path.insert(0, os.path.join(filedir,'submodules','couchforms'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','couchexport'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','dimagi-utils'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','receiver'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','touchforms'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','casexml-src'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','carehq-mobile'))
+##sys.path.insert(0, os.path.join(filedir,'submodules','core-hq'))
+##sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','core-hq', 'corehq', 'apps'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','auditcare'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','couchlog'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','djactor-permissions'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','djangocouch-src'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','hutch-src'))
+#sys.path.insert(0, os.path.join(filedir,'submodules','soil-src'))
 
 from django.core.management import execute_manager
 try:
