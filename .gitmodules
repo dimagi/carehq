@@ -43,3 +43,6 @@
 [submodule "submodules/carehq-mobile"]
 	path = submodules/carehq-mobile
 	url = git://github.com/dimagi/carehq-mobile
+[submodule "submodules/pillowtop-src"]
+	path = submodules/pillowtop-src
+	url = git://github.com/dimagi/pillowtop.git
