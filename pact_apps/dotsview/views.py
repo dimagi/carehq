@@ -465,10 +465,14 @@ def get_couchdata(request):
 
     all_patients = PactPatient.view('pactpatient/by_case_id', include_docs=True).all()
     def is_dots(pt):
-        if pt['arm'].startswith('DOT'):
-            return True
+        if hasattr(pt, 'dot_status'):
+            if pt.dot_status == '' or pt.dot_status is None:
+                return False
+            else:
+                return True
         else:
             return False
+
     dots_pts = filter(is_dots, all_patients)
 
     dots_ids = [pt._id for pt in dots_pts]
