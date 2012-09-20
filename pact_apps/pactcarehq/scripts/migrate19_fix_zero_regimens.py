@@ -1,47 +1,26 @@
-from xml.etree import ElementTree
-from django.contrib.auth.models import User
-import isodate
-import simplejson
-from auditcare.models import AuditEvent
-from casexml.apps.case.models import CommCareCase
-from casexml.apps.case.signals import process_cases
-from casexml.apps.case.tests.util import CaseBlock
-from couchforms.util import post_xform_to_couch
-from couchlog.models import ExceptionRecord
-from dimagi.utils.make_time import make_time
-from pactpatient import caseapi
-from pactpatient.models import html_escape
 from patient.models import Patient
 
 def run():
-    #convert patient from pact_id 493 to 199 due to a clerical/data entry accounting error. This should not be done
-    #in other circumstances.
+
+    """
+    Loop through all the regimens for patients and spoof submit the old regimens to new (default) labeled ones and update the caseblock accordingly
+    """
+    from casexml.apps.case.models import CommCareCase
     patients = Patient.objects.all()
     for pt in patients:
-        patient_doc = pt.couchdoc
-        if patient_doc is None:
-            print "Patient doc none: %s" % pt.id
-            continue
-        case = CommCareCase.get(patient_doc.case_id)
+        case_id = pt.couchdoc.case_id
+        print "Updating Case ID: %s" % case_id
+        casedoc = CommCareCase.get(case_id)
 
+        is_changed = False
+        if hasattr(casedoc, 'artregimen') and casedoc.artregimen == '0':
+            casedoc.artregimen = ''
+            is_changed = True
+        if hasattr(casedoc, 'nonartregimen') and casedoc.nonartregimen == '0':
+            casedoc.nonartregimen = ''
+            is_changed = True
 
-        print "Patient: %s" % pt.couchdoc._id
-        if case is not None:
-            print "\thp_status: %s" % case.hp_status
-            print "\tdot_status: %s" % case.dot_status
-            patient_doc.hp_status = case.hp_status
-
-            if case.dot_status != "" or case.dot_status != None:
-                patient_doc.dot_status = case.dot_status
-            patient_doc.save()
-
-
-        else:
-            print "\tNULL!"
-
-
-
-
-
-
+        if is_changed:
+            print "\tchanging regimens for %s" % case_id
+            casedoc.save()
 
