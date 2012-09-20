@@ -191,6 +191,7 @@ def compute_case_update_block(patient_doc, include_dots=False, close=False):
     return submit_blocks(case_blocks, "compute_pactpatient_update_general")
 
 def compute_schedule_block(patient_doc):
+    """Compute and submit a case update block for the patients' schedule"""
     #reconcile and resubmit DOT json - commcare2.0
     #patient_doc.save()
     case = CommCareCase.get(patient_doc.case_id)

@@ -21,7 +21,7 @@ import settings
 PACT_CACHE_TIMEOUT=14400
 
 ghetto_regimen_map = {
-    "none":'0',
+    "none":'',
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
@@ -921,7 +921,8 @@ class PactPatient(BasePatient):
                 if getattr(self.current_schedule, day) != None:
                     hp_username = getattr(self.current_schedule,day)
                 else:
-                    hp_username=self.primary_hp
+                    #hp_username=self.primary_hp
+                    hp_username = ''
                 key = 'dotSchedule%s' % day
                 val = hp_username
                 ret[key] = val
@@ -930,8 +931,8 @@ class PactPatient(BasePatient):
             for sched in self.dots_schedule:
                 day_of_week = sched.day_of_week
                 hp_username = sched.hp_username
-                if hp_username == '':
-                    hp_username = self.primary_hp
+                #if hp_username == '':
+                    #hp_username = self.primary_hp
 
                 key = 'dotSchedule%s' % day_of_week
                 val = hp_username
