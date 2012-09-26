@@ -12,6 +12,8 @@ from pactcarehq.fixturegenerators import PACT_HP_GROUP_ID
 from pactcarehq.models import PactUser
 from pactpatient.models import PactPatient
 from django.contrib.auth.models import User as DjangoUser
+import logging
+from django.http import Http404
 
 @httpdigest()
 def debug_casexml_new(request):
@@ -31,20 +33,24 @@ def debug_casexml_new(request):
 
 @httpdigest()
 def get_caselist(request):
-    """Intermediary/ghetto way of producing casexml, to be deprecated.
+    """Intermediary/ghetto way of producing casexml.
+    DEPRECATED
     """
-    regblock= get_ghetto_registration_block(request.user)
-    patient_block = ""
-    patients = PactPatient.view("patient/search", include_docs=True)
-    for pt in patients:
-        #if pt.arm == "Discharged":
-            #continue
-        patient_block += pt.ghetto_xml()
+    logging.error("Error attempted access at deprecated ota restore for user: %s" % request.user.username)
 
-    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
-    response = HttpResponse(mimetype='text/xml')
-    response.write(resp_text)
-    return response
+    raise Http404
+#    regblock= get_ghetto_registration_block(request.user)
+#    patient_block = ""
+#    patients = PactPatient.view("patient/search", include_docs=True)
+#    for pt in patients:
+#        #if pt.arm == "Discharged":
+#            #continue
+#        patient_block += pt.ghetto_xml()
+#
+#    resp_text = "<restoredata>%s %s</restoredata>" % (regblock, patient_block)
+#    response = HttpResponse(mimetype='text/xml')
+#    response.write(resp_text)
+#    return response
 
 
 

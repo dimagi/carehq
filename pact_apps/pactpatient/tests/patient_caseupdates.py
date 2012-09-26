@@ -345,3 +345,71 @@ class patientCaseUpdateTests(CareHQClinicalTestCase):
         pass
 
 
+    def testZeroRegimenChange(self):
+        """
+        For a given patient created, ensure that it shows up in the OTA restore.
+        Ensure also that changes in phone and addresses also show up in OTA restore.
+        This test also uses django_digest to authenticate to the OTA restore URL.
+
+        Verify all the phone and address information
+        """
+        patient_doc = self.test0CreatePatient()
+
+        restore_payload = self._doOTARestore()
+        #print print_pretty_xml(restore_payload.content)
+
+        form = PactPatientForm('regimen', instance=patient_doc, data={
+                                                                      'art_regimen':'morning,noon,evening',
+                                                                      'non_art_regimen':'evening',
+                                                                      'first_name': patient_doc.first_name,
+                                                                      'last_name': patient_doc.last_name,
+                                                                      'preferred_language': patient_doc.preferred_language,
+                                                                      'gender': patient_doc.gender,
+                                                                      'birthdate': '1/1/2000',
+                                                                      'race':patient_doc.race,
+                                                                      'hiv_care_clinic':patient_doc.hiv_care_clinic,
+                                                                      'primary_hp': patient_doc.primary_hp,
+                                                                      'hp_status': patient_doc.hp_status,
+                                                                      'dot_status': patient_doc.dot_status
+                                                                      })
+        #regimens: 1,3
+
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+        response = self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}), form.data )
+
+        print "########## posting changed regimen 1"
+
+        restore_payload2 = self._doOTARestore()
+        print print_pretty_xml(restore_payload2.content)
+
+        #case_id_re = re.compile('<case_id>(?P<case_id>\w+)<\/case_id>')
+        #case_id_xml = case_id_re.search(restore_payload.content).group('case_id')
+        form = PactPatientForm('regimen', instance=patient_doc, data={
+                                                                      'non_art_regimen':'',
+                                                                      'art_regimen':'',
+                                                                      'first_name': patient_doc.first_name,
+                                                                      'last_name': patient_doc.last_name,
+                                                                      'preferred_language': patient_doc.preferred_language,
+                                                                      'gender': patient_doc.gender,
+                                                                      'birthdate': '1/1/2000',
+                                                                      'race':patient_doc.race,
+                                                                      'hiv_care_clinic':patient_doc.hiv_care_clinic,
+                                                                      'primary_hp': patient_doc.primary_hp,
+                                                                      'hp_status': patient_doc.hp_status,
+                                                                      'dot_status': patient_doc.dot_status
+                                                                      })
+        #regimens: 0,0
+
+        response = self.client.post('/accounts/login/', {'username': 'mockmock@mockmock.com', 'password': 'mockmock'})
+        response = self.client.post(reverse('ajax_post_patient_form', kwargs={'patient_guid':patient_doc._id, 'form_name':'ptedit'}), form.data )
+
+        print "########## posting changed regimen 2"
+
+        restore_payload3 = self._doOTARestore()
+        print print_pretty_xml(restore_payload3.content)
+
+        casedoc = CommCareCase.get(patient_doc.case_id)
+        #self.assertEqual(case_id_xml, casedoc._id)
+        pass
+
+

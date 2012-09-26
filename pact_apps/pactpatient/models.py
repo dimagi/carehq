@@ -850,10 +850,10 @@ class PactPatient(BasePatient):
         for prop_fmt in ['dot_a_%s', 'dot_n_%s']:
             if prop_fmt[4] == 'a':
                 code_arr = get_regimen_code_arr(self.art_regimen)
-                update_ret['artregimen'] = str(len(code_arr))
+                update_ret['artregimen'] = str(len(code_arr)) if len(code_arr) > 0 else ""
             elif prop_fmt[4] == 'n':
                 code_arr = get_regimen_code_arr(self.non_art_regimen)
-                update_ret['nonartregimen'] = str(len(code_arr))
+                update_ret['nonartregimen'] = str(len(code_arr)) if len(code_arr) > 0 else ""
             digit_strings = ["zero", 'one', 'two', 'three','four']
             for x in range(1,5):
                 prop_prop = prop_fmt % digit_strings[x]
