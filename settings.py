@@ -154,6 +154,7 @@ INSTALLED_APPS = (
     'clinical_shared',
     'careplan',
     'djtables',
+    'pillowtop',
     #'deploy_tools',
     #end clinical_core
 

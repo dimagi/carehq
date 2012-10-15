@@ -46,7 +46,7 @@ class patientEditTests(CareHQClinicalTestCase):
         actor.save()
         return actor
 
-    def testCreatePatientView(self):
+    def testCreatePatientView(self, initial={}):
         """
         Create a patient via the view.
         """
@@ -55,28 +55,33 @@ class patientEditTests(CareHQClinicalTestCase):
         for x in range(0,5):
             chws.append(self._new_chw(self.tenant, generator.get_or_create_user()))
 
-
         start_pt_count = Patient.objects.all().count()
         pact_id = generator.random_number(length=9)
-        newpatient_data = {
-           u'mass_health_expiration': generator.random_future_date().strftime("%m/%d/%Y"),
-           u'first_name': generator.random_word(),
-           u'last_name': generator.random_word(),
-           u'middle_name': generator.random_word(),
-           u'preferred_language': random.choice(PACT_LANGUAGE_CHOICES)[0],
-           u'ssn': generator.random_word(length=9),
-           u'gender': random.choice(GENDER_CHOICES)[0],
-           u'notes': generator.random_text(length=160),
-           u'art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
-           u'birthdate': generator.random_past_date().strftime("%m/%d/%Y"),
-           u'pact_id': pact_id,
-           u'race': random.choice(PACT_RACE_CHOICES)[0],
-           u'hiv_care_clinic': random.choice(PACT_HIV_CLINIC_CHOICES)[0],
-           u'primary_hp': random.choice(chws).django_actor.user.username,
-           u'non_art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
-           u'hp_status': random.choice(['HP1','HP2','HP3','']),
-           u'dot_status': random.choice(['', 'DOT3','DOT5','DOT7','DOT1']),
-        }
+
+        if initial == {}:
+
+            newpatient_data = {
+               u'mass_health_expiration': generator.random_future_date().strftime("%m/%d/%Y"),
+               u'first_name': generator.random_word(),
+               u'last_name': generator.random_word(),
+               u'middle_name': generator.random_word(),
+               u'preferred_language': random.choice(PACT_LANGUAGE_CHOICES)[0],
+               u'ssn': generator.random_word(length=9),
+               u'gender': random.choice(GENDER_CHOICES)[0],
+               u'notes': generator.random_text(length=160),
+               u'art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
+               u'birthdate': generator.random_past_date().strftime("%m/%d/%Y"),
+               u'pact_id': pact_id,
+               u'race': random.choice(PACT_RACE_CHOICES)[0],
+               u'hiv_care_clinic': random.choice(PACT_HIV_CLINIC_CHOICES)[0],
+               u'primary_hp': random.choice(chws).django_actor.user.username,
+               u'non_art_regimen': random.choice(REGIMEN_CHOICES)[1][0],
+               u'hp_status': random.choice(['HP1','HP2','HP3','']),
+               u'dot_status': random.choice(['', 'DOT3','DOT5','DOT7','DOT1']),
+            }
+
+        else:
+            newpatient_data = {}
 
         rf = RequestFactory()
         request = rf.get('/')

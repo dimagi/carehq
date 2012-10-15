@@ -7,6 +7,9 @@ urlpatterns = patterns('webxforms.views',
 
                        #form entry callback
                        url(r'^pact/formentry/callback/(?P<case_id>[\w\-]+)$', 'touchform_callback', name="touchform_callback"),
+
+    #touchforms specific stuff
+                       url(r'^a/pact/cloudcare/api/cases$', 'get_cases', name="touchform_callback"),
 )
 
 

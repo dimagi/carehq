@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf.urls.defaults import url
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -6,6 +7,8 @@ from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 from tastypie.cache import SimpleCache
+from tastypie.resources import Resource
+from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from dimagi.utils.couch.tastykit import  CouchdbkitTastyPaginator, CouchdbkitResource
 from pactpatient.models import PactPatient
@@ -187,3 +190,4 @@ class UserSubmissionResource(CouchdbkitResource):
         authorization = ReadOnlyAuthorization()
         paginator_class = CouchdbkitTastyPaginator
         authentication = Authentication()
+

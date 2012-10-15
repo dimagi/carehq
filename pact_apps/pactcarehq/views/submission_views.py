@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 import logging
 import isodate
 import time
+from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
 from couchforms.util import post_xform_to_couch
 from pactcarehq.forms.progress_note_comment import ProgressNoteComment
@@ -35,6 +36,7 @@ from couchexport.schema import get_docs
 ###################################################
 # View file to view submissions by someone or for someone
 # As well as receive submissions, but these are to be deprecated by the receiver app
+from webxforms.views import get_owned_cases
 
 
 def do_submission(instance, attachments={}):
@@ -193,7 +195,9 @@ def _get_submissions_for_user(username):
     submissions=sorted(submissions, key=lambda x: x[1])
     return submissions
 
+from devserver.modules.profile import devserver_profile
 @login_required
+@devserver_profile(follow=[get_owned_cases, CommCareCase.view, CommCareCase.get_json])
 def my_submits(request, template_name="pactcarehq/chw_submits.html"):
     context = RequestContext(request)
 
@@ -205,6 +209,9 @@ def my_submits(request, template_name="pactcarehq/chw_submits.html"):
     context['submit_dict'] = submit_dict
     context['username'] = username
     context['is_me']=True
+
+    context['cases'] = get_owned_cases(request.user)
+    print context['cases']
     return render_to_response(template_name, context_instance=context)
 
 @login_required
