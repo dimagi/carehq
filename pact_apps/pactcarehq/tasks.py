@@ -16,8 +16,8 @@ from dimagi.utils.make_time import make_time
 from pactcarehq.forms.weekly_schedule_form import hack_pact_usernames
 from django.core.mail import send_mail
 from pactcarehq.models import SubmissionTallyLog, UserTally
-import settings
 from settings_local import hack_chw_username_phones
+from django.conf import settings
 
 
 @task
@@ -172,7 +172,9 @@ def schedule_coverage_tally_report():
             else:
                 unscheduled.append(user.username)
         body = '\n'.join([subject, '', 'Scheduled Today:\n', '\n'.join(scheduled), '\nNot Scheduled Today:\n', '\n'.join(unscheduled)])
-        send_mail(subject, body, 'notifications@dimagi.com', ['dmyung@dimagi.com'], fail_silently=True)
+        recipients = settings.get('REPORT_EMAIL_RECIPIENTS', ['dmyung@dimagi.com'])
+
+        send_mail(subject, body, 'notifications@dimagi.com', recipients, fail_silently=True)
         submission_tally.save()
 
 
