@@ -21,14 +21,14 @@ import settings
 PACT_CACHE_TIMEOUT=14400
 
 ghetto_regimen_map = {
-    "none":'',
+    "none":'0',
     "qd": '1',
     "bid": '2',
     "qd-am": '1',
     "qd-pm": '1',
     "tid": '3',
     "qid": '4',
-    '': '' ,
+    '': '0' ,
 
     'morning': 1,
     'noon': 1,
@@ -256,6 +256,9 @@ class PactPatient(BasePatient):
         cache.delete('%s_schedule_xml' % self._id)
         if hasattr(self,'_case'):
             delattr(self, '_case')
+
+    def get_case(self):
+        return self._cache_case(invalidate=True)
 
 
 

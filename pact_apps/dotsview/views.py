@@ -161,10 +161,14 @@ def dot_addendum(request, template='dots/dot_addendum.html'):
 
     patient = Patient.objects.get(id=patient_id)
     pact_id = patient.couchdoc.pact_id
-    art_regimen = patient.couchdoc.art_regimen
+    case = patient.couchdoc.get_case()
+    print case['_id']
+    print ghetto_regimen_map
+    art_regimen = case.get('art_regimen', '')
     art_num = int(ghetto_regimen_map[art_regimen.lower()])
 
-    nonart_regimen = patient.couchdoc.non_art_regimen
+    nonart_regimen = case.get('non_art_regimen','')
+    print nonart_regimen
     nonart_num = int(ghetto_regimen_map[nonart_regimen.lower()])
 
     context['art_forms'] = []
@@ -308,6 +312,9 @@ def get_couchdata(request):
     start_date = _parse_date(request.GET.get('start', end_date - timedelta(14)))
     patient_id = request.GET.get('patient', None)
 
+    print start_date
+    print end_date
+
     do_pdf = request.GET.get('pdf', False)
 
     if start_date > end_date:
@@ -330,9 +337,13 @@ def get_couchdata(request):
         #we want to see a direct single instance display. override the display times
         observations = CObservation.view('dotsview/dots_observations', key=['doc_id', view_doc_id]).all()
     else:
-        startkey = [pact_id, 'anchor_date', start_date.year, start_date.month, start_date.day]
-        endkey = [pact_id, 'anchor_date', end_date.year, end_date.month, end_date.day]
+        startkey = [pact_id, 'observed_date', start_date.year, start_date.month, start_date.day]
+        endkey = [pact_id, 'observed_date', end_date.year, end_date.month, end_date.day]
+
+        print startkey
+        print endkey
         observations = CObservation.view('dotsview/dots_observations', startkey=startkey, endkey=endkey).all()
+        print observations
 
     total_doses_set = set([obs.total_doses for obs in observations])
     observed_dates = list(set([s.observed_date for s in observations]))
