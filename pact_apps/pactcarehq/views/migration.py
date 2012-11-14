@@ -2,7 +2,7 @@ from StringIO import StringIO
 from django.core.management import call_command
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.servers.basehttp import FileWrapper
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 import simplejson
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
@@ -40,7 +40,12 @@ def get_case(request, case_id):
     Returns case's json, but sorts and filters the actions as we adulterated them.
     """
 
+    if not CommCareCase.get_db().doc_exist(case_id):
+        raise Http404
+
     casedoc = CommCareCase.get(case_id)
+    if casedoc['doc_type'] != 'CommCareCase':
+        raise Http404
     raw_actions = casedoc.actions
     clean_actions = sorted(set(raw_actions), key=lambda x: x.date)
     casedoc.actions = clean_actions
@@ -55,6 +60,13 @@ def get_case(request, case_id):
 @httpdigest
 @user_passes_test(lambda u: u.is_superuser)
 def get_xform_xml(request, xform_id):
+    db = XFormInstance.get_db()
+    if not db.doc_exist(xform_id):
+        raise Http404
+    doc = XFormInstance.get(xform_id)
+    if doc['doc_type'] != 'XFormInstance':
+        raise Http404
+
     response = HttpResponse(XFormInstance.get(xform_id).fetch_attachment('form.xml'), mimetype='application/xml')
     return response
 
