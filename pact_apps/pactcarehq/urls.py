@@ -89,6 +89,12 @@ urlpatterns = patterns ('',
         url(r'^patientapi/(?P<patient_guid>[\w\-]+)/actor/add$', 'carehqapp.views.actors.pt_new_or_link_actor', name='pt_new_or_link_actor'),
 
 
+    url(r'^hqmigration/cases/$', 'pactcarehq.views.migration.get_cases'),
+    url(r'^hqmigration/cases/(?P<case_id>.*)/$', 'pactcarehq.views.migration.get_case'),
+    url(r'^hqmigration/xform/(?P<xform_id>.*)/$', 'pactcarehq.views.migration.get_xform_xml'),
+    url(r'^hqmigration/users/$', 'pactcarehq.views.migration.get_users'),
+    url(r'^hqmigration/actors/$', 'pactcarehq.views.migration.get_actors' ),
+
     #url(r'^progress_notes/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_progress_note', name='show_progress_note'),
     #url(r'^dots_note/(?P<doc_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.show_dots_note', name='show_dots_note'),
     #url(r'^download/(?P<download_id>[0-9a-fA-Z]{25,32})$', 'pactcarehq.views.file_download'),
