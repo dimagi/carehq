@@ -190,6 +190,7 @@ def schedule_coverage_tally_report_sms():
 
 
     today = make_time()
+    return
 
 
     sent_report = SubmissionTallyLog.view('pactcarehq/daily_tally_report_log', key=[today.year, today.month, today.day]).all()
