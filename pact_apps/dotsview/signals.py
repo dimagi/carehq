@@ -3,6 +3,7 @@ import logging
 import simplejson
 from pactpatient import caseapi
 from pactpatient.models import PactPatient
+from receiver.signals import successful_form_received
 
 def process_dots_submission(sender, xform, **kwargs):
     try:
@@ -30,5 +31,6 @@ def process_dots_submission(sender, xform, **kwargs):
     except:
         logging.error("Error processing the submission due to an unknown error.")
 
-xform_saved.connect(process_dots_submission)
+#xform_saved.connect(process_dots_submission)
+successful_form_received.connect(process_dots_submission)
 
