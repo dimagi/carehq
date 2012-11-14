@@ -258,6 +258,8 @@ class PactPatient(BasePatient):
             delattr(self, '_case')
 
 
+    def get_case(self):
+        return CommCareCase.get(self.case_id)
 
     def _cache_case(self, invalidate=False):
         if invalidate:
