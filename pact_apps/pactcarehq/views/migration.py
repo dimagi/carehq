@@ -6,6 +6,7 @@ from django.http import HttpResponse, Http404
 import simplejson
 from casexml.apps.case.models import CommCareCase
 from couchforms.models import XFormInstance
+from pactpatient.models import PactPatient
 from patient.models import Patient
 from django_digest.decorators import httpdigest
 import isodate
@@ -53,7 +54,11 @@ def get_case(request, case_id):
     raw_xforms = set(casedoc.xform_ids)
     casedoc.xform_ids = [x.xform_id for x in clean_actions]
 
-    response = HttpResponse(simplejson.dumps(casedoc.to_json()), mimetype='application/json')
+    patient_doc = PactPatient.view('pactpatient/by_case_id', key=casedoc['case_id'], include_docs=True).first().to_json()
+    casejson = casedoc.to_json()
+    casejson['weekly_schedule'] = patient_doc['weekly_schedule']
+
+    response = HttpResponse(simplejson.dumps(casejson), mimetype='application/json')
     return response
 
 
