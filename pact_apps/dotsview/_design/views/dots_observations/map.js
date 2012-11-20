@@ -128,6 +128,7 @@ function (doc) {
                 new_drug_obs['provider'] = doc.form['meta']['username'];
                 new_drug_obs['created_date'] = doc.form['meta']['timeStart'];
                 new_drug_obs['encounter_date'] = toISOString(encounter_date);
+                new_drug_obs['observed_date'] = toISOString(encounter_date);
                 new_drug_obs['completed_date'] = doc.form['meta']['timeEnd'];
                 new_drug_obs['anchor_date'] = toISOString(encounter_date);
                 new_drug_obs['day_index'] = -1;
@@ -167,7 +168,7 @@ function (doc) {
                     new_drug_obs['observed_date'] = toISOString(encounter_date);
                     var non_art_dispense = eval(doc.form['pillbox_check']['nonartnow']);
                     if (non_art_dispense != null) {
-                        do_observation(doc, encounter_date, anchor_date, non_art_dispense, eval(uneval(new_drug_obs)));
+                        do_observation(doc, encounter_date, encounter_date, non_art_dispense, eval(uneval(new_drug_obs)));
                     }
                 }
 
@@ -183,7 +184,7 @@ function (doc) {
                     }
                     var art_dispense = eval(doc.form['pillbox_check']['artnow']);
                     if (art_dispense != null) {
-                        do_observation(doc, encounter_date, anchor_date, art_dispense, eval(uneval(new_drug_obs)));
+                        do_observation(doc, encounter_date, encounter_date, art_dispense, eval(uneval(new_drug_obs)));
                     }
                 }
 
