@@ -18,7 +18,7 @@ def _join(*args):
 ################################################################
 # PACT bootstrap
 def _setup_pact_production():
-    env.virtualenv_root = '/home/carehq/.virtualenvs/carehq' #todo: change pact user to carehq
+    env.virtualenv_root = '/home/carehq/.virtualenvs/carehq_env' #todo: change pact user to carehq
     env.src_root       = _join(env.root, 'src')
     env.code_root       = _join(env.root, 'src/carehq')
     env.project_root    = _join(env.root, 'src/carehq')
