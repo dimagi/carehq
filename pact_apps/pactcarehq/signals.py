@@ -21,7 +21,6 @@ def process_patient_update_submission(sender, xform, **kwargs):
         except Exception, ex:
             logging.error("Error, patient update submission did not have data in correct format: %s" % (ex))
             logging.error("XForm: %s" % xform.to_json())
-            pdb.set_trace()
 
     except:
         logging.error("Error processing the submission due to an unknown error.")
