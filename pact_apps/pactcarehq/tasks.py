@@ -172,7 +172,7 @@ def schedule_coverage_tally_report():
             else:
                 unscheduled.append(user.username)
         body = '\n'.join([subject, '', 'Scheduled Today:\n', '\n'.join(scheduled), '\nNot Scheduled Today:\n', '\n'.join(unscheduled)])
-        recipients = settings.get('REPORT_EMAIL_RECIPIENTS', ['dmyung@dimagi.com'])
+        recipients = getattr(settings,'REPORT_EMAIL_RECIPIENTS', ['dmyung@dimagi.com'])
 
         send_mail(subject, body, 'notifications@dimagi.com', recipients, fail_silently=True)
         submission_tally.save()
